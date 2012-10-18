@@ -10,6 +10,7 @@ gem 'active-fedora'
 
 group :development, :test do
   gem 'rspec-rails'
+  gem 'jettywrapper'
 end
 
 # Gems used only for assets and not required

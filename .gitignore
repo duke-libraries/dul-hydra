@@ -16,3 +16,6 @@
 
 # Ignore all config yaml files
 /config/*.yml
+
+# Ignore jetty
+/jetty
