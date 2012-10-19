@@ -17,4 +17,27 @@ describe CollectionsController do
       @collection2.delete
     end
   end
+  
+  describe "#new" do
+    it "should set a template collection" do
+      get :new
+      response.should be_successful
+      assigns[:collection].should be_kind_of Collection
+    end
+  end
+  
+  describe "#create" do
+    before do
+      @count = Collection.count
+      @pid = "test:1"
+    end
+    it "should create a collection" do
+      post :create, :collection=>{:pid=>@pid}
+      response.should redirect_to collections_path
+      Collection.count.should == @count + 1
+    end
+    after do
+      Collection.find(@pid).delete
+    end
+  end
 end

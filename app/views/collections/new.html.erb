@@ -1,0 +1,8 @@
+<h1>Create a new Collection</h1>
+
+<%= form_for @collection do |f| %>
+  <%= f.label :pid %>
+  <%= f.text_field :pid %>
+  <br />
+  <%= f.submit %>
+<% end %>
