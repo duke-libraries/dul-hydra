@@ -19,3 +19,6 @@
 
 # Ignore jetty
 /jetty
+
+# Emacs backup files
+*~
