@@ -7,6 +7,10 @@ describe Component do
     c = Component.new(:pid => @pid)
     c.save!
   end
+ 
+  after do
+    Component.find(@pid).delete
+  end
   
   it "should retrieve the component" do
     c = Component.find(@pid)
