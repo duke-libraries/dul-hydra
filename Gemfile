@@ -10,6 +10,7 @@ gem 'active-fedora'
 
 group :development, :test do
   gem 'rspec-rails'
+  gem 'capybara'
   gem 'jettywrapper'
 end
 
