@@ -11,6 +11,7 @@ describe Item do
 
   after do
     @item.delete
+    @collection.delete
   end
 
   it "should be able to become a member of a collection" do
