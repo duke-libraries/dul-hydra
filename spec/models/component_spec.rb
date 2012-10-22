@@ -31,5 +31,5 @@ describe Component do
     @component.save
     @component.part_of.should include(@item)
   end
-  
+
 end
