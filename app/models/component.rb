@@ -4,4 +4,6 @@ class Component < ActiveFedora::Base
 
   has_relationship "part_of", :is_part_of
 
+  has_file_datastream :name => "content", :type => ActiveFedora::Datastream
+
 end
