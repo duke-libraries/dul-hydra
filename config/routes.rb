@@ -1,6 +1,7 @@
 DulHydra::Application.routes.draw do
 
   resources :collections
+  resources :components
   
   # The priority is based upon order of creation:
   # first created -> highest priority.
