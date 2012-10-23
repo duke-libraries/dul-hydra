@@ -12,23 +12,18 @@ describe Item do
     @collection.delete
   end
 
-  it "should have a DC datastream" do
+  it "should have the right datastreams" do
     @item.datastreams["DC"].should_not be_nil
-  end
-
-  it "should have a RELS-EXT datastream" do
+    @item.DC.should be_kind_of ActiveFedora::Datastream
     @item.datastreams["RELS-EXT"].should_not be_nil
-  end
-
-  it "should be able to retrieve the item" do
-    i = Item.find(@item.pid)
-    i.pid.should eq(@item.pid)
+    @item.RELS_EXT.should be_kind_of ActiveFedora::Datastream
   end
 
   it "should be able to become a member of a collection" do
-    @item.member_of_append(@collection)
+    @item.collection = @collection
     @item.save
-    @item.member_of.should include(@collection)
+    @item.collection.should eq(@collection)
+    @collection.items.should include(@item)
   end
 
 end

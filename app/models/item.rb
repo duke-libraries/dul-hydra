@@ -1,8 +1,8 @@
 class Item < ActiveFedora::Base
 
-  include ActiveFedora::Relationships
+  include Hydra::ModelMethods
 
-  has_relationship "member_of", :is_member_of
-  has_relationship "parts", :is_part_of, :inbound => true
+  has_many :components, :property => :is_part_of, :inbound => true, :class_name => 'Component'
+  belongs_to :collection, :property => :is_member_of, :class_name => 'Collection'
   
 end

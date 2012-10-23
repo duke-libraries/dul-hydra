@@ -5,8 +5,8 @@ describe "Items" do
   describe "list items" do
     
     before do
-      @item1 = Item.create(:pid => "item:1")
-      @item2 = Item.create(:pid => "item:2")
+      @item1 = Item.create
+      @item2 = Item.create
     end
 
     after do
@@ -20,17 +20,17 @@ describe "Items" do
       page.should have_content(@item2.pid)
     end
 
-  end
+  end # list items
 
   describe "show item" do
 
     before do
-      @item = Item.create(:pid => "item:1")
-      @component1 = Component.create(:pid => "component:1")
-      @component1.part_of_append(@item)
+      @item = Item.create
+      @component1 = Component.create
+      @component1.item = @item
       @component1.save
-      @component2 = Component.create(:pid => "component:2")
-      @component2.part_of_append(@item)
+      @component2 = Component.create
+      @component2.item = @item
       @component2.save
     end
 
@@ -51,7 +51,6 @@ describe "Items" do
       page.should have_content(@component2.pid)
     end
 
-  end
-
+  end # show item
 
 end
