@@ -6,8 +6,8 @@ gem 'rails', '3.2.8'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'sqlite3'
-gem 'active-fedora'
-gem 'hydra-head'
+gem 'active-fedora', '4.6.0.rc3'
+gem 'hydra-head', '5.0.0.pre9'
 gem 'blacklight'
 gem 'devise'
 
