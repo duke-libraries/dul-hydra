@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Collections" do
-  describe "GET /collections" do
+  describe "List collections" do
     before do
       @pid1 = "collection:1"
       @pid2 = "collection:2"
@@ -18,7 +18,7 @@ describe "Collections" do
       @collection2.delete
     end
   end
-  describe "POST /collection" do
+  describe "Add collection" do
     before do
       @pid = "collection:1"
       @empty_string_pid = ""
