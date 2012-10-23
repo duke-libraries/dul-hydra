@@ -1,0 +1,7 @@
+<h1>Item <%= @item.pid %></h1>
+
+<ul>
+<% @item.parts.each do |part| %>
+  <li><%= part.pid %></li>
+<% end %>
+</ul>
