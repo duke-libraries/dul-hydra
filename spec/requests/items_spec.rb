@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "Items" do
 
-  describe "GET /items" do
+  describe "list items" do
     
     before do
       @item1 = Item.create(:pid => "item:1")
@@ -22,7 +22,7 @@ describe "Items" do
 
   end
 
-  describe "GET /items/<pid>" do
+  describe "show item" do
 
     before do
       @item = Item.create(:pid => "item:1")
