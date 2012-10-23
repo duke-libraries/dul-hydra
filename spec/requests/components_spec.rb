@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "Components" do
 
-  describe "GET /components" do
+  describe "list" do
 
     before do
       @pid1 = "component:1"
@@ -22,16 +22,19 @@ describe "Components" do
       page.should have_content @pid2
     end
 
-  end
+  end # list components
 
-  # describe "POST /components" do
+  # describe "create" do
 
-  #   it "should create a collection" do
+  #   it "should have a content datastream" do
   #     visit new_component_path
-  #     fill_in "Pid", :with => @pid1
+  #     attach_file "Content", "spec/fixtures/library-devil.tiff"
   #     click_button "Create Component"
-  #     page.should have_content "Added Component"
-  #     page.should have_content @pid1
+  #     @component.datastreams["content"].should_not be_nil
+  #   end
+
+  #   after do
+  #     @component.delete
   #   end
 
   # end

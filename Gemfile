@@ -8,6 +8,9 @@ gem 'rails', '3.2.8'
 gem 'sqlite3'
 gem 'active-fedora'
 gem 'hydra-mods'
+gem 'hydra-head'
+gem 'blacklight'
+gem 'devise'
 
 group :development, :test do
   gem 'rspec-rails'
@@ -43,3 +46,8 @@ gem 'jquery-rails'
 
 # To use debugger
 # gem 'debugger'
+
+gem "devise"
+gem "devise-guests"
+gem "compass-rails", "~> 1.0.0", :group => :assets
+gem "compass-susy-plugin", "~> 0.9.0", :group => :assets

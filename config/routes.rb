@@ -1,5 +1,12 @@
 DulHydra::Application.routes.draw do
 
+  root :to => "catalog#index"
+
+  Blacklight.add_routes(self)
+  HydraHead.add_routes(self)
+
+  devise_for :users
+
   resources :collections
   resources :items
   resources :components

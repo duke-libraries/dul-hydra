@@ -3,9 +3,8 @@ require 'spec_helper'
 describe Component do
 
   before do
-    @pid = "component:1"
-    @component = Component.create(:pid => @pid)
-    @item = Item.create(:pid => "item:1")
+    @component = Component.create
+    @item = Item.create
   end
  
   after do
@@ -22,8 +21,8 @@ describe Component do
   end
   
   it "should be able to retrieve the component" do
-    c = Component.find(@pid)
-    c.pid.should eq(@pid)
+    c = Component.find(@component.pid)
+    c.pid.should eq(@component.pid)
   end
 
   it "should be able to be made part of an item" do

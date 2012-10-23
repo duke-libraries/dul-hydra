@@ -3,8 +3,7 @@ require 'spec_helper'
 describe Collection do
 
   before do
-    @collection_pid = "collection:1"
-    @collection = Collection.create(:pid => @collection_pid)
+    @collection = Collection.create
   end
 
   after do
@@ -20,8 +19,8 @@ describe Collection do
   end
 
   it "should be able to retrieve the item" do
-    c = Collection.find(@collection_pid)
-    c.pid.should eq(@collection_pid)
+    c = Collection.find(@collection.pid)
+    c.pid.should eq(@collection.pid)
   end
 
 
