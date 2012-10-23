@@ -7,6 +7,7 @@ gem 'rails', '3.2.8'
 
 gem 'sqlite3'
 gem 'active-fedora'
+gem 'hydra-mods'
 
 group :development, :test do
   gem 'rspec-rails'
