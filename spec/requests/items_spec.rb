@@ -2,6 +2,26 @@ require 'spec_helper'
 
 describe "Items" do
 
+  describe "GET /items" do
+    
+    before do
+      @item1 = Item.create(:pid => "item:1")
+      @item2 = Item.create(:pid => "item:2")
+    end
+
+    after do
+      @item1.delete
+      @item2.delete
+    end
+
+    it "should display a list of all items" do
+      visit items_path
+      page.should have_content(@item1.pid)
+      page.should have_content(@item2.pid)
+    end
+
+  end
+
   describe "GET /items/<pid>" do
 
     before do
