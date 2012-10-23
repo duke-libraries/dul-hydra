@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Collections" do
-  describe "GET /collections" do
+  describe "List collections" do
     before do
       @pid1 = "collection:1"
       @pid2 = "collection:2"
@@ -18,19 +18,34 @@ describe "Collections" do
       @collection2.delete
     end
   end
-  describe "POST /collection" do
+  describe "Add collection" do
     before do
       @pid = "collection:1"
+      @empty_string_pid = ""
+      @default_pid_namespace = "changeme"
     end
     after do
-      Collection.find(@pid).delete
+      Collection.find_each { |c| c.delete }
     end
-    it "should create a collection" do
+    it "should create a collection with provided PID" do
       visit new_collection_path
       fill_in "Pid", :with => @pid
       click_button "Create Collection"
       page.should have_content "Added Collection"
       page.should have_content @pid
+    end
+    it "should create a collection with system-assigned PID" do
+      visit new_collection_path
+      click_button "Create Collection"
+      page.should have_content "Added Collection"
+      page.should have_content @default_pid_namespace
+    end
+    it "should create a collection with system-asigned PID if given blank PID" do
+      visit new_collection_path
+      fill_in "Pid", :with => @empty_string_pid
+      click_button "Create Collection"
+      page.should have_content "Added Collection"
+      page.should have_content @default_pid_namespace
     end
   end
 end
