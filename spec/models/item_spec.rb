@@ -3,10 +3,8 @@ require 'spec_helper'
 describe Item do
 
   before do
-    @item_pid = "item:1"
-    @item = Item.create(:pid => @item_pid)
-    @collection_pid = "collection:1"
-    @collection = Collection.create(:pid => @collection_pid)
+    @item = Item.create
+    @collection = Collection.create
   end
 
   after do
@@ -23,8 +21,8 @@ describe Item do
   end
 
   it "should be able to retrieve the item" do
-    i = Item.find(@item_pid)
-    i.pid.should eq(@item_pid)
+    i = Item.find(@item.pid)
+    i.pid.should eq(@item.pid)
   end
 
   it "should be able to become a member of a collection" do
