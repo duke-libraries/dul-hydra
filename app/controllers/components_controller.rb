@@ -21,4 +21,15 @@ class ComponentsController < ApplicationController
     @component = Component.find(params[:id])
   end
 
+  def update
+    component = Component.find(params[:component][:pid])
+    item_pid = params[:component][:item]
+    if item_pid
+      item = Item.find(item_pid)
+      component.item = item
+      component.save
+    end
+    redirect_to component_path(component)
+  end
+
 end
