@@ -1,5 +1,16 @@
 <h1>Item <%= @item.pid %></h1>
 
+<% if @item.collection %>
+  Member of collection: <%= @item.collection.pid %>
+<% else %>
+  <%= form_for @item do |f| %>
+    <%= f.hidden_field :pid %>
+    <%= f.label :collection %>
+    <%= f.text_field :collection %>
+    <%= f.submit "Add Item to Collection" %>
+  <% end %>
+<% end %>
+
 <ul>
 <% @item.components.each do |component| %>
   <li><%= component.pid %></li>

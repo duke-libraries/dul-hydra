@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe "Items" do
 
-  describe "list items" do
-    
+  describe "list" do
+
     before do
       @item1 = Item.create
       @item2 = Item.create
@@ -20,24 +20,16 @@ describe "Items" do
       page.should have_content(@item2.pid)
     end
 
-  end # list items
+  end # list
 
-  describe "show item" do
+  describe "show" do
 
     before do
       @item = Item.create
-      @component1 = Component.create
-      @component1.item = @item
-      @component1.save
-      @component2 = Component.create
-      @component2.item = @item
-      @component2.save
     end
 
     after do
       @item.delete
-      @component1.delete
-      @component2.delete
     end
 
     it "should display the item pid" do
@@ -45,12 +37,47 @@ describe "Items" do
       page.should have_content(@item.pid)
     end
 
-    it "should display the pids of the item's parts" do
-      visit item_path(@item)
-      page.should have_content(@component1.pid)
-      page.should have_content(@component2.pid)
+    describe "not a member of a collection" do
+
+      before do
+        @collection = Collection.create
+      end
+
+      after do
+        @collection.delete
+      end
+
+      it "should be able to become a member of a collection" do
+        visit item_path(@item)
+        #select @collection.pid, :from => :collection
+        fill_in :collection, :with => @collection.pid
+        click_button "Add Item to Collection"
+        item = Item.find(@item.pid)
+        item.collection.pid.should eq(@collection.pid)
+        collection = Collection.find(@collection.pid)
+        collection.item_ids.should include(@item.pid)
+      end
+      
     end
 
-  end # show item
+    describe "has parts" do
+
+      before do
+        @component = Component.create
+        @item.components << @component
+      end
+
+      after do
+        @component.delete
+      end
+
+      it "should display the pids of the parts" do
+        visit item_path(@item)
+        page.should have_content(@component.pid)
+      end
+
+    end # has parts
+
+  end # show
 
 end
