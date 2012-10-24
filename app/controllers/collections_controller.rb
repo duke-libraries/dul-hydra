@@ -15,4 +15,8 @@ class CollectionsController < ApplicationController
     @collection = Collection.create(params[:collection])
     redirect_to collections_path, :notice=>"Added Collection"
   end
+  
+  def show
+    @collection = Collection.find(params[:id])
+  end
 end

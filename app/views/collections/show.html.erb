@@ -1,0 +1,15 @@
+<h1>Collection <%= @collection.pid %></h1>
+
+<dl>
+  <dt>Title:</dt>
+  <dd><%= @collection.title.first %></dd>
+  <dt>Identifier(s):</dt>
+  <dd>
+    <ul>
+    <% @collection.identifier.each do |id| %>
+      <li><%= id %></li>
+    <% end %>
+    </ul>
+  </dd>
+</dl>
+

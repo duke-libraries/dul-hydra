@@ -2,6 +2,6 @@
 
 <ul>
   <% @collections.each do |collection| %>
-    <li><%= collection.pid %></li>
+    <li><%= link_to collection.title.first.length > 0 ? collection.title.first : collection.pid , collection_path(collection) %></li>
   <% end %>
 </ul>
