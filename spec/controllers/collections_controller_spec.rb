@@ -58,4 +58,21 @@ describe CollectionsController do
       Collection.count.should eq(@count + 1)
     end
   end
+  
+  describe "#show" do
+    before do
+      @collection = Collection.new
+      @collection.title = "Collection Title"
+      @collection.identifier = "collectionIdentifier"
+      @collection.save!
+    end
+    after do
+      Collection.find_each { |c| c.delete }
+    end
+    it "should present the requested collection" do
+      get :show, :id=>@collection
+      response.should be_successful
+      assigns[:collection].should == @collection
+    end
+  end
 end
