@@ -35,8 +35,9 @@ describe "Collections" do
     end
     it "should display the collection object" do
       visit collection_path(@collection)
-      page.should have_content "Collection Title"
-      page.should have_content "collectionIdentifier"
+      page.should have_content @collection.title.first
+      page.should have_content @collection.identifier.first
+      page.should have_content @collection.pid
     end
   end
   describe "Add collection" do

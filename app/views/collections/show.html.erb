@@ -1,4 +1,4 @@
-<h1>Collection <%= @collection.pid %></h1>
+<h1>Collection <%= @collection.title.first.length > 0 ? @collection.title.first : @collection.pid %></h1>
 
 <dl>
   <dt>Title:</dt>
@@ -11,5 +11,7 @@
     <% end %>
     </ul>
   </dd>
+  <dt>PID:</dt>
+  <dd><%= @collection.pid %></dd>
 </dl>
 
