@@ -5,10 +5,8 @@ describe "Components" do
   describe "list" do
 
     before do
-      @pid1 = "component:1"
-      @pid2 = "component:2"
-      @component1 = Component.create(:pid => @pid1)
-      @component2 = Component.create(:pid => @pid2)
+      @component1 = Component.create
+      @component2 = Component.create
     end
 
     after do
@@ -18,11 +16,37 @@ describe "Components" do
 
     it "should display a list of all components" do
       visit components_path
-      page.should have_content @pid1
-      page.should have_content @pid2
+      page.should have_content @component1.pid
+      page.should have_content @component2.pid
     end
 
   end # list components
+
+  describe "show" do
+    
+    before do
+      @component = Component.create
+      @item = Item.create
+    end
+
+    after do
+      @component.delete
+      @item.delete
+    end
+
+    it "should be able the associate the component with an item" do
+      visit component_path(@component)
+      fill_in "Item", :with => @item.pid
+      click_button "Add Component to Item"
+      component = Component.find(@component.pid)
+      component.item.should_not be_nil
+      component.item.pid.should eq(@item.pid)
+      item = Item.find(@item.pid)
+      item.components.should_not be_empty
+      item.component_ids.should include(@component.pid)
+    end
+    
+  end # show
 
   # describe "create" do
 

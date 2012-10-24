@@ -1,0 +1,12 @@
+<h1>Component <%= @component.pid %></h1>
+
+<% if @component.item %>
+  Part of Item: <%= @component.item.pid %>
+<% else %>
+  <%= form_for @component do |f| %>
+    <%= f.hidden_field :pid %>
+    <%= f.label :item %>
+    <%= f.text_field :item %>
+    <%= f.submit "Add Component to Item" %>
+  <% end %>
+<% end %>
