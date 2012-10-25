@@ -13,7 +13,7 @@ class CollectionsController < ApplicationController
       params[:collection].delete(:pid)
     end
     @collection = Collection.create(params[:collection])
-    redirect_to collections_path, :notice=>"Added Collection"
+    redirect_to collection_path(@collection), :notice=>"Added Collection"
   end
   
   def show

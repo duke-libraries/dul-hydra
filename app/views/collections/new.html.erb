@@ -1,8 +1,11 @@
 <h1>Create a new Collection</h1>
 
 <%= form_for @collection do |f| %>
-  <%= f.label :pid %>
-  <%= f.text_field :pid %>
+  <%= f.label :title %>
+  <%= f.text_field :title %>
+  <br />
+  <%= f.label :identifier %>
+  <%= f.text_field :identifier %>
   <br />
   <%= f.submit "Create Collection" %>
 <% end %>

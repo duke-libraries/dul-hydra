@@ -39,22 +39,22 @@ describe CollectionsController do
     end
     it "should create a collection with the provided PID" do
       post :create, :collection=>{:pid=>@pid}
-      response.should redirect_to collections_path
+      response.should redirect_to collection_path(@pid)
       Collection.count.should eq(@count + 1)
     end
     it "should create a collection with a system-assigned PID when given no PID" do
       post :create, :collection=>{}
-      response.should redirect_to collections_path
+      response.should be_redirect
       Collection.count.should eq(@count + 1)
     end
     it "should create a collection with a system-assigned PID when given an empty string as a PID" do
       post :create, :collection=>{:pid=>@empty_string_pid}
-      response.should redirect_to collections_path
+      response.should be_redirect
       Collection.count.should eq(@count + 1)
     end
     it "should create a collection with a system-assigned PID when given a do not use PID" do
       post :create, :collection=>{:pid=>@do_not_use_pid}
-      response.should redirect_to collections_path
+      response.should be_redirect
       Collection.count.should eq(@count + 1)
     end
   end
