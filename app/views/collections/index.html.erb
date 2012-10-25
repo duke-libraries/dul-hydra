@@ -1,5 +1,6 @@
 <h1>Collections</h1>
 
+<%= link_to "Create New Collection", new_collection_path %>
 <ul>
   <% @collections.each do |collection| %>
     <li><%= link_to collection.title.first.length > 0 ? collection.title.first : collection.pid , collection_path(collection) %></li>

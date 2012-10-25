@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Collections" do
-  describe "List collections" do
+  describe "List" do
     before do
       @collection1 = Collection.new
       @collection1.title = "Collection 1 Title"
@@ -22,8 +22,12 @@ describe "Collections" do
       page.should have_content @collection1.title.first
       page.should have_content @collection2.pid
     end
+    it "should contain a link to create a new collection" do
+      visit collections_path
+      page.should have_link "Create New Collection", :href=>new_collection_path
+    end
   end
-  describe "Show collection" do
+  describe "Show" do
     before do
       @collection = Collection.new
       @collection.title = "Collection Title"
@@ -39,8 +43,12 @@ describe "Collections" do
       page.should have_content @collection.identifier.first
       page.should have_content @collection.pid
     end
+    it "should contain a link back to the collection list" do
+      visit collection_path(@collection)
+      page.should have_link "Collection List", :href=>collections_path
+    end
   end
-  describe "Add collection" do
+  describe "Add" do
     before do
       @pid = "collection:1"
       @empty_string_pid = ""
