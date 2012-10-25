@@ -1,4 +1,20 @@
-<h1>Item <%= @item.pid %></h1>
+<h1>Item <%= @item.title.first.length > 0 ? @item.title.first : @item.pid %></h1>
+
+<%= link_to "Item List", items_path %>
+<dl>
+  <dt>Title:</dt>
+  <dd><%= @item.title.first %></dd>
+  <dt>Identifier(s):</dt>
+  <dd>
+    <ul>
+    <% @item.identifier.each do |id| %>
+      <li><%= id %></li>
+    <% end %>
+    </ul>
+  </dd>
+  <dt>PID:</dt>
+  <dd><%= @item.pid %></dd>
+</dl>
 
 <% if @item.collection %>
   Member of collection: <%= @item.collection.pid %>

@@ -1,0 +1,11 @@
+<h1>Create a new Item</h1>
+
+<%= form_for @item do |f| %>
+  <%= f.label :title %>
+  <%= f.text_field :title %>
+  <br />
+  <%= f.label :identifier %>
+  <%= f.text_field :identifier %>
+  <br />
+  <%= f.submit "Create Item" %>
+<% end %>

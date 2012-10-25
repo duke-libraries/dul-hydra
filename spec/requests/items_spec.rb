@@ -80,4 +80,25 @@ describe "Items" do
 
   end # show
 
+  describe "Add" do
+    before do
+      @default_pid_namespace = "changeme"
+      @title = "Test Item"
+      @identifier = "itemIdentifier"
+    end
+    after do
+      Item.find_each { |i| i.delete }
+    end
+    it "should create an item with the provided metadata" do
+      visit new_item_path
+      fill_in "Title", :with => @title
+      fill_in "Identifier", :with => @identifier
+      click_button "Create Item"
+      page.should have_content "Added Item"
+      page.should have_content @title
+      page.should have_content @identifier
+      page.should have_content @default_pid_namespace
+    end
+  end
+  
 end

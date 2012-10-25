@@ -1,7 +1,8 @@
 <h1>Items</h1>
 
+<%= link_to "Create New Item", new_item_path %>
 <ul>
 <% @items.each do |item| %>
-  <li><%= item.pid %></li>
+  <li><%= link_to item.title.first.length > 0 ? item.title.first : item.pid , item_path(item) %></li>
 <% end %>
 </ul>
