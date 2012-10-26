@@ -2,6 +2,6 @@
 
 <ul>
   <% @components.each do |c| %>
-    <li><%= c.pid %></li>
+    <li><%= link_to c.pid, component_path(c) %></li>
   <% end %>
 </ul>

@@ -17,7 +17,7 @@
 </dl>
 
 <% if @item.collection %>
-  Member of collection: <%= @item.collection.pid %>
+  Member of collection: <%= link_to @item.collection.pid, collection_path(@item.collection.pid) %>
 <% else %>
   <%= form_for @item do |f| %>
     <%= f.hidden_field :pid %>
@@ -27,8 +27,10 @@
   <% end %>
 <% end %>
 
+<h2>Components</h2>
+
 <ul>
-<% @item.components.each do |component| %>
-  <li><%= component.pid %></li>
+<% @item.components.each do |c| %>
+  <li><%= link_to c.pid, component_path(c.pid) %></li>
 <% end %>
 </ul>

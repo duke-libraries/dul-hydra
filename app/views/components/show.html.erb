@@ -1,7 +1,7 @@
 <h1>Component <%= @component.pid %></h1>
 
 <% if @component.item %>
-  Part of Item: <%= @component.item.pid %>
+  Part of Item: <%= link_to @component.item.pid, item_path(@component.item.pid) %>
 <% else %>
   <%= form_for @component do |f| %>
     <%= f.hidden_field :pid %>
