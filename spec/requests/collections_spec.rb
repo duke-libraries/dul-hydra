@@ -33,8 +33,11 @@ describe "Collections" do
       @collection.title = "Collection Title"
       @collection.identifier = "collectionIdentifier"
       @collection.save!
+      @member = Item.create
+      @collection.items << @member
     end
     after do
+      @member.delete
       Collection.find_each { |c| c.delete }
     end
     it "should display the collection object" do
@@ -46,6 +49,10 @@ describe "Collections" do
     it "should contain a link back to the collection list" do
       visit collection_path(@collection)
       page.should have_link "Collection List", :href=>collections_path
+    end
+    it "should list the collection members" do # issue 16
+      visit collection_path(@collection)
+      page.should have_content @member.pid
     end
   end
   describe "Add" do
