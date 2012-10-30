@@ -18,8 +18,10 @@ describe Component do
     @component.datastreams["RELS-EXT"].should_not be_nil
     @component.RELS_EXT.should be_kind_of ActiveFedora::Datastream
   end
+
+  it "should have an identifier" # issue 27
   
-  describe "make part of item" do
+  describe "relationships" do
 
     before do
       @item = Item.create
@@ -29,11 +31,17 @@ describe Component do
       @item.delete
     end
 
-    it "should be able to be made part of an item" do
+    it "should be able to add itself to an item's list of components" do
       @component.item = @item
       @component.save
       @component.item.should eq(@item)
       @item.components.should include(@component)
+    end
+
+    it "should be able to be added by an item to its list of components" do
+      @item.components << @component
+      @item.components.should include(@component)
+      @component.item.should eq(@item)
     end
 
   end
