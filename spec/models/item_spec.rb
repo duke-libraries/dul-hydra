@@ -13,10 +13,12 @@ describe Item do
   end
 
   it "should have the right datastreams" do
-    @item.datastreams["DC"].should_not be_nil
-    @item.DC.should be_kind_of ActiveFedora::Datastream
-    @item.datastreams["RELS-EXT"].should_not be_nil
-    @item.RELS_EXT.should be_kind_of ActiveFedora::Datastream
+    # DC
+    @item.datastreams["DC"].should be_kind_of ActiveFedora::Datastream
+    # RELS-EXT
+    @item.datastreams["RELS-EXT"].should be_kind_of ActiveFedora::RelsExtDatastream
+    # rightsMetadata
+    @item.datastreams["rightsMetadata"].should be_kind_of Hydra::Datastream::RightsMetadata
   end
 
   it "should be able to become a member of a collection" do
