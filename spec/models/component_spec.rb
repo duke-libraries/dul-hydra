@@ -3,6 +3,8 @@ require 'spec_helper'
 describe Component do
 
   before do
+    @identifier = "test010010010"
+    @title = "Awesome photo"
     @component = Component.create
   end
  
@@ -19,11 +21,14 @@ describe Component do
     @component.RELS_EXT.should be_kind_of ActiveFedora::Datastream
   end
 
-  it "should have an identifier" # issue 27
+  it "should be able to have an identifier" do # issue 27
+    @component.identifier = @identifier
+    @component.identifier.first.should eq(@identifier)
+  end
 
   it "should be able to have a title" do # issue 28
-    @component.title = "Awesome picture"
-    @component.title.first.should eq("Awesome picture")
+    @component.title = @title
+    @component.title.first.should eq(@title)
   end
   
   describe "relationships" do

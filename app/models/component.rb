@@ -7,6 +7,8 @@ class Component < ActiveFedora::Base
   has_file_datastream :name => "content", :type => ActiveFedora::Datastream
 
   has_metadata :name => "descMetadata", :type => ModsContent
+
+  delegate_to 'descMetadata', [:identifier]
   delegate :title, :to => 'descMetadata', :at => [:title_info, :main_title]
 
 end
