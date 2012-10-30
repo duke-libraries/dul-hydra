@@ -1,6 +1,6 @@
 class Component < ActiveFedora::Base
   
-  include Hydra::ModelMethods
+  include Hydra::ModelMixins::CommonMetadata
 
   belongs_to :item, :property => :is_part_of, :class_name => 'Item'
 

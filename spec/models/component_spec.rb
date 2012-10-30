@@ -14,11 +14,11 @@ describe Component do
 
   it "should have the right datastreams" do
     # DC
-    @component.datastreams["DC"].should_not be_nil
-    @component.DC.should be_kind_of ActiveFedora::Datastream
+    @component.datastreams["DC"].should be_kind_of ActiveFedora::Datastream
     # RELS-EXT
-    @component.datastreams["RELS-EXT"].should_not be_nil
-    @component.RELS_EXT.should be_kind_of ActiveFedora::Datastream
+    @component.datastreams["RELS-EXT"].should be_kind_of ActiveFedora::RelsExtDatastream
+    # rightsMetadata - issue 30
+    @component.datastreams["rightsMetadata"].should be_kind_of Hydra::Datastream::RightsMetadata
   end
 
   it "should be able to have an identifier" do # issue 27
