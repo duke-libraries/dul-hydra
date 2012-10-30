@@ -1,4 +1,6 @@
 class Collection < ActiveFedora::Base
+
+  include Hydra::ModelMixins::CommonMetadata
   
   has_many :items, :property => :is_member_of, :inbound => true
   
