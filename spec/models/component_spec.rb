@@ -20,6 +20,11 @@ describe Component do
   end
 
   it "should have an identifier" # issue 27
+
+  it "should be able to have a title" do # issue 28
+    @component.title = "Awesome picture"
+    @component.title.first.should eq("Awesome picture")
+  end
   
   describe "relationships" do
 
