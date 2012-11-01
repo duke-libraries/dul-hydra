@@ -7,9 +7,9 @@ class ApplicationController < ActionController::Base
   include Hydra::Controller::ControllerBehavior
   
   # specify "application" or "blacklight"
-  #def layout_name
-  # 'hydra-head'
-  #end
+  def layout_name
+    'application'
+  end
 
   # Please be sure to impelement current_user and user_session. Blacklight depends on 
   # these methods in order to perform user specific actions. 
