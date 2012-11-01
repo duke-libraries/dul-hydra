@@ -2,10 +2,10 @@
 
 <%= form_for @item do |f| %>
   <%= f.label :title %>
-  <%= f.text_field :title %>
+  <%= f.text_field :title, :value=>"" %>
   <br />
   <%= f.label :identifier %>
-  <%= f.text_field :identifier %>
+  <%= f.text_field :identifier, :value=>"" %>
   <br />
   <%= f.submit "Create Item" %>
 <% end %>
