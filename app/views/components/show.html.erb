@@ -1,7 +1,9 @@
 <h1>Component <%= @component.pid %></h1>
 
 <% if @component.item %>
-  Part of Item: <%= link_to @component.item.pid, item_path(@component.item.pid) %>
+  <p>
+    Part of Item: <%= link_to @component.item.pid, item_path(@component.item.pid) %>
+  </p>
 <% else %>
   <%= form_for @component do |f| %>
     <%= f.hidden_field :pid %>
@@ -10,3 +12,10 @@
     <%= f.submit "Add Component to Item" %>
   <% end %>
 <% end %>
+
+<h2>Content</h2>
+
+<dl>
+  <dt>Size</dt>
+  <dd><%= @component.content.size %></dd>
+</dl>
