@@ -9,11 +9,5 @@ module DulHydra
       end
     end
 
-    module Identifier
-      def find_by_identifier(identifier)
-        find(:identifier_t=>identifier)
-      end
-    end
-
   end
 end

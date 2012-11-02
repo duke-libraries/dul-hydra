@@ -7,7 +7,7 @@ class ModsContent < ActiveFedora::NokogiriDatastream
       t.main_title(:path=>"title", :label=>"title")
     }
     t.title(:proxy=>[:title_info, :main_title])
-    t.identifier(:index_as=>[:searchable])
+    t.identifier(:index_as=>[:searchable], :data_type=>:symbol)
   end
     
   def self.xml_template

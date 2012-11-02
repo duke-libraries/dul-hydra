@@ -4,7 +4,7 @@ class Component < ActiveFedora::Base
   include Hydra::ModelMixins::RightsMetadata
   include Hydra::ModelMethods
   include DulHydra::ModelMixins::DescMetadata
-  extend DulHydra::ModelMixins::Identifier
+  extend DulHydra::ModelMethods
 
   belongs_to :item, :property => :is_part_of, :class_name => 'Item'
 

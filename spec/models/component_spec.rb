@@ -31,9 +31,9 @@ describe Component do
   end
 
   it "should be findable by a truncated identifier" do # issue 33
-    # trunc_id = @identifier[0, @identifier.length - 1]
-    # results = Component.find_by_identifier(trunc_id)
-    # results.should include(@component)
+    trunc_id = @identifier[0, @identifier.length - 1]
+    results = Component.find_by_identifier(trunc_id)
+    results.should include(@component)
   end
 
   it "should be able to have a title" do # issue 28
