@@ -5,7 +5,7 @@ describe Component do
   before do
     @identifier = "test010010010"
     @title = "Awesome photo"
-    @component = Component.create
+    @component = Component.create(:identifier => @identifier, :title => @title)
   end
  
   after do
@@ -22,22 +22,24 @@ describe Component do
   end
 
   it "should be able to have an identifier" do # issue 27
-    @component.identifier = @identifier
     @component.identifier.first.should eq(@identifier)
   end
 
   it "should be findable by identifier" do
-    @component.identifier = @identifier
-    @component.save
     results = Component.find_by_identifier(@identifier)
     results.should include(@component)
   end
 
+  it "should be findable by a truncated identifier" do # issue 33
+    # trunc_id = @identifier[0, @identifier.length - 1]
+    # results = Component.find_by_identifier(trunc_id)
+    # results.should include(@component)
+  end
+
   it "should be able to have a title" do # issue 28
-    @component.title = @title
     @component.title.first.should eq(@title)
   end
-  
+
   describe "relationships" do
 
     before do
@@ -61,6 +63,6 @@ describe Component do
       @component.item.should eq(@item)
     end
 
-  end
+  end # relationships
 
 end
