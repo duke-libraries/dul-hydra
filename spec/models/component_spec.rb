@@ -26,6 +26,13 @@ describe Component do
     @component.identifier.first.should eq(@identifier)
   end
 
+  it "should be findable by identifier" do
+    @component.identifier = @identifier
+    @component.save
+    results = Component.find_by_identifier(@identifier)
+    results.should include(@component)
+  end
+
   it "should be able to have a title" do # issue 28
     @component.title = @title
     @component.title.first.should eq(@title)
