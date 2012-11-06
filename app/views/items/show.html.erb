@@ -30,7 +30,7 @@
 <h2>Components</h2>
 
 <ul>
-<% @item.components.each do |c| %>
-  <li><%= link_to c.pid, component_path(c.pid) %></li>
+<% @item.parts.each do |part| %>
+  <li><%= link_to part.pid, component_path(part.pid) %></li>
 <% end %>
 </ul>

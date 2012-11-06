@@ -36,14 +36,14 @@ describe "Components" do
 
     it "should be able the associate the component with an item" do
       visit component_path(@component)
-      fill_in "Item", :with => @item.pid
+      fill_in "Container", :with => @item.pid
       click_button "Add Component to Item"
       component = Component.find(@component.pid)
-      component.item.should_not be_nil
-      component.item.pid.should eq(@item.pid)
+      component.container.should_not be_nil
+      component.container.pid.should eq(@item.pid)
       item = Item.find(@item.pid)
-      item.components.should_not be_empty
-      item.component_ids.should include(@component.pid)
+      item.parts.should_not be_empty
+      item.part_ids.should include(@component.pid)
     end
     
   end # show

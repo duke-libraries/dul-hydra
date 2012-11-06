@@ -23,10 +23,10 @@ class ComponentsController < ApplicationController
 
   def update
     component = Component.find(params[:component][:pid])
-    item_pid = params[:component][:item]
+    item_pid = params[:component][:container]
     if item_pid
       item = Item.find(item_pid)
-      component.item = item
+      component.container = item
       component.save
     end
     redirect_to component_path(component)

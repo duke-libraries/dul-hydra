@@ -64,7 +64,7 @@ describe "Items" do
 
       before do
         @component = Component.create
-        @item.components << @component
+        @item.parts << @component
       end
 
       after do

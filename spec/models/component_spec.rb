@@ -51,16 +51,16 @@ describe Component do
     end
 
     it "should be able to add itself to an item's list of components" do
-      @component.item = @item
+      @component.container = @item
       @component.save
-      @component.item.should eq(@item)
-      @item.components.should include(@component)
+      @component.container.should eq(@item)
+      @item.parts.should include(@component)
     end
 
     it "should be able to be added by an item to its list of components" do
-      @item.components << @component
-      @item.components.should include(@component)
-      @component.item.should eq(@item)
+      @item.parts << @component
+      @item.parts.should include(@component)
+      @component.container.should eq(@item)
     end
 
   end # relationships

@@ -1,14 +1,14 @@
 <h1>Component <%= @component.pid %></h1>
 
-<% if @component.item %>
+<% if @component.container %>
   <p>
-    Part of Item: <%= link_to @component.item.pid, item_path(@component.item.pid) %>
+    Part of Item: <%= link_to @component.container.pid, item_path(@component.container.pid) %>
   </p>
 <% else %>
   <%= form_for @component do |f| %>
     <%= f.hidden_field :pid %>
-    <%= f.label :item %>
-    <%= f.text_field :item %>
+    <%= f.label :container %>
+    <%= f.text_field :container %>
     <%= f.submit "Add Component to Item" %>
   <% end %>
 <% end %>
