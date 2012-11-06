@@ -15,7 +15,13 @@
 
 <h2>Content</h2>
 
-<dl>
-  <dt>Size</dt>
-  <dd><%= @component.content.size %></dd>
-</dl>
+<% if @component.content.content %>
+  <dl>
+    <dt>Size</dt>
+    <dd><%= @component.content.size %></dd>
+  </dl>
+<% else %>
+  <p>
+    No content.
+  </p>
+<% end %>
