@@ -9,5 +9,11 @@ module DulHydra
       end
     end
 
+    module Content
+      def self.included(klass)
+        klass.has_file_datastream :name => "content", :type => ActiveFedora::Datastream
+      end
+    end
+
   end
 end
