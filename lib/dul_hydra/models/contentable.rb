@@ -1,5 +1,5 @@
 module DulHydra::Models
-  module Content
+  module Contentable
     extend ActiveSupport::Concern
     included do
       has_file_datastream :name => "content", :type => ActiveFedora::Datastream
