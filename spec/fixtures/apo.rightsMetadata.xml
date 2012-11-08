@@ -7,21 +7,27 @@
         <machine/>
     </copyright>
     <access type="discover">
-        <human>Anyone can discover this object.</human>
+        <human>Only repository editors can discover this policy.</human>
         <machine>
-            <group>public</group>
+            <group>repositoryEditors</group>
         </machine>
     </access>
     <access type="read">
-        <human>Anyone can view this object.</human>
+        <human>Only repository editors can view this policy.</human>
         <machine>
-            <group>public</group>
+            <group>repositoryEditors</group>
         </machine>
     </access>
     <access type="edit">
-        <human>Only repository administrators can edit this object.</human>
+        <human>Only repository administrators can edit this policy.</human>
         <machine>
             <group>repositoryAdmins</group>
+        </machine>
+    </access>
+    <access type="use">
+        <human>Only repository editors can associate this policy with objects.</human>
+        <machine>
+            <group>repositoryEditors</group>
         </machine>
     </access>
     <use>
