@@ -31,6 +31,7 @@ describe Component do
   end
 
   it "should be findable by a truncated identifier" do # issue 33
+    pending "indexing identifier as symbol"
     trunc_id = @identifier[0, @identifier.length - 1]
     results = Component.find_by_identifier(trunc_id)
     results.should include(@component)

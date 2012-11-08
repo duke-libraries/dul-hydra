@@ -1,16 +1,20 @@
-<h1>Collection <%= @collection.title.first.length > 0 ? @collection.title.first : @collection.pid %></h1>
+<h1>Collection <%= @collection.has_title? ? @collection.title.first : @collection.pid %></h1>
 
 <%= link_to " Collection List", collections_path %>
 <dl>
   <dt>Title:</dt>
-  <dd><%= @collection.title.first %></dd>
+  <dd><%= @collection.has_title? ? @collection.title.first : "" %></dd>
   <dt>Identifier(s):</dt>
   <dd>
+    <% if !@collection.identifier.empty? %>
     <ul>
     <% @collection.identifier.each do |id| %>
       <li><%= id %></li>
     <% end %>
     </ul>
+    <% else %>
+      &nbsp;
+    <% end %>
   </dd>
   <dt>PID:</dt>
   <dd><%= @collection.pid %></dd>

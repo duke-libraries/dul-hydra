@@ -1,71 +1,58 @@
 require 'spec_helper'
 
 describe "Collections" do
+
+  after do
+    Collection.find_each { |c| c.delete }
+  end
+
   describe "List" do
-    before do
-      @collection1 = Collection.new
-      @collection1.title = "Collection 1 Title"
-      @collection1.save!
-      @collection2 = Collection.create
-    end
-    after do
-      @collection1.delete
-      @collection2.delete
-    end
     it "should include a show link for each collection" do
+      title = "New Collection"
+      c1 = Collection.create(:title => title)
+      c2 = Collection.create
       visit collections_path
-      page.should have_link @collection1.title.first, :href=>collection_path(@collection1)
-      page.should have_link @collection2.pid, :href=>collection_path(@collection2)
+      page.should have_link c1.title.first, :href => collection_path(c1)
+      page.should have_link c2.pid, :href => collection_path(c2)
     end
-    it "should display the title of the collection if there is one" do
+    it "should display the title if present, otherwise the pid" do
+      title = "New Collection"
+      c1 = Collection.create(:title => title)
+      c2 = Collection.create
       visit collections_path
-      page.should have_content @collection1.title.first
-      page.should have_content @collection2.pid
+      page.should have_content c1.title.first
+      page.should have_content c2.pid
     end
     it "should contain a link to create a new collection" do
       visit collections_path
-      page.should have_link "Create New Collection", :href=>new_collection_path
+      page.should have_link "Create New Collection", :href => new_collection_path
     end
-  end
+  end # List
+
   describe "Show" do
-    before do
-      @collection = Collection.new
-      @collection.title = "Collection Title"
-      @collection.identifier = "collectionIdentifier"
-      @collection.save!
-      @member = Item.create
-      @collection.items << @member
-    end
     after do
-      @member.delete
-      Collection.find_each { |c| c.delete }
+      Item.find_each { |i| i.delete }
     end
-    it "should display the collection object" do
-      visit collection_path(@collection)
-      page.should have_content @collection.title.first
-      page.should have_content @collection.identifier.first
-      page.should have_content @collection.pid
+    it "should display the collection object title, identifier and pid" do
+      c = Collection.create(:title => "Collection", :identifier => "test010010010")
+      visit collection_path(c)
+      page.should have_content c.title.first
+      page.should have_content c.identifier.first
+      page.should have_content c.pid
     end
     it "should contain a link back to the collection list" do
-      visit collection_path(@collection)
-      page.should have_link "Collection List", :href=>collections_path
+      visit collection_path(Collection.create)
+      page.should have_link "Collection List", :href => collections_path
     end
     it "should list the collection members" do # issue 16
-      visit collection_path(@collection)
-      page.should have_content @member.pid
+      c = Collection.create
+      member = Item.create
+      c.items << member
+      visit collection_path(c)
+      page.should have_content member.pid
     end
   end
   describe "Add" do
-    before do
-#      @pid = "collection:1"
-#      @empty_string_pid = ""
-      @default_pid_namespace = "changeme"
-      @title = "Test Collection"
-      @identifier = "collectionIdentifier"
-    end
-    after do
-      Collection.find_each { |c| c.delete }
-    end
 #    it "should create a collection with provided PID" do
 #      visit new_collection_path
 #      fill_in "Pid", :with => @pid
@@ -87,14 +74,16 @@ describe "Collections" do
 #      page.should have_content @default_pid_namespace
 #    end
     it "should create a collection with the provided metadata" do
+      title = "Test Collection"
+      identifier = "collectionIdentifier"
       visit new_collection_path
-      fill_in "Title", :with => @title
-      fill_in "Identifier", :with => @identifier
+      fill_in "Title", :with => title
+      fill_in "Identifier", :with => identifier
       click_button "Create Collection"
       page.should have_content "Added Collection"
-      page.should have_content @title
-      page.should have_content @identifier
-      page.should have_content @default_pid_namespace
+      page.should have_content title
+      page.should have_content identifier
     end
-  end
+  end # Add
+
 end

@@ -4,15 +4,25 @@ module DulHydra::Models
    
     included do
 
-      has_metadata :name => "descMetadata", :type => DulHydra::Datastreams::ModsDatastream
+      #has_metadata :name => "descMetadata", :type => DulHydra::Datastreams::ModsDatastream
+      has_metadata :name => "descMetadata", :type => ActiveFedora::QualifiedDublinCoreDatastream
       delegate_to "descMetadata", [:title, :identifier]
 
       def self.find_by_identifier(identifier)
-        results = []
-        self.find_each("identifier_s:#{identifier}*") do
-          |x| results << x
-        end
-        results
+        self.find(:identifier_t => identifier)
+        # results = []
+        # self.find_each("identifier_s:#{identifier}*") do |x| 
+        #   results << x
+        # end
+        # results
+      end
+
+      def has_title?
+        !(title.empty? || title.first.length == 0)
+      end
+
+      def display_title
+        has_title? ? title.first : pid
       end
 
     end # included
