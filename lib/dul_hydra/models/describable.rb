@@ -3,8 +3,6 @@ module DulHydra::Models
     extend ActiveSupport::Concern
    
     included do
-
-      #has_metadata :name => "descMetadata", :type => DulHydra::Datastreams::ModsDatastream
       has_metadata :name => "descMetadata", :type => ActiveFedora::QualifiedDublinCoreDatastream
       delegate_to "descMetadata", [:title, :identifier]
 
@@ -24,7 +22,6 @@ module DulHydra::Models
       def display_title
         has_title? ? title.first : pid
       end
-
     end # included
 
   end # Describable
