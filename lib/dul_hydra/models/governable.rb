@@ -1,11 +1,8 @@
 module DulHydra::Models
   module Governable
     extend ActiveSupport::Concern
-    include Hydra::ModelMixins::RightsMetadata
-
     included do
-      
+      belongs_to :admin_policy, :property=>:is_governed_by
     end
-
   end
 end
