@@ -17,6 +17,8 @@
 
 <% if @component.content.content %>
   <dl>
+    <dt>Type</dt>
+    <dd><%= @component.content.mimeType %></dd>
     <dt>Size</dt>
     <dd><%= @component.content.size %></dd>
   </dl>
