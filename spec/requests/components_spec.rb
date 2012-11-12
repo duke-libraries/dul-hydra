@@ -57,20 +57,18 @@ describe "Components" do
     end
   end # show
 
-  # describe "create" do
-
-  #   it "should display information about the content" do
-  #     visit new_component_path
-  #     attach_file "Content", "spec/fixtures/library-devil.tiff"
-  #     click_button "Create Component"
-  #     page.should have_content "Size"
-  #   end
-
-  #   after do
-  #     Component.find_each { |c| c.delete }
-  #   end
-
-  # end
+  describe "create" do
+    it "should be able to create a component having a content file" do
+      visit new_component_path
+      attach_file "Content", "spec/fixtures/library-devil.tiff"
+      click_button "Create Component"
+      page.should have_content "Component created"
+      page.should have_content "image/tiff"
+    end
+    after do
+      Component.find_each { |c| c.delete }
+    end
+  end # create
 
 end
 
