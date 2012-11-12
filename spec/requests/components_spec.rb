@@ -3,37 +3,30 @@ require 'spec_helper'
 describe "Components" do
 
   describe "list" do
-
     before do
       @component1 = Component.create
       @component2 = Component.create
     end
-
     after do
       @component1.delete
       @component2.delete
     end
-
     it "should display a list of all components" do
       visit components_path
       page.should have_content @component1.pid
       page.should have_content @component2.pid
     end
-
   end # list components
 
   describe "show" do
-    
     before do
       @component = Component.create
       @item = Item.create
     end
-
     after do
       @component.delete
       @item.delete
     end
-
     it "should be able the associate the component with an item" do
       visit component_path(@component)
       fill_in "Container", :with => @item.pid
@@ -45,7 +38,15 @@ describe "Components" do
       item.parts.should_not be_empty
       item.part_ids.should include(@component.pid)
     end
-    
+    it "should be able to add content to the component" do # issue 35
+      filepath = "spec/fixtures/library-devil.tiff"
+      visit component_path(@component)
+      attach_file "Content", filepath
+      click_button "Add content"
+      page.should have_content "Content added"
+      component = Component.find(@component.pid)
+      component.content.size.should eq(File.size(filepath))
+    end
   end # show
 
   # describe "create" do

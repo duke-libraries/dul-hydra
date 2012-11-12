@@ -21,7 +21,11 @@
     <dd><%= @component.content.size %></dd>
   </dl>
 <% else %>
-  <p>
-    No content.
-  </p>
+  <p>No content.</p>
+  <%= form_for @component do |f| %>
+    <%= f.hidden_field :pid %>
+    <%= f.label :content %>
+    <%= f.file_field :content %>
+    <%= f.submit "Add content" %>
+  <% end %>
 <% end %>

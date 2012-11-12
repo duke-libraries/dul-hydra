@@ -23,11 +23,19 @@ class ComponentsController < ApplicationController
 
   def update
     component = Component.find(params[:component][:pid])
+    # add component to item
     item_pid = params[:component][:container]
     if item_pid
       item = Item.find(item_pid)
       component.container = item
       component.save
+      flash[:notice] = "Added to Item #{item.pid}."
+    end
+    # add content to component
+    content = params[:component][:content]
+    if content
+      component.add_content(content)
+      flash[:notice] = "Content added."
     end
     redirect_to component_path(component)
   end

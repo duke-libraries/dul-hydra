@@ -301,6 +301,7 @@ DEPENDENCIES
   hydra-mods
   jettywrapper
   jquery-rails
+  mime-types (~> 1.19)
   rails (= 3.2.8)
   rspec-rails
   sass-rails (~> 3.2.3)
