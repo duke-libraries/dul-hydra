@@ -18,7 +18,7 @@ describe "Users" do
     fill_in "Password", :with => @password
     click_button "Sign in"
     page.should have_content "Signed in successfully"
-    page.should have_link("Sign out", :href => destroy_user_session_path)
+    page.should have_link("Log Out", :href => destroy_user_session_path)
   end
 
   it "should be able to logout" do
@@ -26,9 +26,9 @@ describe "Users" do
     fill_in "Email", :with => @email
     fill_in "Password", :with => @password
     click_button "Sign in"
-    click_link "Sign out"
-    page.should have_content "Signed out"
-    page.should have_link("Sign in", :href => new_user_session_path)
+    click_link "Log Out"
+    page.should have_content "Signed out successfully"
+    page.should have_link("Login", :href => new_user_session_path)
   end
 
 end

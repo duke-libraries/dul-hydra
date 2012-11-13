@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title><%= h(@page_title || application_name) %></title>
+    <link href="<%= opensearch_catalog_path(:format => 'xml', :only_path => false) %>" title="<%= application_name%>" type="application/opensearchdescription+xml" rel="search"/>
+    <%= favicon_link_tag asset_path('favicon.ico') %>
+    <%= stylesheet_link_tag    "application" %>
+    <%= javascript_include_tag "application" %>
+    <%= csrf_meta_tags %>
+    <%= raw(render_head_content) %>
+  </head>
+  <% onload_text = "$('input#q').focus();" if params[:q].to_s.empty? and params[:f].to_s.empty? and params[:id].nil? %>
+  <body onload="<%= onload_text %>" class="<%= render_body_class.html_safe %>">
+    <div id="page">
+      <div id="hd">
+        <div id="logo">
+          <h1 class="site_title"><%= link_to application_name, root_path %><%= (params[:controller] == "catalog" and !params[:id]) ? content_tag(:span, t('blacklight.search.search_results'), :id => 'results_text') : "" %></h1>
+        </div>
+        <div id="user_util_links">
+          <%= render :partial=>'/user_util_links' %>
+        </div>
+      </div>
+      <div id="bd">
+        <div id="main">
+          <div id="main_container">
+            <%= render :partial=>'/flash_msg' %>
+            <%= yield %>
+          </div>
+        </div>
+        <div id="sidebar"><%= sidebar_items.join('').html_safe %></div>
+      </div>
+      <div id="ft">
+        <%= raw(@footer) %>
+      </div>
+    </div>
+  </body>
+</html>

@@ -56,6 +56,7 @@ class CatalogController < ApplicationController
     #config.add_facet_field 'lc_1letter_facet', :label => 'Call Number' 
     #config.add_facet_field 'subject_geo_facet', :label => 'Region' 
     #config.add_facet_field 'subject_era_facet', :label => 'Era'  
+    config.add_facet_field 'active_fedora_model_facet', :label => 'Type'
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -76,6 +77,9 @@ class CatalogController < ApplicationController
     config.add_index_field 'published_display', :label => 'Published:'
     config.add_index_field 'published_vern_display', :label => 'Published:'
     #config.add_index_field 'lc_callnum_display', :label => 'Call number:'
+    config.add_index_field 'id', :label => 'PID:'
+    config.add_index_field 'identifier_t', :label => 'Identifier:'
+    config.add_index_field 'active_fedora_model_s', :label => 'Model:'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display 
@@ -93,6 +97,9 @@ class CatalogController < ApplicationController
     config.add_show_field 'published_vern_display', :label => 'Published:'
     #config.add_show_field 'lc_callnum_display', :label => 'Call number:'
     #config.add_show_field 'isbn_t', :label => 'ISBN:'
+    config.add_show_field 'id', :label => 'PID:'
+    config.add_show_field 'identifier_t', :label => 'Identifier:'
+    config.add_show_field 'active_fedora_model_s', :label => 'Model:'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -133,25 +140,25 @@ class CatalogController < ApplicationController
       }
     end
     
-    config.add_search_field('author') do |field|
-      field.solr_parameters = { :'spellcheck.dictionary' => 'author' }
-      field.solr_local_parameters = { 
-        :qf => '$author_qf',
-        :pf => '$author_pf'
-      }
-    end
+    # config.add_search_field('author') do |field|
+    #   field.solr_parameters = { :'spellcheck.dictionary' => 'author' }
+    #   field.solr_local_parameters = { 
+    #     :qf => '$author_qf',
+    #     :pf => '$author_pf'
+    #   }
+    # end
     
     # Specifying a :qt only to show it's possible, and so our internal automated
     # tests can test it. In this case it's the same as 
     # config[:default_solr_parameters][:qt], so isn't actually neccesary. 
-    config.add_search_field('subject') do |field|
-      field.solr_parameters = { :'spellcheck.dictionary' => 'subject' }
-      field.qt = 'search'
-      field.solr_local_parameters = { 
-        :qf => '$subject_qf',
-        :pf => '$subject_pf'
-      }
-    end
+    # config.add_search_field('subject') do |field|
+    #   field.solr_parameters = { :'spellcheck.dictionary' => 'subject' }
+    #   field.qt = 'search'
+    #   field.solr_local_parameters = { 
+    #     :qf => '$subject_qf',
+    #     :pf => '$subject_pf'
+    #   }
+    # end
 
     config.add_search_field('identifier') do |field|
       field.qt = 'standard'

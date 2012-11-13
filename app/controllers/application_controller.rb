@@ -8,7 +8,8 @@ class ApplicationController < ActionController::Base
   
   # specify "application" or "blacklight"
   def layout_name
-    'application'
+    #'application'
+    'blacklight'
   end
 
   # Please be sure to impelement current_user and user_session. Blacklight depends on 
