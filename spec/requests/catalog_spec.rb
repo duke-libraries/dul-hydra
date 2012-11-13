@@ -24,4 +24,8 @@ describe "Catalog" do
     page.should have_content(@component.identifier.first)
     page.should have_content("Component")
   end
+  it "should have a search facet for model" do
+    visit catalog_index_path
+    page.should have_content "Model"
+  end
 end
