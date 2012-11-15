@@ -1,5 +1,13 @@
 require 'spec_helper'
 
+def logmein
+  visit new_user_session_path
+  @userA = User.create!(:email=>'user3@nowhere.org', :password=>'supersecretUserApassword')
+  fill_in "Email", with: @userA.email
+  fill_in "Password", with: "supersecretUserApassword"
+  click_button 'Sign in'
+end
+
 describe "Collections" do
 
   after do
@@ -30,6 +38,9 @@ describe "Collections" do
   end # List
 
   describe "Show" do
+    before do
+      logmein
+    end
     after do
       Item.find_each { |i| i.delete }
     end
@@ -53,6 +64,9 @@ describe "Collections" do
     end
   end
   describe "Add" do
+    before do
+      logmein
+    end
 #    it "should create a collection with provided PID" do
 #      visit new_collection_path
 #      fill_in "Pid", :with => @pid

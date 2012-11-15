@@ -1,5 +1,7 @@
 class CollectionsController < ApplicationController
 
+  load_and_authorize_resource
+  
   def index
     @collections = Collection.all
   end

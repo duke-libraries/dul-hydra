@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe CollectionsController do
+  
+  before do
+    @userA = User.create!(email:'user3@nowhere.org', password:'supersecretUserApassword')
+    sign_in @userA
+  end
 
   describe "#index" do
     before do
