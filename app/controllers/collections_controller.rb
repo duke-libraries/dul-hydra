@@ -15,6 +15,10 @@ class CollectionsController < ApplicationController
       params[:collection].delete(:pid)
     end
     @collection = Collection.create(params[:collection])
+    if (@collection.permissions.empty?)
+      @collection.permissions = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
+      @collection.save
+    end
     redirect_to collection_path(@collection), :notice=>"Added Collection"
   end
   

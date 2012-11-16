@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 describe CollectionsController do
+  include Devise::TestHelpers
   
   before do
-    @userA = User.create!(email:'user3@nowhere.org', password:'supersecretUserApassword')
+    @userA = User.create!(email:'user1@nowhere.org', password:'supersecretUserApassword')
     sign_in @userA
   end
 
@@ -69,6 +70,7 @@ describe CollectionsController do
       @collection = Collection.new
       @collection.title = "Collection Title"
       @collection.identifier = "collectionIdentifier"
+      @collection.permissions = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
       @collection.save!
     end
     after do

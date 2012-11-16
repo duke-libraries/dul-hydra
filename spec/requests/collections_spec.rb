@@ -2,7 +2,7 @@ require 'spec_helper'
 
 def logmein
   visit new_user_session_path
-  @userA = User.create!(:email=>'user3@nowhere.org', :password=>'supersecretUserApassword')
+  @userA = User.create!(:email=>'user1@nowhere.org', :password=>'supersecretUserApassword')
   fill_in "Email", with: @userA.email
   fill_in "Password", with: "supersecretUserApassword"
   click_button 'Sign in'
@@ -46,17 +46,24 @@ describe "Collections" do
     end
     it "should display the collection object title, identifier and pid" do
       c = Collection.create(:title => "Collection", :identifier => "test010010010")
+      c.permissions = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
+      c.save!
       visit collection_path(c)
       page.should have_content c.title.first
       page.should have_content c.identifier.first
       page.should have_content c.pid
     end
     it "should contain a link back to the collection list" do
-      visit collection_path(Collection.create)
+      c = Collection.create
+      c.permissions = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
+      c.save!      
+      visit collection_path(c)
       page.should have_link "Collection List", :href => collections_path
     end
     it "should list the collection members" do # issue 16
       c = Collection.create
+      c.permissions = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
+      c.save!
       member = Item.create
       c.items << member
       visit collection_path(c)
