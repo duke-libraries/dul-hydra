@@ -11,14 +11,17 @@ class CollectionsController < ApplicationController
   end
   
   def create
+    publicRead = [{:type=>"group", :access=>"read", :name=>"public"}]
+    restrictedRead = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
     if (params[:collection][:pid] == "") || (params[:collection][:pid] == "__DO_NOT_USE__")
       params[:collection].delete(:pid)
     end
     @collection = Collection.create(params[:collection])
-    if (@collection.permissions.empty?)
-      @collection.permissions = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
-      @collection.save
+    case params[:access]
+      when "public" then @collection.permissions = publicRead
+      when "restricted" then @collection.permissions = restrictedRead
     end
+    @collection.save
     redirect_to collection_path(@collection), :notice=>"Added Collection"
   end
   
