@@ -7,10 +7,10 @@
   <%= f.label :identifier %>
   <%= f.text_field :identifier, :value=>"" %>
   <br />
-  Access: 
-  <%= radio_button_tag(:access, "public") %>
-  <%= label_tag(:access_public, "Public") %>
-  <%= radio_button_tag(:access, "restricted") %>
-  <%= label_tag(:access_restricted, "Restricted") %>
+  Access Policy: 
+  <%= radio_button_tag(:policy, "public") %>
+  <%= label_tag(:policy_public, "Public") %>
+  <%= radio_button_tag(:policy, "restricted") %>
+  <%= label_tag(:policy_restricted, "Restricted") %>
   <%= f.submit "Create Collection" %>
 <% end %>
