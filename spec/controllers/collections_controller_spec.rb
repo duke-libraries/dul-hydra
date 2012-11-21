@@ -1,14 +1,16 @@
 require 'spec_helper'
 
 describe CollectionsController do
-  
+
   before do
-    @publicRead = [{:type=>"group", :access=>"read", :name=>"public"}]
-    @restrictedRead = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
+    @publicReadPermissions = [{:type=>"group", :access=>"read", :name=>"public"}]
+    @publicReadAdminPolicyPid = "duke-apo:publicread"
+    @restrictedReadPermissions = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
+    @restrictedReadAdminPolicyPid = "duke-apo:restrictedread"
     @registeredUser = User.create!(email:'registereduser@nowhere.org', password:'registeredUserPassword')
-    @repositoryReader = User.create!(email:'repositoryreader1@nowhere.org', password:'repositoryReader1Password')
+    @repositoryReader = User.create!(email:'repositoryreader@nowhere.org', password:'repositoryReaderPassword')
   end
-  
+
   after do
     User.find_each { |u| u.delete }
   end
@@ -29,70 +31,192 @@ describe CollectionsController do
       assigns[:collections].should include(@collection2)
     end
   end
-  
+
   describe "#new" do
-    it "should set a template collection" do
-      sign_in @registeredUser
-      get :new
-      response.should be_successful
-      assigns[:collection].should be_kind_of Collection
-      sign_out @registeredUser
+    context "user is not logged in" do
+      it "should respond with a 403 Forbidden" do
+        get :new
+        response.response_code.should == 403
+      end
+    end
+    context "user is logged in" do
+      before do
+        sign_in @registeredUser
+      end
+      after do
+        sign_out @registeredUser
+      end
+      it "should set a template collection" do
+        get :new
+        response.should be_successful
+        assigns[:collection].should be_kind_of Collection
+      end
     end
   end
-  
+
   describe "#create" do
     before do
       @count = Collection.count
       @pid = "collection:1"
       @empty_string_pid = ""
       @do_not_use_pid = "__DO_NOT_USE__"
-      sign_in @registeredUser
     end
     after do
-      sign_out @registeredUser
       Collection.find_each { |c| c.delete }
     end
-    it "should create a collection with the provided PID" do
-      post :create, :collection=>{:pid=>@pid}
-      response.should redirect_to collection_path(@pid)
-      Collection.count.should eq(@count + 1)
+    context "user is not logged in" do
+      it "should respond with a 403 Forbidden" do
+        post :create, :collection=>{:pid=>@pid}
+        response.response_code.should == 403
+      end
     end
-    it "should create a collection with a system-assigned PID when given no PID" do
-      post :create, :collection=>{}
-      response.should be_redirect
-      Collection.count.should eq(@count + 1)
-    end
-    it "should create a collection with a system-assigned PID when given an empty string as a PID" do
-      post :create, :collection=>{:pid=>@empty_string_pid}
-      response.should be_redirect
-      Collection.count.should eq(@count + 1)
-    end
-    it "should create a collection with a system-assigned PID when given a do not use PID" do
-      post :create, :collection=>{:pid=>@do_not_use_pid}
-      response.should be_redirect
-      Collection.count.should eq(@count + 1)
+    context "user is logged in" do
+      before do
+        sign_in @registeredUser
+      end
+      after do
+        sign_out @registeredUser
+      end
+      it "should create a collection with the provided PID" do
+        post :create, :collection=>{:pid=>@pid}
+        response.should redirect_to collection_path(@pid)
+        Collection.count.should eq(@count + 1)
+      end
+      it "should create a collection with a system-assigned PID when given no PID" do
+        post :create, :collection=>{}
+        response.should be_redirect
+        Collection.count.should eq(@count + 1)
+      end
+      it "should create a collection with a system-assigned PID when given an empty string as a PID" do
+        post :create, :collection=>{:pid=>@empty_string_pid}
+        response.should be_redirect
+        Collection.count.should eq(@count + 1)
+      end
+      it "should create a collection with a system-assigned PID when given a do not use PID" do
+        post :create, :collection=>{:pid=>@do_not_use_pid}
+        response.should be_redirect
+        Collection.count.should eq(@count + 1)
+      end
     end
   end
-  
+
   describe "#show" do
     before do
-      sign_in @registeredUser
       @collection = Collection.new
       @collection.title = "Collection Title"
-      @collection.identifier = "collectionIdentifier"
-      @collection.permissions = @restrictedRead
-      @collection.save!
-      sign_out @registeredUser
+      @collection.identifier = "collectionIdentifier"      
     end
     after do
-      Collection.find_each { |c| c.delete }
+      @collection.delete
     end
-    it "should present the requested collection" do
-      sign_in @repositoryReader
-      get :show, :id=>@collection
-      response.should be_success
-      assigns[:collection].should == @collection
-      sign_out @repositoryReader
+    shared_examples_for "an accessible collection" do
+        it "should present the collection" do
+          get :show, :id=>@collection
+          response.should be_success
+          assigns[:collection].should == @collection
+        end      
+    end
+    shared_examples_for "a forbidden collection" do
+        it "should respond with Forbidden (403)" do
+          get :show, :id=>@collection
+          response.response_code.should == 403
+        end      
+    end
+    context "publicly readable collection" do
+      context "using rightsMetadata datastream" do
+        before do
+          @collection.permissions = @publicReadPermissions
+          @collection.save!          
+        end
+        context "user is not logged in" do
+          it_behaves_like "an accessible collection"
+        end
+        context "user is logged in" do
+          before do
+            sign_in @registeredUser
+          end
+          after do
+            sign_out @registeredUser
+          end
+          it_behaves_like "an accessible collection"
+        end
+      end
+      context "using admin policy object" do
+        before do
+          apo = AdminPolicy.find(@publicReadAdminPolicyPid)
+          @collection.admin_policy = apo
+          @collection.save!
+        end
+        context "user is not logged in" do
+          it_behaves_like "an accessible collection"
+        end
+        context "user is logged in" do
+          before do
+            sign_in @registeredUser
+          end
+          after do
+            sign_out @registeredUser
+          end
+          it_behaves_like "an accessible collection"
+        end
+      end
+    end
+    context "restricted collection" do
+      context "using rightsMetadata datastream" do
+        before do
+          @collection.permissions = @restrictedReadPermissions
+          @collection.save!
+        end
+        context "user is not logged in" do
+          it_behaves_like "a forbidden collection"
+        end
+        context "user is logged in but does not have read access to collection" do
+          before do
+            sign_in @registeredUser
+          end
+          after do
+            sign_out @registeredUser
+          end
+          it_behaves_like "a forbidden collection"
+        end
+        context "user is logged in and does have read access to collection" do
+          before do
+            sign_in @repositoryReader
+          end
+          after do
+            sign_out @repositoryReader
+          end
+          it_behaves_like "an accessible collection"
+        end
+      end
+      context "using admin policy object" do
+        before do
+          apo = AdminPolicy.find(@restrictedReadAdminPolicyPid)
+          @collection.admin_policy = apo
+          @collection.save!
+        end
+        context "user is not logged in" do
+          it_behaves_like "a forbidden collection"
+        end
+        context "user is logged in but does not have read access to collection" do
+          before do
+            sign_in @registeredUser
+          end
+          after do
+            sign_out @registeredUser
+          end
+          it_behaves_like "a forbidden collection"
+        end
+        context "user is logged in and does have read access to collection" do
+          before do
+            sign_in @repositoryReader
+          end
+          after do
+            sign_out @repositoryReader
+          end
+          it_behaves_like "an accessible collection"
+        end
+      end
     end
   end
 end

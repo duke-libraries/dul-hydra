@@ -1,9 +1,6 @@
 repositoryReader:
-  - repositoryReader1@nowhere.org
-  - repositoryReader2@nowhere.org
+  - repositoryreader@nowhere.org
 repositoryEditor:
-  - repositoryEditor1@nowhere.org
-  - repositoryEditor2@nowhere.org
+  - repositoryeditor@nowhere.org
 repositoryAdmin:
-  - repositoryAdmin1@nowhere.org
-  - repositoryAdmin2@nowhere.org
+  - repositoryadmin@nowhere.org

@@ -13,7 +13,7 @@ describe "Collections" do
     @publicRead = [{:type=>"group", :access=>"read", :name=>"public"}]
     @restrictedRead = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
     @registeredUser = User.create!(email:'registereduser@nowhere.org', password:'registeredUserPassword')
-    @repositoryReader = User.create!(email:'repositoryreader1@nowhere.org', password:'repositoryReader1Password')
+    @repositoryReader = User.create!(email:'repositoryreader@nowhere.org', password:'repositoryReaderPassword')
   end
   
   after do
@@ -49,6 +49,19 @@ describe "Collections" do
     end
     after do
       Collection.find_each { |c| c.delete }
+    end
+    context "publicly readable collection" do
+      context "user is not logged in" do
+        
+      end
+      context "user is logged in" do
+        before do
+          logmein(@repositoryUser)
+        end
+        after do
+          
+        end
+      end
     end
     it "should display the collection object title, identifier and pid" do
       c = Collection.create(:title => "Collection", :identifier => "test010010010")
