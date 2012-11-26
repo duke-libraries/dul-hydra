@@ -15,16 +15,22 @@ describe "Items" do
 
   before do
     adminPolicyRightsMetadataFilePath = "spec/fixtures/apo.rightsMetadata.xml"
+    adminPolicyRightsMetadataFile = File.open(adminPolicyRightsMetadataFilePath, "r")
     publicReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_publicread.xml"
+    publicReadDefaultRightsFile = File.open(publicReadDefaultRightsFilePath, "r")
     restrictedReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_restrictedread.xml"
+    restrictedReadDefaultRightsFile = File.open(restrictedReadDefaultRightsFilePath, "r")
     @publicReadAdminPolicy = AdminPolicy.new
-    @publicReadAdminPolicy.defaultRights.content = File.open(publicReadDefaultRightsFilePath, "r")
-    @publicReadAdminPolicy.rightsMetadata.content = File.open(adminPolicyRightsMetadataFilePath, "r")
+    @publicReadAdminPolicy.defaultRights.content = publicReadDefaultRightsFile
+    @publicReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
     @publicReadAdminPolicy.save!
     @restrictedReadAdminPolicy = AdminPolicy.new
-    @restrictedReadAdminPolicy.defaultRights.content = File.open(restrictedReadDefaultRightsFilePath, "r")
-    @restrictedReadAdminPolicy.rightsMetadata.content = File.open(adminPolicyRightsMetadataFilePath, "r")
+    @restrictedReadAdminPolicy.defaultRights.content = restrictedReadDefaultRightsFile
+    @restrictedReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFilePath
     @restrictedReadAdminPolicy.save!
+    adminPolicyRightsMetadataFile.close
+    publicReadDefaultRightsFile.close
+    restrictedReadDefaultRightsFile.close
     @registeredUser = User.create!(email:'registereduser@nowhere.org', password:'registeredUserPassword')
     @repositoryReader = User.create!(email:'repositoryreader@nowhere.org', password:'repositoryReaderPassword')
     @repositoryEditor = User.create!(email:'repositoryeditor@nowhere.org', password:'repositoryEditorPassword')
