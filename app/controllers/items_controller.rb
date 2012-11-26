@@ -11,19 +11,15 @@ class ItemsController < ApplicationController
   end
   
   def create
-    publicReadAdminPolicyPid = "duke-apo:publicread"
-    restrictedReadAdminPolicyPid = "duke-apo:restrictedread"
-    publicReadAdminPolicy = AdminPolicy.find(publicReadAdminPolicyPid)
-    restrictedReadAdminPolicy = AdminPolicy.find(restrictedReadAdminPolicyPid)
     if (params[:item][:pid] == "") || (params[:item][:pid] == "__DO_NOT_USE__")
       params[:item].delete(:pid)
     end
     @item = Item.create(params[:item])
-    case params[:policy]
-      when "public" then @item.admin_policy = publicReadAdminPolicy
-      when "restricted" then @item.admin_policy = restrictedReadAdminPolicy
+    if (params[:policypid] && params[:policypid] != "")
+      apo = AdminPolicy.find(params[:policypid])
+      @item.admin_policy = apo
+      @item.save
     end
-    @item.save
     redirect_to item_path(@item), :notice=>"Added Item"
   end
   

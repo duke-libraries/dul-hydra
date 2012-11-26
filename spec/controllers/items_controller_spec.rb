@@ -4,15 +4,27 @@ describe ItemsController do
 
   before do
     @publicReadPermissions = [{:type=>"group", :access=>"read", :name=>"public"}]
-    @publicReadAdminPolicyPid = "duke-apo:publicread"
     @restrictedReadPermissions = [{:type=>"group", :access=>"read", :name=>"repositoryReader"}]
-    @restrictedReadAdminPolicyPid = "duke-apo:restrictedread"
+    adminPolicyRightsMetadataFilePath = "spec/fixtures/apo.rightsMetadata.xml"
+    publicReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_publicread.xml"
+    restrictedReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_restrictedread.xml"
+    @publicReadAdminPolicy = AdminPolicy.new
+    @publicReadAdminPolicy.defaultRights.content = File.open(publicReadDefaultRightsFilePath, "r")
+    @publicReadAdminPolicy.rightsMetadata.content = File.open(adminPolicyRightsMetadataFilePath, "r")
+    @publicReadAdminPolicy.save!
+    @restrictedReadAdminPolicy = AdminPolicy.new
+    @restrictedReadAdminPolicy.defaultRights.content = File.open(restrictedReadDefaultRightsFilePath, "r")
+    @restrictedReadAdminPolicy.rightsMetadata.content = File.open(adminPolicyRightsMetadataFilePath, "r")
+    @restrictedReadAdminPolicy.save!    
     @registeredUser = User.create!(email:'registereduser@nowhere.org', password:'registeredUserPassword')
     @repositoryReader = User.create!(email:'repositoryreader@nowhere.org', password:'repositoryReaderPassword')
   end
 
   after do
-    User.find_each { |u| u.delete }
+    @repositoryReader.delete
+    @registeredUser.delete
+    @restrictedReadAdminPolicy.delete
+    @publicReadAdminPolicy.delete
   end
 
   describe "#new" do
