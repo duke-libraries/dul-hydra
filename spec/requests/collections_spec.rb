@@ -14,17 +14,27 @@ end
 describe "Collections" do
 
   before do
-    @publicReadAdminPolicyPid = "duke-apo:publicread"
-    @publicReadAdminPolicy = AdminPolicy.find(@publicReadAdminPolicyPid)
-    @restrictedReadAdminPolicyPid = "duke-apo:restrictedread"
-    @restrictedReadAdminPolicy = AdminPolicy.find(@restrictedReadAdminPolicyPid)
+    adminPolicyRightsMetadataFilePath = "spec/fixtures/apo.rightsMetadata.xml"
+    publicReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_publicread.xml"
+    restrictedReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_restrictedread.xml"
+    @publicReadAdminPolicy = AdminPolicy.new
+    @publicReadAdminPolicy.defaultRights.content = File.open(publicReadDefaultRightsFilePath, "r")
+    @publicReadAdminPolicy.rightsMetadata.content = File.open(adminPolicyRightsMetadataFilePath, "r")
+    @publicReadAdminPolicy.save!
+    @restrictedReadAdminPolicy = AdminPolicy.new
+    @restrictedReadAdminPolicy.defaultRights.content = File.open(restrictedReadDefaultRightsFilePath, "r")
+    @restrictedReadAdminPolicy.rightsMetadata.content = File.open(adminPolicyRightsMetadataFilePath, "r")
+    @restrictedReadAdminPolicy.save!
     @registeredUser = User.create!(email:'registereduser@nowhere.org', password:'registeredUserPassword')
     @repositoryReader = User.create!(email:'repositoryreader@nowhere.org', password:'repositoryReaderPassword')
     @forbiddenText = "The action you wanted to perform was forbidden."
   end
   
   after do
-    User.find_each { |u| u.delete }
+    @repositoryReader.delete
+    @registeredUser.delete
+    @restrictedReadAdminPolicy.delete
+    @publicReadAdminPolicy.delete
   end
 
   describe "List" do
@@ -57,8 +67,7 @@ describe "Collections" do
     before do
       @title = "Test Collection"
       @identifier = "collectionIdentifier"
-      @policyChoice = "Public"
-      @policyChoiceResult = @publicReadAdminPolicyPid
+      @adminPolicyPid = @publicReadAdminPolicy.pid
     end
     after do
       Collection.find_each { |c| c.delete }
@@ -84,12 +93,12 @@ describe "Collections" do
         visit new_collection_path
         fill_in "Title", :with => @title
         fill_in "Identifier", :with => @identifier
-        choose(@policyChoice)
+        fill_in "Access Policy PID", :with => @adminPolicyPid
         click_button "Create Collection"
         page.should have_content "Added Collection"
         page.should have_content @title
         page.should have_content @identifier
-        page.should have_content @policyChoiceResult
+        page.should have_content @adminPolicyPid
       end
     end
   end # Add
