@@ -8,9 +8,9 @@ class ApplicationController < ActionController::Base
   
   include Hydra::PolicyAwareAccessControlsEnforcement
   
-rescue_from CanCan::AccessDenied do |exception|
-  render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
-end
+  rescue_from CanCan::AccessDenied do |exception|
+    render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
+  end
 
   # specify "application" or "blacklight"
   def layout_name
