@@ -1,7 +1,11 @@
 <h1>New Component</h1>
 
-<%= form_for @component do |f| %>
-  <%= f.label :content %>
-  <%= f.file_field :content %>
-  <%= f.submit "Create Component" %>
+<%= form_tag({:controller => "components", :action => "create"}, :multipart => true) do %>
+  <%= label_tag(:contentfile, "Content File") %>
+  <%= file_field_tag(:contentfile) %>
+  <br />
+  <%= label_tag(:policypid, "Access Policy PID") %>
+  <%= text_field_tag(:policypid) %>
+  <br />
+  <%= submit_tag "Create Component" %>
 <% end %>

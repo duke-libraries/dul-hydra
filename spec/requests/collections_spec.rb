@@ -26,7 +26,7 @@ describe "Collections" do
     @publicReadAdminPolicy.save!
     @restrictedReadAdminPolicy = AdminPolicy.new
     @restrictedReadAdminPolicy.defaultRights.content = restrictedReadDefaultRightsFile
-    @restrictedReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFilePath
+    @restrictedReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
     @restrictedReadAdminPolicy.save!
     adminPolicyRightsMetadataFile.close
     publicReadDefaultRightsFile.close

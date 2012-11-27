@@ -1,5 +1,7 @@
 class ComponentsController < ApplicationController
 
+  load_and_authorize_resource
+  
   def index
     @components = Component.all
   end
@@ -10,7 +12,12 @@ class ComponentsController < ApplicationController
 
   def create
     component = Component.create
-    file = params[:component][:content]
+    if (params[:policypid] && params[:policypid] != "")
+      apo = AdminPolicy.find(params[:policypid])
+      component.admin_policy = apo
+      component.save
+    end
+    file = params[:contentfile]
     component.add_content(file)
     flash[:notice] = "Component created."
     redirect_to component_path(component)
@@ -31,9 +38,9 @@ class ComponentsController < ApplicationController
       flash[:notice] = "Added to Item #{item.pid}."
     end
     # add content to component
-    content = params[:component][:content]
-    if content
-      component.add_content(content)
+    contentfile = params[:contentfile]
+    if contentfile
+      component.add_content(contentfile)
       flash[:notice] = "Content added."
     end
     redirect_to component_path(component)
