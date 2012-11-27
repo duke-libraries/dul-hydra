@@ -1,5 +1,9 @@
 <h1>Component <%= @component.pid %></h1>
 
+<dl>
+  <dt>Access Policy:</dt>
+  <dd><%= @component.admin_policy.pid %></dd>  
+</dl>
 <% if @component.container %>
   <p>
     Part of Item: <%= link_to @component.container.pid, item_path(@component.container.pid) %>
@@ -24,10 +28,10 @@
   </dl>
 <% else %>
   <p>No content.</p>
-  <%= form_for @component do |f| %>
-    <%= f.hidden_field :pid %>
-    <%= f.label :content %>
-    <%= f.file_field :content %>
-    <%= f.submit "Add content" %>
+  <%= form_tag({:controller => "components", :action => "update"}, :multipart => true, :method => "put") do %>
+    <%= hidden_field(:component, :pid) %>
+    <%= label_tag(:contentfile, "Content File") %>
+    <%= file_field_tag(:contentfile) %>    
+    <%= submit_tag "Add content" %>
   <% end %>
 <% end %>
