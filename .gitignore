@@ -19,3 +19,6 @@
 
 # Ignore jetty
 /jetty
+
+# Ignore paperclip files
+/public/system
