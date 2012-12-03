@@ -8,7 +8,7 @@ gem 'rails', '3.2.8'
 gem 'sqlite3'
 gem 'hydra-head', '5.0.0.pre11'
 gem 'hydra-mods'
-gem 'blacklight'
+gem 'blacklight', '~> 3.7.2'
 gem 'devise'
 
 # For mapping file extensions to MIME types
@@ -16,7 +16,7 @@ gem 'mime-types', '~> 1.19'
 
 group :development, :test do
   gem 'rspec-rails'
-  gem 'capybara'
+  gem 'capybara', '~> 1.1.3'
   gem 'jettywrapper'
 end
 
