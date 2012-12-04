@@ -24,6 +24,7 @@ class CollectionsController < ApplicationController
   end
   
   def show
-    @collection = Collection.find(params[:id])
+    # redundant b/c load_and_authorize_resource
+    # @collection = Collection.find(params[:id])
   end
 end

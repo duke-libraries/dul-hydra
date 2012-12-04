@@ -21,6 +21,10 @@ describe Component do
     @component.datastreams["rightsMetadata"].should be_kind_of Hydra::Datastream::RightsMetadata
   end
 
+  it "should have default permissions" do
+    @component.permissions.should_not be_empty
+  end
+
   it "should be able to have an identifier" do # issue 27
     @component.identifier.first.should eq(@identifier)
   end

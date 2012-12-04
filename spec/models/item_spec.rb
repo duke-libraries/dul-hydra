@@ -21,6 +21,10 @@ describe Item do
     @item.datastreams["rightsMetadata"].should be_kind_of Hydra::Datastream::RightsMetadata
   end
 
+  it "should have default permissions" do
+    @item.permissions.should_not be_empty
+  end
+
   it "should be able to become a member of a collection" do
     @item.collection = @collection
     @item.save

@@ -143,12 +143,14 @@ describe "Items" do
       end
     end
     context "publicly readable item" do
-      before do
-        @item.admin_policy = @publicReadAdminPolicy
-        @item.save!
-        @collection.admin_policy = @publicReadAdminPolicy
-        @collection.save!
-      end
+      # items are publicly readable by default
+      #
+      # before do
+      #   @item.admin_policy = @publicReadAdminPolicy
+      #   @item.save!
+      #   @collection.admin_policy = @publicReadAdminPolicy
+      #   @collection.save!
+      # end
       context "user is not logged in" do
         it_behaves_like "a user-accessible item"
       end
@@ -164,6 +166,7 @@ describe "Items" do
     end
     context "restricted item" do
       before do
+        @item.read_groups = []
         @item.admin_policy = @restrictedReadAdminPolicy
         @item.save!
       end

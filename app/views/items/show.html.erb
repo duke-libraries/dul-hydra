@@ -17,7 +17,7 @@
     <% end %>
   </dd>
   <dt>Access Policy:</dt>
-  <dd><%= @item.admin_policy.pid %></dd>
+  <dd><%= @item.admin_policy ? @item.admin_policy.pid : "None" %></dd>
   <dt>PID:</dt>
   <dd><%= @item.pid %></dd>
 </dl>
@@ -26,7 +26,6 @@
   Member of collection: <%= link_to @item.collection.pid, collection_path(@item.collection.pid) %>
 <% else %>
   <%= form_for @item do |f| %>
-    <%= f.hidden_field :pid %>
     <%= f.label :collection %>
     <%= f.text_field :collection %>
     <%= f.submit "Add Item to Collection" %>

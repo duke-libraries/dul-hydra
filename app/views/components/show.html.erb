@@ -2,7 +2,9 @@
 
 <dl>
   <dt>Access Policy:</dt>
-  <dd><%= @component.admin_policy.pid %></dd>  
+  <dd>
+    <%= @component.admin_policy ? @component.admin_policy.pid : "None" %>
+  </dd>  
 </dl>
 <% if @component.container %>
   <p>

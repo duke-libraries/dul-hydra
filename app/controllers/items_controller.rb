@@ -24,18 +24,20 @@ class ItemsController < ApplicationController
   end
   
   def show
-    @item = Item.find(params[:id])
+    # redundant b/c load_and_authorize_resource
+    # @item = Item.find(params[:id])
   end
 
   def update
-    item = Item.find(params[:item][:pid])
+    # redundant b/c load_and_authorize_resource
+    # item = Item.find(params[:id])
     if params[:item][:collection]
-      # XXX check whether collection pid exists and is a Collection object
+      # raises exception on not found
       collection = Collection.find(params[:item][:collection])
-      item.collection = collection
-      item.save
+      @item.collection = collection
+      @item.save
     end
-    redirect_to item_path(item)
+    redirect_to item_path(@item)
   end
 
 end

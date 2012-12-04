@@ -17,7 +17,7 @@
     <% end %>
   </dd>
   <dt>Access Policy:</dt>
-  <dd><%= @collection.admin_policy.pid %></dd>
+  <dd><%= @collection.admin_policy ? @collection.admin_policy.pid : "None" %></dd>
   <dt>PID:</dt>
   <dd><%= @collection.pid %></dd>
 </dl>
