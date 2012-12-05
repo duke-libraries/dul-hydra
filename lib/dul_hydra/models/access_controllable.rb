@@ -30,9 +30,9 @@ module DulHydra::Models
     protected
 
     #
-    # For setting default permissions (and thus creating the rightMetadata datastream)
-    # on a object at create time (technically first save) that has not been assigned 
-    # either permissions or an admin policy object to govern access control.
+    # For setting default permissions (and thus creating the rightsMetadata datastream)
+    # on a object at create time (technically the first save) that has been assigned 
+    # neither permissions nor an admin policy object to govern access control.
     # 
     def require_access_control
       if self.new_object? && self.admin_policy.nil? && self.permissions.empty?
