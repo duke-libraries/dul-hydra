@@ -14,8 +14,6 @@ class ComponentsController < ApplicationController
     @component = Component.new
     if (params[:policypid] && params[:policypid] != "")
       @component.admin_policy = AdminPolicy.find(params[:policypid])
-    else
-      @component.edit_users = [current_user.email]
     end
     if params[:contentfile]
       @component.content_file = params[:contentfile]
