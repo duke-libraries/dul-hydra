@@ -140,16 +140,20 @@ describe "Collections" do
       end
     end
     shared_examples_for "a user-forbidden collection" do
+      before do
+        @collection.clear_permissions!
+      end
       it "should display a Forbidden (403) response" do
         visit collection_path(@collection)
         page.should have_content @forbiddenText
       end      
     end
     context "publicly readable collection" do
-      before do
-        @collection.admin_policy = @publicReadAdminPolicy
-        @collection.save!
-      end
+      # collection is readable by default
+      # before do
+      #   @collection.admin_policy = @publicReadAdminPolicy
+      #   @collection.save!
+      # end
       context "user is not logged in" do
         it_behaves_like "a user-accessible collection"
       end

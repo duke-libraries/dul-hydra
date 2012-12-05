@@ -11,14 +11,16 @@ class ComponentsController < ApplicationController
   end
 
   def create
-    @component = Component.create
+    @component = Component.new
     if (params[:policypid] && params[:policypid] != "")
-      apo = AdminPolicy.find(params[:policypid])
-      @component.admin_policy = apo
-      @component.save
+      @component.admin_policy = AdminPolicy.find(params[:policypid])
+    else
+      @component.edit_users = [current_user.email]
     end
-    file = params[:contentfile]
-    @component.add_content(file)
+    if params[:contentfile]
+      @component.content_file = params[:contentfile]
+    end
+    @component.save
     flash[:notice] = "Component created."
     redirect_to component_path(@component)
   end
@@ -30,18 +32,14 @@ class ComponentsController < ApplicationController
 
   def update
     @component = Component.find(params[:component][:pid])
-    # add component to item
     item_pid = params[:component][:container]
     if item_pid
-      item = Item.find(item_pid)
-      @component.container = item
+      @component.container = Item.find(item_pid)
       @component.save
-      flash[:notice] = "Added to Item #{item.pid}."
+      flash[:notice] = "Added to Item #{item_pid}."
     end
-    # add content to component
-    contentfile = params[:contentfile]
-    if contentfile
-      @component.add_content(contentfile)
+    if params[:contentfile]
+      @component.content_file = params[:contentfile]
       flash[:notice] = "Content added."
     end
     redirect_to component_path(@component)

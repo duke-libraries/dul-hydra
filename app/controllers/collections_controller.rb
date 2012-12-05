@@ -14,12 +14,11 @@ class CollectionsController < ApplicationController
     if (params[:collection][:pid] == "") || (params[:collection][:pid] == "__DO_NOT_USE__")
       params[:collection].delete(:pid)
     end
-    @collection = Collection.create(params[:collection])
+    @collection = Collection.new(params[:collection])
     if (params[:policypid] && params[:policypid] != "")
-      apo = AdminPolicy.find(params[:policypid])
-      @collection.admin_policy = apo
-      @collection.save
+      @collection.admin_policy = AdminPolicy.find(params[:policypid])
     end
+    @collection.save
     redirect_to collection_path(@collection), :notice=>"Added Collection"
   end
   

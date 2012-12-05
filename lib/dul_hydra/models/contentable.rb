@@ -10,10 +10,9 @@ module DulHydra::Models
       has_file_datastream :name => "content", :type => ActiveFedora::Datastream
     end
 
-    def add_content(file, mimetype=nil)
+    def content_file=(file)
       content.content = file
-      content.mimeType = mimetype || get_mimetype(file)
-      content.save
+      content.mimeType = get_mimetype(file)
     end
 
     private

@@ -5,27 +5,39 @@ module DulHydra::Models
     included do
       # add rightsMetadata datastream with Hydra XML terminology
       has_metadata :name => "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
-      after_create :require_access_control!
+      before_save :require_access_control
     end
 
     # adds methods for managing Hydra rightsMetadata content
     include Hydra::ModelMixins::RightsMetadata
 
-    PUBLIC_READ_PERMISSION = {name: 'public', access: 'read', type: 'group'}
-    REPOSITORY_EDITOR_PERMISSION = {name: 'repositoryEditor', access: 'edit', type: 'group'}
-    DEFAULT_PERMISSIONS = [PUBLIC_READ_PERMISSION, REPOSITORY_EDITOR_PERMISSION]
+    REPOSITORY_EDITOR_GROUP = 'repositoryEditor'
+
+    def clear_permissions
+      self.discover_groups = []
+      self.read_groups = []
+      self.edit_groups = []
+      self.discover_users = []
+      self.read_users = []
+      self.edit_users = []
+    end
+
+    def clear_permissions!
+      self.clear_permissions
+      self.save!
+    end
 
     protected
 
     #
     # For setting default permissions (and thus creating the rightMetadata datastream)
-    # on a object at create time that has not been assigned either permissions or an
-    # admin policy object to govern access control.
+    # on a object at create time (technically first save) that has not been assigned 
+    # either permissions or an admin policy object to govern access control.
     # 
-    def require_access_control!
-      if admin_policy.nil? && permissions.empty?
-        permissions = DEFAULT_PERMISSIONS
-        save
+    def require_access_control
+      if self.new_object? && self.admin_policy.nil? && self.permissions.empty?
+        self.read_groups = ['public']
+        self.edit_groups = [REPOSITORY_EDITOR_GROUP]
       end
     end
 

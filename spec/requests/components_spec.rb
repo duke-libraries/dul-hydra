@@ -112,7 +112,8 @@ describe "Components" do
     shared_examples_for "a user-accessible component" do
       context "component has content" do
         before do
-          @component.add_content(File.new(@filepath))          
+          @component.content_file = File.new(@filepath)
+          @component.save
         end
         it "should display information about the content" do
           visit component_path(@component)
@@ -122,16 +123,20 @@ describe "Components" do
       end
     end
     shared_examples_for "a user-forbidden component" do
+      before do
+        @component.clear_permissions!
+      end
       it "should display a Forbidden (403) response" do
         visit component_path(@component)
         page.should have_content @forbiddenText
       end      
     end
     context "publicly readable component" do
-      before do
-        @component.admin_policy = @publicReadAdminPolicy
-        @component.save!
-      end
+      # publicly readable by default
+      # before do
+      #   @component.admin_policy = @publicReadAdminPolicy
+      #   @component.save!
+      # end
       context "user is not logged in" do
         it_behaves_like "a user-accessible component"
       end
@@ -147,6 +152,7 @@ describe "Components" do
     end
     context "restricted collection" do
       before do
+        @component.clear_permissions
         @component.admin_policy = @restrictedReadAdminPolicy
         @component.save!
       end

@@ -166,7 +166,7 @@ describe "Items" do
     end
     context "restricted item" do
       before do
-        @item.read_groups = []
+        @item.clear_permissions
         @item.admin_policy = @restrictedReadAdminPolicy
         @item.save!
       end
