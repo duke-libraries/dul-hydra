@@ -11,7 +11,8 @@ module DulHydra::Models
     # adds methods for managing Hydra rightsMetadata content
     include Hydra::ModelMixins::RightsMetadata
 
-    REPOSITORY_EDITOR_GROUP = 'repositoryEditor'
+    DEFAULT_PERMISSIONS = [{type: 'group', name: 'public', access: 'read'},
+                           {type: 'group', name: 'repositoryEditor', access: 'edit'}]
 
     def clear_permissions
       self.discover_groups = []
@@ -36,8 +37,7 @@ module DulHydra::Models
     # 
     def require_access_control
       if self.new_object? && self.admin_policy.nil? && self.permissions.empty?
-        self.read_groups = ['public']
-        self.edit_groups = [REPOSITORY_EDITOR_GROUP]
+        self.permissions = DEFAULT_PERMISSIONS
       end
     end
 
