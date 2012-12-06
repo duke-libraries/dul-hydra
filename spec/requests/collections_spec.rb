@@ -20,11 +20,14 @@ describe "Collections" do
     publicReadDefaultRightsFile = File.open(publicReadDefaultRightsFilePath, "r")
     restrictedReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_restrictedread.xml"
     restrictedReadDefaultRightsFile = File.open(restrictedReadDefaultRightsFilePath, "r")
-    @publicReadAdminPolicy = AdminPolicy.new
-    @publicReadAdminPolicy.defaultRights.content = publicReadDefaultRightsFile
-    @publicReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
+    @publicReadAdminPolicy = AdminPolicy.new(label: 'Public Read')
+    # @publicReadAdminPolicy.defaultRights.content = publicReadDefaultRightsFile
+    # @publicReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
+    @publicReadAdminPolicy.default_permissions = [{type: 'group', name: 'public', access: 'read'},
+                                                  {type: 'group', name: 'repositoryEditor', access: 'edit'}]
+    @publicReadAdminPolicy.permissions = [{type: 'group', name: 'repositoryAdmin', access: 'edit'}]
     @publicReadAdminPolicy.save!
-    @restrictedReadAdminPolicy = AdminPolicy.new
+    @restrictedReadAdminPolicy = AdminPolicy.new(label: 'Restricted Read')
     @restrictedReadAdminPolicy.defaultRights.content = restrictedReadDefaultRightsFile
     @restrictedReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
     @restrictedReadAdminPolicy.save!
@@ -99,7 +102,8 @@ describe "Collections" do
         visit new_collection_path
         fill_in "Title", :with => @title
         fill_in "Identifier", :with => @identifier
-        fill_in "Access Policy PID", :with => @adminPolicyPid
+        #fill_in "Access Policy", :with => @adminPolicyPid
+        select "Public Read", :from => :policypid
         click_button "Create Collection"
         page.should have_content "Added Collection"
         page.should have_content @title

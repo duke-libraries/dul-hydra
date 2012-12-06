@@ -8,6 +8,8 @@ class CollectionsController < ApplicationController
   
   def new
     @collection = Collection.new
+    # @default_apo = AdminPolicy.default_apo(create: true)
+    @apos = AdminPolicy.all
   end
   
   def create
