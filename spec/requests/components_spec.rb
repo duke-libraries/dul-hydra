@@ -123,20 +123,19 @@ describe "Components" do
       end
     end
     shared_examples_for "a user-forbidden component" do
-      before do
-        @component.clear_permissions!
-      end
+      # before do
+      #   @component.clear_permissions!
+      # end
       it "should display a Forbidden (403) response" do
         visit component_path(@component)
         page.should have_content @forbiddenText
       end      
     end
     context "publicly readable component" do
-      # publicly readable by default
-      # before do
-      #   @component.admin_policy = @publicReadAdminPolicy
-      #   @component.save!
-      # end
+      before do
+        @component.admin_policy = @publicReadAdminPolicy
+        @component.save!
+      end
       context "user is not logged in" do
         it_behaves_like "a user-accessible component"
       end

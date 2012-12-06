@@ -1,9 +1,9 @@
 # AdminPolicy does not subclass DulHydra::Models::Base
 # b/c Hydra::AdminPolicy provides all the datastreams it needs.
 class AdminPolicy < Hydra::AdminPolicy
-  extend ActiveSupport::Concern
+  #extend ActiveSupport::Concern
 
-  include DulHydra::Models::Governable
+  #include DulHydra::Models::Governable
 
   #before_save :set_default_permissions
 
@@ -34,12 +34,12 @@ class AdminPolicy < Hydra::AdminPolicy
     end
   end
 
-  protected
+  # protected
 
-  def set_default_permissions
-    if self.new_object? && self.permissions.empty?
-      self.permissions = DEFAULT_PERMISSIONS
-    end
-  end
+  # def set_default_permissions
+  #   if self.new_object? && self.permissions.empty?
+  #     self.permissions = DEFAULT_PERMISSIONS
+  #   end
+  # end
 
 end

@@ -8,13 +8,22 @@ module DulHydra::Models
       #before_save :require_apo
     end
 
-    protected
-
-    def require_apo
-      if self.new_object? && self.admin_policy.nil? && self.permissions.empty?
-        self.admin_policy = AdminPolicy.default_apo
-      end
+    def set_default_apo
+      self.admin_policy = AdminPolicy.default_apo
     end
+
+    def set_default_apo!
+      set_default_apo
+      save!
+    end
+
+    # protected
+
+    # def require_apo
+    #   if self.new_object? && self.admin_policy.nil? && self.permissions.empty?
+    #     self.admin_policy = AdminPolicy.default_apo
+    #   end
+    # end
 
   end
 end
