@@ -5,7 +5,7 @@ module DulHydra::Models
     included do
       # adds isGovernedBy relationship to object
       belongs_to :admin_policy, :property => :is_governed_by
-      before_save :require_apo
+      #before_save :require_apo
     end
 
     protected
