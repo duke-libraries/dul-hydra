@@ -7,16 +7,18 @@ module DulHydra::Models
       delegate_to "descMetadata", [:title, :identifier]
     end
 
-    def self.find_by_identifier(identifier)
-      self.find(:identifier_t => identifier)
-    end
-
     def has_title?
       !(title.empty? || title.first.length == 0)
     end
 
     def display_title
       has_title? ? title.first : pid
+    end
+
+    module ClassMethods
+      def find_by_identifier(identifier)
+        find(:identifier_t => identifier)
+      end
     end
 
   end
