@@ -1,0 +1,19 @@
+<h1>Edit Component</h1>
+
+<%= form_for @component do |f| %>
+  <%= f.label :title %>
+  <%= f.text_field :title, :value => @component.title.first %>
+  <br />
+  <%= f.label :identifier %>
+  <%= f.text_field :identifier, :value => @component.identifier.first %>
+  <p>
+    <% if @component.content.size %>
+      Content: <%= @component.content.mimeType %> (<%= @component.content.size %>)
+    <% else %>
+      No content.
+    <% end %>
+  </p>
+  <%= label_tag(:contentfile, "Content File") %>
+  <%= file_field_tag(:contentfile) %>
+  <%= f.submit "Update Component" %>
+<% end %>

@@ -1,6 +1,16 @@
 <h1>Component <%= @component.pid %></h1>
 
+<% if can? :edit, @component %>
+  <p>
+    <%= link_to "Edit", edit_component_path(@component) %>
+  <p>
+<% end %>
+
 <dl>
+  <dt>Title:</dt>
+  <dd><%= @component.title.first %></dd>
+  <dt>Identifier:</dt>
+  <dd><%= @component.identifier.first %></dd>
   <dt>Access Policy:</dt>
   <dd>
     <%= @component.admin_policy ? @component.admin_policy.pid : "None" %>
@@ -11,6 +21,7 @@
     Part of Item: <%= link_to @component.container.pid, item_path(@component.container.pid) %>
   </p>
 <% else %>
+  <%# XXX This should be on the edit page %>
   <%= form_for @component do |f| %>
     <%= f.hidden_field :pid %>
     <%= f.label :container %>
@@ -21,7 +32,7 @@
 
 <h2>Content</h2>
 
-<% if @component.content.content %>
+<% if @component.content.size %>
   <dl>
     <dt>Type</dt>
     <dd><%= @component.content.mimeType %></dd>
@@ -29,11 +40,7 @@
     <dd><%= @component.content.size %></dd>
   </dl>
 <% else %>
-  <p>No content.</p>
-  <%= form_tag({:controller => "components", :action => "update"}, :multipart => true, :method => "put") do %>
-    <%= hidden_field(:component, :pid) %>
-    <%= label_tag(:contentfile, "Content File") %>
-    <%= file_field_tag(:contentfile) %>    
-    <%= submit_tag "Add content" %>
-  <% end %>
+  <p>
+    No content.
+  </p>
 <% end %>
