@@ -4,9 +4,9 @@ class ApplicationController < ActionController::Base
   include Blacklight::Controller  
 
   # Adds Hydra behaviors into the application controller 
-  include Hydra::Controller::ControllerBehavior
-  
-  include Hydra::PolicyAwareAccessControlsEnforcement
+  # Moved to CatalogController - https://github.com/duke-libraries/dul-hydra/issues/51
+  #include Hydra::Controller::ControllerBehavior
+  #include Hydra::PolicyAwareAccessControlsEnforcement
   
   rescue_from CanCan::AccessDenied do |exception|
     render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false

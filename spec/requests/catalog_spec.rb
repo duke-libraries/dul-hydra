@@ -4,7 +4,9 @@ describe "Catalog" do
   before(:all) do
     @component_identifier = "test010010010"
     @component_title = "Test Component"
-    @component = Component.create(:title => @component_title, :identifier => @component_identifier)
+    @component = Component.new(:title => @component_title, :identifier => @component_identifier)
+    @component.permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS]
+    @component.save
   end
   after(:all) do
     @component.delete
