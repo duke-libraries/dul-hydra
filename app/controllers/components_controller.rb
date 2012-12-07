@@ -7,7 +7,8 @@ class ComponentsController < ApplicationController
   end
 
   def new
-    @component = Component.new
+    # redundant b/c load_and_authorize_resource
+    # @component = Component.new
   end
 
   def create
@@ -28,6 +29,10 @@ class ComponentsController < ApplicationController
     # @component = Component.find(params[:id])
   end
 
+  def edit
+    raise NotImplementedError
+  end
+
   def update
     @component = Component.find(params[:component][:pid])
     item_pid = params[:component][:container]
@@ -41,6 +46,10 @@ class ComponentsController < ApplicationController
       flash[:notice] = "Content added."
     end
     redirect_to component_path(@component)
+  end
+
+  def destroy
+    raise NotImplementedError
   end
 
 end

@@ -7,7 +7,8 @@ class ItemsController < ApplicationController
   end
 
   def new
-    @item = Item.new
+    # redundant b/c load_and_authorize_resource
+    # @item = Item.new
   end
   
   def create
@@ -28,6 +29,10 @@ class ItemsController < ApplicationController
     # @item = Item.find(params[:id])
   end
 
+  def edit
+    raise NotImplementedError
+  end
+
   def update
     # redundant b/c load_and_authorize_resource
     # item = Item.find(params[:id])
@@ -38,6 +43,10 @@ class ItemsController < ApplicationController
       @item.save
     end
     redirect_to item_path(@item)
+  end
+
+  def destroy
+    raise NotImplementedError
   end
 
 end

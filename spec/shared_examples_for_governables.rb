@@ -27,4 +27,26 @@ shared_examples "a governable object" do
     @repositoryEditor.delete
     @governable.delete
   end
+  context "assigned a public-read admin policy" do
+    before do
+      @governable = described_class.new
+      @governable.admin_policy = @publicReadAdminPolicy
+      @governable.save
+    end
+    after { @governable.delete }
+  end
+  context "assigned a restricted-read admin policy" do
+    context "user is logged in"
+    context "user is not logged in"
+  end
+  context "assigned public-read permissions" do
+  end
+  context "assigned restricted-read permissions" do
+    context "user is logged in" do
+      it "access is permitted"
+    end
+    context "user is not logged in" do
+      it "access is denied"
+    end
+  end
 end
