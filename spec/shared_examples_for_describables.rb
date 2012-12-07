@@ -1,4 +1,4 @@
-shared_examples "a describable" do
+shared_examples "a describable object" do
   before do
     @identifier = "test010010010"
     @title = "Describable Object"

@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'shared_examples_for_describables'
 
 describe Component do
-  it_behaves_like "a describable"
+  it_behaves_like "a describable object"
   context "relationships" do
     before do
       @component = Component.create
