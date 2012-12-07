@@ -21,13 +21,7 @@
     Part of Item: <%= link_to @component.container.pid, item_path(@component.container.pid) %>
   </p>
 <% else %>
-  <%# XXX This should be on the edit page %>
-  <%= form_for @component do |f| %>
-    <%= f.hidden_field :pid %>
-    <%= f.label :container %>
-    <%= f.text_field :container %>
-    <%= f.submit "Add Component to Item" %>
-  <% end %>
+  <%# XXX Link to separate page %>
 <% end %>
 
 <h2>Content</h2>

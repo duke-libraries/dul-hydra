@@ -1,11 +1,13 @@
 <h1>Edit Component</h1>
 
-<%= form_for @component do |f| %>
-  <%= f.label :title %>
-  <%= f.text_field :title, :value => @component.title.first %>
-  <br />
-  <%= f.label :identifier %>
-  <%= f.text_field :identifier, :value => @component.identifier.first %>
+<%= form_tag({:controller => "components", :action => "update"}, :method => :put, :multipart => true) do %>
+  <%= fields_for @component do |f| %>
+    <%= f.label :title %>
+    <%= f.text_field :title, :value => @component.title.first %>
+    <br />
+    <%= f.label :identifier %>
+    <%= f.text_field :identifier, :value => @component.identifier.first %>
+  <% end %>
   <p>
     <% if @component.content.size %>
       Content: <%= @component.content.mimeType %> (<%= @component.content.size %>)
@@ -13,7 +15,7 @@
       No content.
     <% end %>
   </p>
-  <%= label_tag(:contentfile, "Content File") %>
-  <%= file_field_tag(:contentfile) %>
-  <%= f.submit "Update Component" %>
+  <%= label_tag :contentfile, "Content File" %>
+  <%= file_field_tag :contentfile %>
+  <%= submit_tag "Update Component" %>
 <% end %>

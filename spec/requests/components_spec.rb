@@ -196,6 +196,7 @@ describe "Components" do
         @item.delete
       end
       it "should be able the associate the component with an item" do
+        pending "move component-item association to separate page"
         visit component_path(@component)
         fill_in "Container", :with => @item.pid
         click_button "Add Component to Item"
@@ -207,12 +208,12 @@ describe "Components" do
         i.part_ids.should include(@component.pid)
       end
       it "should be able to add content to the component" do # issue 35
-        # visit component_path(@component)
-        # attach_file "Content File", @filepath
-        # click_button "Add content"
+        visit edit_component_path(@component)
+        attach_file "Content File", @filepath
+        click_button "Update Component"
         # page.should have_content "Content added"
-        # component = Component.find(@component.pid)
-        # component.content.size.should eq(File.size(@filepath))
+        component = Component.find(@component.pid)
+        component.content.size.should eq(File.size(@filepath))
       end      
     end
     shared_examples_for "an edit-forbidden component" do

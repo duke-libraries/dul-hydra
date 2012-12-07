@@ -12,8 +12,6 @@ class ComponentsController < ApplicationController
   end
 
   def create
-    # redundant b/c load_and_authorize_resource
-    # @component = Component.new
     if (params[:policypid] && params[:policypid] != "")
       @component.admin_policy = AdminPolicy.find(params[:policypid])
     end
@@ -35,8 +33,7 @@ class ComponentsController < ApplicationController
   end
 
   def update
-    @component.title = params[:component][:title]
-    @component.identifier = params[:component][:identifier]
+    @component.update_attributes(params[:component])
     item_pid = params[:component][:container]
     if item_pid
       @component.container = Item.find(item_pid)
