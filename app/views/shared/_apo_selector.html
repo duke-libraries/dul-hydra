@@ -1,0 +1,2 @@
+<%= label_tag :policypid, "Access Policy" %>
+<%= select_tag :policypid, options_from_collection_for_select(AdminPolicy.all, 'pid', 'pid'), :include_blank => true %>

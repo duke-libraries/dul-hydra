@@ -4,8 +4,7 @@
   <%= label_tag(:contentfile, "Content File") %>
   <%= file_field_tag(:contentfile) %>
   <br />
-  <%= label_tag(:policypid, "Access Policy PID") %>
-  <%= text_field_tag(:policypid) %>
+  <%= render "shared/apo_selector" %>
   <br />
   <%= submit_tag "Create Component" %>
 <% end %>
