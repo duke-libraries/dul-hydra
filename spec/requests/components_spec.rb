@@ -19,18 +19,18 @@ describe "Components" do
   
   before do
     @publicReadAdminPolicy = AdminPolicy.new(label: 'Public Read')
-    @publicReadAdminPolicy.default_permissions = [AdminPolicy::PUBLIC_READ_ACCESS,
-                                                  AdminPolicy::READER_GROUP_ACCESS,
-                                                  AdminPolicy::EDITOR_GROUP_ACCESS,
-                                                  AdminPolicy::ADMIN_GROUP_ACCESS]
+    @publicReadAdminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
+                                                  DulHydra::Permissions::READER_GROUP_ACCESS,
+                                                  DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                                  DulHydra::Permissions::ADMIN_GROUP_ACCESS]
     @publicReadAdminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
     @publicReadAdminPolicy.save!
 
     @restrictedReadAdminPolicy = AdminPolicy.new(label: 'Restricted Read')
-    @restrictedReadAdminPolicy.default_permissions = [AdminPolicy::PUBLIC_DISCOVER_ACCESS,
-                                                      AdminPolicy::READER_GROUP_ACCESS,
-                                                      AdminPolicy::EDITOR_GROUP_ACCESS,
-                                                      AdminPolicy::ADMIN_GROUP_ACCESS]
+    @restrictedReadAdminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_DISCOVER_ACCESS,
+                                                      DulHydra::Permissions::READER_GROUP_ACCESS,
+                                                      DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                                      DulHydra::Permissions::ADMIN_GROUP_ACCESS]
     @restrictedReadAdminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
     @restrictedReadAdminPolicy.save!
 
@@ -148,7 +148,6 @@ describe "Components" do
     end
     context "restricted collection" do
       before do
-        @component.clear_permissions
         @component.admin_policy = @restrictedReadAdminPolicy
         @component.save!
       end
