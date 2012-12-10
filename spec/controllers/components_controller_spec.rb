@@ -34,6 +34,7 @@ describe ComponentsController do
         sign_in @user
       end
       after do
+        sign_out @user
         @user.delete
       end
       it "persists the new component" # errors v. no errors?
@@ -50,14 +51,13 @@ describe ComponentsController do
     after do
       @component.delete
     end
-    subject { get :show, :id => @component.pid }
     context "publicly readable component" do
       before do
         @component.read_groups = ["public"]
         @component.save!
       end
       it "should have a sucessful response" do
-        #get :show, :id => @component.pid
+        get :show, :id => @component
         response.should be_successful
       end
     end
@@ -68,11 +68,21 @@ describe ComponentsController do
       end
       context "anonymous user" do
         it "should have a forbidden response" do
+          get :show, :id => @component
           response.response_code.should eq(403)
         end
       end
       context "authenticated user" do
+        before do
+          @user = FactoryGirl.create(:user)
+          sign_in @user
+        end
+        after do
+          sign_out @user
+          @user.delete
+        end
         it "should have a success response" do
+          get :show, :id => @component
           response.should be_successful
         end
       end
@@ -82,16 +92,19 @@ describe ComponentsController do
     subject { get :edit }
     context "anonymous user" do
       it "should have a forbidden response" do
+        pending
         response.response_code.should eq(403)
       end
     end
     context "authenticated user not having edit permission" do
       it "should have a forbidden response" do
+        pending
         response.response_code.should eq(403)
       end
     end
     context "authenticated user having edit permission" do
       it "should have a success response" do
+        pending
         response.should be_successful
       end
     end
