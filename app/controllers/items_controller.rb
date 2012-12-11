@@ -21,7 +21,7 @@ class ItemsController < ApplicationController
       @item.admin_policy = apo
       @item.save
     end
-    redirect_to item_path(@item), :notice=>"Added Item"
+    redirect_to item_path(@item), :notice => "Added Item"
   end
   
   def show
@@ -30,7 +30,6 @@ class ItemsController < ApplicationController
   end
 
   def edit
-    raise NotImplementedError
   end
 
   def update

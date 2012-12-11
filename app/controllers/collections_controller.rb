@@ -29,7 +29,6 @@ class CollectionsController < ApplicationController
   end
 
   def edit
-    raise NotImplementedError
   end
 
   def update

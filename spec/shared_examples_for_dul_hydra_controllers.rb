@@ -1,58 +1,129 @@
 require 'spec_helper'
 
-shared_examples "a DulHydra controller" do 
+shared_examples "a DulHydra controller" do
+
   def object_class
-    Object.const_get(object_class_name)
+    Object.const_get(described_class.to_s.sub("Controller", "").singularize)
   end
-  def object_class_name
-    described_class.sub("Controller", "").singularize
+
+  def object_instance_symbol
+    object_class.to_s.downcase.to_sym
   end
-  def resource
-    instance_variable_get("@#{object_class_name.downcase}")
+
+  before(:all) do
+    @registered_user = FactoryGirl.create(:user)
+    @editor = FactoryGirl.create(:editor)
+    @public_read_policy = FactoryGirl.create(:public_read_policy)
   end
-  shared_examples "object creator" do
+
+  before(:each) do
+    @object = object_class.create
+  end
+
+  after(:all) do
+    @registered_user.delete
+    @editor.delete
+    @public_read_policy.delete
+    object_class.find_each { |o| o.delete }
+  end
+
+  context "#index" do
+    subject { get :index }
+    it "renders the index template" do
+      expect(subject).to render_template(:index)
+    end
+  end
+
+  context "#new" do
+    subject { get :new }
+    context "anonymous user" do
+      its(:response_code) { should eq(403) }
+    end
     context "authenticated user" do
-      it "creates a new object" do
-        resource.should be_kind_of(object_class)
+      before { sign_in @registered_user }
+      after { sign_out @registered_user }
+      it { should be_successful }
+    end
+  end
+
+  context "#create" do
+    subject { post :create, object_instance_symbol => {title: "Test Object", identifier: "foobar123"} }
+    context "anonymous user" do
+      its(:response_code) { should eq(403) }
+    end
+    context "authenticated user" do
+      before { sign_in @registered_user }
+      after { sign_out @registered_user }
+      it "redirects to the show action" do
+        expect(subject).to redirect_to(:action => :show, 
+                                       :id => assigns(object_instance_symbol).id)
       end
+    end
+  end
+
+  context "#show" do
+    subject { get :show, :id => @object }
+    context "publicly readable object" do
+      context "controlled by permissions" do
+        before do
+          @object.read_groups = ["public"]
+          @object.save!
+        end
+        it { should be_successful }
+      end
+      context "controlled by policy" do
+        before do
+          @object.admin_policy = @public_read_policy
+          @object.save!
+        end
+        it { should be_successful }
+      end
+    end
+    context "restricted read component" do
+      before do
+        @object.read_groups = ["registered"]
+        @object.save!
+      end
+      context "anonymous user" do
+        its(:response_code) { should eq(403) }
+      end
+      context "authenticated user" do
+        before { sign_in @registered_user }
+        after { sign_out @registered_user }
+        it { should be_successful }
+      end
+    end
+  end
+
+  context "#edit" do
+    subject { get :edit, :id => @object }
+    before do
+      @object.read_groups = ["public"]
+      @object.edit_groups = [DulHydra::Permissions::EDITOR_GROUP_NAME]
+      @object.save!
     end
     context "anonymous user" do
-      it "should deny access" do
-        response.code.should eq(403)
-      end
+      its(:response_code) { should eq(403) }
+    end
+    context "authenticated user not having edit permission" do
+      before { sign_in @registered_user }
+      after { sign_out @registered_user }
+      its(:response_code) { should eq(403) }
+    end
+    context "authenticated user having edit permission" do
+      before { sign_in @editor }
+      after { sign_out @editor }
+      it { should be_successful }
     end
   end
-  context "#index" do
-    it "requires discover access to the objects"
-    it "retrieves the existing objects"
+
+  context "#update" do    
+    subject { put :update, :id => @object }
   end
-  context "#new" do
-    include_examples "object creator"
-  end
-  context "#create" do
-    include_examples "object creator"
-    it "saves the object to the repository"
-    it "redirects to the show page for the object"
-  end
-  context "#show" do
-    it "requires read access to the object"
-    it "retrieves the object"
-  end
-  context "#edit" do
-    it "requires edit access to the object"
-    it "retrieves the object"
-  end
-  context "#update" do
-    it "requires edit access to the object"
-    it "retrieves the object"
-    it "updates the attributes of the object"
-    it "saves the object"
-    it "redirects to the show page for the object"
-  end
+
   context "#destroy" do
-    it "requires edit access to the object"
-    it "retrieves the object"
-    it "deletes the object"
-    it "redirects to the index page"
+    subject { delete :destroy, :id => @object }
   end
+
+
 end
