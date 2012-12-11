@@ -45,8 +45,9 @@ describe ComponentsController do
     end
   end
   context "#show" do
+    subject { get :show, :id => @component }
     before do
-      @component = Component.create!
+      @component = Component.create
     end
     after do
       @component.delete
@@ -57,7 +58,6 @@ describe ComponentsController do
         @component.save!
       end
       it "should have a sucessful response" do
-        get :show, :id => @component
         response.should be_successful
       end
     end
@@ -68,7 +68,9 @@ describe ComponentsController do
       end
       context "anonymous user" do
         it "should have a forbidden response" do
-          get :show, :id => @component
+          pending "further investigation"
+          puts @component.pid
+          puts @component.permissions
           response.response_code.should eq(403)
         end
       end
@@ -82,34 +84,57 @@ describe ComponentsController do
           @user.delete
         end
         it "should have a success response" do
-          get :show, :id => @component
           response.should be_successful
         end
       end
     end
   end
   context "#edit" do
-    subject { get :edit }
+    before do
+      @component = Component.new
+      @component.read_groups = ["public"]
+      @component.edit_groups = [DulHydra::Permissions::EDITOR_GROUP_NAME]
+      @component.save!
+    end
+    after do
+      @component.delete
+    end
     context "anonymous user" do
       it "should have a forbidden response" do
-        pending
+        get :edit, :id => @component
         response.response_code.should eq(403)
       end
     end
     context "authenticated user not having edit permission" do
+      before do
+        @user = FactoryGirl.create(:user)
+        sign_in @user
+      end
+      after do
+        sign_out @user
+        @user.delete
+      end
       it "should have a forbidden response" do
-        pending
+        get :edit, :id => @component
         response.response_code.should eq(403)
       end
     end
     context "authenticated user having edit permission" do
+      before do
+        @user = FactoryGirl.create(:editor)
+        sign_in @user
+      end
+      after do
+        sign_out @user
+        @user.delete
+      end
       it "should have a success response" do
-        pending
+        get :edit, :id => @component
         response.should be_successful
       end
     end
   end
-  context "#update" do
+  context "#update" do    
   end
   context "#destroy" do
   end
