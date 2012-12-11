@@ -79,7 +79,7 @@ shared_examples "a DulHydra controller" do
         it { should be_successful }
       end
     end
-    context "restricted read component" do
+    context "restricted read object" do
       before do
         @object.read_groups = ["registered"]
         @object.save!
