@@ -10,23 +10,6 @@ shared_examples "a DulHydra controller" do
     object_class.to_s.downcase.to_sym
   end
 
-  before(:all) do
-    @registered_user = FactoryGirl.create(:user)
-    @editor = FactoryGirl.create(:editor)
-    @public_read_policy = FactoryGirl.create(:public_read_policy)
-  end
-
-  before(:each) do
-    @object = object_class.create
-  end
-
-  after(:all) do
-    @registered_user.delete
-    @editor.delete
-    @public_read_policy.delete
-    object_class.find_each { |o| o.delete }
-  end
-
   context "#index" do
     subject { get :index }
     it "renders the index template" do
@@ -40,20 +23,23 @@ shared_examples "a DulHydra controller" do
       its(:response_code) { should eq(403) }
     end
     context "authenticated user" do
-      before { sign_in @registered_user }
-      after { sign_out @registered_user }
+      let(:user) { FactoryGirl.create(:user) }
+      before { sign_in user }
+      after { sign_out user }
       it { should be_successful }
     end
   end
 
   context "#create" do
+    let(:user) { FactoryGirl.create(:user) }
+    after(:all) { user.delete }
     subject { post :create, object_instance_symbol => {title: "Test Object", identifier: "foobar123"} }
     context "anonymous user" do
       its(:response_code) { should eq(403) }
     end
     context "authenticated user" do
-      before { sign_in @registered_user }
-      after { sign_out @registered_user }
+      before { sign_in user }
+      after { sign_out user }
       it "redirects to the show action" do
         expect(subject).to redirect_to(:action => :show, 
                                        :id => assigns(object_instance_symbol).id)
@@ -62,60 +48,136 @@ shared_examples "a DulHydra controller" do
   end
 
   context "#show" do
-    subject { get :show, :id => @object }
+
+    let!(:object) { object_class.create }
+    let(:user) { FactoryGirl.create(:user) }
+
+    after(:each) { object.delete }
+    after(:all) { user.delete }
+
+    subject { get :show, :id => object }
+
     context "publicly readable object" do
+      let(:policy) { FactoryGirl.create(:public_read_policy) }
+      after(:all) { policy.delete }
       context "controlled by permissions" do
         before do
-          @object.read_groups = ["public"]
-          @object.save!
+          object.permissions = [{type: "group", name: "public", access: "read"}]
+          object.save!
         end
         it { should be_successful }
       end
       context "controlled by policy" do
         before do
-          @object.admin_policy = @public_read_policy
-          @object.save!
+          object.admin_policy = policy
+          object.save!
         end
         it { should be_successful }
       end
     end
+
     context "restricted read object" do
-      before do
-        @object.read_groups = ["registered"]
-        @object.save!
+      let(:policy) { FactoryGirl.create(:registered_read_policy) }
+      after(:all) { policy.delete }
+      context "controlled by permissions" do
+        before do
+          object.permissions = [{type: "group", name: "registered", access: "read"}]
+          object.save!
+        end
+        context "anonymous user" do
+          its(:response_code) { should eq(403) }
+        end
+        context "authenticated user" do
+          before { sign_in user }
+          after { sign_out user }
+          it { should be_successful }
+        end
       end
-      context "anonymous user" do
-        its(:response_code) { should eq(403) }
-      end
-      context "authenticated user" do
-        before { sign_in @registered_user }
-        after { sign_out @registered_user }
-        it { should be_successful }
+      context "controlled by policy" do
+        before do
+          object.admin_policy = policy
+          object.save!
+        end
+        context "anonymous user" do
+          its(:response_code) { should eq(403) }
+        end
+        context "authenticated user" do
+          before { sign_in user }
+          after { sign_out user }
+          it { should be_successful }
+        end
       end
     end
+
   end
 
   context "#edit" do
-    subject { get :edit, :id => @object }
-    before do
-      @object.read_groups = ["public"]
-      @object.edit_groups = [DulHydra::Permissions::EDITOR_GROUP_NAME]
-      @object.save!
+
+    let!(:object) { object_class.create }
+    let(:user) { FactoryGirl.create(:user) }
+
+    after(:each) { object.delete }
+    after(:all) { user.delete }
+
+    subject { get :edit, :id => object }
+
+    context "a permissions-controlled object" do
+      context "by an anonymous user" do
+        before do
+          object.permissions = [{type: "group", name: "editors", access: "edit"}]
+          object.save!
+        end
+        its(:response_code) { should eq(403) }
+      end
+      context "by an authenticated user" do
+        before { sign_in user }
+        after { sign_out user }
+        context "not having edit permission" do
+          before do
+            object.permissions = [{type: "group", name: "editors", access: "edit"}]
+            object.save!
+          end
+          its(:response_code) { should eq(403) }
+        end
+        context "having edit permission" do
+          before do
+            object.permissions = [{type: "person", name: user.email, access: "edit"}]
+            object.save!
+          end
+          it { should be_successful }
+        end
+      end
     end
-    context "anonymous user" do
-      its(:response_code) { should eq(403) }
+
+    context "a policy-governed object" do
+      before do
+        object.admin_policy = policy
+        object.save!
+      end
+      after { policy.delete }
+      context "by an anonymous user" do
+        let(:policy) { FactoryGirl.create(:group_edit_policy) }
+        its(:response_code) { should eq(403) }
+      end
+      context "by an authenticated user" do
+        before { sign_in user }
+        after { sign_out user }
+        context "not having edit permission" do
+          let(:policy) { FactoryGirl.create(:group_edit_policy) }
+          its(:response_code) { should eq(403) }
+        end
+        context "having edit permission" do
+          let(:policy) { FactoryGirl.create(:admin_policy) }
+          before do
+            policy.default_permissions = [{type: "person", name: user.email, access: "edit"}]
+            policy.save!
+          end
+          it { should be_successful }
+        end
+      end
     end
-    context "authenticated user not having edit permission" do
-      before { sign_in @registered_user }
-      after { sign_out @registered_user }
-      its(:response_code) { should eq(403) }
-    end
-    context "authenticated user having edit permission" do
-      before { sign_in @editor }
-      after { sign_out @editor }
-      it { should be_successful }
-    end
-  end
+
+  end # edit
 
   context "#update" do    
     subject { put :update, :id => @object }
