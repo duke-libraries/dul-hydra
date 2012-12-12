@@ -1,4 +1,16 @@
 namespace :dul_hydra do
+    namespace :batch do
+        desc "Prepares a batch of objects for ingest based on a manifest file specified by MANIFEST="
+        task :prepare_for_ingest => :environment do
+            raise "Must specify a manifest file. Ex: MANIFEST='/srv/fedora-working/ingest/VIC/manifests/collection.yaml'" unless ENV['MANIFEST']
+            DulHydra::Scripts::BatchIngest.prep_for_ingest(ENV['MANIFEST'])
+        end
+        desc "Ingests a batch of objects based on a manifest file specified by MANIFEST="
+        task :ingest => :environment do
+            raise "Must specify a manifest file. Ex: MANIFEST='/srv/fedora-working/ingest/VIC/manifests/collection.yaml'" unless ENV['MANIFEST']
+            DulHydra::Scripts::BatchIngest.ingest(ENV['MANIFEST'])
+        end
+    end
     namespace :solr do
         desc "Deletes everything from the solr index"
         task :clean => :environment do
@@ -7,7 +19,7 @@ namespace :dul_hydra do
         end
         desc "Index a single object in solr specified by PID="
         task :index => :environment do
-          raise "Must specify a pid. Ex: PID='changeme:12" unless ENV['PID']
+          raise "Must specify a pid. Ex: PID='changeme:12'" unless ENV['PID']
           ActiveFedora::Base.connection_for_pid('foo:1') # Loads Rubydora connection with fake object
           ActiveFedora::Base.find(ENV['PID'], cast: true).update_index
         end

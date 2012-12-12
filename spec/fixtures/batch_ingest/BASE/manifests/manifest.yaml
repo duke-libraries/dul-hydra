@@ -1,0 +1,13 @@
+basepath: placeholder
+model: afmodel:Object
+adminpolicy: placeholder
+label: Object Label
+title: Object Title
+objects:
+    - identifier: identifier_1
+      marcxml: marcxml.xml
+      qdcsource: marcxml
+    - identifier:
+        - identifier_2
+        - identifier_3
+    - identifier: identifier_4
