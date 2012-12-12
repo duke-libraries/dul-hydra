@@ -7,8 +7,7 @@
   <%= f.label :identifier %>
   <%= f.text_field :identifier, :value=>"" %>
   <br />
-  <%= label_tag(:policypid, "Access Policy PID") %>
-  <%= text_field_tag(:policypid) %>
+  <%= render "shared/apo_selector" %>
   <br />
   <%= f.submit "Create Collection" %>
 <% end %>

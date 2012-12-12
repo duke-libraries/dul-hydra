@@ -1,7 +1,7 @@
 module DulHydra::Models
   class Base < ActiveFedora::Base
     include Describable
-    include AccessControllable
     include Governable
+    include AccessControllable
   end
 end

@@ -18,6 +18,7 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'capybara', '~> 1.1.3'
   gem 'jettywrapper'
+  gem 'factory_girl_rails', '~> 4.0'
 end
 
 # Gems used only for assets and not required

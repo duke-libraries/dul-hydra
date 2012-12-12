@@ -1,35 +1,21 @@
 require 'spec_helper'
+require 'shared_examples_for_dul_hydra_objects'
 
 describe Item do
-
+  it_behaves_like "a DulHydra object"
   before do
     @item = Item.create
     @collection = Collection.create
   end
-
   after do
     @item.delete
     @collection.delete
   end
-
-  it "should have the right datastreams" do
-    # DC
-    @item.datastreams["DC"].should be_kind_of ActiveFedora::Datastream
-    # RELS-EXT
-    @item.datastreams["RELS-EXT"].should be_kind_of ActiveFedora::RelsExtDatastream
-    # rightsMetadata
-    @item.datastreams["rightsMetadata"].should be_kind_of Hydra::Datastream::RightsMetadata
+  context "when collection attribute set to a collection" do
+    it "should be a member of the collection's items" do
+      @item.collection = @collection
+      @item.save
+      @collection.items.should include(@item)
+    end
   end
-
-  it "should have default permissions" do
-    @item.permissions.should_not be_empty
-  end
-
-  it "should be able to become a member of a collection" do
-    @item.collection = @collection
-    @item.save
-    @item.collection.should eq(@collection)
-    @collection.items.should include(@item)
-  end
-
 end

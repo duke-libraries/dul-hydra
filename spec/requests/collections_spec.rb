@@ -14,25 +14,25 @@ end
 describe "Collections" do
 
   before do
-    adminPolicyRightsMetadataFilePath = "spec/fixtures/apo.rightsMetadata.xml"
-    adminPolicyRightsMetadataFile = File.open(adminPolicyRightsMetadataFilePath, "r")
-    publicReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_publicread.xml"
-    publicReadDefaultRightsFile = File.open(publicReadDefaultRightsFilePath, "r")
-    restrictedReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_restrictedread.xml"
-    restrictedReadDefaultRightsFile = File.open(restrictedReadDefaultRightsFilePath, "r")
-    @publicReadAdminPolicy = AdminPolicy.new
-    @publicReadAdminPolicy.defaultRights.content = publicReadDefaultRightsFile
-    @publicReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
+    @publicReadAdminPolicy = AdminPolicy.new(label: 'Public Read')
+    @publicReadAdminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
+                                                  DulHydra::Permissions::READER_GROUP_ACCESS,
+                                                  DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                                  DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+    @publicReadAdminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
     @publicReadAdminPolicy.save!
-    @restrictedReadAdminPolicy = AdminPolicy.new
-    @restrictedReadAdminPolicy.defaultRights.content = restrictedReadDefaultRightsFile
-    @restrictedReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
+
+    @restrictedReadAdminPolicy = AdminPolicy.new(label: 'Restricted Read')
+    @restrictedReadAdminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_DISCOVER_ACCESS,
+                                                      DulHydra::Permissions::READER_GROUP_ACCESS,
+                                                      DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                                      DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+    @restrictedReadAdminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
     @restrictedReadAdminPolicy.save!
-    adminPolicyRightsMetadataFile.close
-    publicReadDefaultRightsFile.close
-    restrictedReadDefaultRightsFile.close
-    @registeredUser = User.create!(email:'registereduser@nowhere.org', password:'registeredUserPassword')
-    @repositoryReader = User.create!(email:'repositoryreader@nowhere.org', password:'repositoryReaderPassword')
+
+    @registeredUser = User.create!(email: 'registereduser@nowhere.org', password: 'registeredUserPassword')
+    @repositoryReader = User.create!(email: 'repositoryreader@nowhere.org', password: 'repositoryReaderPassword')
+
     @forbiddenText = "The action you wanted to perform was forbidden."
   end
   
@@ -99,7 +99,7 @@ describe "Collections" do
         visit new_collection_path
         fill_in "Title", :with => @title
         fill_in "Identifier", :with => @identifier
-        fill_in "Access Policy PID", :with => @adminPolicyPid
+        select @adminPolicyPid, :from => :policypid
         click_button "Create Collection"
         page.should have_content "Added Collection"
         page.should have_content @title
@@ -140,20 +140,16 @@ describe "Collections" do
       end
     end
     shared_examples_for "a user-forbidden collection" do
-      before do
-        @collection.clear_permissions!
-      end
       it "should display a Forbidden (403) response" do
         visit collection_path(@collection)
         page.should have_content @forbiddenText
       end      
     end
     context "publicly readable collection" do
-      # collection is readable by default
-      # before do
-      #   @collection.admin_policy = @publicReadAdminPolicy
-      #   @collection.save!
-      # end
+      before do
+        @collection.admin_policy = @publicReadAdminPolicy
+        @collection.save!
+      end
       context "user is not logged in" do
         it_behaves_like "a user-accessible collection"
       end

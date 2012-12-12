@@ -7,7 +7,8 @@ class ItemsController < ApplicationController
   end
 
   def new
-    @item = Item.new
+    # redundant b/c load_and_authorize_resource
+    # @item = Item.new
   end
   
   def create
@@ -20,12 +21,15 @@ class ItemsController < ApplicationController
       @item.admin_policy = apo
       @item.save
     end
-    redirect_to item_path(@item), :notice=>"Added Item"
+    redirect_to item_path(@item), :notice => "Added Item"
   end
   
   def show
     # redundant b/c load_and_authorize_resource
     # @item = Item.find(params[:id])
+  end
+
+  def edit
   end
 
   def update
@@ -38,6 +42,10 @@ class ItemsController < ApplicationController
       @item.save
     end
     redirect_to item_path(@item)
+  end
+
+  def destroy
+    raise NotImplementedError
   end
 
 end

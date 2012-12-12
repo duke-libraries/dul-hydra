@@ -48,5 +48,7 @@ if Hydra.respond_to?(:configure)
       :owner => "inheritable_depositor_t",
       :embargo_release_date => "inheritable_embargo_release_date_dt"
     }
+    # override default admin policy class in Hydra::PolicyAwareAccessControlsEnforcement
+    config[:permissions][:policy_class] = AdminPolicy
   end
 end

@@ -99,6 +99,11 @@ GEM
     erubis (2.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)
+    factory_girl (4.1.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.1.0)
+      factory_girl (~> 4.1.0)
+      railties (>= 3.0.0)
     fastercsv (1.5.5)
     ffi (1.2.0)
     fssm (0.2.9)
@@ -295,6 +300,7 @@ DEPENDENCIES
   compass-rails (~> 1.0.0)
   compass-susy-plugin (~> 0.9.0)
   devise
+  factory_girl_rails (~> 4.0)
   hydra-head (= 5.0.0.pre11)
   hydra-mods
   jettywrapper

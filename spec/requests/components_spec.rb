@@ -18,26 +18,26 @@ describe "Components" do
   end
   
   before do
-    adminPolicyRightsMetadataFilePath = "spec/fixtures/apo.rightsMetadata.xml"
-    adminPolicyRightsMetadataFile = File.open(adminPolicyRightsMetadataFilePath, "r")
-    publicReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_publicread.xml"
-    publicReadDefaultRightsFile = File.open(publicReadDefaultRightsFilePath, "r")
-    restrictedReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_restrictedread.xml"
-    restrictedReadDefaultRightsFile = File.open(restrictedReadDefaultRightsFilePath, "r")
-    @publicReadAdminPolicy = AdminPolicy.new
-    @publicReadAdminPolicy.defaultRights.content = publicReadDefaultRightsFile
-    @publicReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
+    @publicReadAdminPolicy = AdminPolicy.new(label: 'Public Read')
+    @publicReadAdminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
+                                                  DulHydra::Permissions::READER_GROUP_ACCESS,
+                                                  DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                                  DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+    @publicReadAdminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
     @publicReadAdminPolicy.save!
-    @restrictedReadAdminPolicy = AdminPolicy.new
-    @restrictedReadAdminPolicy.defaultRights.content = restrictedReadDefaultRightsFile
-    @restrictedReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
+
+    @restrictedReadAdminPolicy = AdminPolicy.new(label: 'Restricted Read')
+    @restrictedReadAdminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_DISCOVER_ACCESS,
+                                                      DulHydra::Permissions::READER_GROUP_ACCESS,
+                                                      DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                                      DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+    @restrictedReadAdminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
     @restrictedReadAdminPolicy.save!
-    adminPolicyRightsMetadataFile.close
-    publicReadDefaultRightsFile.close
-    restrictedReadDefaultRightsFile.close
-    @registeredUser = User.create!(email:'registereduser@nowhere.org', password:'registeredUserPassword')
-    @repositoryReader = User.create!(email:'repositoryreader@nowhere.org', password:'repositoryReaderPassword')
-    @repositoryEditor = User.create!(email:'repositoryeditor@nowhere.org', password:'repositoryEditorPassword')
+
+    @registeredUser = User.create!(email: 'registereduser@nowhere.org', password: 'registeredUserPassword')
+    @repositoryReader = User.create!(email: 'repositoryreader@nowhere.org', password: 'repositoryReaderPassword')
+    @repositoryEditor = User.create!(email: 'repositoryeditor@nowhere.org', password: 'repositoryReaderPassword')
+
     @forbiddenText = "The action you wanted to perform was forbidden."
   end
   
@@ -92,7 +92,7 @@ describe "Components" do
       it "should be able to create a component having a content file" do
         visit new_component_path
         attach_file "Content File", "spec/fixtures/library-devil.tiff"
-        fill_in "Access Policy PID", :with => @adminPolicyPid
+        select @adminPolicyPid, :from => :policypid
         click_button "Create Component"
         page.should have_content @adminPolicyPid
         page.should have_content "Component created"
@@ -123,20 +123,16 @@ describe "Components" do
       end
     end
     shared_examples_for "a user-forbidden component" do
-      before do
-        @component.clear_permissions!
-      end
       it "should display a Forbidden (403) response" do
         visit component_path(@component)
         page.should have_content @forbiddenText
       end      
     end
     context "publicly readable component" do
-      # publicly readable by default
-      # before do
-      #   @component.admin_policy = @publicReadAdminPolicy
-      #   @component.save!
-      # end
+      before do
+        @component.admin_policy = @publicReadAdminPolicy
+        @component.save!
+      end
       context "user is not logged in" do
         it_behaves_like "a user-accessible component"
       end
@@ -152,7 +148,6 @@ describe "Components" do
     end
     context "restricted collection" do
       before do
-        @component.clear_permissions
         @component.admin_policy = @restrictedReadAdminPolicy
         @component.save!
       end
@@ -201,6 +196,7 @@ describe "Components" do
         @item.delete
       end
       it "should be able the associate the component with an item" do
+        pending "move component-item association to separate page"
         visit component_path(@component)
         fill_in "Container", :with => @item.pid
         click_button "Add Component to Item"
@@ -212,12 +208,12 @@ describe "Components" do
         i.part_ids.should include(@component.pid)
       end
       it "should be able to add content to the component" do # issue 35
-        # visit component_path(@component)
-        # attach_file "Content File", @filepath
-        # click_button "Add content"
+        visit edit_component_path(@component)
+        attach_file "Content File", @filepath
+        click_button "Update Component"
         # page.should have_content "Content added"
-        # component = Component.find(@component.pid)
-        # component.content.size.should eq(File.size(@filepath))
+        component = Component.find(@component.pid)
+        component.content.size.should eq(File.size(@filepath))
       end      
     end
     shared_examples_for "an edit-forbidden component" do

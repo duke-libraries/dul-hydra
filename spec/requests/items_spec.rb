@@ -14,29 +14,29 @@ end
 describe "Items" do
 
   before do
-    adminPolicyRightsMetadataFilePath = "spec/fixtures/apo.rightsMetadata.xml"
-    adminPolicyRightsMetadataFile = File.open(adminPolicyRightsMetadataFilePath, "r")
-    publicReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_publicread.xml"
-    publicReadDefaultRightsFile = File.open(publicReadDefaultRightsFilePath, "r")
-    restrictedReadDefaultRightsFilePath = "spec/fixtures/apo.defaultRights_restrictedread.xml"
-    restrictedReadDefaultRightsFile = File.open(restrictedReadDefaultRightsFilePath, "r")
-    @publicReadAdminPolicy = AdminPolicy.new
-    @publicReadAdminPolicy.defaultRights.content = publicReadDefaultRightsFile
-    @publicReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
+    @publicReadAdminPolicy = AdminPolicy.new(label: 'Public Read')
+    @publicReadAdminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
+                                                  DulHydra::Permissions::READER_GROUP_ACCESS,
+                                                  DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                                  DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+    @publicReadAdminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
     @publicReadAdminPolicy.save!
-    @restrictedReadAdminPolicy = AdminPolicy.new
-    @restrictedReadAdminPolicy.defaultRights.content = restrictedReadDefaultRightsFile
-    @restrictedReadAdminPolicy.rightsMetadata.content = adminPolicyRightsMetadataFile
+
+    @restrictedReadAdminPolicy = AdminPolicy.new(label: 'Restricted Read')
+    @restrictedReadAdminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_DISCOVER_ACCESS,
+                                                      DulHydra::Permissions::READER_GROUP_ACCESS,
+                                                      DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                                      DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+    @restrictedReadAdminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
     @restrictedReadAdminPolicy.save!
-    adminPolicyRightsMetadataFile.close
-    publicReadDefaultRightsFile.close
-    restrictedReadDefaultRightsFile.close
-    @registeredUser = User.create!(email:'registereduser@nowhere.org', password:'registeredUserPassword')
-    @repositoryReader = User.create!(email:'repositoryreader@nowhere.org', password:'repositoryReaderPassword')
-    @repositoryEditor = User.create!(email:'repositoryeditor@nowhere.org', password:'repositoryEditorPassword')
+
+    @registeredUser = User.create!(email: 'registereduser@nowhere.org', password: 'registeredUserPassword')
+    @repositoryReader = User.create!(email: 'repositoryreader@nowhere.org', password: 'repositoryReaderPassword')
+    @repositoryEditor = User.create!(email: 'repositoryeditor@nowhere.org', password: 'repositoryReaderPassword')
+
     @forbiddenText = "The action you wanted to perform was forbidden."
-  end
-  
+  end  
+
   after do
     @repositoryEditor.delete
     @repositoryReader.delete
@@ -100,7 +100,7 @@ describe "Items" do
         visit new_item_path
         fill_in "Title", :with => @title
         fill_in "Identifier", :with => @identifier
-        fill_in "Access Policy PID", :with => @adminPolicyPid
+        select @adminPolicyPid, :from => :policypid
         click_button "Create Item"
         page.should have_content "Added Item"
         page.should have_content @title
@@ -143,14 +143,12 @@ describe "Items" do
       end
     end
     context "publicly readable item" do
-      # items are publicly readable by default
-      #
-      # before do
-      #   @item.admin_policy = @publicReadAdminPolicy
-      #   @item.save!
-      #   @collection.admin_policy = @publicReadAdminPolicy
-      #   @collection.save!
-      # end
+      before do
+        @item.admin_policy = @publicReadAdminPolicy
+        @item.save!
+        @collection.admin_policy = @publicReadAdminPolicy
+        @collection.save!
+      end
       context "user is not logged in" do
         it_behaves_like "a user-accessible item"
       end
@@ -166,7 +164,6 @@ describe "Items" do
     end
     context "restricted item" do
       before do
-        @item.clear_permissions
         @item.admin_policy = @restrictedReadAdminPolicy
         @item.save!
       end
