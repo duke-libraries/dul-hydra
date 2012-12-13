@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'fileutils'
-require './spec/scripts/batch_ingest_helpers'
+require "#{Rails.root}/spec/scripts/ingest_prep_spec_helper"
 
 RSpec.configure do |c|
-  c.include BatchIngestHelpers
+  c.include IngestPrepSpecHelper
 end
 
 module DulHydra::Scripts
@@ -29,16 +29,16 @@ module DulHydra::Scripts
       end
       it "should create an appropriate master file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          master_file_contents = File.open("#{@generic_master_base}#{@master_filename}") {|io| io.read}
-          expected_master_file_contents = File.open("#{@fixture_generic_master_filepath}") {|io| io.read}
-          master_file_contents.should == expected_master_file_contents
+          result = File.open("#{@generic_master_base}#{@master_filename}") { |f| Nokogiri::XML(f) }
+          expected = File.open("#{@fixture_generic_master_filepath}") { |f| Nokogiri::XML(f) }
+          result.should be_equivalent_to(expected)
       end
       it "should create appropriate qualified Dublin Core files" do
         DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
         for qdc_filename in qdc_filenames(@manifest_file)
-          qdc_file_contents = File.open("#{@generic_qdc_base}#{@qdc_filename}") {|io| io.read}
-          expected_qdc_file_contents = File.open("#{@fixture_generic_qdc_filepath}#{@qdc_filename}") {|io| io.read}
-          qdc_file_contents.should == expected_qdc_file_contents
+          result = File.open("#{@generic_qdc_base}#{qdc_filename}") { |f| Nokogiri::XML(f) }
+          expected = File.open("#{@fixture_generic_qdc_base}#{qdc_filename}") { |f| Nokogiri::XML(f) }
+          result.should be_equivalent_to(expected)
         end
       end
     end

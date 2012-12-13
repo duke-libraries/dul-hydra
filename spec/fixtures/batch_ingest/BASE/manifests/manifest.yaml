@@ -1,3 +1,4 @@
+--- !map:HashWithIndifferentAccess
 basepath: placeholder
 model: afmodel:Object
 adminpolicy: placeholder

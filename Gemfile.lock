@@ -96,6 +96,8 @@ GEM
       railties (~> 3.1)
       warden (~> 1.2.1)
     diff-lcs (1.1.3)
+    equivalent-xml (0.3.0)
+      nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)
@@ -300,6 +302,7 @@ DEPENDENCIES
   compass-rails (~> 1.0.0)
   compass-susy-plugin (~> 0.9.0)
   devise
+  equivalent-xml
   factory_girl_rails (~> 4.0)
   hydra-head (= 5.0.0.pre11)
   hydra-mods
