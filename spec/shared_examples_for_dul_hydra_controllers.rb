@@ -146,15 +146,14 @@ shared_examples "a DulHydra controller" do
         end
         context "not having edit permission" do
           let(:user) { FactoryGirl.create(:user) }
-          let(:permissions) { [{type: "person", name: user.email, access: "read"}] }
+          let(:permissions) { [{type: "user", name: user.email, access: "read"}] }
           its(:response_code) { should eq(403) }
         end
-        # FIXME
-        # context "having edit permission" do
-        #   let(:user) { FactoryGirl.create(:user) }
-        #   let(:permissions) { [{type: "person", name: user.email, access: "edit"}] }
-        #   it { should be_successful }
-        # end
+        context "having edit permission" do
+          let(:user) { FactoryGirl.create(:user) }
+          let(:permissions) { [{type: "user", name: user.email, access: "edit"}] }
+          it { should be_successful }
+        end
       end
     end
 
@@ -179,15 +178,14 @@ shared_examples "a DulHydra controller" do
         end
         context "not having edit permission" do
           let(:user) { FactoryGirl.create(:user) }
-          let(:default_permissions) { [{type: "person", name: user.email, access: "read"}] }
+          let(:default_permissions) { [{type: "user", name: user.email, access: "read"}] }
           its(:response_code) { should eq(403) }
         end
-        # FIXME
-        # context "having edit permission" do
-        #   let(:user) { FactoryGirl.create(:user) }
-        #   let(:default_permissions) { [{type: "person", name: user.email, access: "edit"}] }
-        #   it { should be_successful }
-        # end
+        context "having edit permission" do
+          let(:user) { FactoryGirl.create(:user) }
+          let(:default_permissions) { [{type: "user", name: user.email, access: "edit"}] }
+          it { should be_successful }
+        end
       end
     end
 
