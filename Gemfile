@@ -10,6 +10,7 @@ gem 'hydra-head', '5.0.0.pre11'
 gem 'hydra-mods'
 gem 'blacklight', '~> 3.7.2'
 gem 'devise'
+gem 'equivalent-xml'
 
 # For mapping file extensions to MIME types
 gem 'mime-types', '~> 1.19'
