@@ -5,12 +5,7 @@ module DulHydra::Scripts::Helpers
     # Constants
     FEDORA_URI_PREFIX = "info:fedora/"
     PROVIDED = "provided"
-    CONTENTDM_SUBPATH = "contentdm/"
-    DIGITIZATIONGUIDE_SUBPATH = "digitizationGuide/"
-    FMPEXPORT_SUBPATH = "fmpExport/"
-    MARCXML_SUBPATH = "marcXML/"
-    MASTER_SUBPATH = "master/"
-    QDC_SUBPATH = "qdc/"
+    CONTENTDM_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/CONTENTdm2QDC.xsl"
     MARCXML_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/MARCXML2QDC.xsl"
     
     module ClassMethods
@@ -40,11 +35,11 @@ module DulHydra::Scripts::Helpers
       def create_qdc_from_marcxml(object, marcxml, xslt)
         source_xml_path = case
         when object[:marcxml].blank?
-          "#{basepath}#{MARCXML_SUBPATH}#{key_identifier(object)}.xml"
+          "#{basepath}marcxml#{key_identifier(object)}.xml"
         when object[:marcxml].start_with?("/")
           object[:marcxml]
         else
-          "#{basepath}#{MARCXML_SUBPATH}#{object[:marcxml]}"
+          "#{basepath}marcxml#{object[:marcxml]}"
         end
         xsl_path = "/srv/fedora-working/ingest/bin/xslt/MARCXML2QDC.xsl"
         doc = File.open(source_xml_path) { |f| Nokogiri::XML(f) }
@@ -60,16 +55,28 @@ module DulHydra::Scripts::Helpers
           object[:identifier].first
         end
       end
-
-      def marcxml_filepath(object, basepath)
+      
+      def metadata_filepath(type, object, basepath)
         case
-        when object[:marcxml].blank?
-          "#{basepath}#{MARCXML_SUBPATH}#{key_identifier(object)}.xml"
-        when object[:marcxml].start_with?("/")
-          object[:marcxml]
+        when object["#{type}"].blank?
+          "#{basepath}#{type}#{File::SEPARATOR}#{key_identifier(object)}.xml"
+        when object["#{type}"].start_with?("/")
+          object["#{type}"]
         else
-          "#{basepath}#{MARCXML_SUBPATH}#{object[:marcxml]}"
-        end        
+          filename = object["#{type}"]
+          "#{basepath}#{type}#{File::SEPARATOR}#{filename}"
+        end
+      end
+      
+      def master_path(manifest)
+        master_path = case
+        when manifest[:master].blank?
+          "#{manifest[:basepath]}master/master.xml"
+        when manifest[:master].start_with?("/")
+          manifest[:master]
+        else
+          "#{manifest[:basepath]}master/#{manifest[:master]}"
+        end      
       end
       
     end

@@ -83,35 +83,37 @@ describe BatchIngestHelper do
     end
   end
   
-  describe "#marcxml_filepath" do
+  describe "#metadata_filepath" do
     before do
       @object = HashWithIndifferentAccess.new({"identifier" => "identifier"})
       @basepath = "/basepath/"
+      @type = "marcxml"
+      @canonical_subpath = "marcXML/"
     end
-    context "when the MarcXML file is in the canonical location" do
-      context "when the MarcXML file is named in the object manifest" do
+    context "when the metadata file is in the canonical location" do
+      context "when the metadata file is named in the object manifest" do
         before do
-          @object["marcxml"] = "marcxml.xml"
+          @object["marcxml"] = "metadata.xml"
         end
         it "should return a file path for the named file in the canonical location" do
-          filepath = MockBatchIngest.marcxml_filepath(@object, @basepath)
-          filepath.should == "/basepath/marcXML/marcxml.xml"
+          filepath = MockBatchIngest.metadata_filepath(@type, @object, @basepath)
+          filepath.should == "#{@basepath}#{@canonical_subpath}metadata.xml"
         end
       end
-      context "when the MarcXML file is not named in the object manifest" do
+      context "when the metadata file is not named in the object manifest" do
         it "should return a file path for an identifier-named file in the canonical location" do
-          filepath = MockBatchIngest.marcxml_filepath(@object, @basepath)
-          filepath.should == "/basepath/marcXML/identifier.xml"
+          filepath = MockBatchIngest.metadata_filepath(@type, @object, @basepath)
+          filepath.should == "#{@basepath}#{@canonical_subpath}identifier.xml"
         end
       end
     end
-    context "when the MarcXML file is not in the canonical location" do
+    context "when the metadata file is not in the canonical location" do
       before do
-        @object["marcxml"] = "/marcxmlpath/marcxml.xml"
+        @object["marcxml"] = "/metadatapath/metadata.xml"
       end
       it "should return the specified file path" do
-        filepath = MockBatchIngest.marcxml_filepath(@object, @basepath)
-        filepath.should == "/marcxmlpath/marcxml.xml"
+        filepath = MockBatchIngest.metadata_filepath(@type, @object, @basepath)
+        filepath.should == "/metadatapath/metadata.xml"
       end
     end
   end

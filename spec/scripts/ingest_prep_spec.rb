@@ -19,10 +19,12 @@ module DulHydra::Scripts
     describe "prepare for ingest" do
       before do
         FileUtils.mkdir_p "#{@manifest_base}"
+        FileUtils.mkdir_p "#{@generic_contentdm_base}"
         FileUtils.mkdir_p "#{@generic_master_base}"
         FileUtils.mkdir_p "#{@generic_marcxml_base}"
         FileUtils.mkdir_p "#{@generic_qdc_base}"
         FileUtils.cp "#{@fixture_manifest_filepath}", "#{@manifest_base}"
+        FileUtils.cp "#{@fixture_generic_contentdm_filepath}", "#{@generic_contentdm_base}"
         FileUtils.cp "#{@fixture_generic_marcxml_filepath}", "#{@generic_marcxml_base}"
         @manifest_file = "#{@manifest_base}#{@manifest_filename}"
         update_manifest(@manifest_file, {"basepath" => "#{@generic_base}"})

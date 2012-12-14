@@ -14,11 +14,17 @@ module DulHydra::Scripts
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
         case object[:qdcsource]
+        when "contentdm"
+          xml = File.open(metadata_filepath("contentdm", object, basepath)) { |f| Nokogiri::XML(f) }
+          xslt = File.open(CONTENTDM_TO_QDC_XSLT_FILEPATH) { |f| Nokogiri::XSLT(f) }
+          qdc = xslt.transform(xml)
+          result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
+          File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }          
         when "marcxml"
-          marcxml = File.open(marcxml_filepath(object, basepath)) { |f| Nokogiri::XML(f) }
-          marcxml2qdcxslt = File.open(MARCXML_TO_QDC_XSLT_FILEPATH) { |f| Nokogiri::XSLT(f) }
-          qdc = marcxml2qdcxslt.transform(marcxml)
-          result_xml_path = "#{basepath}#{QDC_SUBPATH}#{key_identifier(object)}.xml"
+          xml = File.open(metadata_filepath("marcxml", object, basepath)) { |f| Nokogiri::XML(f) }
+          xslt = File.open(MARCXML_TO_QDC_XSLT_FILEPATH) { |f| Nokogiri::XSLT(f) }
+          qdc = xslt.transform(xml)
+          result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
           File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }
         end
       end
@@ -51,19 +57,6 @@ module DulHydra::Scripts
         ingest_object.admin_policy = apo unless apo.nil?
         ingest_object.save
       end
-    end
-    
-    private
-    
-    def self.master_path(manifest)
-      master_path = case
-      when manifest[:master].blank?
-        "#{manifest[:basepath]}#{MASTER_SUBPATH}master.xml"
-      when manifest[:master].start_with?("/")
-        manifest[:master]
-      else
-        "#{manifest[:basepath]}#{MASTER_SUBPATH}#{manifest[:master]}"
-      end      
     end
   end
 end

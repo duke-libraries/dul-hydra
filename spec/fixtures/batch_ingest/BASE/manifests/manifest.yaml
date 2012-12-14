@@ -11,4 +11,5 @@ objects:
     - identifier:
         - identifier_2
         - identifier_3
+      qdcsource: contentdm
     - identifier: identifier_4
