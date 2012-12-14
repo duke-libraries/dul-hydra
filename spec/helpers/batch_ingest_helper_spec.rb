@@ -88,7 +88,7 @@ describe BatchIngestHelper do
       @object = HashWithIndifferentAccess.new({"identifier" => "identifier"})
       @basepath = "/basepath/"
       @type = "marcxml"
-      @canonical_subpath = "marcXML/"
+      @canonical_subpath = "marcxml/"
     end
     context "when the metadata file is in the canonical location" do
       context "when the metadata file is named in the object manifest" do

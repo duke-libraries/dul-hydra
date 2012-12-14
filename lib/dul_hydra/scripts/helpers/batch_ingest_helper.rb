@@ -32,21 +32,6 @@ module DulHydra::Scripts::Helpers
         return master
       end
       
-      def create_qdc_from_marcxml(object, marcxml, xslt)
-        source_xml_path = case
-        when object[:marcxml].blank?
-          "#{basepath}marcxml#{key_identifier(object)}.xml"
-        when object[:marcxml].start_with?("/")
-          object[:marcxml]
-        else
-          "#{basepath}marcxml#{object[:marcxml]}"
-        end
-        xsl_path = "/srv/fedora-working/ingest/bin/xslt/MARCXML2QDC.xsl"
-        doc = File.open(source_xml_path) { |f| Nokogiri::XML(f) }
-        xslt = File.open(xsl_path) { |f| Nokogiri::XSLT(f) }
-        xslt.transform(doc)
-      end
-      
       def key_identifier(object)
         case object[:identifier]
         when String
