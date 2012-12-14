@@ -1,4 +1,4 @@
-module IngestPrepSpecHelper
+module BatchIngestSpecHelper
   def create_temp_dir
     @test_temp_dir = Dir.mktmpdir("dul_hydra_test")
   end
