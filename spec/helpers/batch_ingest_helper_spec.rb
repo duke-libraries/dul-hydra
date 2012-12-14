@@ -85,9 +85,8 @@ describe BatchIngestHelper do
   
   describe "#metadata_filepath" do
     before do
-      @object = HashWithIndifferentAccess.new({"identifier" => "identifier"})
+      @object = HashWithIndifferentAccess.new({"identifier" => "identifier", "qdcsource" => "marcxml"})
       @basepath = "/basepath/"
-      @type = "marcxml"
       @canonical_subpath = "marcxml/"
     end
     context "when the metadata file is in the canonical location" do
@@ -96,13 +95,13 @@ describe BatchIngestHelper do
           @object["marcxml"] = "metadata.xml"
         end
         it "should return a file path for the named file in the canonical location" do
-          filepath = MockBatchIngest.metadata_filepath(@type, @object, @basepath)
+          filepath = MockBatchIngest.metadata_filepath(@object, @basepath)
           filepath.should == "#{@basepath}#{@canonical_subpath}metadata.xml"
         end
       end
       context "when the metadata file is not named in the object manifest" do
         it "should return a file path for an identifier-named file in the canonical location" do
-          filepath = MockBatchIngest.metadata_filepath(@type, @object, @basepath)
+          filepath = MockBatchIngest.metadata_filepath(@object, @basepath)
           filepath.should == "#{@basepath}#{@canonical_subpath}identifier.xml"
         end
       end
@@ -112,12 +111,16 @@ describe BatchIngestHelper do
         @object["marcxml"] = "/metadatapath/metadata.xml"
       end
       it "should return the specified file path" do
-        filepath = MockBatchIngest.metadata_filepath(@type, @object, @basepath)
+        filepath = MockBatchIngest.metadata_filepath(@object, @basepath)
         filepath.should == "/metadatapath/metadata.xml"
       end
     end
   end
     
+  describe "#generate_qdc" do
+    it "should create an appropriate Qualified Dublin Core file"
+  end
+  
   describe "#key_identifier" do
     context "when the object has one identifier" do
       before do

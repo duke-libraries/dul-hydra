@@ -5,6 +5,7 @@ module DulHydra::Scripts::Helpers
     # Constants
     FEDORA_URI_PREFIX = "info:fedora/"
     PROVIDED = "provided"
+    QDC_GENERATION_SOURCES = Set[:contentdm, :marcxml]
     CONTENTDM_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/CONTENTdm2QDC.xsl"
     MARCXML_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/MARCXML2QDC.xsl"
     
@@ -32,6 +33,15 @@ module DulHydra::Scripts::Helpers
         return master
       end
       
+      def generate_qdc(object, basepath)
+          xslt_filepath = eval "#{object[:qdcsource].upcase}_TO_QDC_XSLT_FILEPATH"
+          xml = File.open(metadata_filepath(object, basepath)) { |f| Nokogiri::XML(f) }
+          xslt = File.open(xslt_filepath) { |f| Nokogiri::XSLT(f) }
+          qdc = xslt.transform(xml)
+          result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
+          File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }        
+      end
+      
       def key_identifier(object)
         case object[:identifier]
         when String
@@ -41,7 +51,8 @@ module DulHydra::Scripts::Helpers
         end
       end
       
-      def metadata_filepath(type, object, basepath)
+      def metadata_filepath(object, basepath)
+        type = object[:qdcsource]
         case
         when object["#{type}"].blank?
           "#{basepath}#{type}#{File::SEPARATOR}#{key_identifier(object)}.xml"

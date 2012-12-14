@@ -13,19 +13,8 @@ module DulHydra::Scripts
         if master_source == :objects
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
-        case object[:qdcsource]
-        when "contentdm"
-          xml = File.open(metadata_filepath("contentdm", object, basepath)) { |f| Nokogiri::XML(f) }
-          xslt = File.open(CONTENTDM_TO_QDC_XSLT_FILEPATH) { |f| Nokogiri::XSLT(f) }
-          qdc = xslt.transform(xml)
-          result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
-          File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }          
-        when "marcxml"
-          xml = File.open(metadata_filepath("marcxml", object, basepath)) { |f| Nokogiri::XML(f) }
-          xslt = File.open(MARCXML_TO_QDC_XSLT_FILEPATH) { |f| Nokogiri::XSLT(f) }
-          qdc = xslt.transform(xml)
-          result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
-          File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }
+        if object[:qdcsource] && QDC_GENERATION_SOURCES.include?(object[:qdcsource].to_sym)
+          generate_qdc(object, basepath)
         end
       end
       unless master_source == PROVIDED
