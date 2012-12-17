@@ -22,14 +22,10 @@ module DulHydra::Scripts
       end
     end
     def self.ingest(ingest_manifest)
-      File.open(ingest_manifest) { |f| manifest = YAML::load(f) }
-      logger.debug(ingest_manifest)
+      manifest = load_yaml(ingest_manifest)
       manifest_apo = AdminPolicy.find(manifest[:adminpolicy]) unless manifest[:adminpolicy].blank?
+      master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
       for object in manifest[:objects]
-        apo = case
-        when object[:adminpolicy] then AdminPolicy.find(object[:adminpolicy])
-        when manifest_apo then manifest_apo
-        end
         model = object[:model] || manifest[:model]
         if model.blank?
           raise "Missing model"
@@ -43,9 +39,11 @@ module DulHydra::Scripts
         ingest_object.label = object[:label] || manifest[:label]
         ingest_object.identifier = object[:identifier]
         ingest_object.title = object[:title] || manifest[:title]
-        ingest_object.admin_policy = apo unless apo.nil?
+        ingest_object.admin_policy = object_apo(object, manifest_apo) unless object_apo(object, manifest_apo).nil?
         ingest_object.save
+        master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)
       end
+      File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
     end
   end
 end

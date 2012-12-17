@@ -33,6 +33,21 @@ module DulHydra::Scripts::Helpers
         return master
       end
       
+      def add_pid_to_master(master, key_identifier, pid)
+        object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
+        case object_node.size()
+        when 1
+          pid_node = Nokogiri::XML::Node.new :pid.to_s, master
+          pid_node.content = pid
+          object_node.first.add_child(pid_node)
+        when 0
+          raise "Object not found in master file"
+        else
+          raise "Multiple objects found in master file"
+        end
+        return master
+      end
+      
       def generate_qdc(object, basepath)
           xslt_filepath = eval "#{object[:qdcsource].upcase}_TO_QDC_XSLT_FILEPATH"
           xml = File.open(metadata_filepath(object, basepath)) { |f| Nokogiri::XML(f) }
@@ -42,12 +57,12 @@ module DulHydra::Scripts::Helpers
           File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }        
       end
       
-      def key_identifier(object)
-        case object[:identifier]
+      def key_identifier(manifest_object)
+        case manifest_object[:identifier]
         when String
-          object[:identifier]
+          manifest_object[:identifier]
         when Array
-          object[:identifier].first
+          manifest_object[:identifier].first
         end
       end
       
@@ -73,6 +88,13 @@ module DulHydra::Scripts::Helpers
         else
           "#{manifest[:basepath]}master/#{manifest[:master]}"
         end      
+      end
+      
+      def object_apo(object, manifest_apo)
+        case
+        when object[:adminpolicy] then AdminPolicy.find(object[:adminpolicy])
+        when manifest_apo then manifest_apo
+        end
       end
       
     end

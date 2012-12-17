@@ -31,6 +31,69 @@ describe BatchIngestHelper do
       master.should be_equivalent_to Nokogiri::XML("<objects/>")
     end
   end
+
+  describe "add_pid_to_master" do
+    before do
+      master_xml = <<-END
+        <objects>
+          <object model="info:fedora/objectModel">
+            <identifier>object1Identifier</identifier>
+          </object>
+          <object model="info:fedora/objectModel">
+            <identifier>duplicatedObjectIdentifier</identifier>
+          </object>
+          <object model="info:fedora/objectModel">
+            <identifier>object2Identifier</identifier>
+          </object>
+          <object model="info:fedora/objectModel">
+            <identifier>duplicatedObjectIdentifier</identifier>
+          </object>
+        </objects>
+      END
+      @master = Nokogiri::XML(master_xml)
+      expected_master_xml = <<-END
+        <objects>
+          <object model="info:fedora/objectModel">
+            <identifier>object1Identifier</identifier>
+          </object>
+          <object model="info:fedora/objectModel">
+            <identifier>duplicatedObjectIdentifier</identifier>
+          </object>
+          <object model="info:fedora/objectModel">
+            <identifier>object2Identifier</identifier>
+            <pid>object2Pid</pid>
+          </object>
+          <object model="info:fedora/objectModel">
+            <identifier>duplicatedObjectIdentifier</identifier>
+          </object>
+        </objects>      
+      END
+      @expected_master = Nokogiri::XML(expected_master_xml)
+    end
+    context "one object with specified identifier exists in master file" do
+      it "should add a pid element to the the correct object element" do
+        master = MockBatchIngest.add_pid_to_master(@master, "object2Identifier", "object2Pid")
+        master.should be_equivalent_to @expected_master
+      end      
+    end
+    context "no objects with specified identifier exists in master file" do
+      it "should raise an appropriate error" do
+        expect {
+          MockBatchIngest.add_pid_to_master(@master, "nonExistentObjectIdentifier", "objectPid")
+        }.to raise_error(/[Oo]bject not found/)
+      end
+    end
+    context "more than one object with specified identifier exists in master file" do
+      before do
+        
+      end
+      it "should raise an appropriate error" do
+        expect {
+          MockBatchIngest.add_pid_to_master(@master, "duplicatedObjectIdentifier", "objectPid")
+        }.to raise_error(/[Mm]ultiple objects found/)
+      end
+    end
+  end
   
   describe "#add_manifest_object_to_master" do
     before do

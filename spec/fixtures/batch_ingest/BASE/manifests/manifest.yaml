@@ -1,9 +1,9 @@
 --- !map:HashWithIndifferentAccess
 basepath: placeholder
-model: afmodel:Object
-adminpolicy: placeholder
-label: Object Label
-title: Object Title
+model: afmodel:Item
+adminpolicy: duke-apo:adminPolicy
+label: Manifest Label
+title: Manifest Title
 objects:
     - identifier: identifier_1
       marcxml: marcxml.xml
@@ -11,5 +11,7 @@ objects:
     - identifier:
         - identifier_2
         - identifier_3
+      label: Second Object Label
       qdcsource: contentdm
     - identifier: identifier_4
+      title: Title of Third Object
