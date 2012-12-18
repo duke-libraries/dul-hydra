@@ -16,7 +16,7 @@ class ComponentsController < ApplicationController
       @component.admin_policy = AdminPolicy.find(params[:policypid])
     end
     if params[:contentfile]
-      @component.content_file = params[:contentfile]
+      @component.content.content_file = params[:contentfile]
     end
     @component.save
     flash[:notice] = "Component created."
@@ -39,7 +39,7 @@ class ComponentsController < ApplicationController
       @component.container = Item.find(item_pid)
     end
     if params[:contentfile]
-      @component.content_file = params[:contentfile]
+      @component.content.content_file = params[:contentfile]
     end
     @component.save
     flash[:notice] = "Component updated."
