@@ -112,7 +112,7 @@ describe "Components" do
     shared_examples_for "a user-accessible component" do
       context "component has content" do
         before do
-          @component.content_file = File.new(@filepath)
+          @component.content.content_file = File.new(@filepath)
           @component.save
         end
         it "should display information about the content" do

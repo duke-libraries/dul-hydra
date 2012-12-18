@@ -1,18 +1,14 @@
 require 'mime/types'
 
-module DulHydra::Models
-  module Contentable
-    extend ActiveSupport::Concern
+module DulHydra::Datastreams
 
+  class FileContentDatastream < ActiveFedora::Datastream
+    
     DEFAULT_MIME_TYPE = "application/octet-stream"
 
-    included do
-      has_file_datastream :name => "content", :type => ActiveFedora::Datastream
-    end
-
     def content_file=(file)
-      content.content = file
-      content.mimeType = get_mimetype(file)
+      self.content = file
+      self.mimeType = get_mimetype(file)
     end
 
     private
@@ -27,6 +23,7 @@ module DulHydra::Models
     end
 
     end # private
-      
+
   end
+
 end
