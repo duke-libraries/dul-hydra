@@ -1,10 +1,13 @@
+require 'mime/types'
+
 module DulHydra::Datastreams
 
   class FileContentDatastream < ActiveFedora::Datastream
     
+    DEFAULT_MIME_TYPE = "application/octet-stream"
+
     def content_file=(file)
       self.content = file
-      puts self.content.size
       self.mimeType = get_mimetype(file)
     end
 
