@@ -84,9 +84,6 @@ describe BatchIngestHelper do
       end
     end
     context "more than one object with specified identifier exists in master file" do
-      before do
-        
-      end
       it "should raise an appropriate error" do
         expect {
           MockBatchIngest.add_pid_to_master(@master, "duplicatedObjectIdentifier", "objectPid")

@@ -8,6 +8,7 @@ module BatchIngestSpecHelper
     @manifest_base = "#{@ingest_base}manifests#{File::SEPARATOR}"
     @generic_base = "#{@ingest_base}generic#{File::SEPARATOR}"
     @generic_contentdm_base = "#{@generic_base}contentdm#{File::SEPARATOR}"
+    @generic_digitizationguide_base = "#{@generic_base}digitizationguide#{File::SEPARATOR}"
     @generic_master_base = "#{@generic_base}master#{File::SEPARATOR}"
     @generic_marcxml_base = "#{@generic_base}marcxml#{File::SEPARATOR}"
     @generic_qdc_base = "#{@generic_base}qdc#{File::SEPARATOR}"
@@ -17,6 +18,7 @@ module BatchIngestSpecHelper
     # Fixture Paths and Filepaths
     @fixture_manifest_filepath = "spec/fixtures/batch_ingest/BASE/manifests/manifest.yaml" 
     @fixture_generic_contentdm_filepath = "spec/fixtures/batch_ingest/BASE/generic/contentdm/identifier_2.xml"
+    @fixture_generic_digitizationguide_filepath = "spec/fixtures/batch_ingest/BASE/generic/digitizationguide/DigitizationGuide.xls"
     @fixture_generic_master_filepath = "spec/fixtures/batch_ingest/BASE/generic/master/master.xml"
     @fixture_generic_marcxml_filepath = "spec/fixtures/batch_ingest/BASE/generic/marcxml/marcxml.xml"
     @fixture_generic_qdc_base = "spec/fixtures/batch_ingest/BASE/generic/qdc/"

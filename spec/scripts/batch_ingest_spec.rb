@@ -47,8 +47,10 @@ module DulHydra::Scripts
     describe "ingest" do
       before do
         FileUtils.mkdir_p "#{@generic_master_base}"
-        FileUtils.cp "#{@fixture_generic_master_filepath}", "#{@generic_master_base}"
+        FileUtils.mkdir_p "#{@generic_digitizationguide_base}"
         FileUtils.cp "#{@fixture_manifest_filepath}", "#{@manifest_base}"
+        FileUtils.cp "#{@fixture_generic_master_filepath}", "#{@generic_master_base}"
+        FileUtils.cp "#{@fixture_generic_digitizationguide_filepath}", "#{@generic_digitizationguide_base}"
         @manifest_file = "#{@manifest_base}#{@manifest_filename}"
         update_manifest(@manifest_file, {"basepath" => "#{@generic_base}"})
         @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
@@ -93,6 +95,20 @@ module DulHydra::Scripts
           pid = object.xpath("pid").first.content
           repo_object = Item.find(pid)
           repo_object.identifier.should include(identifier)
+        end
+      end
+      context "digitization guide to be ingested" do
+        context "digitization guide is in canonical location and is named in manifest" do
+          it "should add a digitizationguide datastream containing the named file" do
+            DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+            objects = Item.all
+            objects.each do |object|
+              if object.identifier == [ "identifier_4" ]
+                object.datastreams.keys.should include("digitizationguide")
+                content = object.datastreams["digitizationguide"].content
+              end
+            end
+          end
         end
       end
     end

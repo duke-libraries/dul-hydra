@@ -41,6 +41,24 @@ module DulHydra::Scripts
         ingest_object.title = object[:title] || manifest[:title]
         ingest_object.admin_policy = object_apo(object, manifest_apo) unless object_apo(object, manifest_apo).nil?
         ingest_object.save
+        if !object[:digitizationguide].blank?
+          dsLocation = case
+          when object[:digitizationguide] == "true"
+            "#{manifest[:basepath]}digitizationguide#{File::SEPARATOR}#{key_identifier(object)}.xml"
+          when object[:digitizationguide].start_with?("/")
+            "#{object[:digitizationguide]}"
+          else
+            "#{manifest[:basepath]}digitizationguide#{File::SEPARATOR}#{object[:digitizationguide]}"
+          end
+          content = File.open(dsLocation)
+          ds = ActiveFedora::Datastream.new(
+                content,
+                "digitizationguide"
+                )
+          ingest_object.add_datastream(ds)
+          ingest_object.save
+          puts ingest_object.datastreams.keys
+        end
         master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)
       end
       File.open(master_path(manifest), "w") { |f| master.write_xml_to f }

@@ -15,3 +15,4 @@ objects:
       qdcsource: contentdm
     - identifier: identifier_4
       title: Title of Third Object
+      digitizationguide: DigitizationGuide.xls
