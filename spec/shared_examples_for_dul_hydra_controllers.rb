@@ -47,6 +47,7 @@ shared_examples "a DulHydra controller" do
       after do
         sign_out user
         user.delete
+        object_class.find(assigns(object_instance_symbol).id).delete
       end
       it "redirects to the show action" do
         expect(subject).to redirect_to(:action => :show, 
