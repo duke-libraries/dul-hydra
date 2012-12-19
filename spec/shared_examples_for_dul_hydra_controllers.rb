@@ -47,6 +47,7 @@ shared_examples "a DulHydra controller" do
       after do
         sign_out user
         user.delete
+        object_class.find(assigns(object_instance_symbol).id).delete
       end
       it "redirects to the show action" do
         expect(subject).to redirect_to(:action => :show, 
@@ -70,12 +71,12 @@ shared_examples "a DulHydra controller" do
         it { should be_successful }
       end
       context "controlled by policy" do
-        let(:policy) { FactoryGirl.create(:public_read_policy) }
-        after(:all) { policy.delete }
         before do
           object.admin_policy = policy
           object.save!
         end
+        after { policy.delete }
+        let(:policy) { FactoryGirl.create(:public_read_policy) }
         it { should be_successful }
       end
     end
@@ -100,12 +101,12 @@ shared_examples "a DulHydra controller" do
         end
       end
       context "controlled by policy" do
-        let(:policy) { FactoryGirl.create(:registered_read_policy) }
-        after(:all) { policy.delete }
+        let!(:policy) { FactoryGirl.create(:registered_read_policy) }
         before do
           object.admin_policy = policy
           object.save!
         end
+        after { policy.delete }
         context "anonymous user" do
           its(:response_code) { should eq(403) }
         end
