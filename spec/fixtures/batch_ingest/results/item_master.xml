@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <objects>
   <object model="info:fedora/afmodel:Item">
-    <identifier>identifier_1</identifier>
+    <identifier>item_1</identifier>
   </object>
   <object model="info:fedora/afmodel:Item">
-    <identifier>identifier_2</identifier>
+    <identifier>item_2</identifier>
   </object>
   <object model="info:fedora/afmodel:Item">
-    <identifier>identifier_4</identifier>
+    <identifier>item_4</identifier>
   </object>
 </objects>

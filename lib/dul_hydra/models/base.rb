@@ -3,6 +3,5 @@ module DulHydra::Models
     include Describable
     include Governable
     include AccessControllable
-    include Fooable
   end
 end

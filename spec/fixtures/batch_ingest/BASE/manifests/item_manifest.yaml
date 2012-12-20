@@ -3,16 +3,13 @@ basepath: placeholder
 model: afmodel:Item
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
-title: Manifest Title
 objects:
-    - identifier: identifier_1
+    - identifier: item_1
       marcxml: marcxml.xml
       qdcsource: marcxml
     - identifier:
-        - identifier_2
-        - identifier_3
+        - item_2
+        - item_3
       label: Second Object Label
       qdcsource: contentdm
-    - identifier: identifier_4
-      title: Title of Third Object
-      digitizationguide: DigitizationGuide.xls
+    - identifier: item_4

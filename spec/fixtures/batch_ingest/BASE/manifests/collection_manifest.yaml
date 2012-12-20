@@ -1,0 +1,10 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: afmodel:Collection
+adminpolicy: duke-apo:adminPolicy
+label: Manifest Label
+objects:
+    - identifier: collection_1
+      marcxml: marcxml.xml
+      qdcsource: marcxml
+      digitizationguide: DigitizationGuide.xls

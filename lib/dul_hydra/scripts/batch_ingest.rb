@@ -57,7 +57,6 @@ module DulHydra::Scripts
                 )
           ingest_object.add_datastream(ds)
           ingest_object.save
-          puts ingest_object.datastreams.keys
         end
         master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)
       end
