@@ -204,6 +204,51 @@ describe BatchIngestHelper do
     end
   end
   
+  describe "#object_metadata" do
+    before do
+      @manifest = HashWithIndifferentAccess.new
+      @object = HashWithIndifferentAccess.new
+    end
+    context "when neither manifest nor object have metadata" do
+      it "should return an empty array" do
+        metadata = MockBatchIngest.object_metadata(@object, @manifest[:metadata])
+        metadata.should be_kind_of Array
+        metadata.should be_empty
+      end
+    end
+    context "when manifest has metadata but object does not" do
+      before do
+        @manifest[:metadata] = [ "m1", "m2" ]
+      end
+      it "should return an array containing the manifest metadata" do
+        metadata = MockBatchIngest.object_metadata(@object, @manifest[:metadata])
+        metadata.should be_kind_of Array
+        metadata.should == [ "m1", "m2" ]
+      end
+    end
+    context "when object has metadata but manifest does not" do
+      before do
+        @object[:metadata] = [ "m3", "m4" ]
+      end
+      it "should return an array containing the object metadata" do
+        metadata = MockBatchIngest.object_metadata(@object, @manifest[:metadata])
+        metadata.should be_kind_of Array
+        metadata.should == [ "m3", "m4" ]
+      end
+    end
+    context "when both manifiest and object have metadata" do
+      before do
+        @manifest[:metadata] = [ "m1", "m2" ]
+        @object[:metadata] = [ "m3", "m4" ]
+      end
+      it "should return an array containing the object metadata" do
+        metadata = MockBatchIngest.object_metadata(@object, @manifest[:metadata])
+        metadata.should be_kind_of Array
+        metadata.should == [ "m1", "m2", "m3", "m4" ]
+      end
+    end
+  end
+  
 end
 
 end

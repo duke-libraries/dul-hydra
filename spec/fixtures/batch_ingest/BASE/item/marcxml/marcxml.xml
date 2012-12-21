@@ -95,7 +95,7 @@
 </datafield>
 <datafield tag="856" ind1="4" ind2="0">
 <subfield code="3">In Duke Digital Collections: http://library.duke.edu/digitalcollections/</subfield>
-<subfield code="u">http://library.duke.edu/digitalcollections/vica/</subfield>
+<subfield code="u">item_1</subfield>
 </datafield>
 <datafield tag="994" ind1=" " ind2=" ">
 <subfield code="a">C0</subfield>

@@ -3,6 +3,10 @@ basepath: placeholder
 model: afmodel:Collection
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
+metadata:
+    - digitizationguide
+    - marcxml
+    - qdc
 objects:
     - identifier: collection_1
       marcxml: marcxml.xml

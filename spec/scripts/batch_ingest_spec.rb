@@ -51,6 +51,9 @@ module DulHydra::Scripts
       context "applicable to all object types" do
         before do
           FileUtils.cp "spec/fixtures/batch_ingest/results/item_master.xml", "#{@ingest_base}/item/master/master.xml"
+          FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_1.xml", "#{@ingest_base}/item/qdc"
+          FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_2.xml", "#{@ingest_base}/item/qdc"
+          FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_4.xml", "#{@ingest_base}/item/qdc"
           @pre_existing_item_pids = []
           Item.find_each { |i| @pre_existing_item_pids << i.pid }
           @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
@@ -86,9 +89,6 @@ module DulHydra::Scripts
             end
           end
         end
-        it "should add a descMetadata datastream" do
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-        end
         it "should update the master file with the ingested PIDs" do
           DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
           master = File.open("#{@ingest_base}/item/master/master.xml") { |f| Nokogiri::XML(f) }
@@ -100,16 +100,31 @@ module DulHydra::Scripts
             repo_object.identifier.should include(identifier)
           end
         end
+        it "should add a descMetadata datastream" do
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+          master = File.open("#{@ingest_base}/item/master/master.xml") { |f| Nokogiri::XML(f) }
+          master.xpath("/objects/object").each do |object|
+            identifier = object.xpath("identifier").first.content
+            pid = object.xpath("pid").first.content
+            item = Item.find(pid)
+            item.datastreams.keys.should include("descMetadata")
+            content_xml = item.descMetadata.content { |f| Nokogiri::XML(f) }
+            expected_xml = Nokogiri::XML(File.open("#{@ingest_base}/item/qdc/#{identifier}.xml"))
+            content_xml.should be_equivalent_to(expected_xml)
+          end
+        end
       end
       context "digitization guide to be ingested" do
         context "digitization guide is in canonical location and is named in manifest" do
           before do
             FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master.xml", "#{@ingest_base}/collection/master/master.xml"
+            FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
             @pre_existing_collection_pids = []
             Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
             @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yaml"
             update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
             @ingested_identifiers = [ [ "collection_1" ] ]
+            @expected_content_size = File.open("#{@ingest_base}/collection/digitizationguide/DigitizationGuide.xls") { |f| f.size }
           end
           after do
             Collection.find_each do |c|
@@ -130,6 +145,7 @@ module DulHydra::Scripts
               if collection.identifier == [ "collection_1" ]
                 collection.datastreams.keys.should include("digitizationGuide")
                 content = collection.datastreams["digitizationGuide"].content
+                content.size.should == @expected_content_size
               end
             end
           end

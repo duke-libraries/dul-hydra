@@ -97,6 +97,31 @@ module DulHydra::Scripts::Helpers
         end
       end
       
+      def object_metadata(object, manifest_metadata)
+        metadata = Array.new
+        metadata.concat(manifest_metadata) unless manifest_metadata.blank?
+        metadata.concat(object[:metadata]) unless object[:metadata].blank?
+        return metadata
+      end
+      
+      def add_metadata_content_file(ingest_object, object, metadata_type, basepath)
+          dsLocation = case
+          when object[metadata_type].blank?
+            "#{basepath}#{metadata_type}/#{key_identifier(object)}.xml"
+          when object[metadata_type].start_with?("/")
+            "#{object[metadata_type]}"
+          else
+            "#{basepath}#{metadata_type}#{File::SEPARATOR}#{object[:digitizationguide]}"
+          end
+          content = File.open(dsLocation)
+          datastream = case metadata_type
+          when "digitizationguide"
+            ingest_object.digitizationGuide
+          end
+          datastream.content_file = content
+          return ingest_object
+      end
+      
     end
 
   end

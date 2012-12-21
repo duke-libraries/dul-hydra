@@ -3,13 +3,22 @@ basepath: placeholder
 model: afmodel:Item
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
+metadata:
+    - qdc
 objects:
     - identifier: item_1
       marcxml: marcxml.xml
       qdcsource: marcxml
+      metadata:
+        - marcxml
     - identifier:
         - item_2
         - item_3
       label: Second Object Label
       qdcsource: contentdm
+      metadata:
+        - contentdm
     - identifier: item_4
+      qdcsource: contentdm
+      metadata:
+        - contentdm

@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dc xmlns:dcterms="http://purl.org/dc/terms/"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-   <dcterms:title>Paul Kwilecki Photographs</dcterms:title>
-   <dcterms:subject>Kwilecki, Paul, 1928-</dcterms:subject>
-   <dcterms:subject>Agriculture--Georgia</dcterms:subject>
-   <dcterms:subject>Cemeteries--Georgia--Decatur County</dcterms:subject>
-   <dcterms:subject>Churches--Georgia</dcterms:subject>
-   <dcterms:subject>Decatur County (Ga.)--Religious life and customs</dcterms:subject>
-   <dcterms:subject>Dwellings--Georgia--Decatur County</dcterms:subject>
-   <dcterms:subject>Industries--Georgia--Decatur County</dcterms:subject>
-   <dcterms:subject>Religion--Georgia</dcterms:subject>
-   <dcterms:description>581 black-and-white photographs taken by Paul Kwilecki that document the life and culture of Decatur County, Georgia and the individuals who live there. Also included are essays describing selected scenes and people, speeches, a transcript of an interview with Kwilecki, and other writings.</dcterms:description>
+<dc xmlns:dcterms='http://purl.org/dc/terms/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+   <dcterms:title>Court house seen from North Broad Street, 1986 Jan.</dcterms:title>
    <dcterms:creator>Kwilecki, Paul, 1928-</dcterms:creator>
-   <dcterms:date>1960; 1961; 1962; 1963; 1964; 1965; 1966; 1967; 1968; 1969; 1970; 1971; 1972; 1973; 1974; 1975; 1976; 1977; 1978; 1979; 1980; 1981; 1982; 1983; 1984; 1985; 1986; 1987; 1988; 1989; 1990; 1991; 1992; 1993; 1994; 1995; 1996; 1997; 1998; 1999; 2000; 2001</dcterms:date>
-   <dcterms:type>Collection</dcterms:type>
+   <dcterms:date>1986-01</dcterms:date>
+   <dcterms:type>Image</dcterms:type>
+   <dcterms:type>Still Image</dcterms:type>
    <dcterms:type>photographs</dcterms:type>
-   <dcterms:type>documentary photographs</dcterms:type>
    <dcterms:type>black-and-white photographs</dcterms:type>
-   <dcterms:identifier>kwilecki</dcterms:identifier>
+   <dcterms:type>documentary photographs</dcterms:type>
+   <dcterms:identifier>item_2</dcterms:identifier>
+   <dcterms:identifier>item_3</dcterms:identifier>
 </dc>
