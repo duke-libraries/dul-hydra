@@ -155,13 +155,13 @@ describe BatchIngestHelper do
           @object["marcxml"] = "metadata.xml"
         end
         it "should return a file path for the named file in the canonical location" do
-          filepath = MockBatchIngest.metadata_filepath(@object, @basepath)
+          filepath = MockBatchIngest.metadata_filepath(@object, @object[:qdcsource], @basepath)
           filepath.should == "#{@basepath}#{@canonical_subpath}metadata.xml"
         end
       end
       context "when the metadata file is not named in the object manifest" do
         it "should return a file path for an identifier-named file in the canonical location" do
-          filepath = MockBatchIngest.metadata_filepath(@object, @basepath)
+          filepath = MockBatchIngest.metadata_filepath(@object, @object[:qdcsource], @basepath)
           filepath.should == "#{@basepath}#{@canonical_subpath}identifier.xml"
         end
       end
@@ -171,7 +171,7 @@ describe BatchIngestHelper do
         @object["marcxml"] = "/metadatapath/metadata.xml"
       end
       it "should return the specified file path" do
-        filepath = MockBatchIngest.metadata_filepath(@object, @basepath)
+        filepath = MockBatchIngest.metadata_filepath(@object, @object[:qdcsource], @basepath)
         filepath.should == "/metadatapath/metadata.xml"
       end
     end
@@ -246,6 +246,35 @@ describe BatchIngestHelper do
         metadata.should be_kind_of Array
         metadata.should == [ "m1", "m2", "m3", "m4" ]
       end
+    end
+  end
+
+  describe "#set_parent" do
+    before do
+      @item = Item.new
+      @model = "afmodel:Item"
+      @collection = Collection.new(:pid => "test:collectionPid")
+      @collection.identifier = "collectionIdentifier"
+      @collection.save!
+    end
+    context "item child object with parent identifier" do
+      it "should set the collection attribute of the item to the collection parent" do
+        object = MockBatchIngest.set_parent(@item, @model, :id, "collectionIdentifier")
+        object.collection.should eq(@collection)
+      end
+    end
+    context "item child object with parent pid" do
+      it "should set the collection attribute of the item to the collection parent" do
+        object = MockBatchIngest.set_parent(@item, @model, :pid, "test:collectionPid")
+        object.collection.should eq(@collection)
+      end
+    end
+  end
+  
+  describe "#parent_class" do
+    it "should return the correct parent class for a given child model" do
+      MockBatchIngest.parent_class("afmodel:Item").should eq(Collection)
+      MockBatchIngest.parent_class("afmodel:Component").should eq(Item)      
     end
   end
   

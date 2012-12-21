@@ -59,6 +59,9 @@ module DulHydra::Scripts
           @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
           @ingested_identifiers = [ [ "item_1" ], [ "item_2", "item_3" ], [ "item_4" ] ]          
+          @collection = Collection.new(:pid => "test:collection1")
+          @collection.identifier = "collection_1"
+          @collection.save!
         end
         after do
           Item.find_each do |i|
@@ -224,6 +227,47 @@ module DulHydra::Scripts
                 collection.marcXML.label.should == "Aleph MarcXML Data for this object"
                 content = collection.datastreams["marcXML"].content
                 content.size.should == @expected_content_size
+              end
+            end
+          end
+        end
+      end     
+      context "object has parent object" do
+        context "child is member of parent" do
+          context "parent identifier is specified is manifest" do
+            before do
+              FileUtils.cp "spec/fixtures/batch_ingest/results/item_master.xml", "#{@ingest_base}/item/master/master.xml"
+              FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master_with_pid.xml", "#{@ingest_base}/collection/master/master.xml"
+              FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_1.xml", "#{@ingest_base}/item/qdc"
+              FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_2.xml", "#{@ingest_base}/item/qdc"
+              FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_4.xml", "#{@ingest_base}/item/qdc"
+              @pre_existing_item_pids = []
+              Item.find_each { |i| @pre_existing_item_pids << i.pid }
+              @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
+              update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
+              @collection = Collection.new(:pid => "test:collection1")
+              @collection.identifier = "collection_1"
+              @collection.save!
+            end
+            after do
+              Item.find_each do |i|
+                if !@pre_existing_item_pids.include?(i.pid)
+                  i.delete
+                end
+              end
+              @collection.delete
+            end
+            it "should establish an 'isMemberOf' relationship between the child and parent" do
+              DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+              items = []
+              Item.find_each do |i|
+                if !@pre_existing_item_pids.include?(i.pid)
+                  items << i
+                end
+              end
+              items.each do |item|
+                item.collection.should eq(@collection)
+                @collection.items.should include(item)
               end
             end
           end

@@ -48,9 +48,9 @@ module DulHydra::Scripts::Helpers
         return master
       end
       
-      def generate_qdc(object, basepath)
-          xslt_filepath = eval "#{object[:qdcsource].upcase}_TO_QDC_XSLT_FILEPATH"
-          xml = File.open(metadata_filepath(object, basepath)) { |f| Nokogiri::XML(f) }
+      def generate_qdc(object, qdcsource, basepath)
+          xslt_filepath = eval "#{qdcsource.upcase}_TO_QDC_XSLT_FILEPATH"
+          xml = File.open(metadata_filepath(object, qdcsource, basepath)) { |f| Nokogiri::XML(f) }
           xslt = File.open(xslt_filepath) { |f| Nokogiri::XSLT(f) }
           qdc = xslt.transform(xml)
           result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
@@ -66,8 +66,8 @@ module DulHydra::Scripts::Helpers
         end
       end
       
-      def metadata_filepath(object, basepath)
-        type = object[:qdcsource]
+      def metadata_filepath(object, qdcsource, basepath)
+        type = qdcsource
         case
         when object["#{type}"].blank?
           "#{basepath}#{type}#{File::SEPARATOR}#{key_identifier(object)}.xml"
@@ -140,6 +140,39 @@ module DulHydra::Scripts::Helpers
           return ingest_object
       end
       
+      def set_parent(ingest_object, object_model, parent_identifier_type, parent_identifier)
+        parent = case parent_identifier_type
+        when :id
+          parent_results = parent_class(object_model).find_by_identifier(parent_identifier)
+          case
+          when parent_results.size == 1
+            parent_results.first
+          when parent_results.size > 1
+            raise "Found multiple parent objects"
+          else
+            parent_results
+          end
+        when :pid
+          parent_class(object_model).find(parent_identifier)
+        end
+        if parent.blank?
+          raise "Unable to find parent"
+        end
+        case object_model
+        when "afmodel:Item"
+          ingest_object.collection = parent
+        end
+        return ingest_object
+      end
+      
+      def parent_class(child_model)
+        case child_model
+        when "afmodel:Item"
+          Collection
+        when "afmodel:Component"
+          Item
+        end
+      end
     end
 
   end

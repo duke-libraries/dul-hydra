@@ -9,12 +9,13 @@ module DulHydra::Scripts
         master = create_master_document()
       end
       for object in manifest[:objects]
+        qdcsource = object[:qdcsource] || manifest[:qdcsource]
         key_identifier = key_identifier(object)
         if master_source == :objects
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
-        if object[:qdcsource] && QDC_GENERATION_SOURCES.include?(object[:qdcsource].to_sym)
-          generate_qdc(object, basepath)
+        if qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)
+          generate_qdc(object, qdcsource, basepath)
         end
       end
       unless master_source == PROVIDED
@@ -51,6 +52,10 @@ module DulHydra::Scripts
             ingest_object = add_metadata_content_file(ingest_object, object, metadata_type, manifest[:basepath])
           end
         end
+        parentid = object[:parentid] || manifest[:parentid]
+        if !parentid.blank?
+          ingest_object = set_parent(ingest_object, model, :id, parentid)
+        end        
         ingest_object.save
         master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)
       end
