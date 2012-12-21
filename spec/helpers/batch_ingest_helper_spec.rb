@@ -257,6 +257,9 @@ describe BatchIngestHelper do
       @collection.identifier = "collectionIdentifier"
       @collection.save!
     end
+    after do
+      @collection.delete
+    end
     context "item child object with parent identifier" do
       it "should set the collection attribute of the item to the collection parent" do
         object = MockBatchIngest.set_parent(@item, @model, :id, "collectionIdentifier")
