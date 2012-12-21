@@ -44,6 +44,7 @@ module DulHydra::Scripts
         if object_metadata(object, manifest_metadata).include?("qdc")
           qdc = File.open("#{manifest[:basepath]}qdc/#{key_identifier(object)}.xml") { |f| f.read }
           ingest_object.descMetadata.content = qdc
+          ingest_object.descMetadata.dsLabel = "Descriptive Metadata for this object"
         end
         ["contentdm", "digitizationguide", "dpcmetadata", "fmpexport", "jhove", "marcxml"].each do |metadata_type|
           if object_metadata(object, manifest_metadata).include?(metadata_type)

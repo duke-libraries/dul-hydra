@@ -114,21 +114,29 @@ module DulHydra::Scripts::Helpers
             "#{basepath}#{metadata_type}#{File::SEPARATOR}#{object[metadata_type]}"
           end
           content = File.open(dsLocation)
+          label = nil
           datastream = case metadata_type
           when "contentdm"
+            label = "CONTENTdm Data for this object"
             ingest_object.contentdm
           when "digitizationguide"
+            label = "Digitization Guide Data for this object"
             ingest_object.digitizationGuide
           when "dpcmetadata"
+            label = "DPC Metadata Data for this object"
             ingest_object.dpcMetadata
           when "fmpexport"
+            label = "FileMakerPro Export Data for this object"
             ingest_object.fmpExport
           when "jhove"
+            label = "JHOVE Data for this object"
             ingest_object.jhove
           when "marcxml"
+            label = "Aleph MarcXML Data for this object"
             ingest_object.marcXML
           end
           datastream.content_file = content
+          datastream.dsLabel = label
           return ingest_object
       end
       

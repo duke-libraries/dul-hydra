@@ -108,6 +108,7 @@ module DulHydra::Scripts
             pid = object.xpath("pid").first.content
             item = Item.find(pid)
             item.datastreams.keys.should include("descMetadata")
+            item.descMetadata.label.should == "Descriptive Metadata for this object"
             content_xml = item.descMetadata.content { |f| Nokogiri::XML(f) }
             expected_xml = Nokogiri::XML(File.open("#{@ingest_base}/item/qdc/#{identifier}.xml"))
             content_xml.should be_equivalent_to(expected_xml)
@@ -144,6 +145,7 @@ module DulHydra::Scripts
             collections.each do |collection|
               if collection.identifier == [ "collection_1" ]
                 collection.datastreams.keys.should include("digitizationGuide")
+                collection.digitizationGuide.label.should == "Digitization Guide Data for this object"
                 content = collection.datastreams["digitizationGuide"].content
                 content.size.should == @expected_content_size
               end
@@ -181,6 +183,7 @@ module DulHydra::Scripts
             collections.each do |collection|
               if collection.identifier == [ "collection_1" ]
                 collection.datastreams.keys.should include("fmpExport")
+                collection.fmpExport.label.should == "FileMakerPro Export Data for this object"
                 content = collection.datastreams["fmpExport"].content
                 content.size.should == @expected_content_size
               end
@@ -218,6 +221,7 @@ module DulHydra::Scripts
             collections.each do |collection|
               if collection.identifier == [ "collection_1" ]
                 collection.datastreams.keys.should include("marcXML")
+                collection.marcXML.label.should == "Aleph MarcXML Data for this object"
                 content = collection.datastreams["marcXML"].content
                 content.size.should == @expected_content_size
               end
