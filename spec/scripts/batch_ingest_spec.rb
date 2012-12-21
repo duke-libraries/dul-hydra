@@ -133,7 +133,7 @@ module DulHydra::Scripts
               end
             end
           end
-          it "should add a digitizationguide datastream containing the named file" do
+          it "should add a digitizationGuide datastream containing the named file" do
             DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
             collections = []
             Collection.find_each do |c|
@@ -145,6 +145,80 @@ module DulHydra::Scripts
               if collection.identifier == [ "collection_1" ]
                 collection.datastreams.keys.should include("digitizationGuide")
                 content = collection.datastreams["digitizationGuide"].content
+                content.size.should == @expected_content_size
+              end
+            end
+          end
+        end
+      end
+      context "FileMaker Pro export to be ingested" do
+        context "FMP export is in canonical location and is named in manifest" do
+          before do
+            FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master.xml", "#{@ingest_base}/collection/master/master.xml"
+            FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
+            @pre_existing_collection_pids = []
+            Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
+            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yaml"
+            update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
+            @ingested_identifiers = [ [ "collection_1" ] ]
+            @expected_content_size = File.open("#{@ingest_base}/collection/fmpexport/dpc_structural_metadata_vica.xls") { |f| f.size }
+          end
+          after do
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                c.delete
+              end
+            end
+          end
+          it "should add a fmpExport datastream containing the named file" do
+            DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+            collections = []
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                collections << c
+              end
+            end
+            collections.each do |collection|
+              if collection.identifier == [ "collection_1" ]
+                collection.datastreams.keys.should include("fmpExport")
+                content = collection.datastreams["fmpExport"].content
+                content.size.should == @expected_content_size
+              end
+            end
+          end
+        end
+      end
+      context "Marc XML to be ingested" do
+        context "Marc XML is in canonical location and is named in manifest" do
+          before do
+            FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master.xml", "#{@ingest_base}/collection/master/master.xml"
+            FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
+            @pre_existing_collection_pids = []
+            Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
+            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yaml"
+            update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
+            @ingested_identifiers = [ [ "collection_1" ] ]
+            @expected_content_size = File.open("#{@ingest_base}/collection/marcxml/marcxml.xml") { |f| f.size }
+          end
+          after do
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                c.delete
+              end
+            end
+          end
+          it "should add a marcXML datastream containing the named file" do
+            DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+            collections = []
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                collections << c
+              end
+            end
+            collections.each do |collection|
+              if collection.identifier == [ "collection_1" ]
+                collection.datastreams.keys.should include("marcXML")
+                content = collection.datastreams["marcXML"].content
                 content.size.should == @expected_content_size
               end
             end

@@ -45,7 +45,7 @@ module DulHydra::Scripts
           qdc = File.open("#{manifest[:basepath]}qdc/#{key_identifier(object)}.xml") { |f| f.read }
           ingest_object.descMetadata.content = qdc
         end
-        ["digitizationguide"].each do |metadata_type|
+        ["contentdm", "digitizationguide", "dpcmetadata", "fmpexport", "jhove", "marcxml"].each do |metadata_type|
           if object_metadata(object, manifest_metadata).include?(metadata_type)
             ingest_object = add_metadata_content_file(ingest_object, object, metadata_type, manifest[:basepath])
           end

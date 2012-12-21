@@ -5,6 +5,7 @@ adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 metadata:
     - digitizationguide
+    - fmpexport
     - marcxml
     - qdc
 objects:
@@ -12,3 +13,4 @@ objects:
       marcxml: marcxml.xml
       qdcsource: marcxml
       digitizationguide: DigitizationGuide.xls
+      fmpexport: dpc_structural_metadata_vica.xls

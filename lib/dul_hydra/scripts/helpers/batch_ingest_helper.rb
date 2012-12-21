@@ -111,12 +111,22 @@ module DulHydra::Scripts::Helpers
           when object[metadata_type].start_with?("/")
             "#{object[metadata_type]}"
           else
-            "#{basepath}#{metadata_type}#{File::SEPARATOR}#{object[:digitizationguide]}"
+            "#{basepath}#{metadata_type}#{File::SEPARATOR}#{object[metadata_type]}"
           end
           content = File.open(dsLocation)
           datastream = case metadata_type
+          when "contentdm"
+            ingest_object.contentdm
           when "digitizationguide"
             ingest_object.digitizationGuide
+          when "dpcmetadata"
+            ingest_object.dpcMetadata
+          when "fmpexport"
+            ingest_object.fmpExport
+          when "jhove"
+            ingest_object.jhove
+          when "marcxml"
+            ingest_object.marcXML
           end
           datastream.content_file = content
           return ingest_object
