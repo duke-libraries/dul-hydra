@@ -134,6 +134,9 @@ module DulHydra::Scripts::Helpers
           when "marcxml"
             label = "Aleph MarcXML Data for this object"
             ingest_object.marcXML
+          when "tripodmets"
+            label = "Tripod METS Data for this object"
+            ingest_object.tripodMets
           end
           datastream.content_file = content
           datastream.dsLabel = label

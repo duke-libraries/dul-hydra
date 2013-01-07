@@ -47,7 +47,7 @@ module DulHydra::Scripts
           ingest_object.descMetadata.content = qdc
           ingest_object.descMetadata.dsLabel = "Descriptive Metadata for this object"
         end
-        ["contentdm", "digitizationguide", "dpcmetadata", "fmpexport", "jhove", "marcxml"].each do |metadata_type|
+        ["contentdm", "digitizationguide", "dpcmetadata", "fmpexport", "jhove", "marcxml", "tripodmets"].each do |metadata_type|
           if object_metadata(object, manifest_metadata).include?(metadata_type)
             ingest_object = add_metadata_content_file(ingest_object, object, metadata_type, manifest[:basepath])
           end

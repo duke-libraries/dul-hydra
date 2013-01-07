@@ -6,12 +6,14 @@ label: Manifest Label
 parentid: collection_1
 metadata:
     - qdc
+    - tripodmets
 objects:
     - identifier: item_1
       marcxml: marcxml.xml
       qdcsource: marcxml
       metadata:
         - marcxml
+      tripodmets: item1.xml
     - identifier:
         - item_2
         - item_3
@@ -19,7 +21,9 @@ objects:
       qdcsource: contentdm
       metadata:
         - contentdm
+      tripodmets: item2.xml
     - identifier: item_4
       qdcsource: contentdm
       metadata:
         - contentdm
+      tripodmets: item4.xml
