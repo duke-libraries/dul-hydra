@@ -14,9 +14,14 @@ module DulHydra::Scripts
         if master_source == :objects
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
-        if qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)
+        qdc = case
+        when qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)
           generate_qdc(object, qdcsource, basepath)
+        else
+          stub_qdc(object, basepath)
         end
+        result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
+        File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }        
       end
       unless master_source == PROVIDED
         File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
@@ -46,6 +51,7 @@ module DulHydra::Scripts
           qdc = File.open("#{manifest[:basepath]}qdc/#{key_identifier(object)}.xml") { |f| f.read }
           ingest_object.descMetadata.content = qdc
           ingest_object.descMetadata.dsLabel = "Descriptive Metadata for this object"
+          ingest_object.identifier = merge_identifiers(object[:identifier], ingest_object.identifier)
         end
         ["contentdm", "digitizationguide", "dpcmetadata", "fmpexport", "jhove", "marcxml", "tripodmets"].each do |metadata_type|
           if object_metadata(object, manifest_metadata).include?(metadata_type)

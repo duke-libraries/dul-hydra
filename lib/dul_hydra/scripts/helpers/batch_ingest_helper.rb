@@ -6,9 +6,11 @@ module DulHydra::Scripts::Helpers
     FEDORA_URI_PREFIX = "info:fedora/"
     PROVIDED = "provided"
     QDC_GENERATION_SOURCES = Set[:contentdm, :marcxml]
-    CONTENTDM_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/CONTENTdm2QDC.xsl"
-    MARCXML_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/MARCXML2QDC.xsl"
-    
+#    CONTENTDM_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/CONTENTdm2QDC.xsl"
+#    MARCXML_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/MARCXML2QDC.xsl"
+    CONTENTDM_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/CONTENTdm2QDC.xsl"
+    MARCXML_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/MARCXML2QDC.xsl"
+
     module ClassMethods
       
       def load_yaml(path_to_yaml)
@@ -53,8 +55,27 @@ module DulHydra::Scripts::Helpers
           xml = File.open(metadata_filepath(object, qdcsource, basepath)) { |f| Nokogiri::XML(f) }
           xslt = File.open(xslt_filepath) { |f| Nokogiri::XSLT(f) }
           qdc = xslt.transform(xml)
-          result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
-          File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }        
+#          result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
+#          File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }        
+      end
+      
+      def stub_qdc()
+        qdc = Nokogiri::XML::Document.new
+        dc_node = Nokogiri::XML::Node.new :dc.to_s, qdc
+        qdc.root = dc_node
+        qdc.root.add_namespace('dcterms', 'http://purl.org/dc/terms/')
+        qdc.root.add_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+        return qdc        
+      end
+      
+      def merge_identifiers(manifest_object_identifier, ingest_object_identifier)
+        manifest_identifiers = case manifest_object_identifier
+        when String
+          Array.new << manifest_object_identifier
+        when Array
+          manifest_object_identifier
+        end
+        identifiers = Set.new(ingest_object_identifier).merge(Set.new(manifest_identifiers)).to_a
       end
       
       def key_identifier(manifest_object)

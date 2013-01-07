@@ -178,7 +178,33 @@ describe BatchIngestHelper do
   end
     
   describe "#generate_qdc" do
-    it "should create an appropriate Qualified Dublin Core file"
+    it "should create an appropriate Qualified Dublin Core document"
+  end
+  
+  describe "#stub_qdc" do
+    before do
+      @expected_qdc_xml = <<-END
+        <dc xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        </dc>
+      END
+    end
+    it "should create a shell Qualified Dublin Core document" do
+      qdc = MockBatchIngest.stub_qdc()
+      qdc.should be_equivalent_to Nokogiri::XML(@expected_qdc_xml)
+    end
+  end
+  
+  describe "#merge_identifiers" do
+    before do
+      @ingest_object_identifiers = ["idA", "idC"]
+      @manifest_object_identifiers = ["idB", "idA"]
+    end
+    it "should merge the two lists of identifiers with no duplicates" do
+      merged_identifiers = MockBatchIngest.merge_identifiers(@manifest_object_identifiers, @ingest_object_identifiers)
+      merged_identifiers.should include("idA")
+      merged_identifiers.should include("idB")
+      merged_identifiers.should include("idC")
+    end
   end
   
   describe "#key_identifier" do
