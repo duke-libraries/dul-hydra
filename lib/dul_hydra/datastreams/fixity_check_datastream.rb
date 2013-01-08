@@ -20,6 +20,12 @@ module DulHydra::Datastreams
       return builder.doc
     end
 
+    def to_solr(solr_doc)
+      solr_doc.merge!(ActiveFedora::SolrService.solr_name(:fixity_check_date, :date) => date_time,
+                      ActiveFedora::SolrService.solr_name(:fixity_check_outcome, :symbol) => outcome)
+      solr_doc
+    end
+
   end
 
 end
