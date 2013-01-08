@@ -4,24 +4,20 @@ module DulHydra::Datastreams
     
     set_terminology do |t|
       t.root(:path => "fixityCheck")
-      t.date_time(:path => "dateTime")
+      t.datetime(:path => "@datetime")
       t.outcome
       t.outcome_detail(:path => "outcomeDetail") 
     end
     
     def self.xml_template
       builder = Nokogiri::XML::Builder.new do |xml|
-        xml.fixityCheck {
-          xml.dateTime
-          xml.outcome
-          xml.outcomeDetail 
-        }
+        xml.fixityCheck 
       end
       return builder.doc
     end
 
     def to_solr(solr_doc)
-      solr_doc.merge!(ActiveFedora::SolrService.solr_name(:fixity_check_date, :date) => date_time,
+      solr_doc.merge!(ActiveFedora::SolrService.solr_name(:fixity_check_date, :date) => datetime,
                       ActiveFedora::SolrService.solr_name(:fixity_check_outcome, :symbol) => outcome)
       solr_doc
     end
