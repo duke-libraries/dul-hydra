@@ -13,6 +13,32 @@ describe BatchIngestHelper do
     include DulHydra::Scripts::Helpers::BatchIngestHelper
   end
 
+  describe "#expand" do
+    before do
+      source_xml = <<-END
+        <a>
+          <b><c>idA</c><d>contentA</d></b>
+          <b><c>idB</c><d>contentB</d></b>
+          <b><c>idC</c><d>contentC</d></b>
+        </a>
+      END
+      @source_doc = Nokogiri::XML(source_xml)
+      result_a_xml = "<b><c>idA</c><d>contentA</d></b>"
+      result_b_xml = "<b><c>idB</c><d>contentB</d></b>"
+      result_c_xml = "<b><c>idC</c><d>contentC</d></b>"
+      @result_a_doc = Nokogiri::XML(result_a_xml)
+      @result_b_doc = Nokogiri::XML(result_b_xml)
+      @result_c_doc = Nokogiri::XML(result_c_xml)
+    end
+    it "should create a hash of the elements" do
+      expansion = MockBatchIngest.expand(@source_doc, "/a/b", "c")
+      expansion.should be_a_kind_of Hash
+      expansion["idA"].should be_equivalent_to @result_a_doc
+      expansion["idB"].should be_equivalent_to @result_b_doc
+      expansion["idC"].should be_equivalent_to @result_c_doc
+    end
+  end
+
   describe "#load_yaml" do
     before do
       yaml_hash_string = File.open("spec/fixtures/batch_ingest/samples/sample_yaml_hash.txt") { |f| f.read }

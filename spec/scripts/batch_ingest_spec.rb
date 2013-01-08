@@ -20,6 +20,18 @@ module DulHydra::Scripts
         @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
         update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
       end
+      it "should expand the consolidated file into appropriate individual files" do
+        DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
+        result_1 = File.open("#{@ingest_base}/item/contentdm/test010010010.xml") { |f| Nokogiri::XML(f) }
+        result_2 = File.open("#{@ingest_base}/item/contentdm/test010010020.xml") { |f| Nokogiri::XML(f) }
+        result_3 = File.open("#{@ingest_base}/item/contentdm/test010010030.xml") { |f| Nokogiri::XML(f) }
+        expected_1 = Nokogiri::XML("<record><Title>Title 1</Title><Date>1981-01</Date><localid>test010010010</localid></record>")
+        expected_2 = Nokogiri::XML("<record><Title>Title 2</Title><Date>1987-09</Date><localid>test010010020</localid></record>")
+        expected_3 = Nokogiri::XML("<record><Title>Title 3</Title><Date>1979-11</Date><localid>test010010030</localid></record>")
+        result_1.should be_equivalent_to(expected_1)
+        result_2.should be_equivalent_to(expected_2)
+        result_3.should be_equivalent_to(expected_3)        
+      end
       it "should create an appropriate master file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
           result = File.open("#{@ingest_base}/item/master/master.xml") { |f| Nokogiri::XML(f) }

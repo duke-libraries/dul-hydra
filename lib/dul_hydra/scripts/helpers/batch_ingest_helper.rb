@@ -5,14 +5,26 @@ module DulHydra::Scripts::Helpers
     # Constants
     FEDORA_URI_PREFIX = "info:fedora/"
     PROVIDED = "provided"
-    QDC_GENERATION_SOURCES = Set[:contentdm, :marcxml]
-#    CONTENTDM_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/CONTENTdm2QDC.xsl"
-#    MARCXML_TO_QDC_XSLT_FILEPATH = "/srv/fedora-working/ingest/bin/xslt/MARCXML2QDC.xsl"
+    QDC_GENERATION_SOURCES = Set[:contentdm, :digitizationguide, :marcxml]
     CONTENTDM_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/CONTENTdm2QDC.xsl"
+    DIGITIZATIONGUIDE_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/DigitizationGuide2QDC.xsl"
     MARCXML_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/MARCXML2QDC.xsl"
 
     module ClassMethods
       
+      def expand(source_doc, unit_xpath, identifier_element)
+        expansion = Hash.new
+        elements = source_doc.xpath(unit_xpath)
+        elements.each do |element|
+          identifier = element.xpath("#{identifier_element}").text
+          targetDoc = Nokogiri::XML::Document.new
+          targetDoc.root = element
+          expansion[identifier] = targetDoc
+#          File.open("${target_directory}/${identifier}.xml", 'w') { |f| targetDoc.write_xml_to f }
+        end
+        return expansion
+      end
+
       def load_yaml(path_to_yaml)
         File.open(path_to_yaml) { |f| YAML::load(f) }
       end
@@ -55,8 +67,6 @@ module DulHydra::Scripts::Helpers
           xml = File.open(metadata_filepath(object, qdcsource, basepath)) { |f| Nokogiri::XML(f) }
           xslt = File.open(xslt_filepath) { |f| Nokogiri::XSLT(f) }
           qdc = xslt.transform(xml)
-#          result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
-#          File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }        
       end
       
       def stub_qdc()

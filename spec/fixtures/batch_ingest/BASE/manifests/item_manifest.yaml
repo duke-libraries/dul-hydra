@@ -4,6 +4,11 @@ model: afmodel:Item
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 parentid: collection_1
+expand:
+    - type: contentdm
+      source: export.xml
+      xpath: /metadata/record
+      idelement: localid
 metadata:
     - qdc
     - tripodmets

@@ -8,6 +8,20 @@ module DulHydra::Scripts
       unless master_source == PROVIDED
         master = create_master_document()
       end
+      for entry in manifest[:expand]
+        source_doc_path = case
+        when entry[:source].start_with?("/")
+          entry[:source]
+        else
+          "#{basepath}#{entry[:type]}/#{entry[:source]}"
+        end
+        source_doc = File.open(source_doc_path) { |f| Nokogiri::XML(f) }
+        expansion = expand(source_doc, entry[:xpath], entry[:idelement])
+        expansion.each { | key, value |
+          target_path = entry[:targetpath] || "#{basepath}#{entry[:type]}/"
+          File.open("#{target_path}#{key}.xml", 'w') { |f| value.write_xml_to f }
+        }
+      end
       for object in manifest[:objects]
         qdcsource = object[:qdcsource] || manifest[:qdcsource]
         key_identifier = key_identifier(object)
