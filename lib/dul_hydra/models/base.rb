@@ -3,6 +3,6 @@ module DulHydra::Models
     include Describable
     include Governable
     include AccessControllable
-    include FixityCheckable
+    include HasPreservationMetadata
   end
 end

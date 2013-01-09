@@ -1,9 +1,12 @@
 require 'json'
+require 'securerandom'
 
 module DulHydra::Models
-  module FixityCheckable
+  module HasPreservationMetadata
     extend ActiveSupport::Concern
 
+    EVENT_IDENTIFIER_TYPE_UUID = "UUID"
+    FIXITY_CHECK_EVENT_TYPE = "fixity check"
     FIXITY_CHECK_PASSED = "PASSED"
     FIXITY_CHECK_FAILED = "FAILED"
     CHECKSUM_VALID = "VALID"
@@ -11,9 +14,7 @@ module DulHydra::Models
     CHECKSUM_DISABLED = "DISABLED"
 
     included do
-      has_metadata :name => "fixityCheck", :type => DulHydra::Datastreams::FixityCheckDatastream
-      # delegate :fixity_check_date, :to => "fixityCheck", :at => [:date_time], :unique => true
-      # delegate :fixity_check_outcome, :to => "fixityCheck", :at => [:outcome], :unique => true
+      has_metadata :name => "preservationMetadata", :type => DulHydra::Datastreams::PreservationMetadataDatastream
     end
 
     def check_fixity
@@ -38,9 +39,13 @@ module DulHydra::Models
 
     def check_fixity!
       results = check_fixity
-      fixityCheck.datetime = results[:datetime]
-      fixityCheck.outcome = results[:outcome]
-      fixityCheck.outcome_detail = results[:outcome_detail].to_json
+      event_num = preservationMetadata.event.length
+      preservationMetadata.event(event_num).type = FIXITY_CHECK_EVENT_TYPE
+      preservationMetadata.event(event_num).identifier.type = EVENT_IDENTIFIER_TYPE_UUID
+      preservationMetadata.event(event_num).identifier.value = SecureRandom.uuid
+      preservationMetadata.event(event_num).datetime = results[:datetime]
+      preservationMetadata.event(event_num).outcome_information.outcome = results[:outcome]
+      preservationMetadata.event(event_num).outcome_information.detail.note = results[:outcome_detail].to_json
       save!
     end
 
