@@ -15,11 +15,16 @@ module DulHydra::Datastreams
         }
         t.type(:path => "eventType")
         t.datetime(:path => "eventDateTime")
+        t.detail(:path => "eventDetail")
         t.outcome_information(:path => "eventOutcomeInformation") { 
           t.outcome(:path => "eventOutcome")
           t.detail(:path => "eventOutcomeDetail") {
             t.note(:path => "eventOutcomeDetailNote")
           }
+        }
+        t.linking_object_id(:path => "linkingObjectIdentifier") {
+          t.type(:path => "linkingObjectIdentifierType")
+          t.value(:path => "linkingObjectIdentifierValue")
         }
       }
       t.fixity_check(:ref => :event, :path => 'event[oxns:eventType = "fixity check"]')
@@ -36,10 +41,9 @@ module DulHydra::Datastreams
     end
 
     def to_solr(solr_doc)
-      fixity_checks = fixity_check.length
-      if fixity_checks > 0
-        solr_doc.merge!(ActiveFedora::SolrService.solr_name(:fixity_check_date, :date) => fixity_check(fixity_checks - 1).datetime.first,
-                        ActiveFedora::SolrService.solr_name(:fixity_check_outcome, :symbol) => fixity_check(fixity_checks - 1).outcome_information.outcome.first)
+      num_checks = self.fixity_check.length
+      if num_checks > 0
+        solr_doc.merge!(ActiveFedora::SolrService.solr_name(:fixity_check_date, :date) => self.fixity_check(num_checks - 1).datetime.first)
       end
       solr_doc
     end
