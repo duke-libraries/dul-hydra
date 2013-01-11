@@ -4,7 +4,7 @@ model: afmodel:Item
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 parentid: collection_1
-expand:
+split:
     - type: contentdm
       source: export.xml
       xpath: /metadata/record

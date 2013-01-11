@@ -1,0 +1,20 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: afmodel:Component
+adminpolicy: duke-apo:adminPolicy
+label: Manifest Label
+qdcsource: digitizationguide
+split:
+    - type: digitizationguide
+      source: Digitization_Guide.xml
+      xpath: /Root/Row
+      idelement: ID
+metadata:
+    - digitizationguide
+    - qdc
+content:
+    - extension: .TIF
+      location: spec/fixtures/batch_ingest/samples/
+objects:
+    - identifier: CCITT_2
+

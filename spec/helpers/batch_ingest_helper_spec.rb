@@ -13,7 +13,7 @@ describe BatchIngestHelper do
     include DulHydra::Scripts::Helpers::BatchIngestHelper
   end
 
-  describe "#expand" do
+  describe "#split" do
     before do
       source_xml = <<-END
         <a>
@@ -31,7 +31,7 @@ describe BatchIngestHelper do
       @result_c_doc = Nokogiri::XML(result_c_xml)
     end
     it "should create a hash of the elements" do
-      expansion = MockBatchIngest.expand(@source_doc, "/a/b", "c")
+      expansion = MockBatchIngest.split(@source_doc, "/a/b", "c")
       expansion.should be_a_kind_of Hash
       expansion["idA"].should be_equivalent_to @result_a_doc
       expansion["idB"].should be_equivalent_to @result_b_doc

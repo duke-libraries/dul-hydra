@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<objects>
+  <object model="info:fedora/afmodel:Component">
+    <identifier>CCITT_2</identifier>
+  </object>
+</objects>

@@ -8,7 +8,7 @@ module DulHydra::Scripts
       unless master_source == PROVIDED
         master = create_master_document()
       end
-      for entry in manifest[:expand]
+      for entry in manifest[:split]
         source_doc_path = case
         when entry[:source].start_with?("/")
           entry[:source]
@@ -16,8 +16,8 @@ module DulHydra::Scripts
           "#{basepath}#{entry[:type]}/#{entry[:source]}"
         end
         source_doc = File.open(source_doc_path) { |f| Nokogiri::XML(f) }
-        expansion = expand(source_doc, entry[:xpath], entry[:idelement])
-        expansion.each { | key, value |
+        parts = split(source_doc, entry[:xpath], entry[:idelement])
+        parts.each { | key, value |
           target_path = entry[:targetpath] || "#{basepath}#{entry[:type]}/"
           File.open("#{target_path}#{key}.xml", 'w') { |f| value.write_xml_to f }
         }
@@ -70,6 +70,14 @@ module DulHydra::Scripts
         ["contentdm", "digitizationguide", "dpcmetadata", "fmpexport", "jhove", "marcxml", "tripodmets"].each do |metadata_type|
           if object_metadata(object, manifest_metadata).include?(metadata_type)
             ingest_object = add_metadata_content_file(ingest_object, object, metadata_type, manifest[:basepath])
+          end
+        end
+        content_spec = object[:content] || manifest[:content]
+        if !content_spec.blank?
+          if content_spec.size == 1
+            ingest_object = add_content_file(ingest_object, content_spec.first, key_identifier(object));
+          else
+            raise "Multiple content specifications in manifest"
           end
         end
         parentid = object[:parentid] || manifest[:parentid]

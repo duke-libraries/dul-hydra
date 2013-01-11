@@ -5,6 +5,10 @@ module DulHydra::Scripts::Helpers
     # Constants
     FEDORA_URI_PREFIX = "info:fedora/"
     PROVIDED = "provided"
+    JHOVE_DATE_XPATH = "/xmlns:jhove/xmlns:date"
+    JHOVE_SPLIT_XPATH = "/xmlns:jhove/xmlns:repInfo"
+    JHOVE_URI_ATTRIBUTE = "uri"
+    CONTENT_FILE_TYPES = Set[:pdf, :tif]
     QDC_GENERATION_SOURCES = Set[:contentdm, :digitizationguide, :marcxml]
     CONTENTDM_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/CONTENTdm2QDC.xsl"
     DIGITIZATIONGUIDE_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/DigitizationGuide2QDC.xsl"
@@ -12,17 +16,16 @@ module DulHydra::Scripts::Helpers
 
     module ClassMethods
       
-      def expand(source_doc, unit_xpath, identifier_element)
-        expansion = Hash.new
+      def split(source_doc, unit_xpath, identifier_element)
+        parts = Hash.new
         elements = source_doc.xpath(unit_xpath)
         elements.each do |element|
           identifier = element.xpath("#{identifier_element}").text
           targetDoc = Nokogiri::XML::Document.new
           targetDoc.root = element
-          expansion[identifier] = targetDoc
-#          File.open("${target_directory}/${identifier}.xml", 'w') { |f| targetDoc.write_xml_to f }
+          parts[identifier] = targetDoc
         end
-        return expansion
+        return parts
       end
 
       def load_yaml(path_to_yaml)
@@ -133,6 +136,20 @@ module DulHydra::Scripts::Helpers
         metadata.concat(manifest_metadata) unless manifest_metadata.blank?
         metadata.concat(object[:metadata]) unless object[:metadata].blank?
         return metadata
+      end
+      
+      def add_content_file(ingest_object, content_spec, identifier)
+        if ingest_object.datastreams.keys.include?("content")
+          filename = "#{content_spec[:location]}#{identifier}#{content_spec[:extension]}"
+          file = File.open(filename)
+          ingest_object.content.content_file = file
+          ingest_object.content.dsLabel = "Content file for this object"
+          ingest_object.save
+          file.close
+        else
+          raise "Ingest object does not have a 'content' datastream"
+        end
+        return ingest_object
       end
       
       def add_metadata_content_file(ingest_object, object, metadata_type, basepath)

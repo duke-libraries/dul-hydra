@@ -23,9 +23,14 @@ module BatchIngestSpecHelper
     return filenames
   end
   def update_manifest(manifest_filepath, attributes_hash)
-    File.open(manifest_filepath) { |f| @manifest = YAML::load(f) }
-    attributes_hash.each { |key, value| @manifest[key] = value }
-    File.open(manifest_filepath, "w") { |f| YAML::dump(@manifest, f)}            
+    manifest = File.open(manifest_filepath) { |f| YAML::load(f) }
+    attributes_hash.each do |key, value|
+      case
+      when manifest[key].kind_of?(String)
+        manifest[key] = value
+      end
+    end
+    File.open(manifest_filepath, "w") { |f| YAML::dump(manifest, f)}            
   end
   def remove_temp_dir
     FileUtils.remove_dir @test_temp_dir
