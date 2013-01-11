@@ -280,14 +280,46 @@ module DulHydra::Scripts
             end
           end
         end
-        
-        
-        
-        
-        
-        
       end
       context "object has parent object" do
+        context "child is part of parent" do
+          context "parent identifier is determined algorithmically" do
+            before do
+              FileUtils.cp "spec/fixtures/batch_ingest/results/component_master.xml", "#{@ingest_base}/component/master/master.xml"
+              FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/CCITT_2.xml", "#{@ingest_base}/component/qdc/"
+              FileUtils.cp "spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "#{@ingest_base}/component/content/"
+              @pre_existing_component_pids = []
+              Component.find_each { |c| @pre_existing_component_pids << c.pid }
+              @manifest_file = "#{@ingest_base}/manifests/component_manifest.yaml"
+              update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
+              update_manifest(@manifest_file, {"autoparentidlength" => 5})
+              @item = Item.new(:pid => "test:item1")
+              @item.identifier = "CCITT"
+              @item.save!
+            end
+            after do
+              Component.find_each do |c|
+                if !@pre_existing_component_pids.include?(c.pid)
+                  c.delete
+                end
+              end
+              @item.delete
+            end
+            it "should establish an 'isPartOf' relationship between the child and parent" do
+              DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+              components = []
+              Component.find_each do |c|
+                if !@pre_existing_component_pids.include?(c.pid)
+                  components << c
+                end
+              end
+              components.each do |component|
+                component.container.should eq(@item)
+                @item.parts.should include(component)
+              end
+            end
+          end
+        end
         context "child is member of parent" do
           context "parent identifier is specified is manifest" do
             before do

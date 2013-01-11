@@ -81,9 +81,14 @@ module DulHydra::Scripts
           end
         end
         parentid = object[:parentid] || manifest[:parentid]
+        if parentid.blank?
+          if !manifest[:autoparentidlength].blank?
+            parentid = key_identifier(object).slice(0, manifest[:autoparentidlength])
+          end
+        end
         if !parentid.blank?
           ingest_object = set_parent(ingest_object, model, :id, parentid)
-        end        
+        end
         ingest_object.save
         master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)
       end

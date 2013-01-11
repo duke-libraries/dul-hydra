@@ -212,6 +212,8 @@ module DulHydra::Scripts::Helpers
         case object_model
         when "afmodel:Item"
           ingest_object.collection = parent
+        when "afmodel:Component"
+          ingest_object.container = parent
         end
         return ingest_object
       end

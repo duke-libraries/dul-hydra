@@ -26,6 +26,8 @@ module BatchIngestSpecHelper
     manifest = File.open(manifest_filepath) { |f| YAML::load(f) }
     attributes_hash.each do |key, value|
       case
+      when manifest[key].blank?
+        manifest[key] = value
       when manifest[key].kind_of?(String)
         manifest[key] = value
       end
