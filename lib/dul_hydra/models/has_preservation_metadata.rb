@@ -5,50 +5,49 @@ module DulHydra::Models
   module HasPreservationMetadata
     extend ActiveSupport::Concern
 
-    STRFTIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
-    EVENT_IDENTIFIER_TYPE_UUID = "UUID"
-    FIXITY_CHECK_EVENT_TYPE = "fixity check"
     FIXITY_CHECK_PASSED = "PASSED"
     FIXITY_CHECK_FAILED = "FAILED"
-    FIXITY_CHECK_EVENT_DETAIL = "Datastream checksum validation. The event outcome \"#{FIXITY_CHECK_PASSED}\" indicates that all versions of all datastreams having checksums enabled were successfully validated; the outcome \"#{FIXITY_CHECK_FAILED}\" indicates that one or more datastream versions failed checksum validation. The eventOutcomeDetail element contains the detailed validation results in JSON format."
+
+    EVENT_IDENTIFIER_TYPE_UUID = "UUID"
+    EVENT_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
+    EVENT_TYPE_FIXITY_CHECK = "fixity check"
 
     included do
-      has_metadata :name => "preservationMetadata", :type => DulHydra::Datastreams::PreservationMetadataDatastream
+      has_metadata :name => "preservationMetadata", :type => DulHydra::Datastreams::PreservationMetadataDatastream, :label => "Preservation metadata", :versionable => true, :control_group => 'M'
     end
 
     def check_fixity
-      event = {:eventDateTime => Time.now.utc, :eventOutcome => FIXITY_CHECK_PASSED, :eventOutcomeDetail => []}
+      events = []
       datastreams.each do |dsID, ds|
-        next if ds.profile.empty?
+        # XXX filter out datastreams we don't want to check?
         ds.versions.each do |ds_version| 
-          event[:eventOutcomeDetail] << {
+          dsProfile = ds_version.profile(:validateChecksum => true)
+          next if dsProfile.empty? || dsProfile["dsChecksumType"] == "DISABLED"
+          events << {
             :dsID => dsID,
-            :dsVersionID => ds_version.profile["dsVersionID"],
-            :dsChecksumType => ds_version.profile["dsChecksumType"],
-            :dsCreateDate => ds_version.profile["dsCreateDate"],
+            :dsProfile => dsProfile,
             :eventDateTime => Time.now.utc,
-            :dsChecksumValid => ds_version.dsChecksumValid
-          }
-        end
-        event[:eventOutcomeDetail].each do |e|
-          next if e[:dsChecksumValid]
-          event[:eventOutcome] = FIXITY_CHECK_FAILED
-          break
+            :eventOutcome => dsProfile["dsChecksumValid"] ? FIXITY_CHECK_PASSED : FIXITY_CHECK_FAILED,
+          }          
         end
       end        
-      return event
+      return events
     end
 
     def check_fixity!
-      event = self.check_fixity
-      event_num = preservationMetadata.event.length
-      preservationMetadata.event(event_num).type = FIXITY_CHECK_EVENT_TYPE
-      preservationMetadata.event(event_num).detail = FIXITY_CHECK_EVENT_DETAIL
-      preservationMetadata.event(event_num).identifier.type = EVENT_IDENTIFIER_TYPE_UUID
-      preservationMetadata.event(event_num).identifier.value = SecureRandom.uuid
-      preservationMetadata.event(event_num).datetime = event[:eventDateTime].strftime(STRFTIME_FORMAT)
-      preservationMetadata.event(event_num).outcome_information.outcome = event[:eventOutcome]
-      preservationMetadata.event(event_num).outcome_information.detail.note = event[:eventOutcomeDetail].to_json
+      events = self.check_fixity
+      return if events.empty?
+      num_events = preservationMetadata.event.length
+      events.each_with_index do |event, i|
+        preservationMetadata.event(num_events + i).linking_object_id.type = "info:fedora/#{self.pid}/datastreams/" + event[:dsID]
+        preservationMetadata.event(num_events + i).linking_object_id.value = event[:dsProfile]["dsVersionID"]
+        preservationMetadata.event(num_events + i).type = EVENT_TYPE_FIXITY_CHECK
+        preservationMetadata.event(num_events + i).detail = "Datastream version checksum validation"
+        preservationMetadata.event(num_events + i).identifier.type = EVENT_IDENTIFIER_TYPE_UUID
+        preservationMetadata.event(num_events + i).identifier.value = SecureRandom.uuid
+        preservationMetadata.event(num_events + i).datetime = event[:eventDateTime].strftime(EVENT_DATE_TIME_FORMAT)
+        preservationMetadata.event(num_events + i).outcome_information.outcome = event[:eventOutcome]
+      end
       save!
     end
 

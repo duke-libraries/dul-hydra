@@ -6,8 +6,44 @@ module DulHydra::Datastreams
     PREMIS_XMLNS = "info:lc/xmlns/premis-v2"
     PREMIS_SCHEMA = "http://www.loc.gov/standards/premis/v2/premis.xsd"
     
+    #
+    # PREMIS terminology based on version 2.2 of PREMIS standard
+    # http://www.loc.gov/standards/premis/v2/premis-2-2.pdf
+    #
     set_terminology do |t|
+
       t.root(:path => "premis", :xmlns => PREMIS_XMLNS, :schema => PREMIS_SCHEMA)
+
+      # Object Entity
+      t.object {
+        t.identifier(:path => "objectIdentifier") {
+          t.type(:path => "objectIdentifierType")
+          t.value(:path => "objectIdentifierValue")
+        }
+        t.category(:path => "objectCategory")
+        t.characteristics(:path => "objectCharacteristics") {
+          t.composition_level(:path => "compositionLevel")
+          t.fixity {
+            t.digest(:path => "messageDisgest")
+            t.digest_algorithm(:path => "messageDigestAlgorithm")
+            t.digest_originator(:path => "messageDigestOriginator")
+          }
+          t.format {
+            t.designation(:path => "formatDesignation") {
+              t.name(:path => "formatName")
+              t.version(:path => "formatVersion")
+            }
+            t.registry(:path => "formatRegistry") {
+              t.name(:path => "formatRegistryName")
+              t.key(:path => "formatRegistryKey")
+              t.role(:path => "formatRegistryRole")
+            }
+            t.note(:path => "formatNote")
+          }
+        }
+      }
+      
+      # Event Entity
       t.event {
         t.identifier(:path => "eventIdentifier") {
           t.type(:path => "eventIdentifierType")
@@ -27,7 +63,9 @@ module DulHydra::Datastreams
           t.value(:path => "linkingObjectIdentifierValue")
         }
       }
+
       t.fixity_check(:ref => :event, :path => 'event[oxns:eventType = "fixity check"]')
+
     end
     
     def self.xml_template
@@ -47,6 +85,20 @@ module DulHydra::Datastreams
       end
       solr_doc
     end
+
+    # def get_datastream_object_node(ds)
+    #   object_id_value = ds.profile["dsCreateDate"].strftime
+    #   nodes = find_by_terms("oxns:object[oxns:objectCategory = \"datastream version\" and oxns:objectIdentifier/oxns:objectIdentifierType = \"#{ds.dsid}\" and oxns:objectIdentifier/oxns:objectIdentifierValue = \"#{ds_version_id}\"]")
+    #   nodes.empty? ? nil : nodes.first
+    # end
+
+    # def add_datastream_object_node(ds)
+    #   num_objects = self.object.length
+    #   self.object(num_objects).category = "datastream version"
+    #   self.object(num_objects).identifier.type = "info:fedora/#{ds.pid}/datastreams/#{ds.dsid}"
+    #   self.object(num_objects).identifier.value = ds.profile["dscreateDate"]
+    #   self.object(num_objects).characteristics.composition_level = "0"      
+    # end
 
   end
 
