@@ -12,6 +12,8 @@ module DulHydra::Models
     EVENT_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
     EVENT_TYPE_FIXITY_CHECK = "fixity check"
 
+    PREMIS_NS = {"premis" => "info:lc/xmlns/premis-v2"}
+
     included do
       has_metadata :name => "preservationMetadata", :type => DulHydra::Datastreams::PreservationMetadataDatastream, :label => "Preservation metadata", :versionable => true, :control_group => 'M'
     end
@@ -49,6 +51,29 @@ module DulHydra::Models
         preservationMetadata.event(num_events + i).outcome_information.outcome = event[:eventOutcome]
       end
       save!
+    end
+
+    def fixity_checks
+      fc = []
+      preservationMetadata.fixity_check.each_index do |i|
+        fc << {
+          :datastream => preservationMetadata.fixity_check(i).linking_object_id.type.first,
+          :version => preservationMetadata.fixity_check(i).linking_object_id.value.first,
+          :datetime => preservationMetadata.fixity_check(i).datetime.first,
+          :outcome => preservationMetadata.fixity_check(i).outcome
+        }
+      end
+    end
+
+    def datastream_fixity_checks(ds)
+      ds_fixity_checks = []
+      preservationMetadata.find_by_terms("//oxns:event[oxns:eventType = \"#{EVENT_TYPE_FIXITY_CHECK}\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierType = \"info:fedora/#{ds.pid}/datastreams/#{ds.dsid}\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierValue = \"#{ds.profile['dsVersionID']}\"]").each do |node|
+        ds_fixity_checks << {
+          :eventDateTime => node.at_xpath(".//premis:eventDateTime", PREMIS_NS).text,
+          :eventOutcome => node.at_xpath(".//premis:eventOutcome", PREMIS_NS).text
+        }
+      end
+      ds_fixity_checks
     end
 
   end
