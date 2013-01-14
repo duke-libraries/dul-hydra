@@ -8,25 +8,39 @@ module DulHydra::Scripts
       unless master_source == PROVIDED
         master = create_master_document()
       end
-      for entry in manifest[:split]
-        source_doc_path = case
-        when entry[:source].start_with?("/")
-          entry[:source]
-        else
-          "#{basepath}#{entry[:type]}/#{entry[:source]}"
+      if manifest[:split]
+        for entry in manifest[:split]
+          source_doc_path = case
+          when entry[:source].start_with?("/")
+            entry[:source]
+          else
+            "#{basepath}#{entry[:type]}/#{entry[:source]}"
+          end
+          source_doc = File.open(source_doc_path) { |f| Nokogiri::XML(f) }
+          parts = split(source_doc, entry[:xpath], entry[:idelement])
+          parts.each { | key, value |
+            target_path = entry[:targetpath] || "#{basepath}#{entry[:type]}/"
+            File.open("#{target_path}#{key}.xml", 'w') { |f| value.write_xml_to f }
+          }
         end
-        source_doc = File.open(source_doc_path) { |f| Nokogiri::XML(f) }
-        parts = split(source_doc, entry[:xpath], entry[:idelement])
-        parts.each { | key, value |
-          target_path = entry[:targetpath] || "#{basepath}#{entry[:type]}/"
-          File.open("#{target_path}#{key}.xml", 'w') { |f| value.write_xml_to f }
-        }
+      end
+      checksum_spec = manifest[:checksum]
+      if !checksum_spec.blank?
+        if checksum_spec.size == 1
+          checksum_doc = File.open("#{basepath}checksum/#{checksum_spec.first[:location]}") { |f| Nokogiri::XML(f) }
+          checksum_source =  "#{checksum_spec.first[:source]}"
+        else
+          raise "Multiple checksum specifications in manifest"
+        end
       end
       for object in manifest[:objects]
-        qdcsource = object[:qdcsource] || manifest[:qdcsource]
         key_identifier = key_identifier(object)
+        qdcsource = object[:qdcsource] || manifest[:qdcsource]
         if master_source == :objects
           master = add_manifest_object_to_master(master, object, manifest[:model])
+        end
+        if !checksum_doc.nil?
+          master = add_checksum_to_master(master, key_identifier, checksum_doc, checksum_source)
         end
         qdc = case
         when qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)

@@ -4,11 +4,9 @@ model: afmodel:Component
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 qdcsource: digitizationguide
-split:
-    - type: digitizationguide
-      source: Digitization_Guide.xml
-      xpath: /Root/Row
-      idelement: ID
+checksum:
+    - location: checksums.xml
+      source: test
 metadata:
     - digitizationguide
     - qdc
