@@ -86,20 +86,6 @@ module DulHydra::Datastreams
       solr_doc
     end
 
-    # def get_datastream_object_node(ds)
-    #   object_id_value = ds.profile["dsCreateDate"].strftime
-    #   nodes = find_by_terms("oxns:object[oxns:objectCategory = \"datastream version\" and oxns:objectIdentifier/oxns:objectIdentifierType = \"#{ds.dsid}\" and oxns:objectIdentifier/oxns:objectIdentifierValue = \"#{ds_version_id}\"]")
-    #   nodes.empty? ? nil : nodes.first
-    # end
-
-    # def add_datastream_object_node(ds)
-    #   num_objects = self.object.length
-    #   self.object(num_objects).category = "datastream version"
-    #   self.object(num_objects).identifier.type = "info:fedora/#{ds.pid}/datastreams/#{ds.dsid}"
-    #   self.object(num_objects).identifier.value = ds.profile["dscreateDate"]
-    #   self.object(num_objects).characteristics.composition_level = "0"      
-    # end
-
   end
 
 end

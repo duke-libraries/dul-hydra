@@ -12,6 +12,8 @@ module DulHydra::Models
     EVENT_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
     EVENT_TYPE_FIXITY_CHECK = "fixity check"
 
+    DS_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
+
     PREMIS_NS = {"premis" => "info:lc/xmlns/premis-v2"}
 
     included do
@@ -21,7 +23,6 @@ module DulHydra::Models
     def check_fixity
       events = []
       datastreams.each do |dsID, ds|
-        # XXX filter out datastreams we don't want to check?
         ds.versions.each do |ds_version| 
           dsProfile = ds_version.profile(:validateChecksum => true)
           next if dsProfile.empty? || dsProfile["dsChecksumType"] == "DISABLED"
@@ -41,8 +42,8 @@ module DulHydra::Models
       return if events.empty?
       num_events = preservationMetadata.event.length
       events.each_with_index do |event, i|
-        preservationMetadata.event(num_events + i).linking_object_id.type = "info:fedora/#{self.pid}/datastreams/" + event[:dsID]
-        preservationMetadata.event(num_events + i).linking_object_id.value = event[:dsProfile]["dsVersionID"]
+        preservationMetadata.event(num_events + i).linking_object_id.type = "datastreams/#{event[:dsID]}"
+        preservationMetadata.event(num_events + i).linking_object_id.value = event[:dsProfile]["dsCreateDate"].strftime(DS_DATE_TIME_FORMAT)
         preservationMetadata.event(num_events + i).type = EVENT_TYPE_FIXITY_CHECK
         preservationMetadata.event(num_events + i).detail = "Datastream version checksum validation"
         preservationMetadata.event(num_events + i).identifier.type = EVENT_IDENTIFIER_TYPE_UUID
@@ -58,16 +59,18 @@ module DulHydra::Models
       preservationMetadata.fixity_check.each_index do |i|
         fc << {
           :datastream => preservationMetadata.fixity_check(i).linking_object_id.type.first,
-          :version => preservationMetadata.fixity_check(i).linking_object_id.value.first,
-          :datetime => preservationMetadata.fixity_check(i).datetime.first,
-          :outcome => preservationMetadata.fixity_check(i).outcome
+          :dsCreateDate => preservationMetadata.fixity_check(i).linking_object_id.value.first,
+          :eventDateTime => preservationMetadata.fixity_check(i).datetime.first,
+          :eventOutcome => preservationMetadata.fixity_check(i).outcome
         }
       end
     end
 
     def datastream_fixity_checks(ds)
       ds_fixity_checks = []
-      preservationMetadata.find_by_terms("//oxns:event[oxns:eventType = \"#{EVENT_TYPE_FIXITY_CHECK}\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierType = \"info:fedora/#{ds.pid}/datastreams/#{ds.dsid}\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierValue = \"#{ds.profile['dsVersionID']}\"]").each do |node|
+      linking_object_id_type = "datastreams/#{ds.dsid}"
+      linking_object_id_value = ds.profile["dsCreateDate"].strftime(DS_DATE_TIME_FORMAT)
+      preservationMetadata.find_by_terms("//oxns:event[oxns:eventType = \"#{EVENT_TYPE_FIXITY_CHECK}\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierType = \"#{linking_object_id_type}\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierValue = \"#{linking_object_id_value}\"]").each do |node|
         ds_fixity_checks << {
           :eventDateTime => node.at_xpath(".//premis:eventDateTime", PREMIS_NS).text,
           :eventOutcome => node.at_xpath(".//premis:eventOutcome", PREMIS_NS).text
