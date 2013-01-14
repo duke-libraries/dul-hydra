@@ -20,6 +20,8 @@ module DulHydra::Scripts
         before do
           @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
+          FileUtils.mkdir_p "#{@ingest_base}/item/master"
+          FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
         end
         it "should create an appropriate master file" do
             DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
@@ -40,6 +42,8 @@ module DulHydra::Scripts
         before do
           @manifest_file = "#{@ingest_base}/manifests/component_manifest.yaml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
+          FileUtils.mkdir_p "#{@ingest_base}/component/master"
+          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
         end
         it "should add the appropriate checksum to the master file entry for each object" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
@@ -52,6 +56,8 @@ module DulHydra::Scripts
         before do
           @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
+          FileUtils.mkdir_p "#{@ingest_base}/item/master"
+          FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
         end        
         it "should split the consolidated file into appropriate individual files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
@@ -82,6 +88,8 @@ module DulHydra::Scripts
       end
       context "applicable to all object types" do
         before do
+          FileUtils.mkdir_p "#{@ingest_base}/item/master"
+          FileUtils.mkdir_p "#{@ingest_base}/item/qdc"          
           FileUtils.cp "spec/fixtures/batch_ingest/results/item_master.xml", "#{@ingest_base}/item/master/master.xml"
           FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_1.xml", "#{@ingest_base}/item/qdc"
           FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_2.xml", "#{@ingest_base}/item/qdc"
@@ -153,6 +161,8 @@ module DulHydra::Scripts
       context "digitization guide to be ingested" do
         context "digitization guide is in canonical location and is named in manifest" do
           before do
+            FileUtils.mkdir_p "#{@ingest_base}/collection/master"
+            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
             FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master.xml", "#{@ingest_base}/collection/master/master.xml"
             FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
             @pre_existing_collection_pids = []
@@ -191,6 +201,8 @@ module DulHydra::Scripts
       context "FileMaker Pro export to be ingested" do
         context "FMP export is in canonical location and is named in manifest" do
           before do
+            FileUtils.mkdir_p "#{@ingest_base}/collection/master"
+            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
             FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master.xml", "#{@ingest_base}/collection/master/master.xml"
             FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
             @pre_existing_collection_pids = []
@@ -229,6 +241,8 @@ module DulHydra::Scripts
       context "Marc XML to be ingested" do
         context "Marc XML is in canonical location and is named in manifest" do
           before do
+            FileUtils.mkdir_p "#{@ingest_base}/collection/master"
+            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
             FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master.xml", "#{@ingest_base}/collection/master/master.xml"
             FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
             @pre_existing_collection_pids = []
@@ -266,6 +280,9 @@ module DulHydra::Scripts
       end
       context "content to be ingested" do
         before do
+          FileUtils.mkdir_p "#{@ingest_base}/component/master"
+          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
+          FileUtils.mkdir_p "#{@ingest_base}/component/content"          
           FileUtils.cp "spec/fixtures/batch_ingest/results/component_master.xml", "#{@ingest_base}/component/master/master.xml"
           FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/CCITT_2.xml", "#{@ingest_base}/component/qdc/"
           FileUtils.cp "spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "#{@ingest_base}/component/content/"
@@ -305,6 +322,9 @@ module DulHydra::Scripts
         context "child is part of parent" do
           context "parent identifier is determined algorithmically" do
             before do
+              FileUtils.mkdir_p "#{@ingest_base}/component/master"
+              FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
+              FileUtils.mkdir_p "#{@ingest_base}/component/content"          
               FileUtils.cp "spec/fixtures/batch_ingest/results/component_master.xml", "#{@ingest_base}/component/master/master.xml"
               FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/CCITT_2.xml", "#{@ingest_base}/component/qdc/"
               FileUtils.cp "spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "#{@ingest_base}/component/content/"
@@ -343,6 +363,10 @@ module DulHydra::Scripts
         context "child is member of parent" do
           context "parent identifier is specified is manifest" do
             before do
+              FileUtils.mkdir_p "#{@ingest_base}/collection/master"
+              FileUtils.mkdir_p "#{@ingest_base}/item/master"
+              FileUtils.mkdir_p "#{@ingest_base}/item/qdc"          
+              FileUtils.mkdir_p "#{@ingest_base}/item/tripodmets"          
               FileUtils.cp "spec/fixtures/batch_ingest/results/item_master.xml", "#{@ingest_base}/item/master/master.xml"
               FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master_with_pid.xml", "#{@ingest_base}/collection/master/master.xml"
               FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_1.xml", "#{@ingest_base}/item/qdc"
@@ -385,5 +409,4 @@ module DulHydra::Scripts
       end
     end
   end
-  
 end
