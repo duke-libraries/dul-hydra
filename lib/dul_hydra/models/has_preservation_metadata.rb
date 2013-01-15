@@ -41,18 +41,19 @@ module DulHydra::Models
     def check_fixity!
       events = self.check_fixity
       return if events.empty?
-      num_events = preservationMetadata.event.length
+      num_events = self.preservationMetadata.event.length
       events.each_with_index do |event, i|
-        self.preservationMetadata.event(num_events + i).linking_object_id.type = "datastream"
-        self.preservationMetadata.event(num_events + i).linking_object_id.value = event[:dsID] + "?asOfDateTime=" + event[:dsProfile]["dsCreateDate"].strftime(DS_DATE_TIME_FORMAT)
-        self.preservationMetadata.event(num_events + i).type = EVENT_TYPE_FIXITY_CHECK
-        self.preservationMetadata.event(num_events + i).detail = "Datastream version checksum validation"
-        self.preservationMetadata.event(num_events + i).identifier.type = EVENT_IDENTIFIER_TYPE_UUID
-        self.preservationMetadata.event(num_events + i).identifier.value = SecureRandom.uuid
-        self.preservationMetadata.event(num_events + i).datetime = event[:eventDateTime].strftime(EVENT_DATE_TIME_FORMAT)
-        self.preservationMetadata.event(num_events + i).outcome_information.outcome = event[:eventOutcome]
+        n = num_events + i
+        self.preservationMetadata.event(n).linking_object_id.type = "datastream"
+        self.preservationMetadata.event(n).linking_object_id.value = event[:dsID] + "?asOfDateTime=" + event[:dsProfile]["dsCreateDate"].strftime(DS_DATE_TIME_FORMAT)
+        self.preservationMetadata.event(n).type = EVENT_TYPE_FIXITY_CHECK
+        self.preservationMetadata.event(n).detail = "Datastream version checksum validation"
+        self.preservationMetadata.event(n).identifier.type = EVENT_IDENTIFIER_TYPE_UUID
+        self.preservationMetadata.event(n).identifier.value = SecureRandom.uuid
+        self.preservationMetadata.event(n).datetime = event[:eventDateTime].strftime(EVENT_DATE_TIME_FORMAT)
+        self.preservationMetadata.event(n).outcome_information.outcome = event[:eventOutcome]
       end
-      save!
+      self.save!
     end
 
   end

@@ -1,11 +1,11 @@
 shared_examples "a fixity checkable object" do
-  context "a new object" do
+  context "before any fixity check" do
     subject { described_class.new }
     it "should have a preservationMetadata datastream" do
       subject.datastreams["preservationMetadata"].should be_kind_of DulHydra::Datastreams::PreservationMetadataDatastream
-    end
+    end    
   end
-  context "fixity check" do
+  context "after a fixity check" do
     before { obj.check_fixity! }
     after { obj.delete }
     let(:obj) { described_class.create }
@@ -20,5 +20,6 @@ shared_examples "a fixity checkable object" do
         end
       end
     end
+    it "should be indexed by the latest datastream version fixity check date"
   end
 end
