@@ -22,7 +22,8 @@ module DulHydra::Models
 
     def check_fixity
       events = []
-      datastreams.each do |dsID, ds|
+      self.reload # ensure that AF object datastreams are in sync with Fedora
+      self.datastreams.each do |dsID, ds|
         ds.versions.each do |ds_version| 
           dsProfile = ds_version.profile(:validateChecksum => true)
           next if dsProfile.empty? || dsProfile["dsChecksumType"] == "DISABLED"
@@ -42,14 +43,14 @@ module DulHydra::Models
       return if events.empty?
       num_events = preservationMetadata.event.length
       events.each_with_index do |event, i|
-        preservationMetadata.event(num_events + i).linking_object_id.type = "datastreams/#{event[:dsID]}"
-        preservationMetadata.event(num_events + i).linking_object_id.value = event[:dsProfile]["dsCreateDate"].strftime(DS_DATE_TIME_FORMAT)
-        preservationMetadata.event(num_events + i).type = EVENT_TYPE_FIXITY_CHECK
-        preservationMetadata.event(num_events + i).detail = "Datastream version checksum validation"
-        preservationMetadata.event(num_events + i).identifier.type = EVENT_IDENTIFIER_TYPE_UUID
-        preservationMetadata.event(num_events + i).identifier.value = SecureRandom.uuid
-        preservationMetadata.event(num_events + i).datetime = event[:eventDateTime].strftime(EVENT_DATE_TIME_FORMAT)
-        preservationMetadata.event(num_events + i).outcome_information.outcome = event[:eventOutcome]
+        self.preservationMetadata.event(num_events + i).linking_object_id.type = "datastream"
+        self.preservationMetadata.event(num_events + i).linking_object_id.value = event[:dsID] + "?asOfDateTime=" + event[:dsProfile]["dsCreateDate"].strftime(DS_DATE_TIME_FORMAT)
+        self.preservationMetadata.event(num_events + i).type = EVENT_TYPE_FIXITY_CHECK
+        self.preservationMetadata.event(num_events + i).detail = "Datastream version checksum validation"
+        self.preservationMetadata.event(num_events + i).identifier.type = EVENT_IDENTIFIER_TYPE_UUID
+        self.preservationMetadata.event(num_events + i).identifier.value = SecureRandom.uuid
+        self.preservationMetadata.event(num_events + i).datetime = event[:eventDateTime].strftime(EVENT_DATE_TIME_FORMAT)
+        self.preservationMetadata.event(num_events + i).outcome_information.outcome = event[:eventOutcome]
       end
       save!
     end

@@ -4,5 +4,6 @@ module DulHydra::Models
     include Governable
     include AccessControllable
     include HasPreservationMetadata
+    include Reloadable
   end
 end
