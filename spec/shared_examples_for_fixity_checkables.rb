@@ -10,11 +10,10 @@ shared_examples "a fixity checkable object" do
     after { obj.delete }
     let(:obj) { described_class.create }
     it "should have a preservation event for each datastream version" do
-      obj.datastreams.each_value do |ds|
+      obj.datastreams.each do |dsID, ds|
         ds.versions.each do |ds_version|
-          ds_fixity_checks = obj.datastream_fixity_checks(ds_version)
-          ds_fixity_checks.length.should == 1
-          ds_fixity_checks[0][:eventOutcome].should == "PASSED"
+          linking_obj_id_val = ds_version.profile["dsCreateDate"].strftime("%Y-%m-%dT%H:%M:%S.%LZ")
+          obj.preservationMetadata.find_by_xpath(".//oxns:event[oxns:eventType = \"fixity check\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierType = \"datastreams/#{dsID}\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierValue = \"#{linking_obj_id_val}\"]/oxns:eventOutcome").text.should == "PASSED"
         end
       end
     end

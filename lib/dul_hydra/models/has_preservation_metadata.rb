@@ -54,30 +54,5 @@ module DulHydra::Models
       save!
     end
 
-    def fixity_checks
-      fc = []
-      preservationMetadata.fixity_check.each_index do |i|
-        fc << {
-          :datastream => preservationMetadata.fixity_check(i).linking_object_id.type.first,
-          :dsCreateDate => preservationMetadata.fixity_check(i).linking_object_id.value.first,
-          :eventDateTime => preservationMetadata.fixity_check(i).datetime.first,
-          :eventOutcome => preservationMetadata.fixity_check(i).outcome
-        }
-      end
-    end
-
-    def datastream_fixity_checks(ds)
-      ds_fixity_checks = []
-      linking_object_id_type = "datastreams/#{ds.dsid}"
-      linking_object_id_value = ds.profile["dsCreateDate"].strftime(DS_DATE_TIME_FORMAT)
-      preservationMetadata.find_by_terms("//oxns:event[oxns:eventType = \"#{EVENT_TYPE_FIXITY_CHECK}\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierType = \"#{linking_object_id_type}\" and oxns:linkingObjectIdentifier/oxns:linkingObjectIdentifierValue = \"#{linking_object_id_value}\"]").each do |node|
-        ds_fixity_checks << {
-          :eventDateTime => node.at_xpath(".//premis:eventDateTime", PREMIS_NS).text,
-          :eventOutcome => node.at_xpath(".//premis:eventOutcome", PREMIS_NS).text
-        }
-      end
-      ds_fixity_checks
-    end
-
   end
 end
