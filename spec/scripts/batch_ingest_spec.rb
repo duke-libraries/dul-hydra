@@ -444,5 +444,48 @@ module DulHydra::Scripts
         end
       end
     end
+    describe "validate ingest" do
+      before do
+        FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
+        FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
+        @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yaml"
+        update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
+        DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
+        @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
+        @adminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
+                                            DulHydra::Permissions::READER_GROUP_ACCESS,
+                                            DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                            DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+        @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
+        @adminPolicy.save!
+        @pre_existing_collection_pids = []
+        Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
+        DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
+      end
+      after do
+        @adminPolicy.delete
+        Collection.find_each do |c|
+          if !@pre_existing_collection_pids.include?(c.pid)
+            c.delete
+          end
+        end
+      end
+      context "any batch ingest" do
+        it "verifies that all objects in the batch exist in the repository" do
+          valid = DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+          valid.should be_true
+          Collection.find_each do |c|
+            if !@pre_existing_collection_pids.include?(c.pid)
+              c.delete
+            end
+          end
+          valid = DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+          valid.should be_false          
+        end
+      end
+      context "external checksum data exists" do
+        it "verifies that the external source checksum matches that stored in the repository"
+      end
+    end  
   end
 end

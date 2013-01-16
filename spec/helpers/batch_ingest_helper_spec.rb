@@ -106,14 +106,14 @@ describe BatchIngestHelper do
       it "should raise an appropriate error" do
         expect {
           MockBatchIngest.add_pid_to_master(@master, "nonExistentObjectIdentifier", "objectPid")
-        }.to raise_error(/[Oo]bject not found/)
+        }.to raise_error(/[Oo]bject nonExistentObjectIdentifier not found/)
       end
     end
     context "more than one object with specified identifier exists in master file" do
       it "should raise an appropriate error" do
         expect {
           MockBatchIngest.add_pid_to_master(@master, "duplicatedObjectIdentifier", "objectPid")
-        }.to raise_error(/[Mm]ultiple objects found/)
+        }.to raise_error(/[Mm]ultiple objects found for duplicatedObjectIdentifier/)
       end
     end
   end

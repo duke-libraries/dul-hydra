@@ -58,11 +58,24 @@ module DulHydra::Scripts::Helpers
           pid_node.content = pid
           object_node.first.add_child(pid_node)
         when 0
-          raise "Object not found in master file"
+          raise "Object #{key_identifier} not found in master file"
         else
-          raise "Multiple objects found in master file"
+          raise "Multiple objects found for #{key_identifier} in master file"
         end
         return master
+      end
+      
+      def get_pid_from_master(master, key_identifier)
+        object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
+        case object_node.size()
+        when 1
+          pid = object_node.xpath("pid").text
+        when 0
+          raise "Object #{key_identifier} not found in master file"
+        else
+          raise "Multiple objects found for #{key_identifier} in master file"
+        end
+        return pid
       end
       
       def add_checksum_to_master(master, key_identifier, checksum_doc, checksum_source)
@@ -249,6 +262,7 @@ module DulHydra::Scripts::Helpers
           Item
         end
       end
+      
       def create_content_metadata_document(repository_object, sequencing_start, sequencing_length)
         parts = repository_object.parts
         hash = Hash.new

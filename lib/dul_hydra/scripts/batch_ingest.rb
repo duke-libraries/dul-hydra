@@ -134,20 +134,35 @@ module DulHydra::Scripts
             end
           end
         end
-        
       end
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+    end
+    def self.validate_ingest(ingest_manifest)
+      valid = true
+      manifest = load_yaml(ingest_manifest)
+      master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
+      objects = manifest[:objects]
+      objects.each do |object|
+        pid = get_pid_from_master(master, key_identifier(object))
+        model = object[:model] || manifest[:model]
+        if model.blank?
+          raise "Missing model for #{key_identifier(object)}"
+        end
+        begin
+          repository_object = case model
+          when "afmodel:Collection" then Collection.find(pid)
+          when "afmodel:Item" then Item.find(pid)
+          when "afmodel:Component" then Component.find(pid)
+          else raise "Invalid model for #{key_identifier(object)}"
+          end
+        rescue ActiveFedora::ObjectNotFoundError
+          valid = false
+          puts "Object not found in repository"
+          puts "---Model: #{model}"
+          puts "---Identifier: #{key_identifier(object)}"
+          puts "---Pid: #{pid}"          
+        end
+      end
+      return valid
     end
   end
 end
