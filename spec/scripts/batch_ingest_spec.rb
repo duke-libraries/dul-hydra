@@ -408,5 +408,41 @@ module DulHydra::Scripts
         end
       end
     end
+    describe "post-process ingest" do
+      context "content structural metadata" do
+        before do
+          FileUtils.mkdir_p "#{@ingest_base}/item/contentmetadata"          
+          @item = Item.new
+          @item.identifier = "test01"
+          @item.save!
+          @component1 = Component.new
+          @component1.identifier = "test010020010"
+          @component1.container = @item
+          @component1.save!
+          @component2 = Component.new
+          @component2.identifier = "test010030010"
+          @component2.container = @item
+          @component2.save!
+          @component3 = Component.new
+          @component3.identifier = "test010010010"
+          @component3.container = @item
+          @component3.save!
+          @manifest_file = "#{@ingest_base}/manifests/simple_item_manifest.yaml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
+          @expected_doc = create_expected_content_metadata_document
+          @expected_xml = @expected_doc.to_xml
+        end
+        after do
+          @component3.delete
+          @component2.delete
+          @component1.delete
+          @item.delete
+        end
+        it "should add an appropriate contentMetadata datastream to the parent object" do
+          DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
+          @item.contentMetadata.content.should be_equivalent_to(@expected_xml)
+        end
+      end
+    end
   end
 end

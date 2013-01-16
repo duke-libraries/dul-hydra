@@ -108,5 +108,46 @@ module DulHydra::Scripts
       end
       File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
     end
+    def self.post_process_ingest(ingest_manifest)
+      manifest = load_yaml(ingest_manifest)
+      if !manifest[:contentstructure].blank?
+        case manifest[:contentstructure][:type]
+        when "generate"
+          sequence_start = manifest[:contentstructure][:sequencestart]
+          sequence_length = manifest[:contentstructure][:sequencelength]
+          manifest_items = manifest[:objects]
+          manifest_items.each do |manifest_item|
+            identifier = key_identifier(manifest_item)
+            items = Item.find_by_identifier(identifier)
+            case items.size
+            when 1
+              item = items.first
+              content_metadata = create_content_metadata_document(item, sequence_start, sequence_length)
+              filename = "#{manifest[:basepath]}contentmetadata/#{identifier}.xml"
+              File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
+              item = add_metadata_content_file(item, manifest_item, "contentmetadata", manifest[:basepath])
+              item.save
+            when 0
+              raise "Item #{identifier} not found"
+            else
+              raise "Multiple items #{identifier} found"
+            end
+          end
+        end
+        
+      end
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    end
   end
 end

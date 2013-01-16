@@ -333,6 +333,34 @@ describe BatchIngestHelper do
     end
   end
   
+  describe "#create_content_metadata_document" do
+    before do
+      @item = Item.create!
+      @component1 = Component.new
+      @component1.identifier = "test010020010"
+      @component1.container = @item
+      @component1.save!
+      @component2 = Component.new
+      @component2.identifier = "test010030010"
+      @component2.container = @item
+      @component2.save!
+      @component3 = Component.new
+      @component3.identifier = "test010010010"
+      @component3.container = @item
+      @component3.save!
+      @expected = create_expected_content_metadata_document
+    end
+    after do
+      @component3.delete
+      @component2.delete
+      @component1.delete
+      @item.delete
+    end
+    it "should return the appropriate content metadata document" do
+      content_metadata = MockBatchIngest.create_content_metadata_document(@item, 6, 3)
+      content_metadata.should be_equivalent_to(@expected)
+    end
+  end
 end
 
 end

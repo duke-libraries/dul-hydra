@@ -187,6 +187,9 @@ module DulHydra::Scripts::Helpers
           when "contentdm"
             label = "CONTENTdm Data for this object"
             ingest_object.contentdm
+          when "contentmetadata"
+            label = "Structural Content Data for this object"
+            ingest_object.contentMetadata
           when "digitizationguide"
             label = "Digitization Guide Data for this object"
             ingest_object.digitizationGuide
@@ -246,7 +249,45 @@ module DulHydra::Scripts::Helpers
           Item
         end
       end
+      def create_content_metadata_document(repository_object, sequencing_start, sequencing_length)
+        parts = repository_object.parts
+        hash = Hash.new
+        parts.each do |part|
+          hash[part.identifier.first.slice(sequencing_start, sequencing_length)] = part.pid
+        end
+        sorted_keys = hash.keys.sort
+        cm = Nokogiri::XML::Document.new
+        root_node = Nokogiri::XML::Node.new "mets:mets", cm
+        cm.root = root_node
+        cm.root.add_namespace_definition('mets', 'http://www.loc.gov/METS/')
+        cm.root.add_namespace_definition('xlink', 'http://www.w3.org/1999/xlink')
+        fileSec_node = Nokogiri::XML::Node.new "mets:fileSec", cm
+        fileGrp_node = Nokogiri::XML::Node.new "mets:fileGrp", cm
+        fileGrp_node['ID'] = 'GRP01'
+        fileGrp_node['USE'] = 'Master Image'
+        structMap_node = Nokogiri::XML::Node.new "mets:structMap", cm
+        div0_node = Nokogiri::XML::Node.new "mets:div", cm        
+        sorted_keys.each_with_index do |key, index|
+          file_node = Nokogiri::XML::Node.new "mets:file", cm
+          file_node['ID'] = "FILE#{key}"
+          fLocat_node = Nokogiri::XML::Node.new "mets:FLocat", cm
+          fLocat_node['xlink:href'] = "#{hash[key]}/content"
+          fLocat_node['LOCTYPE'] = 'URL'
+          file_node.add_child(fLocat_node)
+          fileGrp_node.add_child(file_node)
+          div1_node = Nokogiri::XML::Node.new "mets:div", cm
+          div1_node['ORDER'] = (index + 1).to_s
+          fptr_node = Nokogiri::XML::Node.new "mets:fptr", cm
+          fptr_node['FILEID'] = "FILE#{key}"
+          div1_node.add_child(fptr_node)
+          div0_node.add_child(div1_node)
+        end
+        fileSec_node.add_child(fileGrp_node)
+        structMap_node.add_child(div0_node)
+        root_node.add_child(fileSec_node)
+        root_node.add_child(structMap_node)
+        return cm
+      end
     end
-
   end
 end
