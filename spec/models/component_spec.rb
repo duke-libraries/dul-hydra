@@ -13,12 +13,10 @@ describe Component do
     context "fixity check" do
       subject { component.fixity_checks.first }
       it { should be_kind_of(PreservationEvent) }
-      its(:label) { should eq(DulHydra::Models::FixityCheckable::EVENT_DETAIL) }
-      its(:outcome) { should eq(DulHydra::Models::FixityCheckable::EVENT_OUTCOME_PASSED) }
-      its(:linking_obj_id_type) { should eq(DulHydra::Models::FixityCheckable::LINKING_OBJECT_ID_TYPE) }
-      its(:linking_obj_id_value) { should eq(component.linking_object_id_value(component.content)) }
-      its(:type) { should eq(DulHydra::Models::FixityCheckable::EVENT_TYPE) }
-      its(:detail) { should eq(DulHydra::Models::FixityCheckable::EVENT_DETAIL) }
+      its(:outcome) { should eq("PASSED") }
+      its(:linking_obj_id_type) { should eq("datastream") }
+      its(:linking_obj_id_value) { should eq("info:fedora/#{component.pid}/datastreams/content?asOfDateTime=" + component.content.profile["dsCreateDate"].strftime("%Y-%m-%dT%H:%M:%S.%LZ")) }
+      its(:type) { should eq(PreservationEvent::FIXITY_CHECK) }
     end
   end
   context "relationships" do

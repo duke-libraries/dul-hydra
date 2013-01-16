@@ -2,6 +2,7 @@ module DulHydra::Models
   module HasContent
     extend ActiveSupport::Concern
 
+    include HasPreservationEvents
     include FixityCheckable
 
     included do

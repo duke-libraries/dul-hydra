@@ -2,10 +2,13 @@ class PreservationEvent < ActiveFedora::Base
     
   include DulHydra::Models::Governable
   include DulHydra::Models::AccessControllable
+
+  DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
+  FIXITY_CHECK = "fixity check" # http://id.loc.gov/vocabulary/preservationEvents/fixityCheck
   
   has_metadata :name => "eventMetadata", :type => DulHydra::Datastreams::PremisEventDatastream, :versionable => false, :label => "PREMIS event metadata"
 
-  belongs_to :for_object, :property => :is_fixity_check_for
+  belongs_to :for_object, :property => :is_preservation_event_for
 
   delegate :id_type, :to => "eventMetadata", :at => [:identifier, :type], :unique => true
   delegate :id_value, :to => "eventMetadata", :at => [:identifier, :value], :unique => true
