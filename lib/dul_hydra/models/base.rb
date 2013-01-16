@@ -3,7 +3,6 @@ module DulHydra::Models
     include Describable
     include Governable
     include AccessControllable
-    include HasPreservationMetadata
     include Reloadable
   end
 end
