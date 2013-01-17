@@ -24,3 +24,5 @@
 
 # Ignore paperclip files
 /public/system
+
+.sass-cache
