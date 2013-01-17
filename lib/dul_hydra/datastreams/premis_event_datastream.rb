@@ -14,23 +14,31 @@ module DulHydra::Datastreams
     #
     set_terminology do |t|
       t.root(:path => "event", :xmlns => PREMIS_XMLNS, :schema => PREMIS_SCHEMA)
-      t.identifier(:path => "eventIdentifier") {
+      t.event_identifier(:path => "eventIdentifier") {
         t.type(:path => "eventIdentifierType")
         t.value(:path => "eventIdentifierValue")
       }
-      t.type(:path => "eventType")
-      t.datetime(:path => "eventDateTime")
-      t.detail(:path => "eventDetail")
-      t.outcome_information(:path => "eventOutcomeInformation") { 
+      t.event_type(:path => "eventType")
+      t.event_date_time(:path => "eventDateTime")
+      t.event_detail(:path => "eventDetail")
+      t.event_outcome_information(:path => "eventOutcomeInformation") { 
         t.outcome(:path => "eventOutcome")
         t.detail(:path => "eventOutcomeDetail") {
           t.note(:path => "eventOutcomeDetailNote")
         }
       }
-      t.linking_object_id(:path => "linkingObjectIdentifier") {
+      t.linking_object_identifier(:path => "linkingObjectIdentifier") {
         t.type(:path => "linkingObjectIdentifierType")
         t.value(:path => "linkingObjectIdentifierValue")
       }
+      
+      # proxy terms
+      t.event_id_type(:proxy => [:event_identifier, :type])
+      t.event_id_value(:proxy => [:event_identifier, :value])
+      t.event_outcome(:proxy => [:event_outcome_information, :outcome])
+      t.event_outcome_detail_note(:proxy => [:event_outcome_information, :detail, :note])
+      t.linking_object_id_type(:proxy => [:linking_object_identifier, :type])
+      t.linking_object_id_value(:proxy => [:linking_object_identifier, :value])
     end
     
     def self.xml_template
@@ -46,6 +54,15 @@ module DulHydra::Datastreams
         }
       end
       return builder.doc
+    end
+    
+    def to_solr(solr_doc)
+      solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :date) => self.event_date_time.first,
+                      ActiveFedora::SolrService.solr_name(:event_type, :symbol) => self.event_type.first,
+                      ActiveFedora::SolrService.solr_name(:event_outcome, :symbol) => self.event_outcome.first,
+                      ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol) => self.linking_object_id_type.first,
+                      ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol) => self.linking_object_id_value.first)
+      solr_doc
     end
 
   end

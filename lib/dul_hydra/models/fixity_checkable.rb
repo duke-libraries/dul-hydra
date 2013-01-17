@@ -3,19 +3,18 @@ module DulHydra::Models
     extend ActiveSupport::Concern
     
     def fixity_checks
-      # XXX probably better to get data from search
-      self.preservation_events.select { |e| e.type == PreservationEvent::FIXITY_CHECK }
+      # XXX better to get from index?
+      self.preservation_events.select { |e| e.fixity_check? }
     end
 
     def validate_ds_checksum(ds)
       pe = PreservationEvent.new(:label => "Datastream checksum validation")
-      pe.datetime = Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT)
-      dsProfile = ds.profile(:validateChecksum => true)
-      pe.outcome = dsProfile["dsChecksumValid"] ? "PASSED" : "FAILED"
-      pe.linking_obj_id_type = "datastream"
-      pe.linking_obj_id_value = "info:fedora/#{ds.pid}/datastreams/#{ds.dsid}?asOfDateTime=" + ds.profile["dsCreateDate"].strftime("%Y-%m-%dT%H:%M:%S.%LZ")
-      pe.type = PreservationEvent::FIXITY_CHECK
-      pe.detail = "Datastream checksum validation"
+      pe.event_date_time = Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT)
+      pe.event_outcome = ds.profile(:validateChecksum => true)["dsChecksumValid"] ? "PASSED" : "FAILED"
+      pe.linking_object_id_type = "datastream"
+      pe.linking_object_id_value = "#{self.internal_uri}/datastreams/#{ds.dsid}?asOfDateTime=" + ds.dsCreateDate.strftime("%Y-%m-%dT%H:%M:%S.%LZ")
+      pe.event_type = PreservationEvent::FIXITY_CHECK
+      pe.event_detail = "Datastream checksum validation"
       return pe
     end
 
