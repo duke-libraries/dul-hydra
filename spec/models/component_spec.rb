@@ -1,24 +1,12 @@
 require 'spec_helper'
 require 'shared_examples_for_dul_hydra_objects'
+require 'shared_examples_for_has_content'
 
 describe Component do
+
   it_behaves_like "a DulHydra object"
-  context "validate content checksum" do
-    let!(:component) { FactoryGirl.create(:component_with_content) }
-    after { component.delete }
-    before { component.validate_content_checksum! }
-    it "should create a fixity check" do
-      component.fixity_checks.length.should == 1
-    end
-    context "fixity check" do
-      subject { component.fixity_checks.first }
-      it { should be_kind_of(PreservationEvent) }
-      its(:event_type) { should eq(PreservationEvent::FIXITY_CHECK) }
-      its(:event_outcome) { should eq("PASSED") }
-      its(:linking_object_id_type) { should eq("datastream") }
-      its(:linking_object_id_value) { should eq("#{component.internal_uri}/datastreams/content?asOfDateTime=" + component.content.dsCreateDate.strftime("%Y-%m-%dT%H:%M:%S.%LZ")) }
-    end
-  end
+  it_behaves_like "an object that has content"
+
   context "relationships" do
     let!(:component) { FactoryGirl.create(:component) }
     let!(:item) { FactoryGirl.create(:item) }
@@ -42,4 +30,5 @@ describe Component do
       end
     end
   end # relationships
+
 end
