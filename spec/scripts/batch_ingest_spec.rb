@@ -18,7 +18,7 @@ module DulHydra::Scripts
     describe "prepare for ingest" do
       context "all object types" do
         before do
-          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
+          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
           FileUtils.mkdir_p "#{@ingest_base}/item/master"
           FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
@@ -40,7 +40,7 @@ module DulHydra::Scripts
       end
       context "checksum file exists" do
         before do
-          @manifest_file = "#{@ingest_base}/manifests/component_manifest.yaml"
+          @manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
           FileUtils.mkdir_p "#{@ingest_base}/component/master"
           FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
@@ -54,7 +54,7 @@ module DulHydra::Scripts
       end
       context "consolidated file is to be split into individual files" do
         before do
-          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
+          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
           FileUtils.mkdir_p "#{@ingest_base}/item/master"
           FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
@@ -96,7 +96,7 @@ module DulHydra::Scripts
           FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_4.xml", "#{@ingest_base}/item/qdc"
           @pre_existing_item_pids = []
           Item.find_each { |i| @pre_existing_item_pids << i.pid }
-          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
+          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
           @ingested_identifiers = [ [ "item_1" ], [ "item_2", "item_3" ], [ "item_4" ] ]          
           @collection = Collection.new(:pid => "test:collection1")
@@ -167,7 +167,7 @@ module DulHydra::Scripts
             FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
             @pre_existing_collection_pids = []
             Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yaml"
+            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
             update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
             @ingested_identifiers = [ [ "collection_1" ] ]
             @expected_content_size = File.open("#{@ingest_base}/collection/digitizationguide/DigitizationGuide.xls") { |f| f.size }
@@ -207,7 +207,7 @@ module DulHydra::Scripts
             FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
             @pre_existing_collection_pids = []
             Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yaml"
+            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
             update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
             @ingested_identifiers = [ [ "collection_1" ] ]
             @expected_content_size = File.open("#{@ingest_base}/collection/fmpexport/dpc_structural_metadata_vica.xls") { |f| f.size }
@@ -247,7 +247,7 @@ module DulHydra::Scripts
             FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
             @pre_existing_collection_pids = []
             Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yaml"
+            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
             update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
             @ingested_identifiers = [ [ "collection_1" ] ]
             @expected_content_size = File.open("#{@ingest_base}/collection/marcxml/marcxml.xml") { |f| f.size }
@@ -288,7 +288,7 @@ module DulHydra::Scripts
           FileUtils.cp "spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "#{@ingest_base}/component/content/"
           @pre_existing_component_pids = []
           Component.find_each { |c| @pre_existing_component_pids << c.pid }
-          @manifest_file = "#{@ingest_base}/manifests/component_manifest.yaml"
+          @manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
           @ingested_identifiers = [ [ "CCITT_2" ] ]
           @expected_content = File.open("spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "rb")
@@ -330,7 +330,7 @@ module DulHydra::Scripts
               FileUtils.cp "spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "#{@ingest_base}/component/content/"
               @pre_existing_component_pids = []
               Component.find_each { |c| @pre_existing_component_pids << c.pid }
-              @manifest_file = "#{@ingest_base}/manifests/component_manifest.yaml"
+              @manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
               update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
               update_manifest(@manifest_file, {"autoparentidlength" => 5})
               @item = Item.new(:pid => "test:item1")
@@ -377,7 +377,7 @@ module DulHydra::Scripts
               FileUtils.cp "spec/fixtures/batch_ingest/BASE/item/tripodmets/item4.xml", "#{@ingest_base}/item/tripodmets"
               @pre_existing_item_pids = []
               Item.find_each { |i| @pre_existing_item_pids << i.pid }
-              @manifest_file = "#{@ingest_base}/manifests/item_manifest.yaml"
+              @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
               update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
               @collection = Collection.new(:pid => "test:collection1")
               @collection.identifier = "collection_1"
@@ -427,7 +427,7 @@ module DulHydra::Scripts
           @component3.identifier = "test010010010"
           @component3.container = @item
           @component3.save!
-          @manifest_file = "#{@ingest_base}/manifests/simple_item_manifest.yaml"
+          @manifest_file = "#{@ingest_base}/manifests/simple_item_manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
           @expected_doc = create_expected_content_metadata_document
           @expected_xml = @expected_doc.to_xml
@@ -448,7 +448,7 @@ module DulHydra::Scripts
       before do
         FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
         FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
-        @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yaml"
+        @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
         update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
         DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
         @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
@@ -482,6 +482,7 @@ module DulHydra::Scripts
           valid = DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
           valid.should be_false          
         end
+        it "verifies that all objects in the batch have content in all datastreams referenced in manifest"
       end
       context "external checksum data exists" do
         it "verifies that the external source checksum matches that stored in the repository"

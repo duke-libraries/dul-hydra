@@ -26,12 +26,8 @@ module DulHydra::Scripts
       end
       checksum_spec = manifest[:checksum]
       if !checksum_spec.blank?
-        if checksum_spec.size == 1
-          checksum_doc = File.open("#{basepath}checksum/#{checksum_spec.first[:location]}") { |f| Nokogiri::XML(f) }
-          checksum_source =  "#{checksum_spec.first[:source]}"
-        else
-          raise "Multiple checksum specifications in manifest"
-        end
+        checksum_doc = File.open("#{basepath}checksum/#{checksum_spec[:location]}") { |f| Nokogiri::XML(f) }
+        checksum_source =  "#{checksum_spec[:source]}"
       end
       for object in manifest[:objects]
         key_identifier = key_identifier(object)
@@ -66,9 +62,9 @@ module DulHydra::Scripts
           raise "Missing model"
         end
         ingest_object = case model
-        when "afmodel:Collection" then Collection.new
-        when "afmodel:Item" then Item.new
-        when "afmodel:Component" then Component.new
+        when "Collection" then Collection.new
+        when "Item" then Item.new
+        when "Component" then Component.new
         else raise "Invalid model"
         end
         ingest_object.label = object[:label] || manifest[:label]
@@ -88,11 +84,7 @@ module DulHydra::Scripts
         end
         content_spec = object[:content] || manifest[:content]
         if !content_spec.blank?
-          if content_spec.size == 1
-            ingest_object = add_content_file(ingest_object, content_spec.first, key_identifier(object));
-          else
-            raise "Multiple content specifications in manifest"
-          end
+          ingest_object = add_content_file(ingest_object, content_spec, key_identifier(object));
         end
         parentid = object[:parentid] || manifest[:parentid]
         if parentid.blank?
@@ -137,7 +129,8 @@ module DulHydra::Scripts
       end
     end
     def self.validate_ingest(ingest_manifest)
-      valid = true
+      all_objects_exist = true
+      datastreams_populated = true
       manifest = load_yaml(ingest_manifest)
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
       objects = manifest[:objects]
@@ -147,22 +140,11 @@ module DulHydra::Scripts
         if model.blank?
           raise "Missing model for #{key_identifier(object)}"
         end
-        begin
-          repository_object = case model
-          when "afmodel:Collection" then Collection.find(pid)
-          when "afmodel:Item" then Item.find(pid)
-          when "afmodel:Component" then Component.find(pid)
-          else raise "Invalid model for #{key_identifier(object)}"
-          end
-        rescue ActiveFedora::ObjectNotFoundError
-          valid = false
-          puts "Object not found in repository"
-          puts "---Model: #{model}"
-          puts "---Identifier: #{key_identifier(object)}"
-          puts "---Pid: #{pid}"          
+        if !validate_object_exists(model, pid)
+          all_objects_exist = false
         end
       end
-      return valid
+      return all_objects_exist
     end
   end
 end

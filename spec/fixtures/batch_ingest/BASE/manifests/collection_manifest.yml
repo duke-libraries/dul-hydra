@@ -1,6 +1,6 @@
 --- !map:HashWithIndifferentAccess
 basepath: placeholder
-model: afmodel:Collection
+model: Collection
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 metadata:

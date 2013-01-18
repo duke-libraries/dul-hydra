@@ -1,6 +1,6 @@
 --- !map:HashWithIndifferentAccess
 basepath: placeholder
-model: afmodel:Item
+model: Item
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 contentstructure:

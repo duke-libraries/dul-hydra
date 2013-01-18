@@ -4,6 +4,7 @@ module DulHydra::Scripts::Helpers
     
     # Constants
     FEDORA_URI_PREFIX = "info:fedora/"
+    ACTIVE_FEDORA_MODEL_PREFIX = "afmodel:"
     PROVIDED = "provided"
     JHOVE_DATE_XPATH = "/xmlns:jhove/xmlns:date"
     JHOVE_SPLIT_XPATH = "/xmlns:jhove/xmlns:repInfo"
@@ -42,7 +43,7 @@ module DulHydra::Scripts::Helpers
       def add_manifest_object_to_master(master, object, manifest_model)
         model = object[:model] || manifest_model
         object_node = Nokogiri::XML::Node.new :object.to_s, master
-        object_node[:model] = "#{FEDORA_URI_PREFIX}#{model}"
+        object_node[:model] = "#{FEDORA_URI_PREFIX}#{ACTIVE_FEDORA_MODEL_PREFIX}#{model}"
         identifier_node = Nokogiri::XML::Node.new :identifier.to_s, master
         identifier_node.content = key_identifier(object)
         object_node.add_child(identifier_node)
@@ -192,7 +193,7 @@ module DulHydra::Scripts::Helpers
           when object[metadata_type].start_with?("/")
             "#{object[metadata_type]}"
           else
-            "#{basepath}#{metadata_type}#{File::SEPARATOR}#{object[metadata_type]}"
+            "#{basepath}#{metadata_type}/#{object[metadata_type]}"
           end
           content = File.open(dsLocation)
           label = nil
@@ -246,9 +247,9 @@ module DulHydra::Scripts::Helpers
           raise "Unable to find parent"
         end
         case object_model
-        when "afmodel:Item"
+        when "Item"
           ingest_object.collection = parent
-        when "afmodel:Component"
+        when "Component"
           ingest_object.container = parent
         end
         return ingest_object
@@ -256,9 +257,9 @@ module DulHydra::Scripts::Helpers
       
       def parent_class(child_model)
         case child_model
-        when "afmodel:Item"
+        when "Item"
           Collection
-        when "afmodel:Component"
+        when "Component"
           Item
         end
       end
@@ -271,27 +272,27 @@ module DulHydra::Scripts::Helpers
         end
         sorted_keys = hash.keys.sort
         cm = Nokogiri::XML::Document.new
-        root_node = Nokogiri::XML::Node.new "mets:mets", cm
+        root_node = Nokogiri::XML::Node.new "mets", cm
         cm.root = root_node
-        cm.root.add_namespace_definition('mets', 'http://www.loc.gov/METS/')
+        cm.root.default_namespace = 'http://www.loc.gov/METS/'
         cm.root.add_namespace_definition('xlink', 'http://www.w3.org/1999/xlink')
-        fileSec_node = Nokogiri::XML::Node.new "mets:fileSec", cm
-        fileGrp_node = Nokogiri::XML::Node.new "mets:fileGrp", cm
+        fileSec_node = Nokogiri::XML::Node.new "fileSec", cm
+        fileGrp_node = Nokogiri::XML::Node.new "fileGrp", cm
         fileGrp_node['ID'] = 'GRP01'
         fileGrp_node['USE'] = 'Master Image'
-        structMap_node = Nokogiri::XML::Node.new "mets:structMap", cm
-        div0_node = Nokogiri::XML::Node.new "mets:div", cm        
+        structMap_node = Nokogiri::XML::Node.new "structMap", cm
+        div0_node = Nokogiri::XML::Node.new "div", cm        
         sorted_keys.each_with_index do |key, index|
-          file_node = Nokogiri::XML::Node.new "mets:file", cm
+          file_node = Nokogiri::XML::Node.new "file", cm
           file_node['ID'] = "FILE#{key}"
-          fLocat_node = Nokogiri::XML::Node.new "mets:FLocat", cm
+          fLocat_node = Nokogiri::XML::Node.new "FLocat", cm
           fLocat_node['xlink:href'] = "#{hash[key]}/content"
           fLocat_node['LOCTYPE'] = 'URL'
           file_node.add_child(fLocat_node)
           fileGrp_node.add_child(file_node)
-          div1_node = Nokogiri::XML::Node.new "mets:div", cm
+          div1_node = Nokogiri::XML::Node.new "div", cm
           div1_node['ORDER'] = (index + 1).to_s
-          fptr_node = Nokogiri::XML::Node.new "mets:fptr", cm
+          fptr_node = Nokogiri::XML::Node.new "fptr", cm
           fptr_node['FILEID'] = "FILE#{key}"
           div1_node.add_child(fptr_node)
           div0_node.add_child(div1_node)
@@ -301,6 +302,37 @@ module DulHydra::Scripts::Helpers
         root_node.add_child(fileSec_node)
         root_node.add_child(structMap_node)
         return cm
+      end
+
+      def validate_object_exists(model_class, pid)
+        valid = true
+        begin
+          object = ActiveFedora::Base.find(pid, :cast => true)
+        rescue ActiveFedora::ObjectNotFoundError
+          valid = false
+        end
+        if valid
+          begin
+            if !object.conforms_to?(model_class.constantize)
+              valid = false
+            end
+          rescue
+            valid = false
+          end
+        end
+        return valid
+      end
+
+      def validate_populated_datastreams(datastreams, object)
+        valid = true
+        datastreams.each do |datastream|
+          if !object.datastreams.keys.include?(datastream)
+            valid = false
+          elsif object.datastreams["#{datastream}"].content.blank?
+            valid = false
+          end
+        end
+        return valid
       end
     end
   end
