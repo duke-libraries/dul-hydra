@@ -228,6 +228,31 @@ module DulHydra::Scripts::Helpers
           return ingest_object
       end
       
+      def datastream_name(alternate_term)
+        case alternate_term
+        when "contentmetadata"
+          "contentMetadata"
+        when "contentstructure"
+          "contentMetadata"
+        when "digitizationguide"
+          "digitizationGuide"
+        when "dpcmetadata"
+          "dpcMetadata"
+        when "fmpexport"
+          "fmpExport"
+        when "jhove"
+          "jhove"
+        when "marcxml"
+          "marcXML"
+        when "qdc"
+          "descMetadata"
+        when "tripodmets"
+          "tripodMets"
+        else
+          alternate_term
+        end
+      end
+      
       def set_parent(ingest_object, object_model, parent_identifier_type, parent_identifier)
         parent = case parent_identifier_type
         when :id

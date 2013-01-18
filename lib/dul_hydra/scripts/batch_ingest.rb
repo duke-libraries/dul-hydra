@@ -129,22 +129,43 @@ module DulHydra::Scripts
       end
     end
     def self.validate_ingest(ingest_manifest)
+      pids_in_master = true
       all_objects_exist = true
       datastreams_populated = true
       manifest = load_yaml(ingest_manifest)
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
       objects = manifest[:objects]
       objects.each do |object|
-        pid = get_pid_from_master(master, key_identifier(object))
+        begin
+          pid = get_pid_from_master(master, key_identifier(object))
+        rescue
+          pids_in_master = false
+        end
         model = object[:model] || manifest[:model]
         if model.blank?
           raise "Missing model for #{key_identifier(object)}"
         end
-        if !validate_object_exists(model, pid)
+        if validate_object_exists(model, pid)
+          repository_object = ActiveFedora::Base.find(pid, :cast => true)
+          metadata = object_metadata(object, manifest[:metadata])
+          expected_datastreams = []
+          metadata.each do |m|
+            expected_datastreams << datastream_name(m)
+          end
+          if !object[:content].blank? || !manifest[:content].blank?
+            expected_datastreams << datastream_name("content")
+          end
+          if !object[:contentstructure].blank? || !manifest[:contentstructure].blank?
+            expected_datastreams << datastream_name("contentstructure")
+          end
+          if !validate_populated_datastreams(expected_datastreams.flatten, repository_object)
+            datastreams_populated = false
+          end
+        else
           all_objects_exist = false
         end
       end
-      return all_objects_exist
+      return pids_in_master && all_objects_exist && datastreams_populated
     end
   end
 end

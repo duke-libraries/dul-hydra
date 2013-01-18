@@ -472,17 +472,17 @@ module DulHydra::Scripts
       end
       context "any batch ingest" do
         it "verifies that all objects in the batch exist in the repository" do
-          valid = DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
-          valid.should be_true
+          DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_true
           Collection.find_each do |c|
             if !@pre_existing_collection_pids.include?(c.pid)
               c.delete
             end
           end
-          valid = DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
-          valid.should be_false          
+          DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
         end
-        it "verifies that all objects in the batch have content in all datastreams referenced in manifest"
+        it "verifies that all objects in the batch have content in all datastreams referenced in manifest" do
+          DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_true
+        end
       end
       context "external checksum data exists" do
         it "verifies that the external source checksum matches that stored in the repository"
