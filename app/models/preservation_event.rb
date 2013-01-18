@@ -4,7 +4,14 @@ class PreservationEvent < ActiveFedora::Base
   include DulHydra::Models::AccessControllable
 
   DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
+
+  # Outcomes
+  SUCCESS = "SUCCESS"
+  FAILURE = "FAILURE"
+  
+  # Event types
   FIXITY_CHECK = "fixity check" # http://id.loc.gov/vocabulary/preservationEvents/fixityCheck
+  INGEST = "ingest"             # http://id.loc.gov/vocabulary/preservationEvents/ingest
   
   has_metadata :name => "eventMetadata", :type => DulHydra::Datastreams::PremisEventDatastream, 
                :versionable => false, :label => "Preservation event metadata"
