@@ -8,7 +8,7 @@ gem 'rails', '3.2.8'
 gem 'sqlite3'
 gem 'hydra-head', '5.0.0.pre11'
 gem 'hydra-mods'
-gem 'blacklight', '~> 3.7.2'
+gem 'blacklight', '~> 3.8.0'
 gem 'devise'
 gem 'equivalent-xml'
 
