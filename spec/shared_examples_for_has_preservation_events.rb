@@ -2,13 +2,13 @@ require 'spec_helper'
 
 shared_examples "an object that has preservation events" do
 
-  context "new" do
+  context "#new" do
     subject { described_class.new }
     its(:preservation_events) { should be_kind_of(Array) }
     its(:fixity_checks) { should be_kind_of(Array) }
   end
 
-  context "validate_checksum" do
+  context "#validate_checksum" do
     let (:obj) { described_class.create.reload }
     after { obj.delete }
     subject { obj.validate_checksum("DC") }
@@ -16,7 +16,7 @@ shared_examples "an object that has preservation events" do
     its(:event_type) { should eq(PreservationEvent::FIXITY_CHECK) }
   end
 
-  context "validate_checksum!" do
+  context "#validate_checksum!" do
     let (:obj) { described_class.create.reload }
     before { obj.validate_checksum!("DC") }
     after do
