@@ -7,7 +7,7 @@ class PreservationEvent < ActiveFedora::Base
   FIXITY_CHECK = "fixity check" # http://id.loc.gov/vocabulary/preservationEvents/fixityCheck
   
   has_metadata :name => "eventMetadata", :type => DulHydra::Datastreams::PremisEventDatastream, 
-               :versionable => false, :label => "PREMIS event metadata"
+               :versionable => false, :label => "Preservation event metadata"
 
   belongs_to :for_object, :property => :is_preservation_event_for
 
