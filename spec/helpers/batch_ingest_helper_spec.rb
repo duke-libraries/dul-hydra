@@ -422,6 +422,36 @@ module DulHydra::Scripts::Helpers
       end
     end
     
+    describe "#verify_checksum(repository_object, checksum_doc)" do
+      before do
+        @component = Component.create!
+        file = File.open("spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "rb")
+        @component.content.content_file = file
+        @component.save!
+        file.close
+      end
+      after do
+        @component.delete
+      end
+      context "checksum matches" do
+        before do
+          @checksum_doc = File.open("spec/fixtures/batch_ingest/BASE/component/checksum/checksums.xml") { |f| Nokogiri::XML(f) }
+        end
+        it "should return true" do
+          MockBatchIngest.verify_checksum(@component, "CCITT_2", @checksum_doc).should be_true
+        end
+      end
+      context "checksum does not match" do
+        before do
+          @checksum_doc = File.open("spec/fixtures/batch_ingest/samples/incorrect_checksums.xml") { |f| Nokogiri::XML(f) }
+        end
+        it "should return true" do
+          MockBatchIngest.verify_checksum(@component, "CCITT_2", @checksum_doc).should be_false
+        end
+      end
+
+    end
+    
   end
 
 end

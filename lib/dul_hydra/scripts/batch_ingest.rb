@@ -24,20 +24,20 @@ module DulHydra::Scripts
           }
         end
       end
-      checksum_spec = manifest[:checksum]
-      if !checksum_spec.blank?
-        checksum_doc = File.open("#{basepath}checksum/#{checksum_spec[:location]}") { |f| Nokogiri::XML(f) }
-        checksum_source =  "#{checksum_spec[:source]}"
-      end
+#      checksum_spec = manifest[:checksum]
+#      if !checksum_spec.blank?
+#        checksum_doc = File.open("#{basepath}checksum/#{checksum_spec[:location]}") { |f| Nokogiri::XML(f) }
+#        checksum_source =  "#{checksum_spec[:source]}"
+#      end
       for object in manifest[:objects]
         key_identifier = key_identifier(object)
         qdcsource = object[:qdcsource] || manifest[:qdcsource]
         if master_source == :objects
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
-        if !checksum_doc.nil?
-          master = add_checksum_to_master(master, key_identifier, checksum_doc, checksum_source)
-        end
+#        if !checksum_doc.nil?
+#          master = add_checksum_to_master(master, key_identifier, checksum_doc, checksum_source)
+#        end
         qdc = case
         when qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)
           generate_qdc(object, qdcsource, basepath)
@@ -132,40 +132,54 @@ module DulHydra::Scripts
       pids_in_master = true
       all_objects_exist = true
       datastreams_populated = true
+      checksums_match = true
       manifest = load_yaml(ingest_manifest)
+      basepath = manifest[:basepath]
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
+      checksum_spec = manifest[:checksum]
+      if !checksum_spec.blank?
+        checksum_doc = File.open("#{basepath}checksum/#{checksum_spec[:location]}") { |f| Nokogiri::XML(f) }
+      end
       objects = manifest[:objects]
       objects.each do |object|
         begin
           pid = get_pid_from_master(master, key_identifier(object))
+          if pid.blank?
+            pids_in_master = false
+          end
         rescue
           pids_in_master = false
         end
-        model = object[:model] || manifest[:model]
-        if model.blank?
-          raise "Missing model for #{key_identifier(object)}"
-        end
-        if validate_object_exists(model, pid)
-          repository_object = ActiveFedora::Base.find(pid, :cast => true)
-          metadata = object_metadata(object, manifest[:metadata])
-          expected_datastreams = []
-          metadata.each do |m|
-            expected_datastreams << datastream_name(m)
+        if !pid.blank?
+          model = object[:model] || manifest[:model]
+          if model.blank?
+            raise "Missing model for #{key_identifier(object)}"
           end
-          if !object[:content].blank? || !manifest[:content].blank?
-            expected_datastreams << datastream_name("content")
+          if validate_object_exists(model, pid)
+            repository_object = ActiveFedora::Base.find(pid, :cast => true)
+            metadata = object_metadata(object, manifest[:metadata])
+            expected_datastreams = []
+            metadata.each do |m|
+              expected_datastreams << datastream_name(m)
+            end
+            if !object[:content].blank? || !manifest[:content].blank?
+              expected_datastreams << datastream_name("content")
+            end
+            if !object[:contentstructure].blank? || !manifest[:contentstructure].blank?
+              expected_datastreams << datastream_name("contentstructure")
+            end
+            if !validate_populated_datastreams(expected_datastreams.flatten, repository_object)
+              datastreams_populated = false
+            end
+          else
+            all_objects_exist = false
           end
-          if !object[:contentstructure].blank? || !manifest[:contentstructure].blank?
-            expected_datastreams << datastream_name("contentstructure")
+          if !checksum_doc.nil?
+            checksums_match = verify_checksum(repository_object, key_identifier(object), checksum_doc)
           end
-          if !validate_populated_datastreams(expected_datastreams.flatten, repository_object)
-            datastreams_populated = false
-          end
-        else
-          all_objects_exist = false
         end
       end
-      return pids_in_master && all_objects_exist && datastreams_populated
+      return pids_in_master && all_objects_exist && datastreams_populated && checksums_match
     end
   end
 end
