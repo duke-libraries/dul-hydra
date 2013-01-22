@@ -38,20 +38,20 @@ module DulHydra::Scripts
           end
         end
       end
-      context "checksum file exists" do
-        before do
-          @manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
-          FileUtils.mkdir_p "#{@ingest_base}/component/master"
-          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
-        end
-        it "should add the appropriate checksum to the master file entry for each object" do
-          DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          result = File.open("#{@ingest_base}/component/master/master.xml") { |f| Nokogiri::XML(f) }
-          expected = File.open("spec/fixtures/batch_ingest/results/component_master.xml") { |f| Nokogiri::XML(f) }
-          result.should be_equivalent_to(expected)          
-        end
-      end
+      #context "checksum file exists" do
+      #  before do
+      #    @manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
+      #    update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
+      #    FileUtils.mkdir_p "#{@ingest_base}/component/master"
+      #    FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
+      #  end
+      #  it "should add the appropriate checksum to the master file entry for each object" do
+      #    DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
+      #    result = File.open("#{@ingest_base}/component/master/master.xml") { |f| Nokogiri::XML(f) }
+      #    expected = File.open("spec/fixtures/batch_ingest/results/component_master.xml") { |f| Nokogiri::XML(f) }
+      #    result.should be_equivalent_to(expected)          
+      #  end
+      #end
       context "consolidated file is to be split into individual files" do
         before do
           @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
@@ -445,47 +445,120 @@ module DulHydra::Scripts
       end
     end
     describe "validate ingest" do
-      before do
-        FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
-        FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
-        @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
-        update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
-        DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-        @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
-        @adminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
-                                            DulHydra::Permissions::READER_GROUP_ACCESS,
-                                            DulHydra::Permissions::EDITOR_GROUP_ACCESS,
-                                            DulHydra::Permissions::ADMIN_GROUP_ACCESS]
-        @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
-        @adminPolicy.save!
-        @pre_existing_collection_pids = []
-        Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-        DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
-      end
-      after do
-        @adminPolicy.delete
-        Collection.find_each do |c|
-          if !@pre_existing_collection_pids.include?(c.pid)
-            c.delete
-          end
-        end
-      end
       context "any batch ingest" do
-        it "verifies that all objects in the batch exist in the repository" do
-          DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_true
+        before do
+          FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
+          FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
+          @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
+          DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
+          @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
+          @adminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
+                                              DulHydra::Permissions::READER_GROUP_ACCESS,
+                                              DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                              DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+          @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
+          @adminPolicy.save!
+          @pre_existing_collection_pids = []
+          Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
+        end
+        after do
+          @adminPolicy.delete
           Collection.find_each do |c|
             if !@pre_existing_collection_pids.include?(c.pid)
               c.delete
             end
           end
-          DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
         end
-        it "verifies that all objects in the batch have content in all datastreams referenced in manifest" do
-          DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_true
+        context "ingest is valid" do
+          it "should declare the ingest to be valid" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_true
+          end
+        end
+        context "manifest object is missing from master file" do
+          before do
+            master = File.open("#{@ingest_base}/collection/master/master.xml") { |f| Nokogiri::XML(f) }
+            object_node = master.xpath("/objects/object").first
+            object_node.remove
+            File.open("#{@ingest_base}/collection/master/master.xml", 'w') { |f| master.write_xml_to f }
+          end
+          it "should declare the ingest to be invalid" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false            
+          end
+        end
+        context "manifest object is missing pid in master file" do
+          before do
+            master = File.open("#{@ingest_base}/collection/master/master.xml") { |f| Nokogiri::XML(f) }
+            object_node = master.xpath("/objects/object").first
+            pid_node = object_node.xpath("pid").first
+            pid_node.remove
+            File.open("#{@ingest_base}/collection/master/master.xml", 'w') { |f| master.write_xml_to f }
+          end
+          it "should declare the ingest to be invalid" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false            
+          end
+        end
+        context "object does not exist in the repository" do
+          before do
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                c.delete
+              end
+            end
+          end
+          it "should declare the ingest to be invalid" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
+          end
+        end
+        context "missing content in datastream" do
+          before do
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                c.marcXML.delete
+                c.save!
+              end
+            end
+          end
+          it "should declare the ingest to be invalid" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
+          end
         end
       end
       context "external checksum data exists" do
-        it "verifies that the external source checksum matches that stored in the repository"
+        before do
+          FileUtils.mkdir_p "#{@ingest_base}/component/master"
+          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
+          @manifest_file = "#{@ingest_base}/manifests/simple_component_manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
+          DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
+          @pre_existing_component_pids = []
+          Component.find_each { |c| @pre_existing_component_pids << c.pid }
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
+        end
+        after do
+          Component.find_each do |c|
+            if !@pre_existing_component_pids.include?(c.pid)
+              c.delete
+            end
+          end
+        end
+        context "checksum matches" do
+          it "should declare the ingest to be valid" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_true
+          end
+        end
+        context "checksum does not match" do
+          before do
+            FileUtils.cp "spec/fixtures/batch_ingest/samples/incorrect_checksums_component_manifest.yml", "#{@ingest_base}/manifests"
+            FileUtils.cp "spec/fixtures/batch_ingest/samples/incorrect_checksums.xml", "#{@ingest_base}/component/checksum"
+            @manifest_file = "#{@ingest_base}/manifests/incorrect_checksums_component_manifest.yml"
+            update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
+          end
+          it "should declare the ingest to be invalid" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
+          end
+        end
       end
     end  
   end

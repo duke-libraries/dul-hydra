@@ -79,25 +79,35 @@ module DulHydra::Scripts::Helpers
         return pid
       end
       
-      def add_checksum_to_master(master, key_identifier, checksum_doc, checksum_source)
-        object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
-        source_checksum_node = checksum_doc.xpath("/checksums/checksum[componentid[contains(text(), '#{key_identifier}')]]")
-        checksum_type_node = source_checksum_node.xpath("type")
-        checksum_value_node = source_checksum_node.xpath("value")
-        case object_node.size()
-        when 1
-          target_checksum_node = Nokogiri::XML::Node.new :checksum.to_s, master
-          target_checksum_node['source'] = checksum_source
-          target_checksum_node.add_child(checksum_type_node.dup)
-          target_checksum_node.add_child(checksum_value_node.dup)
-          object_node.first.add_child(target_checksum_node)
-        when 0
-          raise "Object not found in master file"
-        else
-          raise "Multiple objects found in master file"
-        end
-        return master
+      def verify_checksum(repository_object, key_identifier, checksum_doc)
+        checksum_node = checksum_doc.xpath("/checksums/checksum[componentid[contains(text(), '#{key_identifier}')]]")
+        checksum_value_node = checksum_node.xpath("value")
+        checksum_value = checksum_value_node.text()
+        contentDatastreamProfile = repository_object.content.profile(:validateChecksum => true)
+        fedoraChecksumValidation = contentDatastreamProfile["dsChecksumValid"]
+        externalChecksumValidation = contentDatastreamProfile["dsChecksum"].eql?(checksum_value)
+        return fedoraChecksumValidation && externalChecksumValidation
       end
+      
+      #def add_checksum_to_master(master, key_identifier, checksum_doc, checksum_source)
+      #  object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
+      #  source_checksum_node = checksum_doc.xpath("/checksums/checksum[componentid[contains(text(), '#{key_identifier}')]]")
+      #  checksum_type_node = source_checksum_node.xpath("type")
+      #  checksum_value_node = source_checksum_node.xpath("value")
+      #  case object_node.size()
+      #  when 1
+      #    target_checksum_node = Nokogiri::XML::Node.new :checksum.to_s, master
+      #    target_checksum_node['source'] = checksum_source
+      #    target_checksum_node.add_child(checksum_type_node.dup)
+      #    target_checksum_node.add_child(checksum_value_node.dup)
+      #    object_node.first.add_child(target_checksum_node)
+      #  when 0
+      #    raise "Object not found in master file"
+      #  else
+      #    raise "Multiple objects found in master file"
+      #  end
+      #  return master
+      #end
       
       def generate_qdc(object, qdcsource, basepath)
           xslt_filepath = eval "#{qdcsource.upcase}_TO_QDC_XSLT_FILEPATH"

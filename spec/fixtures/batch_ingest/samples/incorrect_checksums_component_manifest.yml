@@ -1,0 +1,16 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: Component
+label: Manifest Label
+qdcsource: digitizationguide
+metadata:
+    - qdc
+checksum:
+    location: incorrect_checksums.xml
+    source: test
+content:
+    extension: .TIF
+    location: spec/fixtures/batch_ingest/samples/
+objects:
+    - identifier: CCITT_2
+
