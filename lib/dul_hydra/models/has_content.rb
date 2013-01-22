@@ -2,18 +2,18 @@ module DulHydra::Models
   module HasContent
     extend ActiveSupport::Concern
 
-    include FixityCheckable
+    # include FixityCheckable
 
     included do
       has_file_datastream :name => "content", :type => DulHydra::Datastreams::FileContentDatastream
     end
 
     def validate_content_checksum
-      self.validate_ds_checksum(self.datastreams["content"])
+      self.validate_checksum("content")
     end
 
     def validate_content_checksum!
-      self.validate_ds_checksum!(self.datastreams["content"])
+      self.validate_checksum!("content")
     end
       
   end

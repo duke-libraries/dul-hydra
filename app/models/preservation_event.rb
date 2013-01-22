@@ -27,5 +27,17 @@ class PreservationEvent < ActiveFedora::Base
     self.event_type == FIXITY_CHECK
   end
 
+  def self.validate_checksum(obj, dsID)
+    ds = obj.datastreams[dsID]
+    pe = PreservationEvent.new(:label => "Datastream checksum validation")
+    pe.event_date_time = Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT)
+    pe.event_outcome = ds.profile(:validateChecksum => true)["dsChecksumValid"] ? SUCCESS : FAILURE
+    pe.linking_object_id_type = "datastream"
+    pe.linking_object_id_value = "#{obj.internal_uri}/datastreams/#{dsID}?asOfDateTime=" + ds.dsCreateDate.strftime("%Y-%m-%dT%H:%M:%S.%LZ")
+    pe.event_type = FIXITY_CHECK
+    pe.event_detail = "Datastream checksum validation"
+    return pe
+  end
+
 end
 

@@ -1,9 +1,9 @@
 require 'spec_helper'
-require 'shared_examples_for_has_preservation_events'
+# require 'shared_examples_for_has_preservation_events'
 
 shared_examples "a fixity checkable object" do
 
-  it_behaves_like "an object that has preservation events"
+  # it_behaves_like "an object that has preservation events"
 
   context "new" do
     subject { described_class.new }

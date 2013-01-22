@@ -2,7 +2,7 @@ module DulHydra::Models
   module FixityCheckable
     extend ActiveSupport::Concern
 
-    include HasPreservationEvents
+    # include HasPreservationEvents
     
     def fixity_checks
       # XXX better to get from index?
