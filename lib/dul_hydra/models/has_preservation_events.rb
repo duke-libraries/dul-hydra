@@ -3,7 +3,10 @@ module DulHydra::Models
     extend ActiveSupport::Concern
 
     included do
-      has_many :preservation_events, :property => :is_preservation_event_for, :inbound => true, :class_name => 'PreservationEvent'
+      has_many :preservation_events, 
+               :property => :is_preservation_event_for, 
+               :inbound => true, 
+               :class_name => 'PreservationEvent'
     end
 
     def validate_checksum(dsID)
@@ -11,9 +14,9 @@ module DulHydra::Models
     end
 
     def validate_checksum!(dsID)
-      pe = PreservationEvent.validate_checksum!(self, dsID)
+      pe = self.validate_checksum(dsID)
       pe.save!
-      obj.preservation_events << pe
+      self.preservation_events << pe
       return pe
     end
 
