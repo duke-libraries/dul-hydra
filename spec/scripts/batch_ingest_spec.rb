@@ -654,11 +654,8 @@ module DulHydra::Scripts
             before do
               Component.find_each do |c|
                 if !@pre_existing_component_pids.include?(c.pid)
-                  puts c.pid
-                  puts c.container
                   c.container = nil
                   c.save!
-                  puts c.container
                 end
               end
             end
