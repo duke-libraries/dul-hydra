@@ -27,7 +27,8 @@ class PreservationEvent < ActiveFedora::Base
   # DulHydra::Models::Base includes DulHydra::Models::HasPreservationEvents
   # which defines an inbound has_many relationship to PreservationEvent
   #
-  belongs_to :for_object, :property => :is_preservation_event_for, :class_name => 'DulHydra::Models::Base'
+  belongs_to :for_object, :property => :is_preservation_event_for, 
+             :class_name => 'DulHydra::Models::HasPreservationEvents'
 
   delegate_to :eventMetadata, [:event_date_time, :event_detail, :event_type, :event_id_type,
                                :event_id_value, :event_outcome, :event_outcome_detail_note,
@@ -35,7 +36,7 @@ class PreservationEvent < ActiveFedora::Base
                               ], :unique => true
 
   def fixity_check?
-    self.event_type == FIXITY_CHECK
+    event_type == FIXITY_CHECK
   end
 
   def self.validate_checksum(obj, dsID)

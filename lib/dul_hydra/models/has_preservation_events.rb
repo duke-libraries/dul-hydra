@@ -14,16 +14,12 @@ module DulHydra::Models
     end
 
     def validate_checksum!(dsID)
-      # pe = self.validate_checksum(dsID)
-      # pe.save!
-      # self.preservation_events << pe
-      # return pe
       PreservationEvent.validate_checksum!(self, dsID)
     end
 
     def fixity_checks
       # XXX better to get from index?
-      self.preservation_events.select { |e| e.fixity_check? }
+      preservation_events.select { |e| e.fixity_check? }
     end
       
   end

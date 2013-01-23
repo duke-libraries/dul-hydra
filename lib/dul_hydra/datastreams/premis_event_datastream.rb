@@ -49,7 +49,7 @@ module DulHydra::Datastreams
                    "xsi:schemaLocation" => "#{PREMIS_XMLNS} #{PREMIS_SCHEMA}",
                   :version => PREMIS_VERSION) {
           xml.eventIdentifier {
-            xml.eventIdentifierType("UUID")
+            xml.eventIdentifierType(PreservationEvent::UUID)
             xml.eventIdentifierValue(SecureRandom.uuid)
           }
         }
@@ -58,11 +58,11 @@ module DulHydra::Datastreams
     end
     
     def to_solr(solr_doc)
-      solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :date) => self.event_date_time.first,
-                      ActiveFedora::SolrService.solr_name(:event_type, :symbol) => self.event_type.first,
-                      ActiveFedora::SolrService.solr_name(:event_outcome, :symbol) => self.event_outcome.first,
-                      ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol) => self.linking_object_id_type.first,
-                      ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol) => self.linking_object_id_value.first)
+      solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :date) => event_date_time.first,
+                      ActiveFedora::SolrService.solr_name(:event_type, :symbol) => event_type.first,
+                      ActiveFedora::SolrService.solr_name(:event_outcome, :symbol) => event_outcome.first,
+                      ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol) => linking_object_id_type.first,
+                      ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol) => linking_object_id_value.first)
       solr_doc
     end
 
