@@ -263,6 +263,28 @@ module DulHydra::Scripts::Helpers
         end
       end
       
+      def get_parent(repository_object)
+        parent = nil
+        case
+        when repository_object.class == Item
+          parent = repository_object.collection
+        when repository_object.class == Component
+          parent = repository_object.container
+        end
+        return parent
+      end
+      
+      def get_children(repository_object)
+        children = []
+        case
+        when repository_object.class == Collection
+          children = repository_object.items
+        when repository_object.class == Item
+          children = repository_object.parts
+        end
+        return children
+      end
+      
       def set_parent(ingest_object, object_model, parent_identifier_type, parent_identifier)
         parent = case parent_identifier_type
         when :id
@@ -368,10 +390,6 @@ module DulHydra::Scripts::Helpers
           end
         end
         return valid
-      end
-      
-      def datastream_checksum_valid?(profile)
-        return profile["dsChecksumValid"]
       end
       
     end

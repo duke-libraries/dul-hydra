@@ -24,20 +24,12 @@ module DulHydra::Scripts
           }
         end
       end
-#      checksum_spec = manifest[:checksum]
-#      if !checksum_spec.blank?
-#        checksum_doc = File.open("#{basepath}checksum/#{checksum_spec[:location]}") { |f| Nokogiri::XML(f) }
-#        checksum_source =  "#{checksum_spec[:source]}"
-#      end
       for object in manifest[:objects]
         key_identifier = key_identifier(object)
         qdcsource = object[:qdcsource] || manifest[:qdcsource]
         if master_source == :objects
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
-#        if !checksum_doc.nil?
-#          master = add_checksum_to_master(master, key_identifier, checksum_doc, checksum_source)
-#        end
         qdc = case
         when qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)
           generate_qdc(object, qdcsource, basepath)
@@ -45,7 +37,7 @@ module DulHydra::Scripts
           stub_qdc(object, basepath)
         end
         result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
-        File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }        
+        File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }
       end
       unless master_source == PROVIDED
         File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
@@ -186,9 +178,28 @@ module DulHydra::Scripts
           if !checksum_doc.nil?
             checksums_match = verify_checksum(repository_object, key_identifier(object), checksum_doc)
           end
+          parentid = object[:parentid] || manifest[:parentid]
+          if parentid.blank?
+            if !manifest[:autoparentidlength].blank?
+              parentid = key_identifier(object).slice(0, manifest[:autoparentidlength])
+            end
+          end
+          if !parentid.blank?
+            parent = get_parent(repository_object)
+            if parent.nil? || !parent.identifier.include?(parentid)
+              parent_child_correct = false
+            end
+            if parent_child_correct
+              children = get_children(parent)
+              if children.blank? || !children.include?(repository_object)
+                parent_child_correct = false
+              end
+            end
+          end
         end
       end
-      return pids_in_master && all_objects_exist && datastream_checksums_valid && datastreams_populated && checksums_match && parent_child_correct
+      return pids_in_master && all_objects_exist && datastream_checksums_valid && datastreams_populated \
+              && checksums_match && parent_child_correct
     end
   end
 end

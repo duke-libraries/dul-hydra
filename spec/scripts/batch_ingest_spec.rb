@@ -104,6 +104,7 @@ module DulHydra::Scripts
           @collection.save!
         end
         after do
+          @collection.delete
           Item.find_each do |i|
             if !@pre_existing_item_pids.include?(i.pid)
               i.delete
@@ -539,6 +540,131 @@ module DulHydra::Scripts
           end
           it "should declare the ingest to be invalid" do
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
+          end          
+        end
+      end
+      context "object is child to parent object" do
+        before do
+          @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
+          @adminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
+                                              DulHydra::Permissions::READER_GROUP_ACCESS,
+                                              DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+                                              DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+          @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
+          @adminPolicy.save!          
+        end
+        after do
+          @adminPolicy.delete
+        end
+        context "parent ID is explicitly specified in manifest" do
+          before do
+            FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
+            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
+            collection_manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
+            update_manifest(collection_manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
+            DulHydra::Scripts::BatchIngest.prep_for_ingest(collection_manifest_file)
+            @pre_existing_collection_pids = []
+            Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
+            DulHydra::Scripts::BatchIngest.ingest(collection_manifest_file)
+            FileUtils.mkdir_p "#{@ingest_base}/item/master"          
+            FileUtils.mkdir_p "#{@ingest_base}/item/qdc"          
+            @item_manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
+            update_manifest(@item_manifest_file, {"basepath" => "#{@ingest_base}/item/"})
+            DulHydra::Scripts::BatchIngest.prep_for_ingest(@item_manifest_file)
+            @pre_existing_item_pids = []
+            Item.find_each { |i| @pre_existing_item_pids << i.pid }
+            DulHydra::Scripts::BatchIngest.ingest(@item_manifest_file)
+          end
+          after do
+            Item.find_each do |i|
+              if !@pre_existing_item_pids.include?(i.pid)
+                i.delete
+              end
+            end
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                c.delete
+              end
+            end
+          end
+          context "correct parent-child relationship exists" do
+            it "should declare the ingest to be valid" do
+              DulHydra::Scripts::BatchIngest.validate_ingest(@item_manifest_file).should be_true
+            end
+          end
+          context "correct parent-child relationship does not exist" do
+            before do
+              Item.find_each do |i|
+                if !@pre_existing_item_pids.include?(i.pid)
+                  i.collection = nil
+                  i.save!
+                end
+              end
+            end
+            it "should declare the ingest to be invalid" do
+              DulHydra::Scripts::BatchIngest.validate_ingest(@item_manifest_file).should be_false
+            end
+          end
+        end
+        context "parent ID can be determined algorithmically from child ID" do
+          before do
+            #FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
+            #FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
+            #collection_manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
+            #update_manifest(collection_manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
+            #DulHydra::Scripts::BatchIngest.prep_for_ingest(collection_manifest_file)
+            #@pre_existing_collection_pids = []
+            #Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
+            #DulHydra::Scripts::BatchIngest.ingest(collection_manifest_file)
+            #FileUtils.mkdir_p "#{@ingest_base}/item/master"          
+            #FileUtils.mkdir_p "#{@ingest_base}/item/qdc"          
+            #item_manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
+            #update_manifest(item_manifest_file, {"basepath" => "#{@ingest_base}/item/"})
+            #DulHydra::Scripts::BatchIngest.prep_for_ingest(item_manifest_file)
+            #@pre_existing_item_pids = []
+            #Item.find_each { |i| @pre_existing_item_pids << i.pid }
+            #DulHydra::Scripts::BatchIngest.ingest(item_manifest_file)
+            @item = Item.new(:pid => "test:item1")
+            @item.identifier = "CCITT"
+            @item.save!
+            FileUtils.mkdir_p "#{@ingest_base}/component/master"          
+            FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
+            @component_manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
+            update_manifest(@component_manifest_file, {"basepath" => "#{@ingest_base}/component/"})
+            update_manifest(@component_manifest_file, {"autoparentidlength" => 5})
+            DulHydra::Scripts::BatchIngest.prep_for_ingest(@component_manifest_file)
+            @pre_existing_component_pids = []
+            Component.find_each { |c| @pre_existing_component_pids << c.pid }
+            DulHydra::Scripts::BatchIngest.ingest(@component_manifest_file)
+          end
+          after do
+            Component.find_each do |c|
+              if !@pre_existing_component_pids.include?(c.pid)
+                c.delete
+              end
+            end
+            @item.delete
+          end
+          context "correct parent-child relationship exists" do
+            it "should declare the ingest to be valid" do
+              DulHydra::Scripts::BatchIngest.validate_ingest(@component_manifest_file).should be_true
+            end
+          end
+          context "correct parent-child relationship does not exist" do
+            before do
+              Component.find_each do |c|
+                if !@pre_existing_component_pids.include?(c.pid)
+                  puts c.pid
+                  puts c.container
+                  c.container = nil
+                  c.save!
+                  puts c.container
+                end
+              end
+            end
+            it "should declare the ingest to be invalid" do
+              DulHydra::Scripts::BatchIngest.validate_ingest(@component_manifest_file).should be_false
+            end
           end          
         end
       end
