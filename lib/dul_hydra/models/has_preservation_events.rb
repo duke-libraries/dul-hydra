@@ -21,6 +21,15 @@ module DulHydra::Models
       # XXX better to get from index?
       preservation_events.select { |e| e.fixity_check? }
     end
+
+    def to_solr(solr_doc=Hash.new, opts={})
+      solr_doc = ActiveFedora::Base.to_solr(solr_doc, opts)
+      if fixity_checks.length > 0
+        solr_doc.merge!(ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date) => fixity_checks.last.event_date,
+                        ActiveFedora::SolrService.solr_name(:last_fixity_check_outcome, :symbol) => fixity_checks.last.event_outcome)
+        return solr_doc
+      end
+    end
       
   end
 end

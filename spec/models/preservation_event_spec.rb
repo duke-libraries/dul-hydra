@@ -12,10 +12,14 @@ end
 
 shared_examples "a preservation event having a success outcome" do
   its(:event_outcome) { should eq(PreservationEvent::SUCCESS) }
+  its(:success?) { should be_true }
+  its(:failure?) { should be_false }
 end
 
 shared_examples "a preservation event having a failure outcome" do
   its(:event_outcome) { should eq(PreservationEvent::FAILURE) }
+  its(:success?) { should be_false }
+  its(:failure?) { should be_true }
 end
 
 shared_examples "a fixity check preservation event" do # |dsID|
@@ -40,16 +44,14 @@ describe PreservationEvent do
   end
 
   context "::validate_checksum" do
+    subject { PreservationEvent.validate_checksum(obj, "content") }
+    after { obj.delete }
     context "success" do
       let(:obj) { FactoryGirl.create(:component_with_content) }
-      after { obj.delete }
-      subject { PreservationEvent.validate_checksum(obj, "content") }
-      it_should_behave_like "a fixity check preservation event" # , "content"
+      it_should_behave_like "a fixity check preservation event"
       it_should_behave_like "a preservation event having a success outcome"
     end
     context "failure" do
-      let(:obj) { FactoryGirl.create(:component_with_content) }
-      after { obj.delete }
       before do
         # Override datastream method #dsChecksumValid to always return false
         class << obj.datastreams["content"]
@@ -58,8 +60,8 @@ describe PreservationEvent do
           end
         end
       end
-      subject { PreservationEvent.validate_checksum(obj, "content") }
-      it_should_behave_like "a fixity check preservation event" # , "content"
+      let(:obj) { FactoryGirl.create(:component_with_content) }
+      it_should_behave_like "a fixity check preservation event"
       it_should_behave_like "a preservation event having a failure outcome"
     end
   end

@@ -23,10 +23,7 @@ class PreservationEvent < ActiveFedora::Base
   has_metadata :name => "eventMetadata", :type => DulHydra::Datastreams::PremisEventDatastream, 
                :versionable => false, :label => "Preservation event metadata"
 
-  #
-  # DulHydra::Models::Base includes DulHydra::Models::HasPreservationEvents
-  # which defines an inbound has_many relationship to PreservationEvent
-  #
+  # DulHydra::Models::HasPreservationEvents defines an inbound has_many relationship to PreservationEvent
   belongs_to :for_object, :property => :is_preservation_event_for, 
              :class_name => 'DulHydra::Models::HasPreservationEvents'
 
@@ -37,6 +34,14 @@ class PreservationEvent < ActiveFedora::Base
 
   def fixity_check?
     event_type == FIXITY_CHECK
+  end
+
+  def success?
+    event_outcome == SUCCESS
+  end
+
+  def failure?
+    event_outcome == FAILURE
   end
 
   def self.validate_checksum(obj, dsID)
@@ -54,7 +59,20 @@ class PreservationEvent < ActiveFedora::Base
   def self.validate_checksum!(obj, dsID)
     pe = PreservationEvent.validate_checksum(obj, dsID)
     pe.save!
+    obj.update_index # index last fixity check
     return pe
+  end
+
+  def to_solr(solr_doc=Hash.new, opts={})
+    solr_doc = super(solr_doc, opts)
+    solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :date) => event_date_time,
+                    ActiveFedora::SolrService.solr_name(:event_type, :symbol) => event_type,
+                    ActiveFedora::SolrService.solr_name(:event_outcome, :symbol) => event_outcome,
+                    ActiveFedora::SolrService.solr_name(:event_id_type, :symbol) => event_id_type,
+                    ActiveFedora::SolrService.solr_name(:event_id_value, :symbol) => event_id_value,                    
+                    ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol) => linking_object_id_type,
+                    ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol) => linking_object_id_value)
+    return solr_doc
   end
 
 end
