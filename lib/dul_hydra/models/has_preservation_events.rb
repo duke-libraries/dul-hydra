@@ -14,10 +14,11 @@ module DulHydra::Models
     end
 
     def validate_checksum!(dsID)
-      pe = self.validate_checksum(dsID)
-      pe.save!
-      self.preservation_events << pe
-      return pe
+      # pe = self.validate_checksum(dsID)
+      # pe.save!
+      # self.preservation_events << pe
+      # return pe
+      PreservationEvent.validate_checksum!(self, dsID)
     end
 
     def fixity_checks
