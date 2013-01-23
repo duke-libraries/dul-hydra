@@ -524,6 +524,23 @@ module DulHydra::Scripts
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
           end
         end
+        context "stored file does not match" do
+          before do
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                location_pattern = c.digitizationGuide.profile["dsLocation"]
+                location_pattern.gsub!(":","%3A")
+                location_pattern.gsub!("+","%2F")
+                locations = locate_datastream_content_file(location_pattern)
+                location = locations.first
+                FileUtils.cp("spec/fixtures/batch_ingest/BASE/collection/fmpexport/dpc_structural_metadata_vica.xls", location)
+              end
+            end            
+          end
+          it "should declare the ingest to be invalid" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
+          end          
+        end
       end
       context "external checksum data exists" do
         before do

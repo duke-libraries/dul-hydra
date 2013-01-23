@@ -131,8 +131,10 @@ module DulHydra::Scripts
     def self.validate_ingest(ingest_manifest)
       pids_in_master = true
       all_objects_exist = true
+      datastream_checksums_valid = true
       datastreams_populated = true
       checksums_match = true
+      parent_child_correct = true
       manifest = load_yaml(ingest_manifest)
       basepath = manifest[:basepath]
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
@@ -157,8 +159,15 @@ module DulHydra::Scripts
           end
           if validate_object_exists(model, pid)
             repository_object = ActiveFedora::Base.find(pid, :cast => true)
+            datastreams = repository_object.datastreams.values
+            datastreams.each do |datastream|
+              profile = datastream.profile(:validateChecksum => true)
+              if !profile.empty? && !profile["dsChecksumValid"]
+                datastream_checksums_valid = false
+              end
+            end
             metadata = object_metadata(object, manifest[:metadata])
-            expected_datastreams = []
+            expected_datastreams = [ "DC", "RELS-EXT" ]
             metadata.each do |m|
               expected_datastreams << datastream_name(m)
             end
@@ -179,7 +188,7 @@ module DulHydra::Scripts
           end
         end
       end
-      return pids_in_master && all_objects_exist && datastreams_populated && checksums_match
+      return pids_in_master && all_objects_exist && datastream_checksums_valid && datastreams_populated && checksums_match && parent_child_correct
     end
   end
 end

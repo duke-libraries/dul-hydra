@@ -363,12 +363,17 @@ module DulHydra::Scripts::Helpers
         datastreams.each do |datastream|
           if !object.datastreams.keys.include?(datastream)
             valid = false
-          elsif object.datastreams["#{datastream}"].content.blank?
+          elsif object.datastreams["#{datastream}"].size.nil? || object.datastreams["#{datastream}"].size == 0
             valid = false
           end
         end
         return valid
       end
+      
+      def datastream_checksum_valid?(profile)
+        return profile["dsChecksumValid"]
+      end
+      
     end
   end
 end

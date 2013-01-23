@@ -1,3 +1,5 @@
+require 'find'
+
 module BatchIngestSpecHelper
   FIXTURES_BATCH_INGEST_BASE = "spec/fixtures/batch_ingest/BASE"
   def setup_test_temp_dir
@@ -5,6 +7,15 @@ module BatchIngestSpecHelper
     ingest_base = "#{@test_temp_dir}/ingest"
     FileUtils.cp_r "#{FIXTURES_BATCH_INGEST_BASE}", "#{ingest_base}"
     return ingest_base
+  end
+  def locate_datastream_content_file(location_pattern)
+    locations = []
+    Find.find('jetty/fedora/test/data/datastreamStore/') do |f|
+      if f.match("#{location_pattern}")
+        locations << f
+      end
+    end
+    return locations
   end
   def qdc_filenames(manifest_filepath)
     filenames = Array.new
