@@ -25,6 +25,7 @@ module DulHydra::Datastreams
         t.outcome(:path => "eventOutcome")
         t.detail(:path => "eventOutcomeDetail") {
           t.note(:path => "eventOutcomeDetailNote")
+          t.extension(:path => "eventOutcomeDetailExtension")
         }
       }
       t.linking_object_identifier(:path => "linkingObjectIdentifier") {
