@@ -24,7 +24,7 @@ module DulHydra::Models
 
     def last_fixity_check_to_solr
       fixity_checks.empty? ? {} : {
-        ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date) => fixity_checks.last.event_date,
+        ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date) => fixity_checks.last.event_date_time,
         ActiveFedora::SolrService.solr_name(:last_fixity_check_outcome, :symbol) => fixity_checks.last.event_outcome
       }
     end
