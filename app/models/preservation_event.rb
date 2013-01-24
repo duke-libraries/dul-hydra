@@ -22,7 +22,7 @@ class PreservationEvent < ActiveFedora::Base
   DATASTREAM = "datastream"
   
   has_metadata :name => "eventMetadata", :type => DulHydra::Datastreams::PremisEventDatastream, 
-               :versionable => false, :label => "Preservation event metadata"
+               :versionable => true, :label => "Preservation event metadata"
 
   # DulHydra::Models::HasPreservationEvents defines an inbound has_many relationship to PreservationEvent
   belongs_to :for_object, :property => :is_preservation_event_for, 
@@ -46,22 +46,26 @@ class PreservationEvent < ActiveFedora::Base
   end
 
   def self.validate_checksum(obj, dsID)
-    pe = PreservationEvent.new(:label => "Datastream checksum validation")
-    pe.event_date_time = Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT)
-    pe.event_outcome = obj.datastreams[dsID].dsChecksumValid ? SUCCESS : FAILURE
-    pe.linking_object_id_type = DATASTREAM
-    pe.linking_object_id_value = "#{obj.internal_uri}/datastreams/#{dsID}?asOfDateTime=%s" % obj.datastreams[dsID].dsCreateDate.strftime("%Y-%m-%dT%H:%M:%S.%LZ")
-    pe.event_type = FIXITY_CHECK
-    pe.event_detail = "Datastream checksum validation"
-    pe.for_object = obj
-    return pe
+    PreservationEvent.new(:label => "Checksum validation", 
+                          :event_type => FIXITY_CHECK,
+                          :event_date_time => PreservationEvent.to_event_date_time,
+                          :event_outcome => obj.datastreams[dsID].dsChecksumValid ? SUCCESS : FAILURE,
+                          :event_detail => "Repository internal datastream checksum validation",
+                          :linking_object_id_type => DATASTREAM,
+                          :linking_object_id_value => PreservationEvent.ds_linking_object_id_value(obj, dsID),
+                          :for_object => obj
+                          )
   end
 
   def self.validate_checksum!(obj, dsID)
     pe = PreservationEvent.validate_checksum(obj, dsID)
     pe.save!
-    obj.update_index # index last fixity check
+    obj.update_index # to index last fixity check
     return pe
+  end
+
+  def self.ds_linking_object_id_value(obj, dsID)
+    "#{obj.internal_uri}/datastreams/#{dsID}?asOfDateTime=%s" % obj.datastreams[dsID].dsCreateDate.strftime("%Y-%m-%dT%H:%M:%S.%LZ")
   end
 
   def to_solr(solr_doc=Hash.new, opts={})
@@ -74,6 +78,10 @@ class PreservationEvent < ActiveFedora::Base
                     ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol) => linking_object_id_type,
                     ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol) => linking_object_id_value)
     return solr_doc
+  end
+
+  def self.to_event_date_time(t=Time.now.utc)
+    t.strftime(DATE_TIME_FORMAT)
   end
 
 end
