@@ -18,7 +18,9 @@ module DulHydra::Models
     end
 
     def fixity_checks
-      preservation_events.select { |e| e.fixity_check? }
+      # preservation_events.select { |e| e.fixity_check? }
+      PreservationEvent.find({ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri}, 
+                             {:sort => "#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc"})
     end
 
     def last_fixity_check
@@ -31,6 +33,16 @@ module DulHydra::Models
         ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date) => e.event_date_time,
         ActiveFedora::SolrService.solr_name(:last_fixity_check_outcome, :symbol) => e.event_outcome
       } : {}
+    end
+
+    module ClassMethods
+      def find_by_last_fixity_check(before_date=Time.now.utc, limit=100)
+        field = ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)
+        solr_date = before_date.respond_to?(:strftime) ? PreservationEvent.to_event_date_time : before_date
+        all({:sort => "#{field} asc",
+              :rows => limit.to_s,
+              :fq => "#{field}:[* TO #{solr_date}]"})
+      end
     end
 
   end
