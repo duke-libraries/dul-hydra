@@ -6,7 +6,7 @@ module DulHydra::Datastreams
     
     DEFAULT_MIME_TYPE = "application/octet-stream"
 
-    def content_file=(file)
+    def content_file=(file)      
       self.content = file
       self.mimeType = get_mimetype(file)
     end

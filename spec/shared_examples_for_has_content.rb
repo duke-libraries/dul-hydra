@@ -9,4 +9,12 @@ shared_examples "an object that has content" do
     end
   end
 
+  context "#validate_content_checksum" do
+
+  end
+
+  context "#validate_content_checksum!" do
+
+  end
+
 end
