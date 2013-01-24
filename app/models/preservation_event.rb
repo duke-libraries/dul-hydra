@@ -12,7 +12,8 @@ class PreservationEvent < ActiveFedora::Base
   
   # Event types
   FIXITY_CHECK = "fixity check" # http://id.loc.gov/vocabulary/preservationEvents/fixityCheck
-  INGEST       = "ingest"       # http://id.loc.gov/vocabulary/preservationEvents/ingest
+  INGESTION    = "ingestion"    # http://id.loc.gov/vocabulary/preservationEvents/ingestion
+  VALIDATION   = "validation"   # http://id.loc.gov/vocabulary/preservationEvents/validation
 
   # Event identifier types
   UUID = "UUID"
