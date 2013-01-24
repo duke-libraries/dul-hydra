@@ -46,26 +46,23 @@ class PreservationEvent < ActiveFedora::Base
   end
 
   def self.validate_checksum(obj, dsID)
-    PreservationEvent.new(:label => "Checksum validation", 
-                          :event_type => FIXITY_CHECK,
-                          :event_date_time => PreservationEvent.to_event_date_time,
-                          :event_outcome => obj.datastreams[dsID].dsChecksumValid ? SUCCESS : FAILURE,
-                          :event_detail => "Repository internal datastream checksum validation",
-                          :linking_object_id_type => DATASTREAM,
-                          :linking_object_id_value => PreservationEvent.ds_linking_object_id_value(obj, dsID),
-                          :for_object => obj
-                          )
+    ds = obj.datastreams[dsID]
+    new(:label => "Checksum validation", 
+        :event_type => FIXITY_CHECK,
+        :event_date_time => to_event_date_time,
+        :event_outcome => ds.dsChecksumValid ? SUCCESS : FAILURE,
+        :event_detail => "Internal validation of checksum on repository object #{obj.internal_uri} datastream \"#{dsID}\" at version \"#{ds.dsVersionID}\" (created on #{DulHydra::Utils.ds_as_of_date_time(ds)}). DulHydra version #{DulHydra::VERSION}.",
+        :linking_object_id_type => DATASTREAM,
+        :linking_object_id_value => DulHydra::Utils.ds_internal_uri(obj, dsID),
+        :for_object => obj
+        )
   end
 
   def self.validate_checksum!(obj, dsID)
-    pe = PreservationEvent.validate_checksum(obj, dsID)
+    pe = validate_checksum(obj, dsID)
     pe.save!
-    obj.update_index # to index last fixity check
+    obj.update_index # index last fixity check on for_object
     return pe
-  end
-
-  def self.ds_linking_object_id_value(obj, dsID)
-    "#{obj.internal_uri}/datastreams/#{dsID}?asOfDateTime=%s" % obj.datastreams[dsID].dsCreateDate.strftime("%Y-%m-%dT%H:%M:%S.%LZ")
   end
 
   def to_solr(solr_doc=Hash.new, opts={})
