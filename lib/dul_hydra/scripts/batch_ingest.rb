@@ -49,7 +49,8 @@ module DulHydra::Scripts
       manifest_metadata = manifest[:metadata] unless manifest[:metadata].blank?
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
       for object in manifest[:objects]
-        event_details = "Batch ingest"
+        event_details = "Batch ingest\n"
+        event_details << "DulHydra version #{DulHydra::VERSION}\n"
         event_details << "Manifest: #{ingest_manifest}\n"
         model = object[:model] || manifest[:model]
         if model.blank?

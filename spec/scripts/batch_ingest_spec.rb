@@ -202,6 +202,9 @@ module DulHydra::Scripts
           after do
             Collection.find_each do |c|
               if !@pre_existing_collection_pids.include?(c.pid)
+                c.preservation_events.each do |pe|
+                  pe.delete
+                end
                 c.delete
               end
             end
@@ -242,6 +245,9 @@ module DulHydra::Scripts
           after do
             Collection.find_each do |c|
               if !@pre_existing_collection_pids.include?(c.pid)
+                c.preservation_events.each do |pe|
+                  pe.delete
+                end
                 c.delete
               end
             end
@@ -282,6 +288,9 @@ module DulHydra::Scripts
           after do
             Collection.find_each do |c|
               if !@pre_existing_collection_pids.include?(c.pid)
+                c.preservation_events.each do |pe|
+                  pe.delete
+                end
                 c.delete
               end
             end
@@ -324,6 +333,9 @@ module DulHydra::Scripts
           @expected_content.close
           Component.find_each do |c|
             if !@pre_existing_component_pids.include?(c.pid)
+              c.preservation_events.each do |pe|
+                pe.delete
+              end
               c.delete
             end
           end
@@ -367,6 +379,9 @@ module DulHydra::Scripts
             after do
               Component.find_each do |c|
                 if !@pre_existing_component_pids.include?(c.pid)
+                  c.preservation_events.each do |pe|
+                    pe.delete
+                  end
                   c.delete
                 end
               end
@@ -413,6 +428,9 @@ module DulHydra::Scripts
             after do
               Item.find_each do |i|
                 if !@pre_existing_item_pids.include?(i.pid)
+                  i.preservation_events.each do |pe|
+                    pe.delete
+                  end
                   i.delete
                 end
               end
@@ -494,6 +512,9 @@ module DulHydra::Scripts
           @adminPolicy.delete
           Collection.find_each do |c|
             if !@pre_existing_collection_pids.include?(c.pid)
+              c.preservation_events.each do |pe|
+                pe.delete
+              end
               c.delete
             end
           end
@@ -530,6 +551,9 @@ module DulHydra::Scripts
           before do
             Collection.find_each do |c|
               if !@pre_existing_collection_pids.include?(c.pid)
+                c.preservation_events.each do |pe|
+                  pe.delete
+                end
                 c.delete
               end
             end
@@ -604,11 +628,17 @@ module DulHydra::Scripts
           after do
             Item.find_each do |i|
               if !@pre_existing_item_pids.include?(i.pid)
+                i.preservation_events.each do |pe|
+                  pe.delete
+                end
                 i.delete
               end
             end
             Collection.find_each do |c|
               if !@pre_existing_collection_pids.include?(c.pid)
+                c.preservation_events.each do |pe|
+                  pe.delete
+                end
                 c.delete
               end
             end
@@ -650,6 +680,9 @@ module DulHydra::Scripts
           after do
             Component.find_each do |c|
               if !@pre_existing_component_pids.include?(c.pid)
+                c.preservation_events.each do |pe|
+                  pe.delete
+                end                
                 c.delete
               end
             end
@@ -689,6 +722,9 @@ module DulHydra::Scripts
         after do
           Component.find_each do |c|
             if !@pre_existing_component_pids.include?(c.pid)
+              c.preservation_events.each do |pe|
+                pe.delete
+              end
               c.delete
             end
           end
