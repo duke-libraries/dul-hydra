@@ -44,14 +44,15 @@ module DulHydra::Scripts
       end
     end
     def self.ingest(ingest_manifest)
+      log_header = "Batch ingest\n"
+      log_header << "DulHydra version #{DulHydra::VERSION}\n"
+      log_header << "Manifest: #{ingest_manifest}\n"
       manifest = load_yaml(ingest_manifest)
       manifest_apo = AdminPolicy.find(manifest[:adminpolicy]) unless manifest[:adminpolicy].blank?
       manifest_metadata = manifest[:metadata] unless manifest[:metadata].blank?
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
       for object in manifest[:objects]
-        event_details = "Batch ingest\n"
-        event_details << "DulHydra version #{DulHydra::VERSION}\n"
-        event_details << "Manifest: #{ingest_manifest}\n"
+        event_details = log_header
         model = object[:model] || manifest[:model]
         if model.blank?
           raise "Missing model"
@@ -104,7 +105,7 @@ module DulHydra::Scripts
         end
         ingest_object.save
         master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)
-        write_ingestion_event(ingest_object, event_details)
+        write_preservation_event(ingest_object, PreservationEvent::INGESTION, PreservationEvent::SUCCESS, event_details)
       end
       File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
     end
@@ -137,12 +138,10 @@ module DulHydra::Scripts
       end
     end
     def self.validate_ingest(ingest_manifest)
-      pids_in_master = true
-      all_objects_exist = true
-      datastream_checksums_valid = true
-      datastreams_populated = true
-      checksums_match = true
-      parent_child_correct = true
+      log_header = "Validate ingest\n"
+      log_header << "DulHydra version #{DulHydra::VERSION}\n"
+      log_header << "Manifest: #{ingest_manifest}\n"
+      ingest_valid = true
       manifest = load_yaml(ingest_manifest)
       basepath = manifest[:basepath]
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
@@ -152,28 +151,42 @@ module DulHydra::Scripts
       end
       objects = manifest[:objects]
       objects.each do |object|
+        repository_object = nil
+        pid_in_master = true
+        object_exists = true
+        datastream_checksums_valid = true
+        datastreams_populated = true
+        checksum_matches = true
+        parent_child_correct = true
+        event_details = log_header
+        event_details << "Identifier(s): "
+        case
+        when object[:identifier].is_a?(String)
+          event_details << "#{object[:identifier]}"
+        when object[:identifier].is_a?(Array)
+          event_details << "#{object[:identifier].join(",")}"
+        end
+        event_details << "\n"
         begin
+          event_details << "#{VERIFYING}PID found in master file"
           pid = get_pid_from_master(master, key_identifier(object))
           if pid.blank?
-            pids_in_master = false
+            pid_in_master = false
           end
         rescue
-          pids_in_master = false
+          pid_in_master = false
         end
+        event_details << (pid_in_master ? PASS : FAIL) << "\n"
         if !pid.blank?
           model = object[:model] || manifest[:model]
           if model.blank?
             raise "Missing model for #{key_identifier(object)}"
           end
-          if validate_object_exists(model, pid)
+          event_details << "#{VERIFYING}#{model} object found in repository"
+          object_exists = validate_object_exists(model, pid)
+          event_details << (object_exists ? PASS : FAIL) << "\n"
+          if object_exists
             repository_object = ActiveFedora::Base.find(pid, :cast => true)
-            datastreams = repository_object.datastreams.values
-            datastreams.each do |datastream|
-              profile = datastream.profile(:validateChecksum => true)
-              if !profile.empty? && !profile["dsChecksumValid"]
-                datastream_checksums_valid = false
-              end
-            end
             metadata = object_metadata(object, manifest[:metadata])
             expected_datastreams = [ "DC", "RELS-EXT" ]
             metadata.each do |m|
@@ -185,37 +198,63 @@ module DulHydra::Scripts
             if !object[:contentstructure].blank? || !manifest[:contentstructure].blank?
               expected_datastreams << datastream_name("contentstructure")
             end
-            if !validate_populated_datastreams(expected_datastreams.flatten, repository_object)
-              datastreams_populated = false
+            expected_datastreams.flatten.each do |datastream|
+              event_details << "#{VERIFYING}#{datastream} datastream present and not empty"
+              datastream_populated = validate_datastream_populated(datastream, repository_object)
+              event_details << (datastream_populated ? PASS : FAIL) << "\n"
+              if !datastream_populated
+                datastreams_populated = false
+              end
             end
-          else
-            all_objects_exist = false
-          end
-          if !checksum_doc.nil?
-            checksums_match = verify_checksum(repository_object, key_identifier(object), checksum_doc)
-          end
-          parentid = object[:parentid] || manifest[:parentid]
-          if parentid.blank?
-            if !manifest[:autoparentidlength].blank?
-              parentid = key_identifier(object).slice(0, manifest[:autoparentidlength])
+            datastreams = repository_object.datastreams.values
+            datastreams.each do |datastream|
+              profile = datastream.profile(:validateChecksum => true)
+              if !profile.empty?
+                event_details << "#{VERIFYING}#{datastream.dsid} datastream internal checksum"
+                event_details << (profile["dsChecksumValid"] ? PASS : FAIL) << "\n"
+                if  !profile["dsChecksumValid"]
+                  datastream_checksums_valid = false
+                end
+              end
             end
-          end
-          if !parentid.blank?
-            parent = get_parent(repository_object)
-            if parent.nil? || !parent.identifier.include?(parentid)
-              parent_child_correct = false
+            if !checksum_doc.nil?
+              event_details << "#{VERIFYING}content datastream external checksum"
+              checksum_matches = verify_checksum(repository_object, key_identifier(object), checksum_doc)
+              event_details << (checksum_matches ? PASS : FAIL) << "\n"
             end
-            if parent_child_correct
-              children = get_children(parent)
-              if children.blank? || !children.include?(repository_object)
+            parentid = object[:parentid] || manifest[:parentid]
+            if parentid.blank?
+              if !manifest[:autoparentidlength].blank?
+                parentid = key_identifier(object).slice(0, manifest[:autoparentidlength])
+              end
+            end
+            if !parentid.blank?
+              event_details << "#{VERIFYING}child relationship to identifier #{parentid}"
+              parent = get_parent(repository_object)
+              if parent.nil? || !parent.identifier.include?(parentid)
                 parent_child_correct = false
               end
+              if parent_child_correct
+                children = get_children(parent)
+                if children.blank? || !children.include?(repository_object)
+                  parent_child_correct = false
+                end
+              end
+              event_details << (parent_child_correct ? PASS : FAIL) << "\n"
             end
           end
         end
+        object_valid = pid_in_master && object_exists && datastream_checksums_valid && datastreams_populated && checksum_matches && parent_child_correct
+        event_details << "Object ingest..." << (object_valid ? "VALIDATES" : "DOES NOT VALIDATE")
+        if !object_valid
+          ingest_valid = false
+        end
+        if !repository_object.nil?
+          outcome = object_valid ? PreservationEvent::SUCCESS : PreservationEvent::FAILURE
+          write_preservation_event(repository_object, PreservationEvent::VALIDATION, outcome, event_details)
+        end
       end
-      return pids_in_master && all_objects_exist && datastream_checksums_valid && datastreams_populated \
-              && checksums_match && parent_child_correct
+      return ingest_valid
     end
   end
 end

@@ -14,6 +14,9 @@ module DulHydra::Scripts::Helpers
     CONTENTDM_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/CONTENTdm2QDC.xsl"
     DIGITIZATIONGUIDE_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/DigitizationGuide2QDC.xsl"
     MARCXML_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/MARCXML2QDC.xsl"
+    VERIFYING = "Verifying..."
+    PASS = "...PASS"
+    FAIL = "...FAIL"
 
     module ClassMethods
       
@@ -320,15 +323,21 @@ module DulHydra::Scripts::Helpers
         end
       end
       
-      def write_ingestion_event(ingest_object, details)
-        event = PreservationEvent.new(:label => "Object ingestion")
-        event.event_date_time = Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT)
-        event.event_outcome = PreservationEvent::SUCCESS
-        event.linking_object_id_type = PreservationEvent::OBJECT
-        event.linking_object_id_value = ingest_object.internal_uri
-        event.event_type = PreservationEvent::INGESTION
-        event.event_detail = details
-        event.for_object = ingest_object
+      def write_preservation_event(ingest_object, event_type, event_outcome, details)
+        event_label = case event_type
+        when PreservationEvent::INGESTION
+          "Object ingestion"
+        when PreservationEvent::VALIDATION
+          "Object ingest validation"
+        end
+        event = PreservationEvent.new(:label => event_label,
+                                      :event_type => event_type,
+                                      :event_date_time => Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT),
+                                      :event_outcome => event_outcome,
+                                      :linking_object_id_type => PreservationEvent::OBJECT,
+                                      :linking_object_id_value => ingest_object.internal_uri,
+                                      :event_detail => details,
+                                      :for_object => ingest_object)
         event.save
       end
       
@@ -391,14 +400,12 @@ module DulHydra::Scripts::Helpers
         return valid
       end
 
-      def validate_populated_datastreams(datastreams, object)
+      def validate_datastream_populated(datastream, object)
         valid = true
-        datastreams.each do |datastream|
-          if !object.datastreams.keys.include?(datastream)
-            valid = false
-          elsif object.datastreams["#{datastream}"].size.nil? || object.datastreams["#{datastream}"].size == 0
-            valid = false
-          end
+        if !object.datastreams.keys.include?(datastream)
+          valid = false
+        elsif object.datastreams["#{datastream}"].size.nil? || object.datastreams["#{datastream}"].size == 0
+          valid = false
         end
         return valid
       end

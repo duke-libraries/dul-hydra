@@ -523,6 +523,38 @@ module DulHydra::Scripts
           it "should declare the ingest to be valid" do
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_true
           end
+          it "should create a success validation preservation event in the repository" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            collections = []
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                collections << c
+              end
+            end
+            collections.each do |collection|
+              events = collection.preservation_events
+              events.should_not be_empty
+              validation_events = []
+              events.each do |event|
+                if event.event_type == PreservationEvent::VALIDATION
+                  validation_events << event
+                end
+              end
+              validation_events.should_not be_empty
+              validation_events.size.should == 1
+              event = validation_events.first
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+              event.event_outcome.should == PreservationEvent::SUCCESS
+              event.linking_object_id_type.should == PreservationEvent::OBJECT
+              event.linking_object_id_value.should == collection.internal_uri
+              event.event_detail.should include("Identifier(s): collection_1")
+              event.event_detail.should include("PASS")
+              event.event_detail.should_not include("FAIL")
+              event.event_detail.should include ("VALIDATES")
+              event.for_object.should == collection
+            end
+          end
         end
         context "manifest object is missing from master file" do
           before do

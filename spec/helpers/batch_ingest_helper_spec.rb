@@ -450,18 +450,19 @@ module DulHydra::Scripts::Helpers
       context "datastreams all exist" do
         context "datastreams are all populated" do
           it "should return true" do
-            MockBatchIngest.validate_populated_datastreams(["descMetadata", "contentdm"], @item).should be_true
+            MockBatchIngest.validate_datastream_populated("descMetadata", @item).should be_true
+            MockBatchIngest.validate_datastream_populated("contentdm", @item).should be_true
           end
         end
         context "datastreams are not all populated" do
           it "should return false" do
-            MockBatchIngest.validate_populated_datastreams(["descMetadata", "marcXML"], @item).should be_false            
+            MockBatchIngest.validate_datastream_populated("marcXML", @item).should be_false            
           end
         end
       end
       context "datastreams do not all exist" do
         it "should return false" do
-          MockBatchIngest.validate_populated_datastreams(["descMetadata", "content"], @item).should be_false
+          MockBatchIngest.validate_datastream_populated("content", @item).should be_false
         end
       end
     end
