@@ -211,9 +211,14 @@ module DulHydra::Scripts
               profile = datastream.profile(:validateChecksum => true)
               if !profile.empty?
                 event_details << "#{VERIFYING}#{datastream.dsid} datastream internal checksum"
-                event_details << (profile["dsChecksumValid"] ? PASS : FAIL) << "\n"
-                if  !profile["dsChecksumValid"]
-                  datastream_checksums_valid = false
+                if datastream.dsid == "content"
+                  preservation_event = PreservationEvent.validate_checksum!(repository_object, datastream.dsid)
+                  event_details << (preservation_event.event_outcome == PreservationEvent::SUCCESS ? PASS : FAIL)
+                else
+                  event_details << (profile["dsChecksumValid"] ? PASS : FAIL) << "\n"
+                  if  !profile["dsChecksumValid"]
+                    datastream_checksums_valid = false
+                  end
                 end
               end
             end

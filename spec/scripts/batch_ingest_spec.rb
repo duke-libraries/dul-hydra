@@ -923,6 +923,102 @@ module DulHydra::Scripts
           end
         end
       end
+      context "object contains content" do
+        before do
+          FileUtils.mkdir_p "#{@ingest_base}/component/master"
+          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
+          @manifest_file = "#{@ingest_base}/manifests/simple_component_manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
+          DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
+          @pre_existing_component_pids = []
+          Component.find_each { |c| @pre_existing_component_pids << c.pid }
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
+        end
+        after do
+          Component.find_each do |c|
+            if !@pre_existing_component_pids.include?(c.pid)
+              c.preservation_events.each do |pe|
+                pe.delete
+              end
+              c.delete
+            end
+          end
+        end
+        context "internal checksum validates for content datastream" do
+          it "should create a success fixity check event in the repository" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            components = []
+            Component.find_each do |c|
+              if !@pre_existing_component_pids.include?(c.pid)
+                components << c
+              end
+            end
+            components.each do |component|
+              events = component.preservation_events
+              events.should_not be_empty
+              fixity_check_events = []
+              events.each do |event|
+                if event.event_type == PreservationEvent::FIXITY_CHECK
+                  fixity_check_events << event
+                end
+              end
+              fixity_check_events.should_not be_empty
+              fixity_check_events.size.should == 1
+              event = fixity_check_events.first
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+              event.event_outcome.should == PreservationEvent::SUCCESS
+              event.linking_object_id_type.should == PreservationEvent::DATASTREAM
+              event.linking_object_id_value.should == DulHydra::Utils.ds_internal_uri(component, "content")
+              event.event_detail.should include("Internal validation of checksum")
+              event.for_object.should == component
+            end
+          end
+        end
+        context "internal checksum does not validate for content datastream" do
+          before do
+            Component.find_each do |c|
+              if !@pre_existing_component_pids.include?(c.pid)
+                location_pattern = c.content.profile["dsLocation"]
+                location_pattern.gsub!(":","%3A")
+                location_pattern.gsub!("+","%2F")
+                locations = locate_datastream_content_file(location_pattern)
+                location = locations.first
+                FileUtils.cp("spec/fixtures/library-devil.tiff", location)
+              end
+            end
+          end
+          it "should create a failure fixity check event in the repository" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            components = []
+            Component.find_each do |c|
+              if !@pre_existing_component_pids.include?(c.pid)
+                components << c
+              end
+            end
+            components.each do |component|
+              events = component.preservation_events
+              events.should_not be_empty
+              fixity_check_events = []
+              events.each do |event|
+                if event.event_type == PreservationEvent::FIXITY_CHECK
+                  fixity_check_events << event
+                end
+              end
+              fixity_check_events.should_not be_empty
+              fixity_check_events.size.should == 1
+              event = fixity_check_events.first
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+              event.event_outcome.should == PreservationEvent::FAILURE
+              event.linking_object_id_type.should == PreservationEvent::DATASTREAM
+              event.linking_object_id_value.should == DulHydra::Utils.ds_internal_uri(component, "content")
+              event.event_detail.should include("Internal validation of checksum")
+              event.for_object.should == component
+            end            
+          end
+        end        
+      end
     end  
   end
 end
