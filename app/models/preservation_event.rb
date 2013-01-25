@@ -20,6 +20,7 @@ class PreservationEvent < ActiveFedora::Base
 
   # Linking object identifier types
   DATASTREAM = "datastream"
+  OBJECT = "object"
   
   has_metadata :name => "eventMetadata", :type => DulHydra::Datastreams::PremisEventDatastream, 
                :versionable => false, :label => "Preservation event metadata"

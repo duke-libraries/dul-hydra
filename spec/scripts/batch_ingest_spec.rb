@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'fileutils'
 require "#{Rails.root}/spec/scripts/batch_ingest_spec_helper"
+require 'shared_examples_for_batch_ingest'
 
 RSpec.configure do |c|
   c.include BatchIngestSpecHelper
@@ -38,20 +39,6 @@ module DulHydra::Scripts
           end
         end
       end
-      #context "checksum file exists" do
-      #  before do
-      #    @manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
-      #    update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
-      #    FileUtils.mkdir_p "#{@ingest_base}/component/master"
-      #    FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
-      #  end
-      #  it "should add the appropriate checksum to the master file entry for each object" do
-      #    DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-      #    result = File.open("#{@ingest_base}/component/master/master.xml") { |f| Nokogiri::XML(f) }
-      #    expected = File.open("spec/fixtures/batch_ingest/results/component_master.xml") { |f| Nokogiri::XML(f) }
-      #    result.should be_equivalent_to(expected)          
-      #  end
-      #end
       context "consolidated file is to be split into individual files" do
         before do
           @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
@@ -107,6 +94,9 @@ module DulHydra::Scripts
           @collection.delete
           Item.find_each do |i|
             if !@pre_existing_item_pids.include?(i.pid)
+              i.preservation_events.each do |pe|
+                pe.delete
+              end
               i.delete
             end
           end
@@ -156,6 +146,42 @@ module DulHydra::Scripts
             content_xml = item.descMetadata.content { |f| Nokogiri::XML(f) }
             expected_xml = Nokogiri::XML(File.open("#{@ingest_base}/item/qdc/#{identifier}.xml"))
             content_xml.should be_equivalent_to(expected_xml)
+          end
+        end
+        it "should create an ingestion preservation event in the repository" do
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+          items = []
+          Item.find_each do |i|
+            if !@pre_existing_item_pids.include?(i.pid)
+              items << i
+            end
+          end
+          items.each do |item|
+            events = item.preservation_events
+            events.should_not be_empty
+            ingestion_events = []
+            events.each do |event|
+              if event.event_type == PreservationEvent::INGESTION
+                ingestion_events << event
+              end
+            end
+            ingestion_events.should_not be_empty
+            ingestion_events.size.should == 1
+            event = ingestion_events.first
+            DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+            DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+            event.event_outcome.should == PreservationEvent::SUCCESS
+            event.linking_object_id_type.should == PreservationEvent::OBJECT
+            event.linking_object_id_value.should == item.internal_uri
+            case item.identifier
+            when [ "item_1" ]
+              event.event_detail.should include("Identifier(s): item_1")
+            when [ "item_2", "item_3" ]
+              event.event_detail.should include("Identifier(s): item_2,item_3")
+            when [ "item_4" ]
+              event.event_detail.should include("Identifier(s): item_4")
+            end
+            event.for_object.should == item
           end
         end
       end
@@ -608,22 +634,6 @@ module DulHydra::Scripts
         end
         context "parent ID can be determined algorithmically from child ID" do
           before do
-            #FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
-            #FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
-            #collection_manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
-            #update_manifest(collection_manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
-            #DulHydra::Scripts::BatchIngest.prep_for_ingest(collection_manifest_file)
-            #@pre_existing_collection_pids = []
-            #Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-            #DulHydra::Scripts::BatchIngest.ingest(collection_manifest_file)
-            #FileUtils.mkdir_p "#{@ingest_base}/item/master"          
-            #FileUtils.mkdir_p "#{@ingest_base}/item/qdc"          
-            #item_manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
-            #update_manifest(item_manifest_file, {"basepath" => "#{@ingest_base}/item/"})
-            #DulHydra::Scripts::BatchIngest.prep_for_ingest(item_manifest_file)
-            #@pre_existing_item_pids = []
-            #Item.find_each { |i| @pre_existing_item_pids << i.pid }
-            #DulHydra::Scripts::BatchIngest.ingest(item_manifest_file)
             @item = Item.new(:pid => "test:item1")
             @item.identifier = "CCITT"
             @item.save!

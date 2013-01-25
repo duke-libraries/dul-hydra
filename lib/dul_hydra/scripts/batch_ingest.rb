@@ -49,6 +49,8 @@ module DulHydra::Scripts
       manifest_metadata = manifest[:metadata] unless manifest[:metadata].blank?
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
       for object in manifest[:objects]
+        event_details = "Batch ingest"
+        event_details << "Manifest: #{ingest_manifest}\n"
         model = object[:model] || manifest[:model]
         if model.blank?
           raise "Missing model"
@@ -59,10 +61,19 @@ module DulHydra::Scripts
         when "Component" then Component.new
         else raise "Invalid model"
         end
+        event_details << "Model: #{model}\n"
+        event_details << "Identifier(s): "
+        case
+        when object[:identifier].is_a?(String)
+          event_details << "#{object[:identifier]}\n"
+        when object[:identifier].is_a?(Array)
+          event_details << "#{object[:identifier].join(",")}\n"
+        end
         ingest_object.label = object[:label] || manifest[:label]
         ingest_object.admin_policy = object_apo(object, manifest_apo) unless object_apo(object, manifest_apo).nil?
         ingest_object.save
         metadata = object_metadata(object, manifest[:metadata])
+        event_details << "Metadata: #{metadata.join(",")}\n"
         if object_metadata(object, manifest_metadata).include?("qdc")
           qdc = File.open("#{manifest[:basepath]}qdc/#{key_identifier(object)}.xml") { |f| f.read }
           ingest_object.descMetadata.content = qdc
@@ -76,7 +87,9 @@ module DulHydra::Scripts
         end
         content_spec = object[:content] || manifest[:content]
         if !content_spec.blank?
-          ingest_object = add_content_file(ingest_object, content_spec, key_identifier(object));
+          filename = "#{content_spec[:location]}#{key_identifier(object)}#{content_spec[:extension]}"
+          ingest_object = add_content_file(ingest_object, filename)
+          event_details << "Content file: #{filename}\n"
         end
         parentid = object[:parentid] || manifest[:parentid]
         if parentid.blank?
@@ -86,9 +99,11 @@ module DulHydra::Scripts
         end
         if !parentid.blank?
           ingest_object = set_parent(ingest_object, model, :id, parentid)
+          event_details << "Parent id: #{parentid}\n"
         end
         ingest_object.save
         master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)
+        write_ingestion_event(ingest_object, event_details)
       end
       File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
     end

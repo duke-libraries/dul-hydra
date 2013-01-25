@@ -182,9 +182,8 @@ module DulHydra::Scripts::Helpers
         return metadata
       end
       
-      def add_content_file(ingest_object, content_spec, identifier)
+      def add_content_file(ingest_object, filename)
         if ingest_object.datastreams.keys.include?("content")
-          filename = "#{content_spec[:location]}#{identifier}#{content_spec[:extension]}"
           file = File.open(filename)
           ingest_object.content.content_file = file
           ingest_object.content.dsLabel = "Content file for this object"
@@ -319,6 +318,18 @@ module DulHydra::Scripts::Helpers
         when "Component"
           Item
         end
+      end
+      
+      def write_ingestion_event(ingest_object, details)
+        event = PreservationEvent.new(:label => "Object ingestion")
+        event.event_date_time = Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT)
+        event.event_outcome = PreservationEvent::SUCCESS
+        event.linking_object_id_type = PreservationEvent::OBJECT
+        event.linking_object_id_value = ingest_object.internal_uri
+        event.event_type = PreservationEvent::INGESTION
+        event.event_detail = details
+        event.for_object = ingest_object
+        event.save
       end
       
       def create_content_metadata_document(repository_object, sequencing_start, sequencing_length)
