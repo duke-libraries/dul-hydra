@@ -606,6 +606,35 @@ module DulHydra::Scripts
           it "should declare the ingest to be invalid" do
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
           end
+          it "should create a failure validation preservation event in the repository" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            collections = []
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                collections << c
+              end
+            end
+            collections.each do |collection|
+              events = collection.preservation_events
+              events.should_not be_empty
+              validation_events = []
+              events.each do |event|
+                if event.event_type == PreservationEvent::VALIDATION
+                  validation_events << event
+                end
+              end
+              validation_events.should_not be_empty
+              validation_events.size.should == 1
+              event = validation_events.first
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+              event.event_outcome.should == PreservationEvent::FAILURE
+              event.linking_object_id_value.should == collection.internal_uri
+              event.event_detail.should include("marcXML datastream present and not empty...FAIL")
+              event.event_detail.should include ("DOES NOT VALIDATE")
+              event.for_object.should == collection
+            end
+          end
         end
         context "stored file does not match" do
           before do
@@ -622,7 +651,36 @@ module DulHydra::Scripts
           end
           it "should declare the ingest to be invalid" do
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
-          end          
+          end
+          it "should create a failure validation preservation event in the repository" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            collections = []
+            Collection.find_each do |c|
+              if !@pre_existing_collection_pids.include?(c.pid)
+                collections << c
+              end
+            end
+            collections.each do |collection|
+              events = collection.preservation_events
+              events.should_not be_empty
+              validation_events = []
+              events.each do |event|
+                if event.event_type == PreservationEvent::VALIDATION
+                  validation_events << event
+                end
+              end
+              validation_events.should_not be_empty
+              validation_events.size.should == 1
+              event = validation_events.first
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+              event.event_outcome.should == PreservationEvent::FAILURE
+              event.linking_object_id_value.should == collection.internal_uri
+              event.event_detail.should include("digitizationGuide datastream internal checksum...FAIL")
+              event.event_detail.should include ("DOES NOT VALIDATE")
+              event.for_object.should == collection
+            end
+          end
         end
       end
       context "object is child to parent object" do
@@ -692,6 +750,35 @@ module DulHydra::Scripts
             it "should declare the ingest to be invalid" do
               DulHydra::Scripts::BatchIngest.validate_ingest(@item_manifest_file).should be_false
             end
+            it "should create a failure validation preservation event in the repository" do
+              DulHydra::Scripts::BatchIngest.validate_ingest(@item_manifest_file)
+              items = []
+              Item.find_each do |i|
+                if !@pre_existing_item_pids.include?(i.pid)
+                  items << i
+                end
+              end
+              items.each do |item|
+                events = item.preservation_events
+                events.should_not be_empty
+                validation_events = []
+                events.each do |event|
+                  if event.event_type == PreservationEvent::VALIDATION
+                    validation_events << event
+                  end
+                end
+                validation_events.should_not be_empty
+                validation_events.size.should == 1
+                event = validation_events.first
+                DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+                DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+                event.event_outcome.should == PreservationEvent::FAILURE
+                event.linking_object_id_value.should == item.internal_uri
+                event.event_detail.should include("child relationship to identifier collection_1...FAIL")
+                event.event_detail.should include ("DOES NOT VALIDATE")
+                event.for_object.should == item
+              end
+            end
           end
         end
         context "parent ID can be determined algorithmically from child ID" do
@@ -737,6 +824,35 @@ module DulHydra::Scripts
             it "should declare the ingest to be invalid" do
               DulHydra::Scripts::BatchIngest.validate_ingest(@component_manifest_file).should be_false
             end
+            it "should create a failure validation preservation event in the repository" do
+              DulHydra::Scripts::BatchIngest.validate_ingest(@component_manifest_file)
+              components = []
+              Component.find_each do |c|
+                if !@pre_existing_component_pids.include?(c.pid)
+                  components << c
+                end
+              end
+              components.each do |component|
+                events = component.preservation_events
+                events.should_not be_empty
+                validation_events = []
+                events.each do |event|
+                  if event.event_type == PreservationEvent::VALIDATION
+                    validation_events << event
+                  end
+                end
+                validation_events.should_not be_empty
+                validation_events.size.should == 1
+                event = validation_events.first
+                DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+                DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+                event.event_outcome.should == PreservationEvent::FAILURE
+                event.linking_object_id_value.should == component.internal_uri
+                event.event_detail.should include ("child relationship to identifier CCITT...FAIL")
+                event.event_detail.should include ("DOES NOT VALIDATE")
+                event.for_object.should == component
+              end
+            end
           end          
         end
       end
@@ -775,6 +891,35 @@ module DulHydra::Scripts
           end
           it "should declare the ingest to be invalid" do
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
+          end
+          it "should create a failure validation preservation event in the repository" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            components = []
+            Component.find_each do |c|
+              if !@pre_existing_component_pids.include?(c.pid)
+                components << c
+              end
+            end
+            components.each do |component|
+              events = component.preservation_events
+              events.should_not be_empty
+              validation_events = []
+              events.each do |event|
+                if event.event_type == PreservationEvent::VALIDATION
+                  validation_events << event
+                end
+              end
+              validation_events.should_not be_empty
+              validation_events.size.should == 1
+              event = validation_events.first
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+              event.event_outcome.should == PreservationEvent::FAILURE
+              event.linking_object_id_value.should == component.internal_uri
+              event.event_detail.should include ("content datastream external checksum...FAIL")
+              event.event_detail.should include ("DOES NOT VALIDATE")
+              event.for_object.should == component
+            end
           end
         end
       end
