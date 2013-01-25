@@ -57,15 +57,6 @@ module DulHydra::Datastreams
       return builder.doc
     end
 
-    # def to_solr(solr_doc)
-    #   solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :date) => event_date_time.first,
-    #                   ActiveFedora::SolrService.solr_name(:event_type, :symbol) => event_type.first,
-    #                   ActiveFedora::SolrService.solr_name(:event_outcome, :symbol) => event_outcome.first,
-    #                   ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol) => linking_object_id_type.first,
-    #                   ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol) => linking_object_id_value.first)
-    #   solr_doc
-    # end
-
   end
 
 end
