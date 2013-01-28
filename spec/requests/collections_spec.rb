@@ -120,8 +120,8 @@ describe "Collections" do
       @collection.items << @member
     end
     after do
-      @member.delete
       @collection.delete
+      @member.delete
     end
     shared_examples_for "a user-accessible collection" do
       it "should display the collection object title, identifier and pid" do
