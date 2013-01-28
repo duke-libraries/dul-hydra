@@ -26,7 +26,8 @@ class PreservationEvent < ActiveFedora::Base
                :versionable => true, :label => "Preservation event metadata"
 
   # DulHydra::Models::HasPreservationEvents defines an inbound has_many relationship to PreservationEvent
-  belongs_to :for_object, :property => :is_preservation_event_for, 
+  belongs_to :for_object, 
+             :property => :is_preservation_event_for, 
              :class_name => 'DulHydra::Models::HasPreservationEvents'
 
   delegate_to :eventMetadata, [:event_date_time, :event_detail, :event_type, :event_id_type,
@@ -34,6 +35,9 @@ class PreservationEvent < ActiveFedora::Base
                                :linking_object_id_type, :linking_object_id_value
                               ], :unique => true
 
+  #
+  # Convenience methods: fixity_check? success? failure?
+  #
   def fixity_check?
     event_type == FIXITY_CHECK
   end
@@ -46,6 +50,7 @@ class PreservationEvent < ActiveFedora::Base
     event_outcome == FAILURE
   end
 
+  # Return a preservation event for a datastream checksum validation
   def self.validate_checksum(obj, dsID)
     ds = obj.datastreams[dsID]
     new(:label => "Checksum validation", 
@@ -54,11 +59,12 @@ class PreservationEvent < ActiveFedora::Base
         :event_outcome => ds.dsChecksumValid ? SUCCESS : FAILURE,
         :event_detail => "Internal validation of checksum on repository object #{obj.internal_uri} datastream \"#{dsID}\" at version \"#{ds.dsVersionID}\" (created on #{DulHydra::Utils.ds_as_of_date_time(ds)}). DulHydra version #{DulHydra::VERSION}.",
         :linking_object_id_type => DATASTREAM,
-        :linking_object_id_value => DulHydra::Utils.ds_internal_uri(obj, dsID),
+        :linking_object_id_value => obj.ds_internal_uri(dsID),
         :for_object => obj
         )
   end
 
+  # persist and return a preservation event for a datastream checksum validation
   def self.validate_checksum!(obj, dsID)
     pe = validate_checksum(obj, dsID)
     pe.save!
@@ -66,6 +72,7 @@ class PreservationEvent < ActiveFedora::Base
     return pe
   end
 
+  # Overriding to_solr here seems cleaner than using :index_as on eventMetadata OM terminology.
   def to_solr(solr_doc=Hash.new, opts={})
     solr_doc = super(solr_doc, opts)
     solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :date) => event_date_time,
@@ -78,6 +85,7 @@ class PreservationEvent < ActiveFedora::Base
     return solr_doc
   end
 
+  # Return a date/time formatted as a string suitable for use as a PREMIS eventDateTime.
   def self.to_event_date_time(t=Time.now.utc)
     t.strftime(DATE_TIME_FORMAT)
   end
