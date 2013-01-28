@@ -12,11 +12,12 @@ class ApplicationController < ActionController::Base
     render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
   end
 
-  # specify "application" or "blacklight"
-  def layout_name
-    #'application'
-    'blacklight'
-  end
+  layout 'blacklight'
+  # # specify "application" or "blacklight"
+  # def layout_name
+  #   #'application'
+  #   'blacklight'
+  # end
 
   # Please be sure to impelement current_user and user_session. Blacklight depends on 
   # these methods in order to perform user specific actions. 

@@ -17,6 +17,6 @@
 
 //
 // Required by Blacklight
-//= require jquery-ui
+// require jquery-ui
 //= require blacklight/blacklight
 //= require_tree .
