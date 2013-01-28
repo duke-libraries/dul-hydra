@@ -11,17 +11,14 @@ shared_examples "an object that has preservation events" do
 
   context "#validate_checksum" do
     subject { obj.validate_checksum("DC") }
-    after { obj.delete }
+    after { obj.destroy }
     let (:obj) { described_class.create.reload }
     it_should_behave_like "a fixity check success preservation event"
   end
 
   context "#validate_checksum!" do
     subject { obj.validate_checksum!("DC") }
-    after do
-      obj.preservation_events.each { |e| e.delete }
-      obj.delete
-    end
+    after { obj.destroy }
     let (:obj) { described_class.create.reload }
     it_should_behave_like "a fixity check success preservation event"
   end  

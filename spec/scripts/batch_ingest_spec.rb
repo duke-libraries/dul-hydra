@@ -969,7 +969,7 @@ module DulHydra::Scripts
               DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
               event.event_outcome.should == PreservationEvent::SUCCESS
               event.linking_object_id_type.should == PreservationEvent::DATASTREAM
-              event.linking_object_id_value.should == DulHydra::Utils.ds_internal_uri(component, "content")
+              event.linking_object_id_value.should == component.ds_internal_uri("content")
               event.event_detail.should include("Internal validation of checksum")
               event.for_object.should == component
             end
@@ -1012,7 +1012,7 @@ module DulHydra::Scripts
               DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
               event.event_outcome.should == PreservationEvent::FAILURE
               event.linking_object_id_type.should == PreservationEvent::DATASTREAM
-              event.linking_object_id_value.should == DulHydra::Utils.ds_internal_uri(component, "content")
+              event.linking_object_id_value.should == component.ds_internal_uri("content")
               event.event_detail.should include("Internal validation of checksum")
               event.for_object.should == component
             end            

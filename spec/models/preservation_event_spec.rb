@@ -24,7 +24,7 @@ describe PreservationEvent do
 
   context "::validate_checksum" do
     subject { PreservationEvent.validate_checksum(obj, "content") }
-    after { obj.delete }
+    after { obj.destroy }
     context "success" do
       let(:obj) { FactoryGirl.create(:component_with_content) }
       it_should_behave_like "a fixity check success preservation event"
@@ -38,10 +38,7 @@ describe PreservationEvent do
 
   context "::validate_checksum!" do
     subject { PreservationEvent.validate_checksum!(obj, "content") }
-    after do 
-      obj.preservation_events.each { |e| e.delete }
-      obj.delete
-    end
+    after { obj.destroy }
     context "success" do
       let(:obj) { FactoryGirl.create(:component_with_content) }
       it_should_behave_like "a fixity check success preservation event"
