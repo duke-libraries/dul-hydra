@@ -7,7 +7,7 @@ module DulHydra::Models
                :property => :is_preservation_event_for, 
                :inbound => true, 
                :class_name => 'PreservationEvent'
-      before_destroy :delete_preservation_events
+      #before_destroy 'preservation_events.each { |e| e.delete }'
     end
 
     def validate_checksum(dsID)
@@ -47,10 +47,10 @@ module DulHydra::Models
       end
     end
 
-    protected
-    def delete_preservation_events
-      preservation_events.each { |e| e.delete }
-    end
+    # protected
+    # def delete_preservation_events
+    #   preservation_events.each { |e| e.delete }
+    # end
 
   end
 end
