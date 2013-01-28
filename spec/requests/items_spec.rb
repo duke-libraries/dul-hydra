@@ -120,9 +120,9 @@ describe "Items" do
       @collection = Collection.create
     end
     after do
+      @item.delete
       @component.delete
       @collection.delete
-      @item.delete
     end
     shared_examples_for "a user-accessible item" do
       it "should display the item pid" do
