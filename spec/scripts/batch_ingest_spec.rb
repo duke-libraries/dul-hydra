@@ -97,6 +97,7 @@ module DulHydra::Scripts
               i.preservation_events.each do |pe|
                 pe.delete
               end
+              i.reload
               i.delete
             end
           end
@@ -205,6 +206,7 @@ module DulHydra::Scripts
                 c.preservation_events.each do |pe|
                   pe.delete
                 end
+                c.reload
                 c.delete
               end
             end
@@ -248,6 +250,7 @@ module DulHydra::Scripts
                 c.preservation_events.each do |pe|
                   pe.delete
                 end
+                c.reload
                 c.delete
               end
             end
@@ -291,6 +294,7 @@ module DulHydra::Scripts
                 c.preservation_events.each do |pe|
                   pe.delete
                 end
+                c.reload
                 c.delete
               end
             end
@@ -336,6 +340,7 @@ module DulHydra::Scripts
               c.preservation_events.each do |pe|
                 pe.delete
               end
+              c.reload
               c.delete
             end
           end
@@ -382,9 +387,11 @@ module DulHydra::Scripts
                   c.preservation_events.each do |pe|
                     pe.delete
                   end
+                  c.reload
                   c.delete
                 end
               end
+              @item.reload
               @item.delete
             end
             it "should establish an 'isPartOf' relationship between the child and parent" do
@@ -431,9 +438,11 @@ module DulHydra::Scripts
                   i.preservation_events.each do |pe|
                     pe.delete
                   end
+                  i.reload
                   i.delete
                 end
               end
+              @collection.reload
               @collection.delete
             end
             it "should establish an 'isMemberOf' relationship between the child and parent" do
@@ -485,6 +494,7 @@ module DulHydra::Scripts
         end
         it "should add an appropriate contentMetadata datastream to the parent object" do
           DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
+          @item.reload
           @item.contentMetadata.content.should be_equivalent_to(@expected_xml)
         end
       end
@@ -515,6 +525,7 @@ module DulHydra::Scripts
               c.preservation_events.each do |pe|
                 pe.delete
               end
+              c.reload
               c.delete
             end
           end
@@ -586,6 +597,7 @@ module DulHydra::Scripts
                 c.preservation_events.each do |pe|
                   pe.delete
                 end
+                c.reload
                 c.delete
               end
             end
@@ -721,6 +733,7 @@ module DulHydra::Scripts
                 i.preservation_events.each do |pe|
                   pe.delete
                 end
+                i.reload
                 i.delete
               end
             end
@@ -729,6 +742,7 @@ module DulHydra::Scripts
                 c.preservation_events.each do |pe|
                   pe.delete
                 end
+                c.reload
                 c.delete
               end
             end
@@ -801,7 +815,8 @@ module DulHydra::Scripts
               if !@pre_existing_component_pids.include?(c.pid)
                 c.preservation_events.each do |pe|
                   pe.delete
-                end                
+                end
+                c.reload
                 c.delete
               end
             end
@@ -873,6 +888,7 @@ module DulHydra::Scripts
               c.preservation_events.each do |pe|
                 pe.delete
               end
+              c.reload
               c.delete
             end
           end
@@ -940,6 +956,7 @@ module DulHydra::Scripts
               c.preservation_events.each do |pe|
                 pe.delete
               end
+              c.reload
               c.delete
             end
           end

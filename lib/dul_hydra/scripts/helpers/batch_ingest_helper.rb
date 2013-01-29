@@ -192,6 +192,7 @@ module DulHydra::Scripts::Helpers
           ingest_object.content.dsLabel = "Content file for this object"
           ingest_object.save
           file.close
+          ingest_object.reload
         else
           raise "Ingest object does not have a 'content' datastream"
         end

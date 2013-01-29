@@ -398,6 +398,7 @@ module DulHydra::Scripts::Helpers
         @component3.delete
         @component2.delete
         @component1.delete
+        @item.reload
         @item.delete
       end
       it "should return the appropriate content metadata document" do
