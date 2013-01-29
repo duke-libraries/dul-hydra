@@ -4,7 +4,6 @@ module DulHydra::Models
     include Describable
     include Governable
     include AccessControllable
-    include Reloadable
     include HasPreservationEvents
 
     def to_solr(solr_doc=Hash.new, opts={})
