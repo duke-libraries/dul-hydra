@@ -206,7 +206,7 @@ describe "Items" do
       context "not a member of a collection" do
         it "should be able to become a member of a collection" do
           visit item_path(@item)
-          fill_in :collection, :with => @collection.pid
+          fill_in 'Collection', :with => @collection.pid
           click_button "Add Item to Collection"
           item_in_collection = Item.find(@item.pid)
           item_in_collection.collection.should eq(@collection)

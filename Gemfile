@@ -18,7 +18,8 @@ gem 'mime-types', '~> 1.19'
 
 group :development, :test do
   gem 'rspec-rails'
-  gem 'capybara', '~> 1.1.3'
+#  gem 'capybara', '~> 1.1.3'
+  gem 'capybara', '~> 2.0'
   gem 'jettywrapper'
   gem 'factory_girl_rails', '~> 4.0'
 end
