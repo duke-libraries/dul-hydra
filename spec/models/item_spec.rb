@@ -8,8 +8,8 @@ describe Item do
     @collection = Collection.create
   end
   after do
-    @item.delete
     @collection.delete
+    @item.delete
   end
   context "when collection attribute set to a collection" do
     it "should be a member of the collection's items" do
