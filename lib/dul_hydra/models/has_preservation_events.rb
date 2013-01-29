@@ -7,7 +7,7 @@ module DulHydra::Models
                :property => :is_preservation_event_for, 
                :inbound => true, 
                :class_name => 'PreservationEvent'
-      #before_destroy 'preservation_events.each { |e| e.delete }'
+      before_destroy :delete_preservation_events
     end
 
     def validate_checksum(dsID)
@@ -26,7 +26,9 @@ module DulHydra::Models
     end
 
     def fixity_checks
-      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
+      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri,
+                              ActiveFedora::SolrService.solr_name(:event_type, :symbol) => PreservationEvent::FIXITY_CHECK
+                              ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
     end
 
     def last_fixity_check_to_solr
@@ -47,10 +49,10 @@ module DulHydra::Models
       end
     end
 
-    # protected
-    # def delete_preservation_events
-    #   preservation_events.each { |e| e.delete }
-    # end
+    protected
+    def delete_preservation_events
+      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri).delete_all
+    end
 
   end
 end
