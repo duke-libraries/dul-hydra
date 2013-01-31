@@ -1,0 +1,35 @@
+log4r_config:
+    loggers:
+        - name      : preparation
+          level     : INFO
+          trace     : 'false'
+          outputters:
+            - file_preparation
+        - name      : ingest
+          level     : INFO
+          trace     : 'false'
+          outputters:
+            - file_ingest
+    outputters:
+        - type      : StdoutOutputter
+          name      : stdout
+          formatter :
+            date_pattern: '%F %T'
+            pattern     : '%d %l: %m '
+            type        : PatternFormatter
+        - type      : FileOutputter
+          name      : file_preparation
+          filename  : "log/#{tag}_ingest_preparation.log"
+          formatter :
+            date_pattern: '%F %T'
+            pattern     : '%d %l: %m '
+            type        : PatternFormatter
+        - type      : FileOutputter
+          name      : file_ingest
+          filename  : "log/#{tag}_batch_ingest.log"
+          formatter :
+            date_pattern: '%F %T'
+            pattern     : '%d %l: %m '
+            type        : PatternFormatter
+
+    

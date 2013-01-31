@@ -1,8 +1,17 @@
+# log4r
+require 'log4r'
+require 'log4r/logger'
+require 'log4r/yamlconfigurator'
+require 'log4r/outputter/datefileoutputter'
+
 module DulHydra::Scripts::Helpers
   module BatchIngestHelper
     extend ActiveSupport::Concern
+
+    include Log4r
     
     # Constants
+    LOG_CONFIG_FILEPATH = "#{Rails.root}/config/log4r_batch_ingest.yml"
     FEDORA_URI_PREFIX = "info:fedora/"
     ACTIVE_FEDORA_MODEL_PREFIX = "afmodel:"
     PROVIDED = "provided"
@@ -19,6 +28,13 @@ module DulHydra::Scripts::Helpers
     FAIL = "...FAIL"
 
     module ClassMethods
+      
+      def config_logger(logger_name, filename_tag = "")
+        log_config = YAML.load_file(LOG_CONFIG_FILEPATH)
+        YamlConfigurator['tag'] = filename_tag
+        YamlConfigurator.decode_yaml(log_config['log4r_config'])
+        return Log4r::Logger[logger_name]
+      end
       
       def split(source_doc, unit_xpath, identifier_element)
         parts = Hash.new

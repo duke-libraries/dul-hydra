@@ -13,6 +13,8 @@ gem 'devise'
 #gem 'equivalent-xml'
 gem 'unicode' # blacklight 4.0
 
+gem 'log4r'
+
 # For mapping file extensions to MIME types
 gem 'mime-types', '~> 1.19'
 
