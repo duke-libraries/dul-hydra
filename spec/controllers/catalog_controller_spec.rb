@@ -4,7 +4,6 @@ describe CatalogController do
   subject { get :show, :id => item }
   let(:item) { FactoryGirl.create(:item) }
   let(:apo) { FactoryGirl.create(:public_read_policy) }
-  let(:user) { FactoryGirl.create(:user) }
   before do
     item.admin_policy = apo
     item.save!
@@ -16,5 +15,12 @@ describe CatalogController do
     apo.delete
     item.delete
   end
-  it { should render_template(:show) }
+  context "registered user" do
+    let(:user) { FactoryGirl.create(:user) }
+    it { should render_template(:show) }
+  end
+  context "editor" do
+    let(:user) { FactoryGirl.create(:editor) }
+    it { should render_template(:show) }
+  end
 end
