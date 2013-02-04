@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'shared_examples_for_preservation_events'
+require 'support/shared_examples_for_preservation_events'
 
 shared_examples "an object that has preservation events" do
 

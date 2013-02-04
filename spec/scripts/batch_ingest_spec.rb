@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fileutils'
 require "#{Rails.root}/spec/scripts/batch_ingest_spec_helper"
-require 'shared_examples_for_batch_ingest'
+require 'support/shared_examples_for_batch_ingest'
 
 RSpec.configure do |c|
   c.include BatchIngestSpecHelper

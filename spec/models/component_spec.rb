@@ -1,6 +1,6 @@
 require 'spec_helper'
-require 'shared_examples_for_dul_hydra_objects'
-require 'shared_examples_for_has_content'
+require 'support/shared_examples_for_dul_hydra_objects'
+require 'support/shared_examples_for_has_content'
 
 describe Component do
 

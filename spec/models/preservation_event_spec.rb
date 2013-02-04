@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'shared_examples_for_governables'
-require 'shared_examples_for_access_controllables'
-require 'shared_examples_for_preservation_events'
+require 'support/shared_examples_for_governables'
+require 'support/shared_examples_for_access_controllables'
+require 'support/shared_examples_for_preservation_events'
 
 # Override datastream method #dsChecksumValid to always return false
 def ds_checksum_valid_false(ds)

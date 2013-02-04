@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'shared_examples_for_dul_hydra_objects'
+require 'support/shared_examples_for_dul_hydra_objects'
 
 describe Item do
   it_behaves_like "a DulHydra object"

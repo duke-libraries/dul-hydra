@@ -1,7 +1,7 @@
-require 'shared_examples_for_describables'
-require 'shared_examples_for_governables'
-require 'shared_examples_for_access_controllables'
-require 'shared_examples_for_has_preservation_events'
+require 'support/shared_examples_for_describables'
+require 'support/shared_examples_for_governables'
+require 'support/shared_examples_for_access_controllables'
+require 'support/shared_examples_for_has_preservation_events'
 
 shared_examples "a DulHydra object" do
   it_behaves_like "a describable object"
