@@ -15,6 +15,11 @@ log4r_config:
           trace     : 'false'
           outputters:
             - file_postprocess
+        - name      : validation
+          level     : INFO
+          trace     : 'false'
+          outputters:
+            - file_validation
     outputters:
         - type      : StdoutOutputter
           name      : stdout
@@ -39,6 +44,13 @@ log4r_config:
         - type      : FileOutputter
           name      : file_postprocess
           filename  : "#{basepath}log/ingest_postprocess.log"
+          formatter :
+            date_pattern: '%F %T'
+            pattern     : '%d %l: %m '
+            type        : PatternFormatter
+        - type      : FileOutputter
+          name      : file_validation
+          filename  : "#{basepath}log/ingest_validation.log"
           formatter :
             date_pattern: '%F %T'
             pattern     : '%d %l: %m '

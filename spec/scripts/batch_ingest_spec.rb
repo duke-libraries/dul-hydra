@@ -597,6 +597,14 @@ module DulHydra::Scripts
               event.for_object.should == collection
             end
           end
+          it "should create an appropriate log file" do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            result = File.open("#{@ingest_base}/collection/log/ingest_validation.log") { |f| f.read }
+            result.should match("DulHydra version #{DulHydra::VERSION}")
+            result.should match("Manifest: #{@ingest_base}/manifests/collection_manifest.yml")
+            result.should match("Validated Collection collection_1 in #{Collection.find_by_identifier("collection_1").first.pid}...PASS")
+            result.should match("Validated 1 object\\(s\\)")
+          end
         end
         context "manifest object is missing from master file" do
           before do

@@ -168,12 +168,17 @@ module DulHydra::Scripts
       log.info "=================="
     end
     def self.validate_ingest(ingest_manifest)
-      log_header = "Validate ingest\n"
-      log_header << "DulHydra version #{DulHydra::VERSION}\n"
-      log_header << "Manifest: #{ingest_manifest}\n"
       ingest_valid = true
       manifest = load_yaml(ingest_manifest)
       basepath = manifest[:basepath]
+      log = config_logger("validation", basepath)
+      log.info "=================="
+      log.info "Ingest Validation"
+      log.info "DulHydra version #{DulHydra::VERSION}"
+      log.info "Manifest: #{ingest_manifest}"
+      event_details_header = "Validate ingest\n"
+      event_details_header << "DulHydra version #{DulHydra::VERSION}\n"
+      event_details_header << "Manifest: #{ingest_manifest}\n"
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
       checksum_spec = manifest[:checksum]
       if !checksum_spec.blank?
@@ -182,6 +187,8 @@ module DulHydra::Scripts
       objects = manifest[:objects]
       object_count = 0;
       objects.each do |object|
+        object_count += 1
+        model = object[:model] || manifest[:model]
         repository_object = nil
         pid_in_master = true
         object_exists = true
@@ -189,7 +196,7 @@ module DulHydra::Scripts
         datastreams_populated = true
         checksum_matches = true
         parent_child_correct = true
-        event_details = log_header
+        event_details = event_details_header
         event_details << "Identifier(s): "
         case
         when object[:identifier].is_a?(String)
@@ -209,7 +216,6 @@ module DulHydra::Scripts
         end
         event_details << (pid_in_master ? PASS : FAIL) << "\n"
         if !pid.blank?
-          model = object[:model] || manifest[:model]
           if model.blank?
             raise "Missing model for #{key_identifier(object)}"
           end
@@ -289,7 +295,10 @@ module DulHydra::Scripts
           outcome = object_valid ? PreservationEvent::SUCCESS : PreservationEvent::FAILURE
           write_preservation_event(repository_object, PreservationEvent::VALIDATION, outcome, event_details)
         end
+        log.info "Validated #{model} #{key_identifier(object)} in #{pid_in_master ? pid : nil}#{object_valid ? PASS : FAIL}"
       end
+      log.info "Validated #{object_count} object(s)"
+      log.info "=================="
       return ingest_valid
     end
   end
