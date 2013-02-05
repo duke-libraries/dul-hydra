@@ -8,6 +8,13 @@ FactoryGirl.define do
       admin_policy
     end
 
+    factory :collection_has_item do
+      after(:create) { |c| c.items << FactoryGirl.create(:item) }
+
+      factory :collection_has_item_has_apo, traits: [:has_admin_policy]
+
+    end
+
     factory :collection_has_apo, traits: [:has_admin_policy]
 
   end
