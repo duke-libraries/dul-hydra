@@ -12,6 +12,9 @@ module DulHydra::Scripts
   describe BatchIngest do
     before do
       @ingest_base = setup_test_temp_dir
+      FileUtils.mkdir_p "#{@ingest_base}/collection/log"
+      FileUtils.mkdir_p "#{@ingest_base}/item/log"
+      FileUtils.mkdir_p "#{@ingest_base}/component/log"
     end
     after do
       remove_temp_dir
@@ -37,6 +40,15 @@ module DulHydra::Scripts
             expected = File.open("spec/fixtures/batch_ingest/results/qdc/#{qdc_filename}") { |f| Nokogiri::XML(f) }
             result.should be_equivalent_to(expected)
           end
+        end
+        it "should create an appropriate log file" do
+          DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
+          result = File.open("#{@ingest_base}/item/log/ingest_preparation.log") { |f| f.read }
+          result.should match("Manifest: #{@ingest_base}/manifests/item_manifest.yml")
+          result.should match("Processing item_1")
+          result.should match("Processing item_2")
+          result.should match("Processing item_4")
+          result.should match("Processed 3 object\\(s\\)")
         end
       end
       context "consolidated file is to be split into individual files" do

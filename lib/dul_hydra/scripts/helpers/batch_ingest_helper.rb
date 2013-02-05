@@ -29,9 +29,9 @@ module DulHydra::Scripts::Helpers
 
     module ClassMethods
       
-      def config_logger(logger_name, filename_tag = "")
+      def config_logger(logger_name, basepath)
         log_config = YAML.load_file(LOG_CONFIG_FILEPATH)
-        YamlConfigurator['tag'] = filename_tag
+        YamlConfigurator['basepath'] = basepath
         YamlConfigurator.decode_yaml(log_config['log4r_config'])
         return Log4r::Logger[logger_name]
       end

@@ -2,12 +2,12 @@ module DulHydra::Scripts
   module BatchIngest
     include DulHydra::Scripts::Helpers::BatchIngestHelper
     def self.prep_for_ingest(ingest_manifest)
-      log = config_logger("preparation")
+      manifest = load_yaml(ingest_manifest)
+      basepath = manifest[:basepath]
+      log = config_logger("preparation", basepath)
       log.info "=================="
       log.info "Ingest Preparation"
       log.info "Manifest: #{ingest_manifest}"
-      manifest = load_yaml(ingest_manifest)
-      basepath = manifest[:basepath]
       master_source = manifest[:mastersource] || :objects
       unless master_source == PROVIDED
         master = create_master_document()
@@ -49,7 +49,7 @@ module DulHydra::Scripts
       unless master_source == PROVIDED
         File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
       end
-      log.info "Processed #{object_count} objects"
+      log.info "Processed #{object_count} object(s)"
       log.info "=================="
     end
     def self.ingest(ingest_manifest)

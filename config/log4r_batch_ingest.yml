@@ -19,14 +19,14 @@ log4r_config:
             type        : PatternFormatter
         - type      : FileOutputter
           name      : file_preparation
-          filename  : "log/#{tag}_ingest_preparation.log"
+          filename  : "#{basepath}log/ingest_preparation.log"
           formatter :
             date_pattern: '%F %T'
             pattern     : '%d %l: %m '
             type        : PatternFormatter
         - type      : FileOutputter
           name      : file_ingest
-          filename  : "log/#{tag}_batch_ingest.log"
+          filename  : "#{basepath}log/batch_ingest.log"
           formatter :
             date_pattern: '%F %T'
             pattern     : '%d %l: %m '
