@@ -1,33 +1,45 @@
 FactoryGirl.define do
 
   factory :admin_policy do
+    permissions AdminPolicy::APO_PERMISSIONS
+    title "Admin Policy"
 
-    # set permissions on the APO itself
-    after(:build) { |apo| apo.permissions = AdminPolicy::APO_PERMISSIONS }
-
-    factory :public_discover_policy do
-      after(:build) { |apo| apo.default_permissions = [DulHydra::Permissions::PUBLIC_DISCOVER_ACCESS] }
+    trait :public_discover do
+      default_permissions [DulHydra::Permissions::PUBLIC_DISCOVER_ACCESS]
+      title "Public discover policy"
     end
 
-    factory :registered_discover_policy do
-      after(:build) { |apo| apo.default_permissions = [DulHydra::Permissions::REGISTERED_DISCOVER_ACCESS] }
+    trait :registered_discover do
+      default_permissions [DulHydra::Permissions::REGISTERED_DISCOVER_ACCESS]
+      title "Registered discover policy"
     end
 
-    factory :public_read_policy do
-      after(:build) { |apo| apo.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS] }
+    trait :public_read do
+      default_permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
+      title "Public read policy"
     end
 
-    factory :registered_read_policy do
-      after(:build) { |apo| apo.default_permissions = [DulHydra::Permissions::REGISTERED_READ_ACCESS] }
+    trait :registered_read do
+      default_permissions [DulHydra::Permissions::REGISTERED_READ_ACCESS]
+      title "Registered read policy"
     end
 
-    factory :group_read_policy do
-      after(:build) { |apo| apo.default_permissions = [DulHydra::Permissions::READER_GROUP_ACCESS] }
+    trait :group_read do
+      default_permissions [DulHydra::Permissions::READER_GROUP_ACCESS]
+      title "Group read policy"
     end
 
-    factory :group_edit_policy do
-      after(:build) { |apo| apo.default_permissions = [DulHydra::Permissions::EDITOR_GROUP_ACCESS] }
+    trait :group_edit do
+      default_permissions [DulHydra::Permissions::EDITOR_GROUP_ACCESS]
+      title "Group edit policy"
     end
+
+    factory :public_discover_policy,     traits: [:public_discover]
+    factory :registered_discover_policy, traits: [:registered_discover]
+    factory :public_read_policy,         traits: [:public_read]
+    factory :registered_read_policy,     traits: [:registered_read]
+    factory :group_read_policy,          traits: [:group_read]
+    factory :group_edit_policy,          traits: [:group_edit]
 
   end
 
