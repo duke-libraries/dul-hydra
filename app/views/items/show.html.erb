@@ -31,7 +31,7 @@
 </dl>
 
 <% if @item.collection %>
-  Member of collection: <%= link_to @item.collection.pid, collection_path(@item.collection.pid) %>
+  Member of collection: <%= link_to @item.collection.pid, collection_path(@item.collection) %>
 <% else %>
   <%= form_for @item do |f| %>
     <%= f.label :collection %>
