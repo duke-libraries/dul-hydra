@@ -1,37 +1,38 @@
 FactoryGirl.define do
 
   factory :admin_policy do
-    permissions AdminPolicy::APO_PERMISSIONS
     title "Admin Policy"
+    permissions AdminPolicy::APO_PERMISSIONS
+    default_permissions DulHydra::Permissions::DEFAULT_PERMISSIONS
 
     trait :public_discover do
-      default_permissions [DulHydra::Permissions::PUBLIC_DISCOVER_ACCESS]
       title "Public discover policy"
+      default_permissions [DulHydra::Permissions::PUBLIC_DISCOVER_ACCESS]
     end
 
     trait :registered_discover do
-      default_permissions [DulHydra::Permissions::REGISTERED_DISCOVER_ACCESS]
       title "Registered discover policy"
+      default_permissions [DulHydra::Permissions::REGISTERED_DISCOVER_ACCESS]
     end
 
     trait :public_read do
-      default_permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
       title "Public read policy"
+      default_permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
     end
 
     trait :registered_read do
-      default_permissions [DulHydra::Permissions::REGISTERED_READ_ACCESS]
       title "Registered read policy"
+      default_permissions [DulHydra::Permissions::REGISTERED_READ_ACCESS]
     end
 
     trait :group_read do
-      default_permissions [DulHydra::Permissions::READER_GROUP_ACCESS]
       title "Group read policy"
+      default_permissions [DulHydra::Permissions::READER_GROUP_ACCESS]
     end
 
     trait :group_edit do
-      default_permissions [DulHydra::Permissions::EDITOR_GROUP_ACCESS]
       title "Group edit policy"
+      default_permissions [DulHydra::Permissions::EDITOR_GROUP_ACCESS]
     end
 
     factory :public_discover_policy,     traits: [:public_discover]
