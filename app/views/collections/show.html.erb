@@ -16,6 +16,14 @@
       &nbsp;
     <% end %>
   </dd>
+  <dt>Datastreams:</dt>
+  <dd>
+    <ul>
+      <% @collection.datastreams.each do |dsid, ds| %>
+      <li><a href="#"><%= dsid %></a></li>
+      <% end %>
+    </ul>
+  </dd>
   <dt>Access Policy:</dt>
   <dd><%= @collection.admin_policy ? @collection.admin_policy.pid : "None" %></dd>
   <dt>PID:</dt>

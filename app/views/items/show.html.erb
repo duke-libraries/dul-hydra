@@ -2,6 +2,8 @@
 
 <%= link_to "Item List", items_path %>
 <dl>
+  <dt>PID:</dt>
+  <dd><%= @item.pid %></dd>
   <dt>Title:</dt>
   <dd><%= @item.has_title? ? @item.title.first : "" %></dd>
   <dt>Identifier(s):</dt>
@@ -16,14 +18,20 @@
       &nbsp;
     <% end %>
   </dd>
+  <dt>Datastreams:</dt>
+  <dd>
+    <ul>
+      <% @item.datastreams.each do |dsid, ds| %>
+      <li><a href="#"><%= dsid %></a></li>
+      <% end %>
+    </ul>
+  </dd>
   <dt>Access Policy:</dt>
-  <dd><%= @item.admin_policy ? @item.admin_policy.pid : "None" %></dd>
-  <dt>PID:</dt>
-  <dd><%= @item.pid %></dd>
+  <dd><%= @item.admin_policy ? @item.admin_policy.pid : "None" %></dd>  
 </dl>
 
 <% if @item.collection %>
-  Member of collection: <%= link_to @item.collection.pid, collection_path(@item.collection.pid) %>
+  Member of collection: <%= link_to @item.collection.pid, collection_path(@item.collection) %>
 <% else %>
   <%= form_for @item do |f| %>
     <%= f.label :collection %>

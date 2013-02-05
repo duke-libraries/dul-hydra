@@ -11,6 +11,14 @@
   <dd><%= @component.title.first %></dd>
   <dt>Identifier:</dt>
   <dd><%= @component.identifier.first %></dd>
+  <dt>Datastreams:</dt>
+  <dd>
+    <ul>
+      <% @component.datastreams.each do |dsid, ds| %>
+      <li><a href="#"><%= dsid %></a></li>
+      <% end %>
+    </ul>
+  </dd>
   <dt>Access Policy:</dt>
   <dd>
     <%= @component.admin_policy ? @component.admin_policy.pid : "None" %>
