@@ -44,6 +44,7 @@ module DulHydra::Scripts
         it "should create an appropriate log file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
           result = File.open("#{@ingest_base}/item/log/ingest_preparation.log") { |f| f.read }
+          result.should match("DulHydra version #{DulHydra::VERSION}")
           result.should match("Manifest: #{@ingest_base}/manifests/item_manifest.yml")
           result.should match("Processing item_1")
           result.should match("Processing item_2")
@@ -197,6 +198,16 @@ module DulHydra::Scripts
             event.for_object.should == item
           end
         end
+        it "should create an appropriate log file" do
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+          result = File.open("#{@ingest_base}/item/log/batch_ingest.log") { |f| f.read }
+          result.should match("DulHydra version #{DulHydra::VERSION}")
+          result.should match("Manifest: #{@ingest_base}/manifests/item_manifest.yml")
+          result.should match("Ingested Item item_1 into #{Item.find_by_identifier("item_1").first.pid}")
+          result.should match("Ingested Item item_2 into #{Item.find_by_identifier("item_2").first.pid}")
+          result.should match("Ingested Item item_4 into #{Item.find_by_identifier("item_4").first.pid}")
+          result.should match("Ingested 3 object\\(s\\)")
+        end        
       end
       context "digitization guide to be ingested" do
         context "digitization guide is in canonical location and is named in manifest" do

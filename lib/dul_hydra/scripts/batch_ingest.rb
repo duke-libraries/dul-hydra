@@ -7,6 +7,7 @@ module DulHydra::Scripts
       log = config_logger("preparation", basepath)
       log.info "=================="
       log.info "Ingest Preparation"
+      log.info "DulHydra version #{DulHydra::VERSION}"
       log.info "Manifest: #{ingest_manifest}"
       master_source = manifest[:mastersource] || :objects
       unless master_source == PROVIDED
@@ -53,15 +54,21 @@ module DulHydra::Scripts
       log.info "=================="
     end
     def self.ingest(ingest_manifest)
-      log_header = "Batch ingest\n"
-      log_header << "DulHydra version #{DulHydra::VERSION}\n"
-      log_header << "Manifest: #{ingest_manifest}\n"
       manifest = load_yaml(ingest_manifest)
+      log = config_logger("ingest", manifest[:basepath])
+      log.info "=================="
+      log.info "Batch Ingest"
+      log.info "DulHydra version #{DulHydra::VERSION}"
+      log.info "Manifest: #{ingest_manifest}"
+      event_details_header = "Batch ingest\n"
+      event_details_header << "DulHydra version #{DulHydra::VERSION}\n"
+      event_details_header << "Manifest: #{ingest_manifest}\n"
       manifest_apo = AdminPolicy.find(manifest[:adminpolicy]) unless manifest[:adminpolicy].blank?
       manifest_metadata = manifest[:metadata] unless manifest[:metadata].blank?
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
+      object_count = 0;
       for object in manifest[:objects]
-        event_details = log_header
+        event_details = event_details_header
         model = object[:model] || manifest[:model]
         if model.blank?
           raise "Missing model"
@@ -115,8 +122,12 @@ module DulHydra::Scripts
         ingest_object.save
         master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)
         write_preservation_event(ingest_object, PreservationEvent::INGESTION, PreservationEvent::SUCCESS, event_details)
+        log.info "Ingested #{model} #{key_identifier(object)} into #{ingest_object.pid}"
+        object_count += 1
       end
       File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
+      log.info "Ingested #{object_count} object(s)"
+      log.info "=================="
     end
     def self.post_process_ingest(ingest_manifest)
       manifest = load_yaml(ingest_manifest)
@@ -159,6 +170,7 @@ module DulHydra::Scripts
         checksum_doc = File.open("#{basepath}checksum/#{checksum_spec[:location]}") { |f| Nokogiri::XML(f) }
       end
       objects = manifest[:objects]
+      object_count = 0;
       objects.each do |object|
         repository_object = nil
         pid_in_master = true
