@@ -15,6 +15,11 @@ namespace :dul_hydra do
             raise "Must specify a manifest file. Ex: MANIFEST='/srv/fedora-working/ingest/VIC/manifests/item.yaml'" unless ENV['MANIFEST']
             DulHydra::Scripts::BatchIngest.post_process_ingest(ENV['MANIFEST'])
         end
+        desc "Validates the ingest of a batch of objects based on a manifest file specified by MANIFEST="
+        task :validate_ingest => :environment do
+            raise "Must specify a manifest file. Ex: MANIFEST='/srv/fedora-working/ingest/VIC/manifests/item.yaml'" unless ENV['MANIFEST']
+            DulHydra::Scripts::BatchIngest.validate_ingest(ENV['MANIFEST'])
+        end
     end
     namespace :solr do
         desc "Deletes everything from the solr index"
