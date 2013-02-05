@@ -17,5 +17,6 @@ describe "show.html.erb" do
   it { should have_link("DC") }
   it { should have_link("RELS-EXT") }
   it { should have_link("descMetadata") }
+  it { should have_link(collection.items.first.pid, :href => item_path(collection.items.first)) }
   
 end
