@@ -19,6 +19,7 @@ FactoryGirl.define do
       factory :component_part_of_item_with_content_has_apo, traits: [:part_of_item, :has_admin_policy]
     end
     
+    factory :component_has_apo, traits: [:has_admin_policy]
     factory :component_part_of_item, traits: [:part_of_item]
     factory :component_part_of_item_has_apo, traits: [:part_of_item, :has_admin_policy]
 
