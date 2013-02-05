@@ -131,6 +131,12 @@ module DulHydra::Scripts
     end
     def self.post_process_ingest(ingest_manifest)
       manifest = load_yaml(ingest_manifest)
+      log = config_logger("postprocess", manifest[:basepath])
+      log.info "=================="
+      log.info "Ingest Post-Processing"
+      log.info "DulHydra version #{DulHydra::VERSION}"
+      log.info "Manifest: #{ingest_manifest}"
+      object_count = 0
       if !manifest[:contentstructure].blank?
         case manifest[:contentstructure][:type]
         when "generate"
@@ -138,6 +144,7 @@ module DulHydra::Scripts
           sequence_length = manifest[:contentstructure][:sequencelength]
           manifest_items = manifest[:objects]
           manifest_items.each do |manifest_item|
+            object_count += 1
             identifier = key_identifier(manifest_item)
             items = Item.find_by_identifier(identifier)
             case items.size
@@ -148,6 +155,7 @@ module DulHydra::Scripts
               File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
               item = add_metadata_content_file(item, manifest_item, "contentmetadata", manifest[:basepath])
               item.save
+              log.info "Added contentmetadata datastream for #{identifier} to #{item.pid}"
             when 0
               raise "Item #{identifier} not found"
             else
@@ -156,6 +164,8 @@ module DulHydra::Scripts
           end
         end
       end
+      log.info "Post-processed #{object_count} object(s)"
+      log.info "=================="
     end
     def self.validate_ingest(ingest_manifest)
       log_header = "Validate ingest\n"

@@ -520,6 +520,14 @@ module DulHydra::Scripts
           @item.reload
           @item.contentMetadata.content.should be_equivalent_to(@expected_xml)
         end
+        it "should create an appropriate log file" do
+          DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
+          result = File.open("#{@ingest_base}/item/log/ingest_postprocess.log") { |f| f.read }
+          result.should match("DulHydra version #{DulHydra::VERSION}")
+          result.should match("Manifest: #{@ingest_base}/manifests/simple_item_manifest.yml")
+          result.should match("Added contentmetadata datastream for test01 to #{Item.find_by_identifier("test01").first.pid}")
+          result.should match("Post-processed 1 object\\(s\\)")
+        end        
       end
     end
     describe "validate ingest" do
