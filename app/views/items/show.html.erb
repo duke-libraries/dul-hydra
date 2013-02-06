@@ -1,34 +1,8 @@
 <h1>Item <%= @item.has_title? ? @item.title.first : @item.pid %></h1>
 
 <%= link_to "Item List", items_path %>
-<dl>
-  <dt>PID:</dt>
-  <dd><%= @item.pid %></dd>
-  <dt>Title:</dt>
-  <dd><%= @item.has_title? ? @item.title.first : "" %></dd>
-  <dt>Identifier(s):</dt>
-  <dd>
-    <% if !@item.identifier.empty? %>
-    <ul>
-    <% @item.identifier.each do |id| %>
-      <li><%= id %></li>
-    <% end %>
-    </ul>
-    <% else %>
-      &nbsp;
-    <% end %>
-  </dd>
-  <dt>Datastreams:</dt>
-  <dd>
-    <ul>
-      <% @item.datastreams.each do |dsid, ds| %>
-      <li><a href="#"><%= dsid %></a></li>
-      <% end %>
-    </ul>
-  </dd>
-  <dt>Access Policy:</dt>
-  <dd><%= @item.admin_policy ? @item.admin_policy.pid : "None" %></dd>  
-</dl>
+
+<%= render :partial => 'dul_hydra/show_summary', :locals => { :obj => @item } %>
 
 <% if @item.collection %>
   Member of collection: <%= link_to @item.collection.pid, collection_path(@item.collection) %>

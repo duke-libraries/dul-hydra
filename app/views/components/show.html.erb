@@ -6,30 +6,12 @@
   <p>
 <% end %>
 
-<dl>
-  <dt>Title:</dt>
-  <dd><%= @component.title.first %></dd>
-  <dt>Identifier:</dt>
-  <dd><%= @component.identifier.first %></dd>
-  <dt>Datastreams:</dt>
-  <dd>
-    <ul>
-      <% @component.datastreams.each do |dsid, ds| %>
-      <li><a href="#"><%= dsid %></a></li>
-      <% end %>
-    </ul>
-  </dd>
-  <dt>Access Policy:</dt>
-  <dd>
-    <%= @component.admin_policy ? @component.admin_policy.pid : "None" %>
-  </dd>  
-</dl>
+<%= render :partial => 'dul_hydra/show_summary', :locals => { :obj => @component } %>
+
 <% if @component.container %>
   <p>
-    Part of Item: <%= link_to @component.container.pid, item_path(@component.container.pid) %>
+    Part of Item: <%= link_to @component.container.pid, item_path(@component.container) %>
   </p>
-<% else %>
-  <%# XXX Link to separate page %>
 <% end %>
 
 <h2>Content</h2>

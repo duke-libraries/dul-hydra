@@ -1,0 +1,34 @@
+<dl>
+  <dt>PID:</dt>
+  <dd><%= obj.pid %></dd>
+  <dt>Title:</dt>
+  <dd><%= obj.title.first %></dd>
+  <dt>Identifier(s):</dt>
+  <dd>
+    <% if obj.identifier.empty? %>
+    [None]
+    <% else %>
+    <ul>
+      <% obj.identifier.each do |id| %>
+      <li><%= id %></li>
+      <% end %>
+    </ul>
+    <% end %>
+  </dd>
+  <dt>Datastreams:</dt>
+  <dd>
+    <ul>
+      <% obj.datastreams.each do |dsid, ds| %>
+      <li><a href="#"><%= dsid %></a></li>
+      <% end %>
+    </ul>
+  </dd>
+  <dt>Governing Policy:</dt>
+  <dd>
+    <% if obj.admin_policy %>
+      <%= obj.admin_policy.pid %>
+    <% else %>
+      [None]
+    <% end %>
+  </dd>  
+</dl>
