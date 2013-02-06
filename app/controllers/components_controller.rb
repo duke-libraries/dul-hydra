@@ -1,6 +1,4 @@
-class ComponentsController < ApplicationController
-
-  load_and_authorize_resource
+class ComponentsController < DulHydraController
 
   def index
     @components = Component.all
