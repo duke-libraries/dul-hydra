@@ -220,10 +220,16 @@ module DulHydra::Scripts
             raise "Missing model for #{key_identifier(object)}"
           end
           event_details << "#{VERIFYING}#{model} object found in repository"
-          object_exists = validate_object_exists(model, pid)
+          begin 
+            repository_object = ActiveFedora::Base.find(pid, :cast => true)
+            if repository_object.nil? || !repository_object.conforms_to?(model.constantize)
+              object_exists = false
+            end
+          rescue
+            object_exists = false
+          end
           event_details << (object_exists ? PASS : FAIL) << "\n"
           if object_exists
-            repository_object = ActiveFedora::Base.find(pid, :cast => true)
             metadata = object_metadata(object, manifest[:metadata])
             expected_datastreams = [ "DC", "RELS-EXT" ]
             metadata.each do |m|
