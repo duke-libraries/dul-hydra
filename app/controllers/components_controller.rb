@@ -1,5 +1,7 @@
 class ComponentsController < DulHydraController
 
+  load_and_authorize_resource
+
   def index
     @components = Component.all
   end
