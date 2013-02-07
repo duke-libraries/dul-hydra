@@ -15,6 +15,7 @@ FactoryGirl.define do
     factory :component_with_content do
       after(:build) { |c| c.content.content_file = File.new("#{Rails.root}/spec/fixtures/library-devil.tiff", "rb") }
 
+      factory :component_with_content_has_apo, traits: [:has_admin_policy]
       factory :component_part_of_item_with_content, traits: [:part_of_item]
       factory :component_part_of_item_with_content_has_apo, traits: [:part_of_item, :has_admin_policy]
     end
