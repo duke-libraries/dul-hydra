@@ -8,10 +8,11 @@ DulHydra::Application.routes.draw do
   devise_for :users
 
   # DulHydra objects
-  resources :collections, :items, :components do
-    get 'datastreams'
-    get 'datastreams/:datastream_id', :action => 'datastream'
-    get 'datastreams/:datastream_id/content', :action => 'datastream_content'
+  [:collections, :items, :components].each do |model|
+    resources model
+    match "/#{model}/:id/datastreams" => "#{model}#datastreams", :via => :get
+    match "/#{model}/:id/datastreams/:dsid" => "#{model}#datastream", :via => :get
+    match "/#{model}/:id/datastreams/:dsid/content" => "#{model}#datastream_content", :via => :get
   end
   
 end
