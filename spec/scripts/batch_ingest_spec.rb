@@ -192,8 +192,11 @@ module DulHydra::Scripts
               event.event_detail.should include("Identifier(s): item_1")
             when [ "item_2", "item_3" ]
               event.event_detail.should include("Identifier(s): item_2,item_3")
+              event.event_detail.should_not include("Identifier(s): item_1")
             when [ "item_4" ]
               event.event_detail.should include("Identifier(s): item_4")
+              event.event_detail.should_not include("Identifier(s): item_1")
+              event.event_detail.should_not include("Identifier(s): item_2,item_3")
             end
             event.for_object.should == item
           end
@@ -827,6 +830,17 @@ module DulHydra::Scripts
                 DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
                 event.event_outcome.should == PreservationEvent::FAILURE
                 event.linking_object_id_value.should == item.internal_uri
+                case item.identifier
+                when [ "item_1" ]
+                  event.event_detail.should include("Identifier(s): item_1")
+                when [ "item_2", "item_3" ]
+                  event.event_detail.should include("Identifier(s): item_2,item_3")
+                  event.event_detail.should_not include("Identifier(s): item_1")
+                when [ "item_4" ]
+                  event.event_detail.should include("Identifier(s): item_4")
+                  event.event_detail.should_not include("Identifier(s): item_1")
+                  event.event_detail.should_not include("Identifier(s): item_2,item_3")
+                end
                 event.event_detail.should include("child relationship to identifier collection_1...FAIL")
                 event.event_detail.should include ("DOES NOT VALIDATE")
                 event.for_object.should == item

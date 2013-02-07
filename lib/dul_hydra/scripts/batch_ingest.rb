@@ -68,7 +68,7 @@ module DulHydra::Scripts
       master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
       object_count = 0;
       for object in manifest[:objects]
-        event_details = event_details_header
+        event_details = String.new(event_details_header)
         model = object[:model] || manifest[:model]
         if model.blank?
           raise "Missing model"
@@ -187,6 +187,7 @@ module DulHydra::Scripts
       objects = manifest[:objects]
       object_count = 0;
       objects.each do |object|
+        event_details = String.new(event_details_header)
         object_count += 1
         model = object[:model] || manifest[:model]
         repository_object = nil
@@ -196,7 +197,6 @@ module DulHydra::Scripts
         datastreams_populated = true
         checksum_matches = true
         parent_child_correct = true
-        event_details = event_details_header
         event_details << "Identifier(s): "
         case
         when object[:identifier].is_a?(String)
