@@ -250,7 +250,7 @@ module DulHydra::Scripts
                 event_details << "#{VERIFYING}#{datastream.dsid} datastream internal checksum"
                 if datastream.dsid == "content"
                   preservation_event = PreservationEvent.validate_checksum!(repository_object, datastream.dsid)
-                  event_details << (preservation_event.event_outcome == PreservationEvent::SUCCESS ? PASS : FAIL)
+                  event_details << (preservation_event.event_outcome == PreservationEvent::SUCCESS ? PASS : FAIL) << "\n"
                 else
                   event_details << (profile["dsChecksumValid"] ? PASS : FAIL) << "\n"
                   if  !profile["dsChecksumValid"]
@@ -277,8 +277,8 @@ module DulHydra::Scripts
                 parent_child_correct = false
               end
               if parent_child_correct
-                children = get_children(parent)
-                if children.blank? || !children.include?(repository_object)
+                child_ids = get_child_ids(parent)
+                if child_ids.blank? || !child_ids.include?(repository_object.pid)
                   parent_child_correct = false
                 end
               end

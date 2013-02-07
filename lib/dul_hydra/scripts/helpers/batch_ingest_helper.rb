@@ -304,6 +304,17 @@ module DulHydra::Scripts::Helpers
         return children
       end
       
+      def get_child_ids(repository_object)
+        child_ids = []
+        case
+        when repository_object.class == Collection
+          child_ids = repository_object.item_ids
+        when repository_object.class == Item
+          child_ids = repository_object.part_ids
+        end
+        return child_ids
+      end
+      
       def set_parent(ingest_object, object_model, parent_identifier_type, parent_identifier)
         parent = case parent_identifier_type
         when :id
