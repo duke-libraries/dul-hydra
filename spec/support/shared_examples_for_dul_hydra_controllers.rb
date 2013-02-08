@@ -200,5 +200,36 @@ shared_examples "a DulHydra controller" do
     subject { delete :destroy, :id => @object }
   end
 
+  context "datastream methods" do
+    let(:object) { FactoryGirl.create("#{object_class.to_s.downcase}_has_apo".to_sym) }
+    let(:user) { FactoryGirl.create(:reader) }
+    before { sign_in user }
+    after { sign_out user }
+    after(:all) do
+      user.delete
+      object.admin_policy.delete
+      object.delete
+    end
+
+    context "#datastreams" do
+      subject { get :datastreams, :id => object }
+      it "should render the 'datastreams' template" do
+        expect(subject).to render_template(:datastreams)
+      end
+    end
+
+    context "#datastream" do
+      subject { get :datastream, :id => object, :dsid => "DC" }
+      it "should render the 'datastream' template" do
+        expect(subject).to render_template(:datastream)
+      end
+    end
+
+    context "#datastream_content" do
+      subject { get :datastream_content, :id => object, :dsid => "DC" }
+      it { should be_successful }
+    end
+
+  end
 
 end
