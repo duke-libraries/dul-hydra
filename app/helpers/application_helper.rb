@@ -8,4 +8,8 @@ module ApplicationHelper
     send "#{obj.class.to_s.downcase}_datastream_path".to_sym, obj, dsid
   end
 
+  def object_datastream_content_path(obj, dsid)
+    send "#{obj.class.to_s.downcase}_datastream_content_path".to_sym, obj, dsid
+  end
+
 end
