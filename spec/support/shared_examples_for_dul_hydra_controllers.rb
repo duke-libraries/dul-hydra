@@ -2,14 +2,17 @@ require 'spec_helper'
 
 shared_examples "a DulHydra controller" do
 
+  # XXX refactor to use SharedExamplesHelpers methods
   def object_class
     Object.const_get(described_class.to_s.sub("Controller", "").singularize)
   end
 
+  # XXX refactor to use SharedExamplesHelpers methods
   def object_instance_symbol
     object_class.to_s.downcase.to_sym
   end
 
+  # XXX refactor to use SharedExamplesHelpers methods
   def create_object
     FactoryGirl.create(object_instance_symbol)
   end
