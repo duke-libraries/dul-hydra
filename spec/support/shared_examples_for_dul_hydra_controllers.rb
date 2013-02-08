@@ -10,6 +10,10 @@ shared_examples "a DulHydra controller" do
     object_class.to_s.downcase.to_sym
   end
 
+  def create_object
+    FactoryGirl.create(object_instance_symbol)
+  end
+
   context "#index" do
     subject { get :index }
     it "renders the index template" do
@@ -192,42 +196,70 @@ shared_examples "a DulHydra controller" do
 
   end #edit
 
-  context "#update" do    
-    subject { put :update, :id => @object }
-  end
+  # context "#update" do    
+  #   subject { put :update, :id => object }
+  # end
 
-  context "#destroy" do
-    subject { delete :destroy, :id => @object }
-  end
+  # context "#destroy" do
+  #   subject { delete :destroy, :id => object }
+  # end
 
   context "datastream methods" do
-    let(:object) { FactoryGirl.create("#{object_class.to_s.downcase}_has_apo".to_sym) }
-    let(:user) { FactoryGirl.create(:reader) }
-    before { sign_in user }
-    after { sign_out user }
-    after(:all) do
+    let(:object) { create_object }
+    before(:each) { sign_in user }
+    before(:all) do
+      object.admin_policy = FactoryGirl.create(:group_read_policy)
+      object.save!
+    end
+    after(:each) do
+      sign_out user 
       user.delete
+    end
+    after(:all) do
       object.admin_policy.delete
       object.delete
     end
 
     context "#datastreams" do
       subject { get :datastreams, :id => object }
-      it "should render the 'datastreams' template" do
-        expect(subject).to render_template(:datastreams)
+      context "user can read object" do
+        let(:user) { FactoryGirl.create(:reader) }
+        it { should be_successful }
+        # it "should render the 'datastreams' template" do
+        #   expect(subject).to render_template(:datastreams)
+        # end
+      end
+      context "user can not read object" do
+        let(:user) { FactoryGirl.create(:user) }
+        its(:response_code) { should eq(403) }
       end
     end
 
     context "#datastream" do
       subject { get :datastream, :id => object, :dsid => "DC" }
-      it "should render the 'datastream' template" do
-        expect(subject).to render_template(:datastream)
+      context "user can read object" do
+        let(:user) { FactoryGirl.create(:reader) }
+        it { should be_successful }
+        # it "should render the 'datastream' template" do
+        #   expect(subject).to render_template(:datastream)
+        # end
+      end
+      context "user can not read object" do
+        let(:user) { FactoryGirl.create(:user) }
+        its(:response_code) { should eq(403) }
       end
     end
 
     context "#datastream_content" do
       subject { get :datastream_content, :id => object, :dsid => "DC" }
-      it { should be_successful }
+      context "user can read object" do
+        let(:user) { FactoryGirl.create(:reader) }
+        it { should be_successful }
+      end
+      context "user can not read object" do
+        let(:user) { FactoryGirl.create(:user) }
+        its(:response_code) { should eq(403) }
+      end
     end
 
   end
