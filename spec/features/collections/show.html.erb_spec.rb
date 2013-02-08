@@ -21,7 +21,8 @@ describe "show.html.erb" do
     end
   end
   it "should have links to child objects" do
-    collections.items.each do |i|
+    collection.items.each do |i|
       expect(subject).to have_link(i.pid, :href => item_path(i)) 
+    end
   end
 end
