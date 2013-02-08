@@ -18,11 +18,13 @@ describe "show.html.erb" do
   end
   it "should have links to datastreams" do
     item.datastreams.each_key do |dsid|
-      expect(subject).to have_link(dsid)
+      expect(subject).to have_link(dsid, :href => item_datastream_path(item, dsid))
     end
   end
   it "should have links to parent and child objects" do
-    expect(subject).to have_link(item.parts.first.pid, :href => item_path(item.parts.first)) 
+    item.parts.each do |p|
+      expect(subject).to have_link(p.pid, :href => component_path(p))
+    end
     expect(subject).to have_link(item.collection.pid, :href => collection_path(item.collection))
   end
 end
