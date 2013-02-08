@@ -208,62 +208,67 @@ shared_examples "a DulHydra controller" do
   # end
 
   context "datastream methods" do
-    let!(:object) { create_object }
-    let!(:user) { FactoryGirl.create(:user) }
-    before { sign_in user }
-    after(:each) do
-      sign_out user 
-      user.delete
-      object.delete
+    before(:all) { @user = FactoryGirl.create(:user) }
+    before(:each) do
+      @obj = object_class.create
+      sign_in @user
     end
+    after(:each) do
+      sign_out @user
+      @obj.delete
+    end
+    after(:all) { @user.delete }
 
     context "#datastreams" do
-      subject { get :datastreams, :id => object }
+      subject { get :datastreams, :id => @obj }
       context "user can read object" do
+        # let(:obj) { object_class.create }
+        # after { obj.delete }
         before do
-          object.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
-          object.save!
+          @obj.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
+          @obj.save!
         end
         it { should be_successful }
-        # it "should render the 'datastreams' template" do
-        #   expect(subject).to render_template(:datastreams)
-        # end
       end
       context "user can not read object" do
-        let(:user) { FactoryGirl.create(:user) }
+        let(:obj) { object_class.create }
+        after { obj.delete }
         its(:response_code) { should eq(403) }
       end
     end
 
     context "#datastream" do
-      subject { get :datastream, :id => object, :dsid => "DC" }
+      subject { get :datastream, :id => @obj, :dsid => "DC" }
       context "user can read object" do
+        # let(:obj) { object_class.create }
+        # after { obj.delete }
         before do
-          object.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
-          object.save!
+          @obj.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
+          @obj.save!
         end
         it { should be_successful }
-        # it "should render the 'datastream' template" do
-        #   expect(subject).to render_template(:datastream)
-        # end
       end
       context "user can not read object" do
-        let(:user) { FactoryGirl.create(:user) }
+        # let(:obj) { object_class.create }
+        # after { obj.delete }
         its(:response_code) { should eq(403) }
       end
     end
 
     context "#datastream_content" do
-      subject { get :datastream_content, :id => object, :dsid => "DC" }
+      subject { get :datastream_content, :id => @obj, :dsid => "DC" }
       context "user can read object" do
+        # let(:obj) { object_class.create }
+        # after { obj.delete}
         before do
-          object.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
-          object.save!
+          @obj.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
+          @obj.save!
         end
         it { should be_successful }
       end
       context "user can not read object" do
-        let(:user) { FactoryGirl.create(:user) }
+        # let(:obj) { object_class.create }
+        # after { obj.delete }
         its(:response_code) { should eq(403) }
       end
     end

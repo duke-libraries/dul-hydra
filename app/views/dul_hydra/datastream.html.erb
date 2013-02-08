@@ -1,0 +1,9 @@
+<h1><%= @title %></h1>
+
+<dl>
+  <% @datastream.profile.each do |key, value| %>
+  <dt><%= key %></dt>
+  <dd><%= value %></dd>
+  <% end %>
+</dl>
+
