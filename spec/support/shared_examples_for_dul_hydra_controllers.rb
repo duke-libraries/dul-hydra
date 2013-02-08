@@ -205,25 +205,22 @@ shared_examples "a DulHydra controller" do
   # end
 
   context "datastream methods" do
-    let(:object) { create_object }
-    before(:each) { sign_in user }
-    before(:all) do
-      object.admin_policy = FactoryGirl.create(:group_read_policy)
-      object.save!
-    end
+    let!(:object) { create_object }
+    let!(:user) { FactoryGirl.create(:user) }
+    before { sign_in user }
     after(:each) do
       sign_out user 
       user.delete
-    end
-    after(:all) do
-      object.admin_policy.delete
       object.delete
     end
 
     context "#datastreams" do
       subject { get :datastreams, :id => object }
       context "user can read object" do
-        let(:user) { FactoryGirl.create(:reader) }
+        before do
+          object.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
+          object.save!
+        end
         it { should be_successful }
         # it "should render the 'datastreams' template" do
         #   expect(subject).to render_template(:datastreams)
@@ -238,7 +235,10 @@ shared_examples "a DulHydra controller" do
     context "#datastream" do
       subject { get :datastream, :id => object, :dsid => "DC" }
       context "user can read object" do
-        let(:user) { FactoryGirl.create(:reader) }
+        before do
+          object.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
+          object.save!
+        end
         it { should be_successful }
         # it "should render the 'datastream' template" do
         #   expect(subject).to render_template(:datastream)
@@ -253,7 +253,10 @@ shared_examples "a DulHydra controller" do
     context "#datastream_content" do
       subject { get :datastream_content, :id => object, :dsid => "DC" }
       context "user can read object" do
-        let(:user) { FactoryGirl.create(:reader) }
+        before do
+          object.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
+          object.save!
+        end
         it { should be_successful }
       end
       context "user can not read object" do
