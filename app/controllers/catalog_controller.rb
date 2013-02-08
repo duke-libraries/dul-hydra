@@ -10,12 +10,9 @@ class CatalogController < ApplicationController
   include Hydra::PolicyAwareAccessControlsEnforcement
 
   # These before_filters apply the hydra access controls
-  before_filter :enforce_access_controls
-  before_filter :enforce_viewing_context_for_show_requests, :only=>:show
+  before_filter :enforce_show_permissions, :only => :show
   # This applies appropriate access controls to all solr queries
-  CatalogController.solr_search_params_logic << :add_access_controls_to_solr_params
-  # This filters out objects that you want to exclude from search results, like FileAssets
-  CatalogController.solr_search_params_logic << :exclude_unwanted_models
+  CatalogController.solr_search_params_logic += [:add_access_controls_to_solr_params]
 
   configure_blacklight do |config|
     config.default_solr_params = { 
