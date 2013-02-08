@@ -18,8 +18,8 @@
   <dt>Datastreams:</dt>
   <dd>
     <ul>
-      <% obj.datastreams.each do |dsid, ds| %>
-      <li><a href="#"><%= dsid %></a></li>
+      <% obj.datastreams.each_key do |dsid| %>
+      <li><%= link_to dsid, object_datastream_path(obj, dsid) %></li>
       <% end %>
     </ul>
   </dd>
