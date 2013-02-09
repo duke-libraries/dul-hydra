@@ -41,4 +41,7 @@ shared_examples "a DulHydra object datastream view" do |object_sym|
       expect(subject).to have_content(value)
     end
   end
+  it "should have a link to download the datastream content" do
+    expect(subject).to have_link("Download Content", :href => object_datastream_content_path(obj, dsid))
+  end
 end

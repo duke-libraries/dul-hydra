@@ -5,13 +5,13 @@ module DulHydra::Controllers
         
     def datastreams
       @obj = model_instance_variable_get
-      @dsid = params[:dsid]
+      @title = "#{@obj.class.to_s} #{@obj.pid} Datastreams"
     end
 
     def datastream
       @obj = model_instance_variable_get
       @datastream = @obj.datastreams[params[:dsid]]
-      @title = "#{@obj.class.to_s} #{@obj.pid} Datastream #{@dsid}"
+      @title = "#{@obj.class.to_s} #{@obj.pid} Datastream #{@datastream.dsid}"
     end
 
     def datastream_content
