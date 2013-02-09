@@ -18,8 +18,8 @@ shared_examples "a DulHydra object datastreams view" do |object_sym|
   before { visit object_datastreams_path(obj) }
   after { obj.delete }
   it "should have links to all datastreams" do
-    obj.datastreams.each_key do |dsid|
-      expect(subject).to have_link(dsid, :href => object_datastream_path(obj, dsid))
+    obj.datastreams.each do |dsid, ds|
+      expect(subject).to have_link(dsid, :href => object_datastream_path(obj, dsid)) unless ds.profile.empty?
     end
   end
 end
