@@ -2,12 +2,19 @@ require 'spec_helper'
 
 shared_examples "a DulHydra controller" do
 
+  # XXX refactor to use SharedExamplesHelpers methods
   def object_class
     Object.const_get(described_class.to_s.sub("Controller", "").singularize)
   end
 
+  # XXX refactor to use SharedExamplesHelpers methods
   def object_instance_symbol
     object_class.to_s.downcase.to_sym
+  end
+
+  # XXX refactor to use SharedExamplesHelpers methods
+  def create_object
+    FactoryGirl.create(object_instance_symbol)
   end
 
   context "#index" do
@@ -192,13 +199,80 @@ shared_examples "a DulHydra controller" do
 
   end #edit
 
-  context "#update" do    
-    subject { put :update, :id => @object }
-  end
+  # context "#update" do    
+  #   subject { put :update, :id => object }
+  # end
 
-  context "#destroy" do
-    subject { delete :destroy, :id => @object }
-  end
+  # context "#destroy" do
+  #   subject { delete :destroy, :id => object }
+  # end
 
+  context "datastream methods" do
+    before(:all) { @user = FactoryGirl.create(:user) }
+    before(:each) do
+      @obj = object_class.create
+      sign_in @user
+    end
+    after(:each) do
+      sign_out @user
+      @obj.delete
+    end
+    after(:all) { @user.delete }
+
+    context "#datastreams" do
+      subject { get :datastreams, :id => @obj }
+      context "user can read object" do
+        # let(:obj) { object_class.create }
+        # after { obj.delete }
+        before do
+          @obj.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
+          @obj.save!
+        end
+        it { should be_successful }
+      end
+      context "user can not read object" do
+        let(:obj) { object_class.create }
+        after { obj.delete }
+        its(:response_code) { should eq(403) }
+      end
+    end
+
+    context "#datastream" do
+      subject { get :datastream, :id => @obj, :dsid => "DC" }
+      context "user can read object" do
+        # let(:obj) { object_class.create }
+        # after { obj.delete }
+        before do
+          @obj.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
+          @obj.save!
+        end
+        it { should be_successful }
+      end
+      context "user can not read object" do
+        # let(:obj) { object_class.create }
+        # after { obj.delete }
+        its(:response_code) { should eq(403) }
+      end
+    end
+
+    context "#datastream_content" do
+      subject { get :datastream_content, :id => @obj, :dsid => "DC" }
+      context "user can read object" do
+        # let(:obj) { object_class.create }
+        # after { obj.delete}
+        before do
+          @obj.permissions = [{:access => 'read', :type => 'group', :name => 'registered'}]
+          @obj.save!
+        end
+        it { should be_successful }
+      end
+      context "user can not read object" do
+        # let(:obj) { object_class.create }
+        # after { obj.delete }
+        its(:response_code) { should eq(403) }
+      end
+    end
+
+  end
 
 end

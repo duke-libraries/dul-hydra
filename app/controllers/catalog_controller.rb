@@ -5,9 +5,9 @@ class CatalogController < ApplicationController
 
   include Blacklight::Catalog
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
-  include Hydra::Controller::ControllerBehavior
+  #include Hydra::Controller::ControllerBehavior
   # Moved from ApplicationController - https://github.com/duke-libraries/dul-hydra/issues/51
-  include Hydra::PolicyAwareAccessControlsEnforcement
+  #include Hydra::PolicyAwareAccessControlsEnforcement
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_show_permissions, :only => :show

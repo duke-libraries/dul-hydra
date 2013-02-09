@@ -1,4 +1,4 @@
-class ItemsController < ApplicationController
+class ItemsController < DulHydraController
 
   load_and_authorize_resource
   

@@ -1,4 +1,4 @@
-class ComponentsController < ApplicationController
+class ComponentsController < DulHydraController
 
   load_and_authorize_resource
 
