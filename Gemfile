@@ -11,6 +11,9 @@ gem 'devise'
 
 gem 'log4r'
 
+# ExecJS runtime
+gem 'therubyracer', '~> 0.11.3', :require => 'v8'
+
 # For mapping file extensions to MIME types
 gem 'mime-types', '~> 1.19'
 
@@ -26,6 +29,7 @@ end
 group :assets do
   gem 'sass-rails', '~> 3.2.3'
   gem 'jquery-rails'
+  gem 'uglifier', '~> 1.3.0'
 end
 
 # To use ActiveModel has_secure_password
