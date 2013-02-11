@@ -8,5 +8,9 @@ class Collection < DulHydra::Models::Base
   include DulHydra::Models::HasTripodMets
 
   has_many :items, :property => :is_member_of, :inbound => true, :class_name => 'Item'
+
+  def children
+    items
+  end
   
 end
