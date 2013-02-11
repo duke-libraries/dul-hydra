@@ -71,7 +71,8 @@ module DulHydra::Scripts::Helpers
       end
       
       def add_pid_to_master(master, key_identifier, pid)
-        object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
+#        object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
+        object_node = master.xpath("/objects/object[identifier[text() = '#{key_identifier}']]")
         case object_node.size()
         when 1
           pid_node = Nokogiri::XML::Node.new :pid.to_s, master
@@ -86,7 +87,8 @@ module DulHydra::Scripts::Helpers
       end
       
       def get_pid_from_master(master, key_identifier)
-        object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
+#        object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
+        object_node = master.xpath("/objects/object[identifier[text() = '#{key_identifier}']]")
         case object_node.size()
         when 1
           pid = object_node.xpath("pid").text
@@ -99,7 +101,8 @@ module DulHydra::Scripts::Helpers
       end
       
       def verify_checksum(repository_object, key_identifier, checksum_doc)
-        checksum_node = checksum_doc.xpath("/checksums/checksum[componentid[contains(text(), '#{key_identifier}')]]")
+#        checksum_node = checksum_doc.xpath("/checksums/checksum[componentid[contains(text(), '#{key_identifier}')]]")
+        checksum_node = checksum_doc.xpath("/checksums/checksum[componentid[text() = '#{key_identifier}']]")
         checksum_value_node = checksum_node.xpath("value")
         checksum_value = checksum_value_node.text()
         contentDatastreamProfile = repository_object.content.profile(:validateChecksum => true)
