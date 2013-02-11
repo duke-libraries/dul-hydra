@@ -14,10 +14,19 @@ describe Component do
       item.delete
       component.delete
     end
-    context "when container set to item" do
+    context "#container=" do
       before do 
         component.container = item
-        component.save
+        component.save!
+      end
+      it "should be a part of the item" do
+        item.parts.should include(component)
+      end
+    end
+    context "#parent=" do
+      before do
+        component.parent = item
+        component.save!
       end
       it "should be a part of the item" do
         item.parts.should include(component)
@@ -25,8 +34,9 @@ describe Component do
     end
     context "when added to item's parts" do
       before { item.parts << component }
-      it "should have the item as container" do
+      it "should have the item as container and parent" do
         component.container.should eq(item)
+        component.parent.should eq(item)
       end
     end
   end # relationships

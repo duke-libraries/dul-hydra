@@ -8,8 +8,7 @@ class Component < DulHydra::Models::Base
 
   belongs_to :container, :property => :is_part_of, :class_name => 'Item'
 
-  def item
-    container
-  end
+  alias_method :parent, :container
+  alias_method :parent=, :container=
 
 end
