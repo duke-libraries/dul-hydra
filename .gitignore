@@ -22,7 +22,10 @@
 # Ignore jetty
 /jetty
 
-# Ignore paperclip files
+# Pre-compiled assets
+/public/assets
+
+# Paperclip files
 /public/system
 
 .sass-cache
