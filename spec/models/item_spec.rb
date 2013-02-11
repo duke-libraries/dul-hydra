@@ -1,52 +1,69 @@
 require 'spec_helper'
 require 'support/shared_examples_for_dul_hydra_objects'
 
+shared_examples "an Item related to a Collection" do
+  it "should have the collection as parent and collection" do
+    expect(item.parent).to eq(collection)
+    expect(item.collection).to eq(collection)
+  end
+  it "should be the first member of the collection's items" do
+    expect(collection.items.first).to eq(item)
+  end
+end
+
+shared_examples "an Item related to a Component" do
+  it "should have the component as first member of its parts, children, and components" do
+    expect(item.parts.first).to eq(component)
+    expect(item.children.first).to eq(component)
+    expect(item.components.first).to eq(component)
+  end
+  it "should be the component's container" do
+    expect(item).to eq(component.container)
+  end
+end
+
 describe Item do
   it_behaves_like "a DulHydra object"
 
-  context "item-collection relationships" do
-    subject { item }
+  context "relationships" do
     let!(:item) { FactoryGirl.create(:item) }
-    let!(:collection) { FactoryGirl.create(:collection) }
     after do
-      collection.delete
+      item.reload
       item.delete
     end
-    context "#collection=" do
-      before do
-        item.collection = collection
-        item.save!
+    context "with a collection" do
+      let!(:collection) { FactoryGirl.create(:collection) }
+      after { collection.delete }
+      context "#collection=" do
+        before do
+          item.collection = collection
+          item.save!
+        end
+        it_behaves_like "an Item related to a Collection"
       end
-      its(:parent) { should eq(item.collection) }
-      it { should eq(collection.items.first) }
-    end
-    context "#parent=" do
-      before do
-        item.parent = collection
-        item.save!
+      context "#parent=" do
+        before do
+          item.parent = collection
+          item.save!
+        end
+        it_behaves_like "an Item related to a Collection"
       end
-      its(:collection) { should eq(item.parent) }
-      it { should eq(collection.items.first) }
     end
-  end
-
-  context "item-component relationships" do
-    subject { item }
-    let!(:item) { FactoryGirl.create(:item) }
-    let!(:component) { FactoryGirl.create(:component) }
-    after do
-      item.delete
-      component.delete
-    end
-    context "#parts" do
-      before { item.parts << component }
-      its(:children) { should eq(item.parts) }
-      it { should eq(component.container) }
-    end
-    context "#children" do
-      before { item.children << component }
-      its(:parts) { should eq(item.children) }
-      it { should eq(component.container) }
+    context "with components" do
+      let!(:component) { FactoryGirl.create(:component) }
+      after { component.delete }
+      context "#parts.<<" do
+        before { item.parts << component }
+        it_behaves_like "an Item related to a Component"
+      end
+      context "#children.<<" do
+        before { item.children << component }
+        it_behaves_like "an Item related to a Component"
+      end
+      context "#components.<<" do
+        before { item.components << component }
+        it_behaves_like "an Item related to a Component"
+      end
     end
   end
 end
