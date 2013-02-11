@@ -52,6 +52,15 @@ module DulHydra::Scripts::Helpers
         File.open(path_to_yaml) { |f| YAML::load(f) }
       end
       
+      def master_document(master_path)
+        case
+        when File.exists?(master_path)
+          File.open(master_path) { |f| Nokogiri::XML(f) }
+        else
+          create_master_document()
+        end
+      end
+
       def create_master_document()
         master = Nokogiri::XML::Document.new
         objects_node = Nokogiri::XML::Node.new :objects.to_s, master
@@ -71,7 +80,6 @@ module DulHydra::Scripts::Helpers
       end
       
       def add_pid_to_master(master, key_identifier, pid)
-#        object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
         object_node = master.xpath("/objects/object[identifier[text() = '#{key_identifier}']]")
         case object_node.size()
         when 1
@@ -87,7 +95,6 @@ module DulHydra::Scripts::Helpers
       end
       
       def get_pid_from_master(master, key_identifier)
-#        object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
         object_node = master.xpath("/objects/object[identifier[text() = '#{key_identifier}']]")
         case object_node.size()
         when 1
@@ -101,7 +108,6 @@ module DulHydra::Scripts::Helpers
       end
       
       def verify_checksum(repository_object, key_identifier, checksum_doc)
-#        checksum_node = checksum_doc.xpath("/checksums/checksum[componentid[contains(text(), '#{key_identifier}')]]")
         checksum_node = checksum_doc.xpath("/checksums/checksum[componentid[text() = '#{key_identifier}']]")
         checksum_value_node = checksum_node.xpath("value")
         checksum_value = checksum_value_node.text()
@@ -110,26 +116,6 @@ module DulHydra::Scripts::Helpers
         externalChecksumValidation = contentDatastreamProfile["dsChecksum"].eql?(checksum_value)
         return fedoraChecksumValidation && externalChecksumValidation
       end
-      
-      #def add_checksum_to_master(master, key_identifier, checksum_doc, checksum_source)
-      #  object_node = master.xpath("/objects/object[identifier[contains(text(), '#{key_identifier}')]]")
-      #  source_checksum_node = checksum_doc.xpath("/checksums/checksum[componentid[contains(text(), '#{key_identifier}')]]")
-      #  checksum_type_node = source_checksum_node.xpath("type")
-      #  checksum_value_node = source_checksum_node.xpath("value")
-      #  case object_node.size()
-      #  when 1
-      #    target_checksum_node = Nokogiri::XML::Node.new :checksum.to_s, master
-      #    target_checksum_node['source'] = checksum_source
-      #    target_checksum_node.add_child(checksum_type_node.dup)
-      #    target_checksum_node.add_child(checksum_value_node.dup)
-      #    object_node.first.add_child(target_checksum_node)
-      #  when 0
-      #    raise "Object not found in master file"
-      #  else
-      #    raise "Multiple objects found in master file"
-      #  end
-      #  return master
-      #end
       
       def generate_qdc(object, qdcsource, basepath)
           xslt_filepath = eval "#{qdcsource.upcase}_TO_QDC_XSLT_FILEPATH"
@@ -179,14 +165,14 @@ module DulHydra::Scripts::Helpers
         end
       end
       
-      def master_path(manifest)
+      def master_path(manifest_master, manifest_basepath)
         master_path = case
-        when manifest[:master].blank?
-          "#{manifest[:basepath]}master/master.xml"
-        when manifest[:master].start_with?("/")
-          manifest[:master]
+        when manifest_master.blank?
+          "#{manifest_basepath}master/master.xml"
+        when manifest_master.start_with?("/")
+          manifest_master
         else
-          "#{manifest[:basepath]}master/#{manifest[:master]}"
+          "#{manifest_basepath}master/#{manifest_master}"
         end      
       end
       

@@ -11,7 +11,7 @@ module DulHydra::Scripts
       log.info "Manifest: #{ingest_manifest}"
       master_source = manifest[:mastersource] || :objects
       unless master_source == PROVIDED
-        master = create_master_document()
+        master = master_document(master_path(manifest[:master], manifest[:basepath]))
       end
       if manifest[:split]
         for entry in manifest[:split]
@@ -48,7 +48,7 @@ module DulHydra::Scripts
         object_count += 1
       end
       unless master_source == PROVIDED
-        File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
+        File.open(master_path(manifest[:master], manifest[:basepath]), "w") { |f| master.write_xml_to f }
       end
       log.info "Processed #{object_count} object(s)"
       log.info "=================="
@@ -65,7 +65,7 @@ module DulHydra::Scripts
       event_details_header << "Manifest: #{ingest_manifest}\n"
       manifest_apo = AdminPolicy.find(manifest[:adminpolicy]) unless manifest[:adminpolicy].blank?
       manifest_metadata = manifest[:metadata] unless manifest[:metadata].blank?
-      master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
+      master = File.open(master_path(manifest[:master], manifest[:basepath])) { |f| Nokogiri::XML(f) }
       object_count = 0;
       for object in manifest[:objects]
         event_details = String.new(event_details_header)
@@ -125,7 +125,7 @@ module DulHydra::Scripts
         log.info "Ingested #{model} #{key_identifier(object)} into #{ingest_object.pid}"
         object_count += 1
       end
-      File.open(master_path(manifest), "w") { |f| master.write_xml_to f }
+      File.open(master_path(manifest[:master], manifest[:basepath]), "w") { |f| master.write_xml_to f }
       log.info "Ingested #{object_count} object(s)"
       log.info "=================="
     end
@@ -179,7 +179,7 @@ module DulHydra::Scripts
       event_details_header = "Validate ingest\n"
       event_details_header << "DulHydra version #{DulHydra::VERSION}\n"
       event_details_header << "Manifest: #{ingest_manifest}\n"
-      master = File.open(master_path(manifest)) { |f| Nokogiri::XML(f) }
+      master = File.open(master_path(manifest[:master], manifest[:basepath])) { |f| Nokogiri::XML(f) }
       checksum_spec = manifest[:checksum]
       if !checksum_spec.blank?
         checksum_doc = File.open("#{basepath}checksum/#{checksum_spec[:location]}") { |f| Nokogiri::XML(f) }
