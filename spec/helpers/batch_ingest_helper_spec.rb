@@ -51,6 +51,21 @@ module DulHydra::Scripts::Helpers
       end
     end
     
+    describe "#master_document" do
+      context "master file does not exist" do
+        it "should return a master file document with an empty objects root element" do
+          master = MockBatchIngest.master_document("/path/to/nonexistent/master.xml")
+          master.should be_equivalent_to Nokogiri::XML("<objects/>")
+        end
+      end
+      context "master file does exist" do
+        it "should return the existing master file document" do
+          master = MockBatchIngest.master_document("spec/fixtures/batch_ingest/results/item_master.xml")
+          master.should be_equivalent_to File.open("spec/fixtures/batch_ingest/results/item_master.xml") { |f| Nokogiri::XML(f) }
+        end
+      end
+    end
+    
     describe "#create_master_document" do
       it "should return a master file document with an empty objects root element" do
         master = MockBatchIngest.create_master_document()

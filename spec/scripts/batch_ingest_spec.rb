@@ -52,6 +52,21 @@ module DulHydra::Scripts
           result.should match("Processed 3 object\\(s\\)")
         end
       end
+      context "partially populated master file already exists" do
+        before do
+          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
+          FileUtils.mkdir_p "#{@ingest_base}/item/master"
+          FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
+          FileUtils.cp "spec/fixtures/batch_ingest/samples/preexisting_item_master.xml", "#{@ingest_base}/item/master/master.xml"
+        end
+        it "should add the new objects to those already in the master file" do
+          DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
+            result = File.open("#{@ingest_base}/item/master/master.xml") { |f| Nokogiri::XML(f) }
+            expected = File.open("spec/fixtures/batch_ingest/results/using_preexisting_item_master.xml") { |f| Nokogiri::XML(f) }
+            result.should be_equivalent_to(expected)          
+        end
+      end
       context "consolidated file is to be split into individual files" do
         before do
           @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
