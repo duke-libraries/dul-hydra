@@ -2,7 +2,7 @@
   <dt>PID:</dt>
   <dd><%= @object.pid %></dd>
   <dt>Title:</dt>
-  <dd><%= @object.title.first %></dd>
+  <dd><%= @object.title.first || "[None]" %></dd>
   <dt>Identifier(s):</dt>
   <dd>
     <% if @object.identifier.empty? %>
@@ -19,14 +19,44 @@
   <dd>
     <ul>
       <% @object.datastreams.each do |dsid, ds| %>
-      <li><%= 
-	     link_to_unless ds.profile.empty?, dsid, {:action => 'datastream', :id => @object, :dsid => dsid} do |name|
-	       name
-	     end
-	     %>
+      <li>
+	<%= 
+	   link_to_unless ds.profile.empty?, dsid, {:action => 'datastream', :id => @object, :dsid => dsid} do |name|
+	     name
+	   end
+	%>
       </li>
       <% end %>
     </ul>
+  </dd>
+  <dt>Permissions</dt>
+  <dd>
+    <% if @object.permissions.empty? %>
+      No permissions granted.
+    <% else %>
+    <table>
+      <thead>
+	<tr>
+	  <th>User/Group</th>
+	  <th>Permission</th>
+	</tr>
+      </thead>
+      <tbody>
+	<% @object.permissions.each do |perm| %>
+	<tr>
+	  <td class="<%= perm[:type] %>"><%= perm[:name] %></td>
+	  <td><%= perm[:access] %></td>
+	</tr>
+	<% end %>
+	<% @object.inherited_permissions.each do |perm| %>
+	<tr>
+	  <td class="<%= perm[:type] %>"><%= perm[:name] %></td>
+	  <td><%= perm[:access] %> (inherited)</td>
+	</tr>
+	<% end %>
+      </tbody>
+    </table>
+    <% end %>
   </dd>
   <dt>Governing Policy:</dt>
   <dd>
