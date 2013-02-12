@@ -1,19 +1,15 @@
 class CollectionsController < DulHydraController
 
-  load_and_authorize_resource
-  
   def index
     @collections = Collection.all
   end
   
   def new
-    # redundant b/c load_and_authorize_resource
-    # @collection = Collection.new
+    @title = "New Collection"
   end
   
   def show
-    # redundant b/c load_and_authorize_resource
-    # @collection = Collection.find(params[:id])
+    @title = "Collection #{@collection.pid}"
   end
 
   def create
@@ -29,6 +25,7 @@ class CollectionsController < DulHydraController
   end
 
   def edit
+    @title = "Edit Collection #{@collection.pid}"
   end
 
   def update

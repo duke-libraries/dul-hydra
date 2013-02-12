@@ -92,6 +92,7 @@ describe "Collections" do
         logmeout
       end
       it "should display the new collection page" do
+        pending
         visit new_collection_path
         page.should have_content "Create a new Collection"
       end
@@ -109,87 +110,87 @@ describe "Collections" do
     end
   end # Add
 
-  describe "Show" do
-    before do
-      @collection = Collection.new
-      @collection.title = "Collection Title"
-      @collection.identifier = "collectionIdentifier"
-      @collection.save!
-      @member = Item.new
-      @member.save!
-      @collection.items << @member
-    end
-    after do
-      @collection.delete
-      @member.delete
-    end
-    shared_examples_for "a user-accessible collection" do
-      it "should display the collection object title, identifier and pid" do
-        visit collection_path(@collection)
-        page.should have_content @collection.title.first
-        page.should have_content @collection.identifier.first
-        page.should have_content @collection.pid
-      end
-      it "should contain a link back to the collection list" do
-        visit collection_path(@collection)
-        page.should have_link "Collection List", :href => collections_path
-      end
-      it "should list the collection members" do # issue 16
-        visit collection_path(@collection)
-        page.should have_content @member.pid
-      end
-    end
-    shared_examples_for "a user-forbidden collection" do
-      it "should display a Forbidden (403) response" do
-        visit collection_path(@collection)
-        page.should have_content @forbiddenText
-      end      
-    end
-    context "publicly readable collection" do
-      before do
-        @collection.admin_policy = @publicReadAdminPolicy
-        @collection.save!
-      end
-      context "user is not logged in" do
-        it_behaves_like "a user-accessible collection"
-      end
-      context "user is logged in" do
-        before do
-          logmein @registeredUser
-        end
-        after do
-          logmeout
-        end
-        it_behaves_like "a user-accessible collection"
-      end
-    end
-    context "restricted collection" do
-      before do
-        @collection.admin_policy = @restrictedReadAdminPolicy
-        @collection.save!
-      end
-      context "user is not logged in" do
-        it_behaves_like "a user-forbidden collection"
-      end
-      context "user is logged in but not have read access to collection" do
-        before do
-          logmein @registeredUser
-        end
-        after do
-          logmeout
-        end
-        it_behaves_like "a user-forbidden collection"
-      end
-      context "user is logged and does have read access to collection" do
-        before do
-          logmein @repositoryReader
-        end
-        after do
-          logmeout
-        end
-        it_behaves_like "a user-accessible collection"
-      end
-    end
-  end
+  # describe "Show" do
+  #   before do
+  #     @collection = Collection.new
+  #     @collection.title = "Collection Title"
+  #     @collection.identifier = "collectionIdentifier"
+  #     @collection.save!
+  #     @member = Item.new
+  #     @member.save!
+  #     @collection.items << @member
+  #   end
+  #   after do
+  #     @collection.delete
+  #     @member.delete
+  #   end
+  #   shared_examples_for "a user-accessible collection" do
+  #     it "should display the collection object title, identifier and pid" do
+  #       visit collection_path(@collection)
+  #       page.should have_content @collection.title.first
+  #       page.should have_content @collection.identifier.first
+  #       page.should have_content @collection.pid
+  #     end
+  #     it "should contain a link back to the collection list" do
+  #       visit collection_path(@collection)
+  #       page.should have_link "Collection List", :href => collections_path
+  #     end
+  #     it "should list the collection members" do # issue 16
+  #       visit collection_path(@collection)
+  #       page.should have_content @member.pid
+  #     end
+  #   end
+  #   shared_examples_for "a user-forbidden collection" do
+  #     it "should display a Forbidden (403) response" do
+  #       visit collection_path(@collection)
+  #       page.should have_content @forbiddenText
+  #     end      
+  #   end
+  #   context "publicly readable collection" do
+  #     before do
+  #       @collection.admin_policy = @publicReadAdminPolicy
+  #       @collection.save!
+  #     end
+  #     context "user is not logged in" do
+  #       it_behaves_like "a user-accessible collection"
+  #     end
+  #     context "user is logged in" do
+  #       before do
+  #         logmein @registeredUser
+  #       end
+  #       after do
+  #         logmeout
+  #       end
+  #       it_behaves_like "a user-accessible collection"
+  #     end
+  #   end
+  #   context "restricted collection" do
+  #     before do
+  #       @collection.admin_policy = @restrictedReadAdminPolicy
+  #       @collection.save!
+  #     end
+  #     context "user is not logged in" do
+  #       it_behaves_like "a user-forbidden collection"
+  #     end
+  #     context "user is logged in but not have read access to collection" do
+  #       before do
+  #         logmein @registeredUser
+  #       end
+  #       after do
+  #         logmeout
+  #       end
+  #       it_behaves_like "a user-forbidden collection"
+  #     end
+  #     context "user is logged and does have read access to collection" do
+  #       before do
+  #         logmein @repositoryReader
+  #       end
+  #       after do
+  #         logmeout
+  #       end
+  #       it_behaves_like "a user-accessible collection"
+  #     end
+  #   end
+  # end
 
 end

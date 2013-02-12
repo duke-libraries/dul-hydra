@@ -1,8 +1,10 @@
-<h1>Items</h1>
+<h1><%= @title %></h1>
 
 <%= link_to "Create New Item", new_item_path %>
 <ul>
-<% @items.each do |item| %>
-  <li><%= link_to item.has_title? ? item.title.first : item.pid, item_path(item) %></li>
-<% end %>
+  <% @items.each do |item| %>
+  <li>
+    <%= link_to item.has_title? ? item.title.first : item.pid, item_path(item) %>
+  </li>
+  <% end %>
 </ul>

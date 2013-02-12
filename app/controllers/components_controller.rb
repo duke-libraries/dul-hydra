@@ -1,14 +1,14 @@
 class ComponentsController < DulHydraController
 
-  load_and_authorize_resource
+  # load_and_authorize_resource
 
   def index
+    @title = "Components"
     @components = Component.all
   end
 
   def new
-    # redundant b/c load_and_authorize_resource
-    # @component = Component.new
+    @title = "New Component"
   end
 
   def create
@@ -24,12 +24,11 @@ class ComponentsController < DulHydraController
   end
 
   def show
-    # redundant b/c load_and_authorize_resource
-    # @component = Component.find(params[:id])
+    @title = "Component #{@component.pid}"
   end
 
   def edit
-    # raise NotImplementedError
+    @title = "Edit Component #{@component.pid}"
   end
 
   def update
@@ -49,5 +48,11 @@ class ComponentsController < DulHydraController
   def destroy
     raise NotImplementedError
   end
+
+  # private
+
+  # def set_object
+  #   @object = @component
+  # end
 
 end

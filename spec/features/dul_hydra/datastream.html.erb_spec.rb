@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'support/shared_examples_for_dul_hydra_views'
 
 describe "dul_hydra/datastream.html.erb" do
+  subject { page }
   let!(:dsid) { "DC" }
   after { obj.delete }
   # Component
