@@ -41,7 +41,7 @@ module DulHydra::Scripts
         when qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)
           generate_qdc(object, qdcsource, basepath)
         else
-          stub_qdc(object, basepath)
+          stub_qdc()
         end
         result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
         File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }
