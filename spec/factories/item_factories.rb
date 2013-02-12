@@ -12,6 +12,10 @@ FactoryGirl.define do
       admin_policy
     end
 
+    trait :public_read do
+      permissions [{:access => 'read', :type => 'group', :name => 'public'}]
+    end
+
     factory :item_has_part do
       after(:create) { |i| i.parts << FactoryGirl.create(:component) }
 
@@ -22,6 +26,7 @@ FactoryGirl.define do
 
     factory :item_in_collection,         traits: [:member_of_collection]
     factory :item_has_apo,               traits: [:has_admin_policy]
+    factory :item_public_read,           traits: [:public_read]
     factory :item_in_collection_has_apo, traits: [:member_of_collection, :has_admin_policy]
 
   end

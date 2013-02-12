@@ -7,13 +7,13 @@ RSpec.configure do |c|
   c.include ApplicationHelper
 end
 
+shared_examples "a DulHydra object show view" do
+  subject { page }
+end
+
 shared_examples "a DulHydra object datastreams view" do
   subject { page }
-  before do
-    obj.permissions = [{:access => 'read', :type => 'group', :name => 'public'}]
-    obj.save!
-    visit object_datastreams_path(obj)
-  end
+  before { visit object_datastreams_path(obj) }
   after { obj.delete }
   it "should have links to all datastreams" do
     obj.datastreams.each do |dsid, ds|
@@ -25,11 +25,7 @@ end
 shared_examples "a DulHydra object datastream view" do
   subject { page }
   let(:dsid) { "DC" }
-  before do
-    obj.permissions = [{:access => 'read', :type => 'group', :name => 'public'}]
-    obj.save!
-    visit object_datastream_path(obj, dsid)
-  end
+  before { visit object_datastream_path(obj, dsid) }
   after { obj.delete }
   it "should show all the attributes of the datastream profile" do
     obj.datastreams[dsid].profile.each do |key, value|
