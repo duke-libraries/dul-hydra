@@ -1,5 +1,10 @@
 log4r_config:
     loggers:
+        - name      : production
+          level     : WARN
+          trace     : 'false'
+          outputters:
+            - datefile_production
         - name      : test
           level     : DEBUG
           trace     : 'true'
@@ -11,6 +16,14 @@ log4r_config:
           outputters:
             - datefile_development
     outputters:
+        - type      : DateFileOutputter
+          name      : datefile_production
+          dirname   : "log"
+          filename  : "production.log"
+          formatter :
+            date_pattern: '%H:%M:%S'
+            pattern     : '%d %l: %m '
+            type        : PatternFormatter          
         - type      : DateFileOutputter
           name      : datefile_test
           dirname   : "log"
