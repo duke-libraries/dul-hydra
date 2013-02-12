@@ -7,15 +7,13 @@ RSpec.configure do |c|
   c.include ApplicationHelper
 end
 
-shared_examples "a DulHydra object datastreams view" do |object_sym|
+shared_examples "a DulHydra object datastreams view" do
   subject { page }
-  let(:obj) do
-    o = FactoryGirl.create(object_sym)
-    o.permissions = [{:access => 'read', :type => 'group', :name => 'public'}]
-    o.save!
-    o
+  before do
+    obj.permissions = [{:access => 'read', :type => 'group', :name => 'public'}]
+    obj.save!
+    visit object_datastreams_path(obj)
   end
-  before { visit object_datastreams_path(obj) }
   after { obj.delete }
   it "should have links to all datastreams" do
     obj.datastreams.each do |dsid, ds|
@@ -24,16 +22,14 @@ shared_examples "a DulHydra object datastreams view" do |object_sym|
   end
 end
 
-shared_examples "a DulHydra object datastream view" do |object_sym|
+shared_examples "a DulHydra object datastream view" do
   subject { page }
-  let(:obj) do
-    o = FactoryGirl.create(object_sym)
-    o.permissions = [{:access => 'read', :type => 'group', :name => 'public'}]
-    o.save!
-    o
-  end
   let(:dsid) { "DC" }
-  before { visit object_datastream_path(obj, dsid) }
+  before do
+    obj.permissions = [{:access => 'read', :type => 'group', :name => 'public'}]
+    obj.save!
+    visit object_datastream_path(obj, dsid)
+  end
   after { obj.delete }
   it "should show all the attributes of the datastream profile" do
     obj.datastreams[dsid].profile.each do |key, value|
