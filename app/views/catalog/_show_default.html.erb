@@ -1,0 +1,25 @@
+<%# default partial to display solr document fields in catalog show view -%>
+<dl class="dl-horizontal  dl-invert">
+  <% document_show_fields.each do |solr_fname, field| -%>
+    <% if should_render_show_field? document, field %>
+    <dt class="blacklight-<%= solr_fname.parameterize %>"><%= render_document_show_field_label :field => solr_fname %></dt>
+    <dd class="blacklight-<%= solr_fname.parameterize %>"><%= render_document_show_field_value :document => document, :field => solr_fname %></dd>
+    <% end -%>
+  <% end -%>
+  <dt>Datastreams:</dt>
+  <dd>
+    <ul>
+    <% document.datastreams.each do |dsid, dsprofile| %>
+    <li>
+      <%= dsid %>
+    </li>
+    <% end %>
+    </ul>
+  </dd>
+  <% if document.has_admin_policy? %>
+  <dt>Admin Policy:</dt>
+  <dd>
+    <%= link_to document.admin_policy_pid, catalog_path(document.admin_policy_pid) %>
+  </dd>
+  <% end %>
+</dl>
