@@ -1,10 +1,10 @@
 <h1><%= @title %></h1>
 
 <ul>
-  <% @obj.datastreams.each do |dsid, ds| %>
+  <% @object.datastreams.each do |dsid, ds| %>
   <li>
     <%=
-       link_to_unless ds.profile.empty?, dsid, { :action => 'datastream', :id => @obj, :dsid => dsid } do |name|
+       link_to_unless ds.profile.empty?, dsid, { :action => 'datastream', :id => @object, :dsid => dsid } do |name|
          name
        end
     %>

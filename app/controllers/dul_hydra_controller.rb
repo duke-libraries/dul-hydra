@@ -7,7 +7,7 @@ class DulHydraController < ApplicationController
   load_and_authorize_resource
 
   # set @object on new, show, edit
-  before_filter :only => [:new, :show, :edit] do |controller|
+  before_filter :only => [:new, :show, :edit, :datastream, :datastreams, :datastream_content] do |controller|
     @object = controller.instance_variable_get("@#{controller.class.to_s.sub("Controller", "").singularize.downcase}")
   end
 
