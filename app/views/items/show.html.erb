@@ -1,23 +1,27 @@
-<h1>Item <%= @item.has_title? ? @item.title.first : @item.pid %></h1>
+<h1><%= @title %></h1>
 
 <%= link_to "Item List", items_path %>
 
-<%= render :partial => 'dul_hydra/show_summary', :locals => { :obj => @item } %>
+<%= render :partial => 'dul_hydra/show_summary' %>
 
 <% if @item.collection %>
-  Member of collection: <%= link_to @item.collection.pid, collection_path(@item.collection) %>
+  <h2>Member of Collection</h2> 
+  <p>
+    <%= link_to @item.collection.pid, collection_path(@item.collection) %>
+  </p>
+<% end %>
+
+<h2>Parts</h2>
+<% if @item.parts.empty? %>
+  <p>
+    [None]
+  <p> 
 <% else %>
-  <%= form_for @item do |f| %>
-    <%= f.label :collection %>
-    <%= f.text_field :collection %>
-    <%= f.submit "Add Item to Collection" %>
-  <% end %>
+  <ul>
+    <% @item.parts.each do |part| %>
+    <li>
+      Component <%= link_to part.pid, component_path(part.pid) %>
+    </li>
+    <% end %>
+  </ul>
 <% end %>
-
-<h2>Components</h2>
-
-<ul>
-<% @item.parts.each do |part| %>
-  <li><%= link_to part.pid, component_path(part.pid) %></li>
-<% end %>
-</ul>

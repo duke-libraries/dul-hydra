@@ -1,4 +1,4 @@
-<h1>New Component</h1>
+<h1><%= @title %></h1>
 
 <%= form_tag({:controller => "components", :action => "create"}, :multipart => true) do %>
   <%= fields_for @component do |f| %>

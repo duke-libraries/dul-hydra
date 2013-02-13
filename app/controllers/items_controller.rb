@@ -1,14 +1,12 @@
 class ItemsController < DulHydraController
 
-  load_and_authorize_resource
-  
   def index
+    @title = "Items"
     @items = Item.all
   end
 
   def new
-    # redundant b/c load_and_authorize_resource
-    # @item = Item.new
+    @title = "New Item"
   end
   
   def create
@@ -25,11 +23,11 @@ class ItemsController < DulHydraController
   end
   
   def show
-    # redundant b/c load_and_authorize_resource
-    # @item = Item.find(params[:id])
+    @title = "Item #{@item.pid}"
   end
 
   def edit
+    @title = "Edit Item #{@item.pid}"
   end
 
   def update

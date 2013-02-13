@@ -1,22 +1,26 @@
 <h1>Component <%= @component.pid %></h1>
 
+<p>
+  <%= link_to "Component List", components_path %>
+</p>
+
 <% if can? :edit, @component %>
   <p>
     <%= link_to "Edit", edit_component_path(@component) %>
   <p>
 <% end %>
 
-<%= render :partial => 'dul_hydra/show_summary', :locals => { :obj => @component } %>
+<%= render :partial => 'dul_hydra/show_summary' %>
 
 <% if @component.container %>
+  <h2>Part of Item</h2>
   <p>
-    Part of Item: <%= link_to @component.container.pid, item_path(@component.container) %>
+    <%= link_to @component.container.pid, item_path(@component.container) %>
   </p>
 <% end %>
 
 <h2>Content</h2>
-
-<% if @component.content.size %>
+<% if @component.content.has_content? %>
   <dl>
     <dt>Type</dt>
     <dd><%= @component.content.mimeType %></dd>
@@ -25,6 +29,6 @@
   </dl>
 <% else %>
   <p>
-    No content.
+    [None]
   </p>
 <% end %>

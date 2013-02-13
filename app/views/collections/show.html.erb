@@ -1,13 +1,20 @@
-<h1>Collection <%= @collection.has_title? ? @collection.title.first : @collection.pid %></h1>
+<h1><%= @title %></h1>
 
 <%= link_to " Collection List", collections_path %>
 
-<%= render :partial => 'dul_hydra/show_summary', :locals => { :obj => @collection } %>
+<%= render :partial => 'dul_hydra/show_summary' %>
 
-<h2>Members</h2>
-
-<ul>
-<% @collection.items.each do |i| %>
-  <li><%= link_to i.pid, item_path(i) %></li>
+<h2>Items</h2>
+<% if @collection.items.empty? %>
+  <p>
+    [None]
+  </p>
+<% else %>
+  <ul>
+    <% @collection.items.each do |item| %>
+    <li>
+      Item <%= link_to item.pid, item_path(item) %>
+    </li>
+    <% end %>
+  </ul>
 <% end %>
-</ul>

@@ -101,79 +101,79 @@ describe "Components" do
     end
   end # create
 
-  describe "show" do
-    before do
-      @component = Component.create
-    end
-    after do
-      Component.find_each { |c| c.delete }
-      Item.find_each { |i| i.delete }
-    end
-    shared_examples_for "a user-accessible component" do
-      context "component has content" do
-        before do
-          @component.content.content_file = File.new(@filepath)
-          @component.save
-        end
-        it "should display information about the content" do
-          visit component_path(@component)
-          page.should have_content @component.content.mimeType
-          page.should have_content @component.content.size
-        end              
-      end
-    end
-    shared_examples_for "a user-forbidden component" do
-      it "should display a Forbidden (403) response" do
-        visit component_path(@component)
-        page.should have_content @forbiddenText
-      end      
-    end
-    context "publicly readable component" do
-      before do
-        @component.admin_policy = @publicReadAdminPolicy
-        @component.save!
-      end
-      context "user is not logged in" do
-        it_behaves_like "a user-accessible component"
-      end
-      context "user is logged in" do
-        before do
-          logmein @registeredUser
-        end
-        after do
-          logmeout
-        end
-        it_behaves_like "a user-accessible component"
-      end
-    end
-    context "restricted collection" do
-      before do
-        @component.admin_policy = @restrictedReadAdminPolicy
-        @component.save!
-      end
-      context "user is not logged in" do
-        it_behaves_like "a user-forbidden component"
-      end
-      context "user is logged in but does not have read access to component" do
-        before do
-          logmein @registeredUser
-        end
-        after do
-          logmeout
-        end
-        it_behaves_like "a user-forbidden component"
-      end
-      context "user is logged and does have read access to component" do
-        before do
-          logmein @repositoryReader
-        end
-        after do
-          logmeout
-        end
-        it_behaves_like "a user-accessible component"
-      end
-    end
-  end # show
+  # describe "show" do
+  #   before do
+  #     @component = Component.create
+  #   end
+  #   after do
+  #     Component.find_each { |c| c.delete }
+  #     Item.find_each { |i| i.delete }
+  #   end
+  #   shared_examples_for "a user-accessible component" do
+  #     context "component has content" do
+  #       before do
+  #         @component.content.content_file = File.new(@filepath)
+  #         @component.save
+  #       end
+  #       it "should display information about the content" do
+  #         visit component_path(@component)
+  #         page.should have_content @component.content.mimeType
+  #         page.should have_content @component.content.size
+  #       end              
+  #     end
+  #   end
+  #   shared_examples_for "a user-forbidden component" do
+  #     it "should display a Forbidden (403) response" do
+  #       visit component_path(@component)
+  #       page.should have_content @forbiddenText
+  #     end      
+  #   end
+  #   context "publicly readable component" do
+  #     before do
+  #       @component.admin_policy = @publicReadAdminPolicy
+  #       @component.save!
+  #     end
+  #     context "user is not logged in" do
+  #       it_behaves_like "a user-accessible component"
+  #     end
+  #     context "user is logged in" do
+  #       before do
+  #         logmein @registeredUser
+  #       end
+  #       after do
+  #         logmeout
+  #       end
+  #       it_behaves_like "a user-accessible component"
+  #     end
+  #   end
+  #   context "restricted collection" do
+  #     before do
+  #       @component.admin_policy = @restrictedReadAdminPolicy
+  #       @component.save!
+  #     end
+  #     context "user is not logged in" do
+  #       it_behaves_like "a user-forbidden component"
+  #     end
+  #     context "user is logged in but does not have read access to component" do
+  #       before do
+  #         logmein @registeredUser
+  #       end
+  #       after do
+  #         logmeout
+  #       end
+  #       it_behaves_like "a user-forbidden component"
+  #     end
+  #     context "user is logged and does have read access to component" do
+  #       before do
+  #         logmein @repositoryReader
+  #       end
+  #       after do
+  #         logmeout
+  #       end
+  #       it_behaves_like "a user-accessible component"
+  #     end
+  #   end
+  # end # show
 
   describe "update" do
     before do

@@ -3,8 +3,11 @@ module DulHydra::Models
     extend ActiveSupport::Concern
 
     included do
-      # adds isGovernedBy relationship to object
       belongs_to :admin_policy, :property => :is_governed_by
+    end
+
+    def inherited_permissions
+      admin_policy ? admin_policy.default_permissions : []
     end
 
   end
