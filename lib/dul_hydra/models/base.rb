@@ -6,8 +6,6 @@ module DulHydra::Models
     include AccessControllable
     include HasPreservationEvents
 
-    NO_TITLE = "[No Title]"
-
     def to_solr(solr_doc=Hash.new, opts={})
       solr_doc = super(solr_doc, opts)
       solr_doc.merge!(last_fixity_check_to_solr)
@@ -16,7 +14,11 @@ module DulHydra::Models
     end
 
     def title_display
-      title.first || NO_TITLE
+      title.first || no_title
+    end
+
+    def no_title
+      "<#{pid}>"
     end
 
   end
