@@ -1,4 +1,7 @@
 # -*- encoding : utf-8 -*-
+
+require 'json'
+
 class SolrDocument 
 
   include Blacklight::Solr::Document
@@ -30,4 +33,21 @@ class SolrDocument
                          :language => "language_facet",
                          :format => "format"
                          )
+
+  def object_profile
+    JSON.parse(self[:object_profile_display].first)
+  end
+
+  def datastreams
+    object_profile["datastreams"]
+  end
+
+  def has_admin_policy?
+    has? :is_governed_by_s
+  end
+
+  def admin_policy_pid
+    has_admin_policy? ? get(:is_governed_by_s).split('/').last : nil
+  end
+
 end
