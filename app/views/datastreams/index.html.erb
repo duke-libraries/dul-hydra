@@ -1,0 +1,14 @@
+<h1><%= @title %></h1>
+
+<ul>
+  <% @object.datastreams.each do |dsid, ds| %>
+  <li>
+    <%=
+       link_to_unless ds.profile.empty?, dsid, { :action => 'show', :object_id => @object, :id => dsid } do |name|
+         name
+       end
+    %>
+  </li>
+  <% end %>
+</ul>
+
