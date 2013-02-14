@@ -7,19 +7,14 @@ DulHydra::Application.routes.draw do
 
   devise_for :users
 
+  # Datastreams
+  match '/catalog/:object_id/datastreams' => 'datastreams#index', :as => 'datastreams'
+  match '/catalog/:object_id/datastreams/:id' => 'datastreams#show', :as => 'datastream'
+  match '/catalog/:object_id/datastreams/:id/content' => 'datastreams#content', :as => 'datastream_content'
+
   # DulHydra objects
-  [:collections, :items, :components].each do |model|
-    resources model
-    path_prefix = model.to_s.singularize
-    match "/#{model}/:id/datastreams" => "#{model}#datastreams", 
-          :via => :get, 
-          :as => "#{path_prefix}_datastreams"
-    match "/#{model}/:id/datastreams/:dsid" => "#{model}#datastream", 
-          :via => :get, 
-          :as => "#{path_prefix}_datastream"
-    match "/#{model}/:id/datastreams/:dsid/content" => "#{model}#datastream_content", 
-          :via => :get, 
-          :as => "#{path_prefix}_datastream_content"
-  end
+  resources :collections
+  resources :items
+  resources :components
   
 end
