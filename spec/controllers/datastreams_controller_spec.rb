@@ -14,4 +14,7 @@ describe DatastreamsController do
     after { object.delete }
     it { should render_template('datastreams/show') }
   end
+  context "#content" do
+    it "should download the datastream content"
+  end
 end
