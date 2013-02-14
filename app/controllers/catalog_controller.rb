@@ -108,7 +108,8 @@ class CatalogController < ApplicationController
         :pf => '$title_pf'
       }
     end
-    
+
+    # FIXME https://github.com/duke-libraries/dul-hydra/issues/42
     config.add_search_field('identifier') do |field|
       field.qt = 'standard'
     end
