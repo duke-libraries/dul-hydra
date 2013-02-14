@@ -14,7 +14,7 @@ shared_examples "a DulHydra object catalog show view" do
     expect(subject).to have_content(object.title_display)
     expect(subject).to have_content(object.identifier.first)
   end
-  it "should have list all datastreams" do
+  it "should list all datastreams" do
     object.datastreams.each do |dsid, ds|
       expect(subject).to have_content(dsid)
     end
