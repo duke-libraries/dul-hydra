@@ -42,12 +42,12 @@ class SolrDocument
     object_profile["datastreams"]
   end
 
-  def has_admin_policy?
-    has? :is_governed_by_s
+  def admin_policy_uri
+    get(:is_governed_by_s)
   end
 
-  def admin_policy_pid
-    has_admin_policy? ? get(:is_governed_by_s).split('/').last : nil
+  def parent_uri
+    get(:is_part_of_s) || get(:is_member_of_s) || get(:is_member_of_collection_s)
   end
 
 end

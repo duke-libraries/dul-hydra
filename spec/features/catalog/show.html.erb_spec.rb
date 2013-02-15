@@ -41,15 +41,18 @@ describe "catalog/show.html.erb" do
     login user
     visit catalog_path(object)
   end
-  after(:each) { object.delete }
+  after(:each) do
+    object.parent.delete if object.respond_to?(:parent) && object.parent
+    object.delete
+  end
   after(:all) { user.delete }
   it_behaves_like "a DulHydra object catalog show view" do
     let(:object) { FactoryGirl.create(:collection_has_apo) }
   end
   it_behaves_like "a DulHydra object catalog show view" do
-    let(:object) { FactoryGirl.create(:item_has_apo) }
+    let(:object) { FactoryGirl.create(:item_in_collection_has_apo) }
   end
   it_behaves_like "a DulHydra object catalog show view" do
-    let(:object) { FactoryGirl.create(:component_has_apo) }
+    let(:object) { FactoryGirl.create(:component_part_of_item_has_apo) }
   end
 end
