@@ -5,6 +5,9 @@ class CatalogController < ApplicationController
 
   include Blacklight::Catalog
 
+  # DulHydra catalog behaviors - depends on Blacklight::Catalog (which includes Blacklight::SolrHelper)
+  include DulHydra::Catalog 
+
   # These before_filters apply the hydra access controls
   before_filter :enforce_show_permissions, :only => :show
 
