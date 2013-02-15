@@ -52,3 +52,6 @@
   http://id.loc.gov/vocabulary/preservationEvents#:
     :is_preservation_event_for: isPreservationEventFor
     :has_preservation_event: hasPreservationEvent
+  http://www.loc.gov/mix/v20/externalTarget#:
+    :is_external_target_for: isExternalTargetFor
+    :has_external_target: hasExternalTarget
