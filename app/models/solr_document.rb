@@ -72,4 +72,8 @@ class SolrDocument
     uri &&= ActiveFedora::Base.pids_from_uris(uri)
   end
 
+  def active_fedora_model
+    get(:active_fedora_model_s)
+  end
+
 end
