@@ -1,0 +1,16 @@
+<h1><%= @title %></h1>
+
+<p><%= link_to "Download Content", {:action => 'datastream_content', :object_id => @object, :id => @datastream.dsid} %></p>
+
+<h3>Profile</h3>
+<dl class="dl-horizontal dl-invert">
+  <% @datastream.profile.each do |key, value| %>
+  <dt><%= key %>:</dt>
+  <dd>
+    <% if value.blank? %>&nbsp;<% else %><%= value %><% end %>
+  </dd>
+  <% end %>
+</dl>
+
+<h4>Debug</h4>
+<p><%= @datastream.profile %></p>
