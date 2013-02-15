@@ -11,15 +11,25 @@
     <ul>
     <% document.datastreams.each do |dsid, dsprofile| %>
     <li>
-      <%= dsid %>
+      <%= 
+	 link_to_unless dsprofile.empty?, dsid, datastream_path(document.id, dsid) do |name|
+	   "#{name} (not used)"
+	 end
+	 %>
     </li>
     <% end %>
     </ul>
   </dd>
-  <% if document.has_admin_policy? %>
+  <% if document.admin_policy_uri %>
   <dt>Admin Policy:</dt>
   <dd>
-    <%= link_to document.admin_policy_pid, catalog_path(document.admin_policy_pid) %>
+    <%= link_to uri_to_pid(document.admin_policy_uri), catalog_path(uri_to_pid(document.admin_policy_uri)) %>
+  </dd>
+  <% end %>
+  <% if document.parent_uri %>
+  <dt>Parent Object:</dt>
+  <dd>
+    <%= link_to uri_to_pid(document.parent_uri), catalog_path(uri_to_pid(document.parent_uri)) %>
   </dd>
   <% end %>
 </dl>
