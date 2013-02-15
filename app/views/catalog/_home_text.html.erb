@@ -1,2 +1,7 @@
 <h3><%= t('blacklight.welcome') %></h3>
-<p>Use the facets on the left to browse the repository.</p>
+<p>Browse the repository by content type:</p>
+<ul>
+  <li><%= link_to "Collections", collections_path %></li>
+  <li><%= link_to "Items", items_path %></li>
+  <li><%= link_to "Components", components_path %></li>
+<ul>
