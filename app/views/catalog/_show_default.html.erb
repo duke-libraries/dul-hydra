@@ -20,16 +20,16 @@
     <% end %>
     </ul>
   </dd>
-  <% if document.admin_policy_uri %>
+  <% if document.admin_policy? %>
   <dt>Admin Policy:</dt>
   <dd>
-    <%= link_to uri_to_pid(document.admin_policy_uri), catalog_path(uri_to_pid(document.admin_policy_uri)) %>
+    <%= link_to document.admin_policy_pid, catalog_path(document.admin_policy_pid) %>
   </dd>
   <% end %>
-  <% if document.parent_uri %>
+  <% if document.parent? %>
   <dt>Parent Object:</dt>
   <dd>
-    <%= link_to uri_to_pid(document.parent_uri), catalog_path(uri_to_pid(document.parent_uri)) %>
+    <%= link_to document.parent_pid, catalog_path(document.parent_pid) %>
   </dd>
   <% end %>
 </dl>
