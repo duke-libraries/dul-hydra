@@ -2,10 +2,10 @@ DulHydra::Application.routes.draw do
 
   root :to => "catalog#index"
 
-  # # Model index views
-  # match '/collections' => 'collections#index', :defaults => {:model => 'Collection'}
-  # match '/items' => 'items#index', :defaults => {:model => 'Item'}
-  # match '/components' => 'components#index', :defaults => {:model => 'Component'}
+  # Model index views
+  match '/collections' => 'catalog#model_index', :defaults => {:model => 'Collection'}, :as => 'collections'
+  match '/items' => 'catalog#model_index', :defaults => {:model => 'Item'}, :as => 'items'
+  match '/components' => 'catalog#model_index', :defaults => {:model => 'Component'}, :as => 'components'
 
   # Datastreams
   match '/catalog/:object_id/datastreams' => 'datastreams#index', :as => 'datastreams'
