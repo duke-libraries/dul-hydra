@@ -6,6 +6,11 @@ describe 'components/show.html.erb' do
     subject { page }
     let(:obj) { FactoryGirl.create(:component_part_of_item_has_apo) }
     before { visit component_path(obj) }
-    after { obj.delete }
+    after do
+      obj.item.delete
+      obj.admin_policy.delete
+      obj.reload
+      obj.delete
+    end
   end
 end
