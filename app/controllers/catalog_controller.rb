@@ -69,7 +69,7 @@ class CatalogController < ApplicationController
     #   The ordering of the field names is the order of the display
     config.add_show_field 'active_fedora_model_s', :label => 'Model:'
     config.add_show_field 'id', :label => 'PID:'
-    config.add_show_field 'title_display', :label => 'Title:' 
+    config.add_show_field 'title_t', :label => 'Title:' 
     config.add_show_field 'identifier_t', :label => 'Identifier:'
     #config.add_show_field 'is_governed_by_s', :label => 'Admin Policy:', :helper_method => :internal_uri_to_pid
 
