@@ -13,6 +13,15 @@ shared_examples "a Component related to an Item" do
   end
 end
 
+shared_examples "a Component with a Target" do
+  it "should be the first component of the target" do
+    expect(target.components.first).to eq(component)
+  end
+  it "should have the target as target" do
+    expect(component.target).to eq(target)
+  end
+end
+
 describe Component do
 
   it_behaves_like "a DulHydra object"
@@ -21,7 +30,9 @@ describe Component do
   context "relationships" do
     let!(:component) { FactoryGirl.create(:component) }
     let!(:item) { FactoryGirl.create(:item) }
+    let!(:target) { FactoryGirl.create(:target) }
     after do
+      target.delete
       item.delete
       component.delete
     end
@@ -49,6 +60,17 @@ describe Component do
     context "when added to item's parts" do
       before { item.parts << component }
       it_behaves_like "a Component related to an Item"
+    end
+    context "#target=" do
+      before do
+        component.target = target
+        component.save!
+      end
+      it_behaves_like "a Component with a Target"
+    end
+    context "when added to target's components" do
+      before { target.components << component}
+      it_behaves_like "a Component with a Target"
     end
   end # relationships
 

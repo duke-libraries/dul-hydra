@@ -11,6 +11,15 @@ shared_examples "a Collection related to an Item" do
   end
 end
 
+shared_examples "a Collection related to a Target" do
+  it "should be the target's collection" do
+    expect(collection).to eq(target.collection)
+  end
+  it "should have the target as first member of its targets" do
+    expect(collection.targets.first).to eq(target)
+  end
+end
+
 describe Collection do
   it_behaves_like "a DulHydra object"
   
@@ -30,4 +39,18 @@ describe Collection do
       it_behaves_like "a Collection related to an Item"
     end
   end
+
+  context "collection-target relationships" do
+    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:target) { FactoryGirl.create(:target) }
+    after do
+      collection.delete
+      target.delete
+    end
+    context "#targets.<<" do
+      before { collection.targets << target }
+      it_behaves_like "a Collection related to a Target"
+    end
+  end
+
 end
