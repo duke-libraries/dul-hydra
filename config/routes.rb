@@ -8,9 +8,9 @@ DulHydra::Application.routes.draw do
   match '/components' => 'catalog#model_index', :defaults => {:model => 'Component'}, :as => 'components'
 
   # Datastreams
-  match '/catalog/:object_id/datastreams' => 'datastreams#index', :as => 'datastreams'
-  match '/catalog/:object_id/datastreams/:id' => 'datastreams#show', :as => 'datastream'
-  match '/catalog/:object_id/datastreams/:id/content' => 'datastreams#content', :as => 'datastream_content'
+  match '/catalog/:object_id/datastreams' => 'catalog#datastreams', :as => 'datastreams'
+  match '/catalog/:object_id/datastreams/:id' => 'catalog#datastream', :as => 'datastream'
+  match '/catalog/:object_id/datastreams/:id/content' => 'catalog#datastream_content', :as => 'datastream_content'
 
   # # Related objects
   # match '/catalog/:object_id/parts' => 'related_objects#index', :default => {:rel => :is_part_of_s}
