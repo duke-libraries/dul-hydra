@@ -1,7 +1,7 @@
 <h1><%= @title %></h1>
 
 <div class="pagination">
-  <%= paginate_rsolr_response @response, :theme => 'blacklight' %>
+  <%= render_pagination_info @response %>
 </div>
 
 <ul>
@@ -11,3 +11,7 @@
   </li>
   <% end %>
 </ul>
+
+<div class="pagination">
+  <%= paginate_rsolr_response @response, :theme => 'blacklight' %>
+</div>
