@@ -3,8 +3,15 @@ require 'mime/types'
 module DulHydra::Catalog
 
   def model_index
-    @title = params[:model].pluralize
-    @solr_response, @document_list = get_solr_response_for_field_values(:active_fedora_model_s, params[:model])
+    model = params[:model]
+    page = params.fetch(:page, 1).to_i
+    rows = params.fetch(:rows, 10).to_i
+    solr_params = {
+      :start => rows * (page - 1),
+      :rows => rows
+    }
+    @title = model.pluralize
+    @response, @document_list = get_solr_response_for_field_values(:active_fedora_model_s, model, solr_params)
   end
 
   def datastreams
