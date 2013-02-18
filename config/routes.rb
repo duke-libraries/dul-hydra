@@ -6,6 +6,7 @@ DulHydra::Application.routes.draw do
   match '/collections' => 'catalog#model_index', :defaults => {:model => 'Collection'}, :as => 'collections'
   match '/items' => 'catalog#model_index', :defaults => {:model => 'Item'}, :as => 'items'
   match '/components' => 'catalog#model_index', :defaults => {:model => 'Component'}, :as => 'components'
+  match '/admin_policies' => 'catalog#model_index', :defaults => {:model => 'AdminPolicy'}, :as => 'admin_policies'
 
   # Datastreams
   match '/catalog/:object_id/datastreams' => 'catalog#datastreams', :as => 'datastreams'
