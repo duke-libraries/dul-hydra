@@ -7,7 +7,7 @@
 <ul>
   <% @document_list.each do |doc| %>
   <li>
-    <%= link_to "#{doc.active_fedora_model} #{doc.id}", catalog_path(doc.id) %>
+    <%= link_to doc.id, catalog_path(doc.id) %>
   </li>
   <% end %>
 </ul>
