@@ -1,10 +1,8 @@
 require 'spec_helper'
+require 'helpers/features_helper'
 
-def login(user)
-  visit new_user_session_path
-  fill_in 'Email', :with => user.email
-  fill_in 'Password', :with => user.password
-  click_button 'Sign in'
+RSpec.configure do |c|
+  c.include FeaturesHelper
 end
 
 shared_examples "a DulHydra object catalog show view" do
@@ -43,6 +41,7 @@ describe "catalog/show.html.erb" do
   end
   after(:each) do
     object.parent.delete if object.respond_to?(:parent) && object.parent
+    object.admin_policy.delete
     object.delete
   end
   after(:all) { user.delete }
