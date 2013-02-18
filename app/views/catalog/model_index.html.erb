@@ -1,6 +1,8 @@
 <h1><%= @title %></h1>
 
-TODO: Pagination
+<div class="pagination">
+  <%= paginate_rsolr_response @response, :theme => 'blacklight' %>
+</div>
 
 <ul>
   <% @document_list.each do |doc| %>
