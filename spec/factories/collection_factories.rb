@@ -15,12 +15,12 @@ FactoryGirl.define do
     factory :collection_has_item do
       after(:create) { |c| c.items << FactoryGirl.create(:item) }
 
-      factory :collection_has_item_has_apo, traits: [:has_admin_policy]
-
+      factory :collection_has_item_has_apo,     :traits => [:has_admin_policy]
+      factory :collection_has_item_public_read, :traits => [:public_read]
     end
 
-    factory :collection_has_apo,     traits: [:has_admin_policy]
-    factory :collection_public_read, traits: [:public_read]
+    factory :collection_has_apo,     :traits => [:has_admin_policy]
+    factory :collection_public_read, :traits => [:public_read]
 
   end
 

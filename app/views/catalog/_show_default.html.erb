@@ -32,4 +32,17 @@
     <%= link_to document.parent_pid, catalog_path(document.parent_pid) %>
   </dd>
   <% end %>
+  <dt>Preservation Information:</dt>
+  <dd>
+    <ul>
+      <% unless document.active_fedora_model == 'PreservationEvent' %>
+      <li>
+	<%= link_to "Preservation Events", preservation_events_path(document.id) %>
+      </li>
+      <% end %>
+      <li>
+	Audit Trail
+      </li>
+    </ul>
+  </dd>
 </dl>
