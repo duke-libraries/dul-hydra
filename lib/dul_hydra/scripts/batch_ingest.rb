@@ -33,10 +33,10 @@ module DulHydra::Scripts
       for object in manifest[:objects]
         key_identifier = key_identifier(object)
         log.info "Processing #{key_identifier}"
-        qdcsource = object[:qdcsource] || manifest[:qdcsource]
         if master_source == :objects
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
+        qdcsource = object[:qdcsource] || manifest[:qdcsource]
         qdc = case
         when qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)
           generate_qdc(object, qdcsource, basepath)

@@ -1,0 +1,6 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: Ingestable
+objects:
+    - identifier: id001
+    - identifier: id002

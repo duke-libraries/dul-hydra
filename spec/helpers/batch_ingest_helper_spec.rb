@@ -219,7 +219,15 @@ module DulHydra::Scripts::Helpers
     end
       
     describe "#generate_qdc" do
-      it "should create an appropriate Qualified Dublin Core document"
+      context "QDC source is CONTENTdm" do
+        it "should create an appropriate Qualified Dublin Core document"
+      end
+      context "QDC source is digitization guide" do
+        it "should create an appropriate Qualified Dublin Core document"
+      end
+      context "QDC source is MarcXML" do
+        it "should create an appropriate Qualified Dublin Core document"
+      end
     end
     
     describe "#stub_qdc" do

@@ -9,76 +9,69 @@ end
 
 module DulHydra::Scripts
   
+  FIXTURES_BATCH_INGEST_SAMPLES = "spec/fixtures/batch_ingest/samples"
+
   describe BatchIngest do
     before do
-      @ingest_base = setup_test_temp_dir
-      FileUtils.mkdir_p "#{@ingest_base}/collection/log"
-      FileUtils.mkdir_p "#{@ingest_base}/item/log"
-      FileUtils.mkdir_p "#{@ingest_base}/component/log"
+      setup_test_dir
+      FileUtils.cp "#{FIXTURES_BATCH_INGEST_SAMPLES}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+      @manifest_file = "#{@manifest_dir}/manifest.yml"
+      update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
     end
     after do
-      remove_temp_dir
+      remove_test_dir
     end
     describe "prepare for ingest" do
       context "all object types" do
-        before do
-          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
-          FileUtils.mkdir_p "#{@ingest_base}/item/master"
-          FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
-        end
         it "should create an appropriate master file" do
             DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-            result = File.open("#{@ingest_base}/item/master/master.xml") { |f| Nokogiri::XML(f) }
-            expected = File.open("spec/fixtures/batch_ingest/results/item_master.xml") { |f| Nokogiri::XML(f) }
+            result = File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) }
+            expected = File.open("#{FIXTURES_BATCH_INGEST_SAMPLES}/master/base_master.xml") { |f| Nokogiri::XML(f) }
             result.should be_equivalent_to(expected)
         end
-        it "should create appropriate qualified Dublin Core files" do
+        it "should create Qualified Dublin Core files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          for qdc_filename in qdc_filenames(@manifest_file)
-            result = File.open("#{@ingest_base}/item/qdc/#{qdc_filename}") { |f| Nokogiri::XML(f) }
-            expected = File.open("spec/fixtures/batch_ingest/results/qdc/#{qdc_filename}") { |f| Nokogiri::XML(f) }
-            result.should be_equivalent_to(expected)
-          end
+          File.size?("#{@ingestable_dir}/qdc/id001.xml").should_not be_nil
+          File.size?("#{@ingestable_dir}/qdc/id002.xml").should_not be_nil
         end
         it "should create an appropriate log file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          result = File.open("#{@ingest_base}/item/log/ingest_preparation.log") { |f| f.read }
+          result = File.open("#{@ingestable_dir}/log/ingest_preparation.log") { |f| f.read }
           result.should match("DulHydra version #{DulHydra::VERSION}")
-          result.should match("Manifest: #{@ingest_base}/manifests/item_manifest.yml")
-          result.should match("Processing item_1")
-          result.should match("Processing item_2")
-          result.should match("Processing item_4")
-          result.should match("Processed 3 object\\(s\\)")
+          result.should match("Manifest: #{@manifest_file}")
+          result.should match("Processing id001")
+          result.should match("Processing id002")
+          result.should match("Processed 2 object\\(s\\)")
         end
       end
       context "partially populated master file already exists" do
         before do
-          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
-          FileUtils.mkdir_p "#{@ingest_base}/item/master"
-          FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
-          FileUtils.cp "spec/fixtures/batch_ingest/samples/preexisting_item_master.xml", "#{@ingest_base}/item/master/master.xml"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST_SAMPLES}/master/preexisting_master.xml", "#{@ingestable_dir}/master/master.xml"
         end
         it "should add the new objects to those already in the master file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-            result = File.open("#{@ingest_base}/item/master/master.xml") { |f| Nokogiri::XML(f) }
-            expected = File.open("spec/fixtures/batch_ingest/results/using_preexisting_item_master.xml") { |f| Nokogiri::XML(f) }
+            result = File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) }
+            expected = File.open("#{FIXTURES_BATCH_INGEST_SAMPLES}/master/base_added_to_preexisting_master.xml") { |f| Nokogiri::XML(f) }
             result.should be_equivalent_to(expected)          
         end
       end
       context "consolidated file is to be split into individual files" do
         before do
-          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
-          FileUtils.mkdir_p "#{@ingest_base}/item/master"
-          FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST_SAMPLES}/composite_to_be_split.xml", "#{@ingestable_dir}/zzz"
+          split_entry = Array.new
+          split_entry << HashWithIndifferentAccess.new(
+            :type => "zzz",
+            :source => "composite_to_be_split.xml",
+            :xpath => "/metadata/record",
+            :idelement => "localid"
+          )
+          update_manifest(@manifest_file, {"split" => split_entry})
         end        
         it "should split the consolidated file into appropriate individual files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          result_1 = File.open("#{@ingest_base}/item/contentdm/test010010010.xml") { |f| Nokogiri::XML(f) }
-          result_2 = File.open("#{@ingest_base}/item/contentdm/test010010020.xml") { |f| Nokogiri::XML(f) }
-          result_3 = File.open("#{@ingest_base}/item/contentdm/test010010030.xml") { |f| Nokogiri::XML(f) }
+          result_1 = File.open("#{@ingestable_dir}/zzz/test010010010.xml") { |f| Nokogiri::XML(f) }
+          result_2 = File.open("#{@ingestable_dir}/zzz/test010010020.xml") { |f| Nokogiri::XML(f) }
+          result_3 = File.open("#{@ingestable_dir}/zzz/test010010030.xml") { |f| Nokogiri::XML(f) }
           expected_1 = Nokogiri::XML("<record><Title>Title 1</Title><Date>1981-01</Date><localid>test010010010</localid></record>")
           expected_2 = Nokogiri::XML("<record><Title>Title 2</Title><Date>1987-09</Date><localid>test010010020</localid></record>")
           expected_3 = Nokogiri::XML("<record><Title>Title 3</Title><Date>1979-11</Date><localid>test010010030</localid></record>")

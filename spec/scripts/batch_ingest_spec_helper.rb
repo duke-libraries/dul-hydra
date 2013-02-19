@@ -1,7 +1,31 @@
 require 'find'
 
+
 module BatchIngestSpecHelper
   FIXTURES_BATCH_INGEST_BASE = "spec/fixtures/batch_ingest/BASE"
+  
+  def setup_test_dir
+    @test_dir = Dir.mktmpdir("dul_hydra_test")
+    base_dir = "#{@test_dir}/ingest/BASE"
+    @manifest_dir = "#{base_dir}/manifests"
+    FileUtils.mkdir_p @manifest_dir
+    @ingestable_dir = "#{base_dir}/ingestable"
+    FileUtils.mkdir_p @ingestable_dir
+    FileUtils.mkdir "#{@ingestable_dir}/checksum"
+    FileUtils.mkdir "#{@ingestable_dir}/contentdm"
+    FileUtils.mkdir "#{@ingestable_dir}/digitizationguide"
+    FileUtils.mkdir "#{@ingestable_dir}/fmpexport"
+    FileUtils.mkdir "#{@ingestable_dir}/jhove"
+    FileUtils.mkdir "#{@ingestable_dir}/log"
+    FileUtils.mkdir "#{@ingestable_dir}/marcxml"
+    FileUtils.mkdir "#{@ingestable_dir}/master"
+    FileUtils.mkdir "#{@ingestable_dir}/qdc"
+    FileUtils.mkdir "#{@ingestable_dir}/tripodmets"
+    FileUtils.mkdir "#{@ingestable_dir}/zzz"
+  end
+  def remove_test_dir
+    FileUtils.remove_dir @test_dir
+  end
   def setup_test_temp_dir
     @test_temp_dir = Dir.mktmpdir("dul_hydra_test")
     ingest_base = "#{@test_temp_dir}/ingest"
@@ -17,22 +41,22 @@ module BatchIngestSpecHelper
     end
     return locations
   end
-  def qdc_filenames(manifest_filepath)
-    filenames = Array.new
-    File.open(manifest_filepath) { |f| @manifest = YAML::load(f) }
-    for object in @manifest[:objects]
-      unless object["qdcsource"].blank?
-        key_identifier = case object[:identifier]
-        when String
-          object[:identifier]
-        when Array
-          object[:identifier].first
-        end
-        filenames << "#{key_identifier}.xml"
-      end
-    end
-    return filenames
-  end
+  #def qdc_filenames(manifest_filepath)
+  #  filenames = Array.new
+  #  File.open(manifest_filepath) { |f| @manifest = YAML::load(f) }
+  #  for object in @manifest[:objects]
+  #    unless object["qdcsource"].blank?
+  #      key_identifier = case object[:identifier]
+  #      when String
+  #        object[:identifier]
+  #      when Array
+  #        object[:identifier].first
+  #      end
+  #      filenames << "#{key_identifier}.xml"
+  #    end
+  #  end
+  #  return filenames
+  #end
   def update_manifest(manifest_filepath, attributes_hash)
     manifest = File.open(manifest_filepath) { |f| YAML::load(f) }
     attributes_hash.each do |key, value|
