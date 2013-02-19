@@ -15,8 +15,7 @@ module DulHydra::Controllers
       @response, @document_list = get_search_results
     end
 
-    # TODO - move datastream methods to DulHydra::Controllers::DatastreamControllerBehavior
-
+    # XXX DEPRECATED
     def datastreams
       # @object = ActiveFedora::Base.find(params[:object_id], :cast => true)
       # authorize! :read, @object

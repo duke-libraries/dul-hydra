@@ -21,12 +21,12 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
-    config.index.show_link = 'title_display'
+    config.index.show_link = 'id'
     config.index.record_display_type = 'active_fedora_model_s'
 
     # solr field configuration for document/show views
-    config.show.html_title = 'title_display'
-    config.show.heading = 'title_display'
+    config.show.html_title = 'id'
+    config.show.heading = 'id'
     config.show.display_type = 'active_fedora_model_s'
 
     # solr fields that will be treated as facets by the blacklight application
@@ -62,16 +62,20 @@ class CatalogController < ApplicationController
     #   The ordering of the field names is the order of the display 
     #config.add_index_field 'title_display', :label => 'Title:' 
     config.add_index_field 'active_fedora_model_s', :label => 'Model:'
-    config.add_index_field 'id', :label => 'PID:'
+    #config.add_index_field 'id', :label => 'PID:'
+    config.add_index_field 'title_t', :label => 'Title:'
     config.add_index_field 'identifier_t', :label => 'Identifier:'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
     config.add_show_field 'active_fedora_model_s', :label => 'Model:'
-    config.add_show_field 'id', :label => 'PID:'
+    #config.add_show_field 'id', :label => 'PID:'
     config.add_show_field 'title_t', :label => 'Title:' 
     config.add_show_field 'identifier_t', :label => 'Identifier:'
-    #config.add_show_field 'is_governed_by_s', :label => 'Admin Policy:', :helper_method => :internal_uri_to_pid
+    config.add_show_field 'is_part_of_s', :label => 'Part of:', :helper_method => :internal_uri_to_pid
+    config.add_show_field 'is_member_of_s', :label => 'Member of:', :helper_method => :internal_uri_to_pid
+    config.add_show_field 'is_member_of_collection_s', :label => 'Member of Collection:', :helper_method => :internal_uri_to_pid
+    config.add_show_field 'is_governed_by_s', :label => 'Admin Policy:', :helper_method => :internal_uri_to_pid
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
