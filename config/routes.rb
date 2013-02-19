@@ -17,8 +17,8 @@ DulHydra::Application.routes.draw do
   # match '/catalog/:object_id/parts' => 'related_objects#index', :default => {:rel => :is_part_of_s}
   # match '/catalog/:object_id/members' => 'related_objects#index', :default => {:rel => :is_member_of_s}
   
-  # # Preservation events
-  # match '/catalog/:object_id/preservation_events' = > 'preservation_events#index'
+  # Preservation events
+  match '/catalog/:object_id/preservation_events' => 'catalog#preservation_events', :as => 'preservation_events'
   # match '/catalog/:object_id/preservation_events/:id' => 'preservation_events#show'
 
   # # DulHydra objects

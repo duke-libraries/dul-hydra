@@ -9,6 +9,12 @@ module DulHydra::Controllers
       @response, @document_list = get_search_results
     end
 
+    def preservation_events
+      self.solr_search_params_logic += [:preservation_events_filter]
+      @title = "Preservation Events for #{params[:object_id]}"
+      @response, @document_list = get_search_results
+    end
+
     # TODO - move datastream methods to DulHydra::Controllers::DatastreamControllerBehavior
 
     def datastreams
