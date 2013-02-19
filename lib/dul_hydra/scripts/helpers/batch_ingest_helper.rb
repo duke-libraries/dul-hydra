@@ -331,6 +331,28 @@ module DulHydra::Scripts::Helpers
         return ingest_object
       end
       
+      def set_collection(ingest_object, collection_identifier_type, collection_identifer)
+        collection = case collection_identifier_type
+        when :id
+          results = Collection.find_by_identifier(collection_identifer)
+          case
+          when results.size == 1
+            results.first
+          when results.size > 1
+            raise "Found multiple collections"
+          else
+            results
+          end
+        when :pid
+          Collection.find(collection_identifer)
+        end
+        if collection.blank?
+          raise "Unable to find collection"
+        end
+        ingest_object.collection = collection
+        return ingest_object
+      end
+      
       def parent_class(child_model)
         case child_model
         when "Item"

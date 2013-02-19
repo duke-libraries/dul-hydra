@@ -77,6 +77,7 @@ module DulHydra::Scripts
         when "Collection" then Collection.new
         when "Item" then Item.new
         when "Component" then Component.new
+        when "Target" then Target.new
         else raise "Invalid model"
         end
         event_details << "Model: #{model}\n"
@@ -118,6 +119,11 @@ module DulHydra::Scripts
         if !parentid.blank?
           ingest_object = set_parent(ingest_object, model, :id, parentid)
           event_details << "Parent id: #{parentid}\n"
+        end
+        collectionid = object[:collectionid] || manifest[:collectionid]
+        if !collectionid.blank?
+          ingest_object = set_collection(ingest_object, :id, collectionid)
+          event_details << "Collection id: #{collectionid}\n"
         end
         ingest_object.save
         master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)

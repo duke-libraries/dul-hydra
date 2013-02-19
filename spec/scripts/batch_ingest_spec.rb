@@ -456,7 +456,7 @@ module DulHydra::Scripts
               FileUtils.mkdir_p "#{@ingest_base}/collection/master"
               FileUtils.mkdir_p "#{@ingest_base}/item/master"
               FileUtils.mkdir_p "#{@ingest_base}/item/qdc"          
-              FileUtils.mkdir_p "#{@ingest_base}/item/tripodmets"          
+              FileUtils.mkdir_p "#{@ingest_base}/item/tripodmets"
               FileUtils.cp "spec/fixtures/batch_ingest/results/item_master.xml", "#{@ingest_base}/item/master/master.xml"
               FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master_with_pid.xml", "#{@ingest_base}/collection/master/master.xml"
               FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_1.xml", "#{@ingest_base}/item/qdc"
@@ -498,6 +498,52 @@ module DulHydra::Scripts
                 item.collection.should eq(@collection)
                 @collection.items.should include(item)
               end
+            end
+          end
+        end
+      end
+      context "target has associated collection" do
+        before do
+          FileUtils.mkdir_p "#{@ingest_base}/collection/master"
+          FileUtils.mkdir_p "#{@ingest_base}/target/log"          
+          FileUtils.mkdir_p "#{@ingest_base}/target/master"
+          FileUtils.mkdir_p "#{@ingest_base}/target/qdc"          
+          FileUtils.cp "spec/fixtures/batch_ingest/results/target_master.xml", "#{@ingest_base}/target/master/master.xml"
+          FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master_with_pid.xml", "#{@ingest_base}/collection/master/master.xml"
+          FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/T001.xml", "#{@ingest_base}/target/qdc"
+          @manifest_file = "#{@ingest_base}/manifests/target_manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/target/"})
+          @pre_existing_target_pids = []
+          Target.find_each { |t| @pre_existing_target_pids << t.pid }
+          @collection = Collection.new(:pid => "test:collection1")
+          @collection.identifier = "collection_1"
+          @collection.save!
+        end
+        after do
+          Target.find_each do |t|
+            if !@pre_existing_target_pids.include?(t.pid)
+              t.preservation_events.each do |pe|
+                pe.delete
+              end
+              t.reload
+              t.delete
+            end
+          end
+          @collection.reload
+          @collection.delete          
+        end
+        context "collection identifier is specified in manifest" do
+          it "should extablish an 'isExternalTargetOf' relationship between the target and the collection" do
+            DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+            targets = []
+            Target.find_each do |t|
+              if !@pre_existing_target_pids.include?(t.pid)
+                targets << t
+              end
+            end
+            targets.each do |target|
+              target.collection.should eq(@collection)
+              @collection.targets.should include(target)
             end
           end
         end
@@ -937,6 +983,15 @@ module DulHydra::Scripts
               end
             end
           end          
+        end
+      end
+      context "target has associated collection" do
+        context "correct target-collection relationship exists" do
+          it "should declare the ingest to be valid"
+        end
+        context "correct target-collection relationship does not exist" do
+          it "should declare the ingest to be invalid"
+          it "should create a failure validation preservation event in the repository"
         end
       end
       context "external checksum data exists" do
