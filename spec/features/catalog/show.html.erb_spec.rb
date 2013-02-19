@@ -36,19 +36,21 @@ describe "catalog/show.html.erb" do
       expect(subject).to have_link(object.parent.pid)
     end
   end
-  # context "Object has children" do
+  context "Object has children" do
+    it "should have links to its child objects"
   #   let(:object) { FactoryGirl.create(:item_has_part_public_read) }
   #   it "should have links to its child objects" do
   #     object.children.each do |child|
   #       expect(subject).to have_link(child.pid, :href => catalog_path(child))
   #     end
   #   end
-  # end
+  end
   context "Object has preservation events" do
     let(:object) { FactoryGirl.create(:component_with_content) }
     before { object.validate_content_checksum! }
     after { object.preservation_events.each { |e| e.delete } }
-    it { should have_link(object.preservation_events.first.pid, :href => catalog_path(object.preservation_events.first)) }
+    it "should have a link to the list of associated preservation events"
+    # it { should have_link(object.preservation_events.first.pid, :href => catalog_path(object.preservation_events.first)) }
   end
   context "object has admin policy" do
     let(:object) { FactoryGirl.create(:collection_has_apo) }
