@@ -48,7 +48,7 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field 'active_fedora_model_s', :label => 'Model'
+    config.add_facet_field 'active_fedora_model_s', :label => 'Object Type'
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -61,14 +61,14 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
     #config.add_index_field 'title_display', :label => 'Title:' 
-    config.add_index_field 'active_fedora_model_s', :label => 'Model:'
+    config.add_index_field 'active_fedora_model_s', :label => 'Object Type:'
     #config.add_index_field 'id', :label => 'PID:'
     config.add_index_field 'title_t', :label => 'Title:'
     config.add_index_field 'identifier_t', :label => 'Identifier:'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
-    config.add_show_field 'active_fedora_model_s', :label => 'Model:'
+    config.add_show_field 'active_fedora_model_s', :label => 'Object Type:'
     #config.add_show_field 'id', :label => 'PID:'
     config.add_show_field 'title_t', :label => 'Title:' 
     config.add_show_field 'identifier_t', :label => 'Identifier:'

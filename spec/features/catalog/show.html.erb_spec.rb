@@ -11,9 +11,6 @@ describe "catalog/show.html.erb" do
   after do
     object.parent.delete if object.respond_to?(:parent) && object.parent
     object.admin_policy.delete if object.admin_policy
-    if object.respond_to?(:children)
-      object.children.each { |c| c.delete }
-    end
     object.delete
   end
   context "Basic object" do
@@ -32,30 +29,32 @@ describe "catalog/show.html.erb" do
   end
   context "Object has a parent" do
     let(:object) { FactoryGirl.create(:item_in_collection_public_read) }
-    it "should have a link to its parent object"
-  end
-  context "Object has children" do
-    it "should have links to its child objects"
-  #   let(:object) { FactoryGirl.create(:item_has_part_public_read) }
-  #   it "should have links to its child objects" do
-  #     object.children.each do |child|
-  #       expect(subject).to have_link(child.pid, :href => catalog_path(child))
-  #     end
-  #   end
+    it "should display its parent object PID" do
+      expect(subject).to have_content(object.parent.pid)
+    end
   end
   context "Object has preservation events" do
-    let(:object) { FactoryGirl.create(:component_with_content) }
-    before { object.validate_content_checksum! }
-    after { object.preservation_events.each { |e| e.delete } }
-    it "should have a link to the list of associated preservation events"
-    # it { should have_link(object.preservation_events.first.pid, :href => catalog_path(object.preservation_events.first)) }
+    let(:object) { FactoryGirl.create(:component_with_content_public_read) }
+    let(:preservation_event) { object.validate_content_checksum! }
+    before do
+      preservation_event.permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS]
+      preservation_event.save!
+    end
+    after { preservation_event.delete }
+    it "should have a link to the list of associated preservation events" do
+      expect(subject).to have_link("Preservation Events", :href => catalog_preservation_events_path(object))
+    end
   end
   context "object has admin policy" do
-    let(:object) { FactoryGirl.create(:collection_has_apo) }
-    # XXX User authn works around https://github.com/projecthydra/hydra-head/issues/39
-    let(:user) { FactoryGirl.create(:user) }
-    before { login user }
-    after { user.delete }
-    it "should have a link to its admin policy"
+    let(:object) { FactoryGirl.create(:collection_public_read) }
+    let(:apo) { FactoryGirl.create(:public_read_policy) }
+    before do
+      object.admin_policy = apo
+      object.save!
+    end
+    after { apo.delete }
+    it "should display its admin policy PID" do
+      expect(subject).to have_content(object.admin_policy.pid)
+    end
   end
 end

@@ -35,12 +35,12 @@ FactoryGirl.define do
       default_permissions [DulHydra::Permissions::EDITOR_GROUP_ACCESS]
     end
 
-    factory :public_discover_policy,     traits: [:public_discover]
-    factory :registered_discover_policy, traits: [:registered_discover]
-    factory :public_read_policy,         traits: [:public_read]
-    factory :registered_read_policy,     traits: [:registered_read]
-    factory :group_read_policy,          traits: [:group_read]
-    factory :group_edit_policy,          traits: [:group_edit]
+    factory :public_discover_policy,     :traits => [:public_discover]
+    factory :registered_discover_policy, :traits => [:registered_discover]
+    factory :public_read_policy,         :traits => [:public_read]
+    factory :registered_read_policy,     :traits => [:registered_read]
+    factory :group_read_policy,          :traits => [:group_read]
+    factory :group_edit_policy,          :traits => [:group_edit]
 
   end
 

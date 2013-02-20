@@ -5,7 +5,7 @@ FactoryGirl.define do
     sequence(:identifier) { |n| "coll%05d" % n }
 
     trait :has_admin_policy do
-      admin_policy
+      admin_policy { create(:public_read_policy) }
     end
 
     trait :public_read do
