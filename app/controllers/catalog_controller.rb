@@ -5,9 +5,6 @@ class CatalogController < ApplicationController
 
   include Blacklight::Catalog
 
-  # DulHydra catalog behaviors - add after Blacklight::Catalog
-  include DulHydra::Controllers::CatalogControllerBehavior
-
   # These before_filters apply the hydra access controls
   before_filter :enforce_show_permissions, :only => :show
 

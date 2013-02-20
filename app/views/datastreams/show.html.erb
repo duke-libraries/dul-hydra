@@ -4,7 +4,7 @@
 
 <div class="document">
   <p>
-    <%= link_to "Download Content", {:action => 'datastream_content', :object_id => @object, :id => @datastream.dsid} %>
+    <%= link_to "Download Content", {:action => 'show', :object_id => @object, :id => @datastream.dsid, :download => 'true'} %>
   </p>
   <dl class="dl-horizontal dl-invert">
     <% @datastream.profile.each do |key, value| %>

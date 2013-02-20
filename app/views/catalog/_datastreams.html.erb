@@ -10,7 +10,7 @@
     <% document.datastreams.reject { |dsid, dsProfile| dsProfile.empty? }.each do |dsid, dsProfile| %>
     <tr>
       <td>
-	<%= link_to dsid, catalog_datastream_path(document.id, dsid) %>
+	<%= link_to dsid, datastream_path(document.id, dsid) %>
       </td>
       <td>
 	<%= dsProfile["dsLabel"] %>
