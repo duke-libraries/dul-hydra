@@ -28,7 +28,6 @@ module DulHydra::Controllers
       authorize! :read, @object
       # @object = ActiveFedora::Base.load_instance_from_solr(params[:object_id]) # XXX authz?
       @datastream = @object.datastreams[params[:id]]
-      @title = "#{@object.pid} Datastream #{params[:id]}"
     end
 
     def datastream_content    

@@ -1,4 +1,6 @@
-<h1><%= @title %></h1>
+<h1><%= @object.pid %></h1>
+
+<h3>Datastream: <%= @datastream.dsid %></h3>
 
 <div class="document">
   <p>
@@ -6,7 +8,7 @@
   </p>
   <dl class="dl-horizontal dl-invert">
     <% @datastream.profile.each do |key, value| %>
-    <dt><%= key %>:</dt>
+    <dt><%= key.sub(/^ds/, "") %>:</dt>
     <dd>
       <% if value.blank? %>&nbsp;<% else %><%= value %><% end %>
     </dd>

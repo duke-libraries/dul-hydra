@@ -12,7 +12,7 @@ module DulHydra::Models
     end
 
     def admin_policy?
-      !admin_policy_uri.nil?
+      !admin_policy_uri.blank?
     end
 
     def admin_policy_uri
@@ -25,7 +25,7 @@ module DulHydra::Models
     end
 
     def parent?
-      !parent_uri.nil?
+      !parent_uri
     end
 
     def parent_uri
