@@ -26,6 +26,9 @@ describe "catalog/show.html.erb" do
         expect(subject).to have_content(dsid)
       end
     end  
+    it "should link to its audit trail" do
+      expect(subject).to have_link("Audit Trail", :href => audit_trail_index_path(object))
+    end
   end
   context "Object has a parent" do
     let(:object) { FactoryGirl.create(:item_in_collection_public_read) }
