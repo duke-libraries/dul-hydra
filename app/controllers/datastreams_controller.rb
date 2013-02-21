@@ -1,29 +1,18 @@
 require 'mime/types'
 
 class DatastreamsController < ApplicationController
-
-  def index
-    # XXX load from solr?
-    @object = ActiveFedora::Base.find(params[:object_id], :cast => true)
-    authorize! :read, @object
-    @title = "#{@object.pid} Datastreams"
-  end
+  
+  INLINE_MEDIA_TYPES = ['text', 'image']
 
   def show
-    # XXX load from solr?
     @object = ActiveFedora::Base.find(params[:object_id], :cast => true)
     authorize! :read, @object
     @datastream = @object.datastreams[params[:id]]
-    @title = "#{@object.pid} Datastream #{params[:id]}"
-  end
-
-  def content    
-    @object = ActiveFedora::Base.find(params[:object_id], :cast => true)
-    authorize! :read, @object
-    ds = @object.datastreams[params[:id]]
-    mimetype = MIME::Types[ds.mimeType].first
-    disposition = mimetype.media_type == 'text' ? 'inline' : 'attachment'
-    send_data ds.content, :disposition => disposition, :type => ds.mimeType, :filename => "#{ds.dsid}.#{mimetype.extensions.first}"
+    if params[:download]  
+      mimetype = MIME::Types[@datastream.mimeType].first
+      disposition = INLINE_MEDIA_TYPES.include?(mimetype.media_type) ? 'inline' : 'attachment'
+      send_data @datastream.content, :disposition => disposition, :type => @datastream.mimeType, :filename => "#{@datastream.dsid}.#{mimetype.extensions.first}"    
+    end     
   end
 
 end

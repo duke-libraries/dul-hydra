@@ -9,7 +9,7 @@ FactoryGirl.define do
     end
 
     trait :has_admin_policy do
-      admin_policy
+      admin_policy { create(:public_read_policy) }
     end
 
     trait :public_read do
@@ -23,16 +23,18 @@ FactoryGirl.define do
     factory :component_with_content do
       after(:build) { |c| c.content.content_file = File.new("#{Rails.root}/spec/fixtures/library-devil.tiff", "rb") }
 
-      factory :component_with_content_has_apo, traits: [:has_admin_policy]
-      factory :component_part_of_item_with_content, traits: [:part_of_item]
-      factory :component_part_of_item_with_content_has_apo, traits: [:part_of_item, :has_admin_policy]
+      factory :component_with_content_public_read,          :traits => [:public_read]
+      factory :component_with_content_has_apo,              :traits => [:has_admin_policy]
+      factory :component_part_of_item_with_content,         :traits => [:part_of_item]
+      factory :component_part_of_item_with_content_has_apo, :traits => [:part_of_item, :has_admin_policy]
     end
     
-    factory :component_has_apo,              traits: [:has_admin_policy]
-    factory :component_public_read,          traits: [:public_read]
-    factory :component_part_of_item,         traits: [:part_of_item]
-    factory :component_part_of_item_has_apo, traits: [:part_of_item, :has_admin_policy]
-    factory :component_has_target,           traits: [:has_target]
+    factory :component_has_apo,              :traits => [:has_admin_policy]
+    factory :component_public_read,          :traits => [:public_read]
+    factory :component_part_of_item,         :traits => [:part_of_item]
+    factory :component_part_of_item_has_apo, :traits => [:part_of_item, :has_admin_policy]
+    factory :component_part_of_item_public_read, :traits => [:part_of_item, :public_read]
+    factory :component_has_target,           :traits => [:has_target]
 
   end
 end

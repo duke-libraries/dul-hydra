@@ -5,53 +5,56 @@ RSpec.configure do |c|
   c.include FeaturesHelper
 end
 
-shared_examples "a DulHydra object catalog show view" do
-  it "should display the PID, model, title and identifier(s)" do
-    expect(subject).to have_content(object.pid)
-    expect(subject).to have_content(object.class.to_s)
-    expect(subject).to have_content(object.title_display)
-    expect(subject).to have_content(object.identifier.first)
-  end
-  it "should list all datastreams" do
-    object.datastreams.each do |dsid, ds|
-      expect(subject).to have_content(dsid)
-    end
-  end  
-  it "should have a link to its parent object, if relevant" do
-    expect(subject).to have_link(object.parent.pid) if object.respond_to?(:parent)
-  end
-  it "should have links to its child objects, if relevant" do
-    if object.respond_to?(:children)
-      object.children.each do |child|
-        expect(subject).to have_link(child.pid, :href => catalog_path(child))
-      end
-    end
-  end
-  it "should display its admin policy" do
-    expect(subject).to have_content(object.admin_policy.pid)
-  end
-end
-
 describe "catalog/show.html.erb" do
   subject { page }
-  let(:user) { FactoryGirl.create(:user) }
-  before(:each) do
-    login user
-    visit catalog_path(object)
-  end
-  after(:each) do
+  before { visit catalog_path(object) }
+  after do
     object.parent.delete if object.respond_to?(:parent) && object.parent
-    object.admin_policy.delete
+    object.admin_policy.delete if object.admin_policy
     object.delete
   end
-  after(:all) { user.delete }
-  it_behaves_like "a DulHydra object catalog show view" do
-    let(:object) { FactoryGirl.create(:collection_has_apo) }
+  context "Basic object" do
+    let(:object) { FactoryGirl.create(:collection_public_read) }
+    it "should display the PID, model, title and identifier(s)" do
+      expect(subject).to have_content(object.pid)
+      expect(subject).to have_content(object.class.to_s)
+      expect(subject).to have_content(object.title_display)
+      expect(subject).to have_content(object.identifier.first)
+    end
+    it "should link to all datastreams" do
+      object.datastreams.reject { |dsid, ds| ds.profile.empty? }.each do |dsid, ds|
+        expect(subject).to have_content(dsid)
+      end
+    end  
   end
-  it_behaves_like "a DulHydra object catalog show view" do
-    let(:object) { FactoryGirl.create(:item_in_collection_has_apo) }
+  context "Object has a parent" do
+    let(:object) { FactoryGirl.create(:item_in_collection_public_read) }
+    it "should display its parent object PID" do
+      expect(subject).to have_content(object.parent.pid)
+    end
   end
-  it_behaves_like "a DulHydra object catalog show view" do
-    let(:object) { FactoryGirl.create(:component_part_of_item_has_apo) }
+  context "Object has preservation events" do
+    let(:object) { FactoryGirl.create(:component_with_content_public_read) }
+    let(:preservation_event) { object.validate_content_checksum! }
+    before do
+      preservation_event.permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS]
+      preservation_event.save!
+    end
+    after { preservation_event.delete }
+    it "should have a link to the list of associated preservation events" do
+      expect(subject).to have_link("Preservation Events", :href => preservation_events_path(object))
+    end
+  end
+  context "object has admin policy" do
+    let(:object) { FactoryGirl.create(:collection_public_read) }
+    let(:apo) { FactoryGirl.create(:public_read_policy) }
+    before do
+      object.admin_policy = apo
+      object.save!
+    end
+    after { apo.delete }
+    it "should display its admin policy PID" #do
+#      expect(subject).to have_content(object.admin_policy.pid)
+#    end
   end
 end

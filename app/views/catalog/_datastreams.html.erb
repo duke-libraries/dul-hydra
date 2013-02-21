@@ -1,0 +1,25 @@
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Label</th>
+      <th>MIME Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% document.datastreams.reject { |dsid, dsProfile| dsProfile.empty? }.each do |dsid, dsProfile| %>
+    <tr>
+      <td>
+	<%= link_to dsid, datastream_path(document.id, dsid) %>
+      </td>
+      <td>
+	<%= dsProfile["dsLabel"] %>
+      </td>
+      <td>
+	<%= dsProfile["dsMIME"] %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+

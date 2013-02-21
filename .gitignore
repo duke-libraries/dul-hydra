@@ -29,3 +29,7 @@
 /public/system
 
 .sass-cache
+
+# Eclipse
+.buildpath
+.project
