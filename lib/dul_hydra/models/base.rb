@@ -5,6 +5,7 @@ module DulHydra::Models
     include Governable
     include AccessControllable
     include HasPreservationEvents
+    include Auditable
 
     def to_solr(solr_doc=Hash.new, opts={})
       solr_doc = super(solr_doc, opts)

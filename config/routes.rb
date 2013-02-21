@@ -9,6 +9,7 @@ DulHydra::Application.routes.draw do
   scope "catalog/:object_id" do
     resources :datastreams, :only => :show
     resources :preservation_events, :only => :index
+    resources :audit_trail, :only => :index
   end
   
 end

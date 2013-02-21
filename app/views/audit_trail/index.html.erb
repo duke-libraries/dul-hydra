@@ -1,0 +1,31 @@
+<h1><%= @object.pid %></h1>
+
+<h3>Audit Trail</h3>
+
+<p>
+	<%= link_to "Download Raw XML", "#{audit_trail_index_path(@object)}?download=true" %>
+</p>
+
+<table border="1" cellspacing="0" cellpadding="3">
+	<thead>
+		<tr>
+			<th>Record ID</th>
+			<th>Date</th>
+			<th>Action</th>
+			<th>Component ID</th>
+			<th>Responsibility</th>
+			<th>Justification</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% @object.audit_trail.records.each do |record| %>
+		<tr>
+			<td><%= record.id %></td>
+			<td><%= record.date %></td>
+			<td><%= record.action %></td>
+			<td><%= record.component_id %></td>
+			<td><%= record.responsibility %></td>
+			<td><%= record.justification %></td>
+		</tr>
+		<% end %>
+	</tbody>
