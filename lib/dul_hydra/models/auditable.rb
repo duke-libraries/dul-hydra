@@ -36,7 +36,7 @@ module DulHydra::Models
       def id
         @record['ID']
       end
-      def process
+      def process_type
         @record.at_xpath('audit:process/@type', AT_NS).text
       end
       def action
