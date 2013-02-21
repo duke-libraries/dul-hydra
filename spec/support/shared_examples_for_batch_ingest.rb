@@ -11,7 +11,6 @@ shared_examples "an ingested batch" do
     object_type.find_each do |object|
       object.admin_policy.should eq(admin_policy)
       object.label.should eq(expected_label)
-      object.datastreams.keys.should include("descMetadata")
       object.descMetadata.label.should eq(expected_desc_metadata_label)
       object.descMetadata.content.should_not be_empty
       found_identifiers << object.identifier
@@ -59,4 +58,33 @@ shared_examples "an ingested batch" do
 
 end
 
-
+shared_examples "an ingested batch with metadata files" do
+  
+  let(:expected_contentdm_label) { "CONTENTdm Data for this object" }
+  let(:expected_digitization_guide_label) { "Digitization Guide Data for this object" }
+  let(:expected_dpc_metadata_label) { "DPC Metadata Data for this object" }
+  let(:expected_fmp_export_label) { "FileMakerPro Export Data for this object" }
+  let(:expected_jhove_label) { "JHOVE Data for this object" }
+  let(:expected_marc_xml_label) { "Aleph MarcXML Data for this object" }
+  let(:expected_tripod_mets_label) { "Tripod METS Data for this object" }
+  
+  it "should have the appropriate datastreams" do
+    object_type.find_each do |object|
+      object.contentdm.label.should eq(expected_contentdm_label)
+      FileUtils.compare_stream(StringIO.new(object.contentdm.content), StringIO.new(xml_file)).should be_true
+      object.digitizationGuide.label.should eq(expected_digitization_guide_label)
+      FileUtils.compare_stream(StringIO.new(object.digitizationGuide.content), StringIO.new(xls_file)).should be_true
+      object.dpcMetadata.label.should eq(expected_dpc_metadata_label)
+      FileUtils.compare_stream(StringIO.new(object.dpcMetadata.content), StringIO.new(xml_file)).should be_true
+      object.fmpExport.label.should eq(expected_fmp_export_label)
+      FileUtils.compare_stream(StringIO.new(object.fmpExport.content), StringIO.new(xml_file)).should be_true
+      object.jhove.label.should eq(expected_jhove_label)
+      FileUtils.compare_stream(StringIO.new(object.jhove.content), StringIO.new(xml_file)).should be_true
+      object.marcXML.label.should eq(expected_marc_xml_label)
+      FileUtils.compare_stream(StringIO.new(object.marcXML.content), StringIO.new(xml_file)).should be_true
+      object.tripodMets.label.should eq(expected_tripod_mets_label)
+      FileUtils.compare_stream(StringIO.new(object.tripodMets.content), StringIO.new(xml_file)).should be_true
+    end
+  end
+  
+end

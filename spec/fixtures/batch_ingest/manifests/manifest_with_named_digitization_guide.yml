@@ -1,0 +1,12 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: Ingestable
+adminpolicy: duke-apo:adminPolicy
+label: Manifest Label
+metadata:
+    - digitizationguide
+    - qdc
+objects:
+    - identifier: id001
+      digitizationguide: excel.xls
+    

@@ -1,6 +1,5 @@
 require 'find'
 
-
 module BatchIngestSpecHelper
   FIXTURES_BATCH_INGEST_BASE = "spec/fixtures/batch_ingest/BASE"
   

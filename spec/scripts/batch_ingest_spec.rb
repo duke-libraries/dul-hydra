@@ -16,14 +16,16 @@ module DulHydra::Scripts
       setup_test_dir
       FileUtils.mkdir "#{@ingestable_dir}/master"
       FileUtils.mkdir "#{@ingestable_dir}/qdc"
-      FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
-      @manifest_file = "#{@manifest_dir}/manifest.yml"
-      update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
     end
     after do
       remove_test_dir
     end
     describe "prepare for ingest" do
+      before do
+        FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+        @manifest_file = "#{@manifest_dir}/manifest.yml"
+        update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})        
+      end
       context "all object types" do
         it "should create an appropriate master file" do
             DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
@@ -89,15 +91,18 @@ module DulHydra::Scripts
     describe "ingest" do
       let!(:admin_policy) { AdminPolicy.create(:pid => "duke-apo:adminPolicy") }
       let(:log_file) { File.open("#{@ingestable_dir}/log/batch_ingest.log") { |f| f.read } }
-      let(:manifest) { "#{@manifest_dir}/manifest.yml" }
+      let(:manifest) { @manifest_file }
       let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) } }
       before do
+        #FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+        #@manifest_file = "#{@manifest_dir}/manifest.yml"
+        #update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})        
         FileUtils.cp "spec/fixtures/batch_ingest/master/base_master.xml", "#{@ingestable_dir}/master/master.xml"
         FileUtils.cp "spec/fixtures/batch_ingest/qdc/id001.xml", "#{@ingestable_dir}/qdc"
         FileUtils.cp "spec/fixtures/batch_ingest/qdc/id002.xml", "#{@ingestable_dir}/qdc"
         FileUtils.cp "spec/fixtures/batch_ingest/qdc/id004.xml", "#{@ingestable_dir}/qdc"
-        update_manifest(@manifest_file, {:model => object_type.to_s})
-        DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+#        update_manifest(@manifest_file, {:model => object_type.to_s})
+#        DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
       end
       after do
         object_type.find_each do |object|
@@ -107,154 +112,47 @@ module DulHydra::Scripts
         end
         admin_policy.delete
       end
-      context "Collection" do
-        let(:object_type) { Collection }
+      context "TestModel" do
+        let(:object_type) { TestModel }
+        before do
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          update_manifest(@manifest_file, {:model => object_type.to_s})
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+        end
         it_behaves_like "an ingested batch"
       end
-      context "Item" do
-        let(:object_type) { Item }
-        it_behaves_like "an ingested batch"        
-      end
-      context "Component" do
-        let(:object_type) { Component }
-        it_behaves_like "an ingested batch"        
-      end
-      context "Target" do
-        let(:object_type) { Target }
-        it_behaves_like "an ingested batch"        
-      end
-      context "digitization guide to be ingested" do
-        context "digitization guide is in canonical location and is named in manifest" do
-          before do
-            FileUtils.mkdir_p "#{@ingest_base}/collection/master"
-            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
-            FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master.xml", "#{@ingest_base}/collection/master/master.xml"
-            FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
-            @pre_existing_collection_pids = []
-            Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
-            update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
-            @ingested_identifiers = [ [ "collection_1" ] ]
-            @expected_content_size = File.open("#{@ingest_base}/collection/digitizationguide/DigitizationGuide.xls") { |f| f.size }
-          end
-          after do
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                c.preservation_events.each do |pe|
-                  pe.delete
-                end
-                c.reload
-                c.delete
-              end
-            end
-          end
-          it "should add a digitizationGuide datastream containing the named file" do
-            DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-            collections = []
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                collections << c
-              end
-            end
-            collections.each do |collection|
-              if collection.identifier == [ "collection_1" ]
-                collection.datastreams.keys.should include("digitizationGuide")
-                collection.digitizationGuide.label.should == "Digitization Guide Data for this object"
-                content = collection.datastreams["digitizationGuide"].content
-                content.size.should == @expected_content_size
-              end
-            end
-          end
+      context "metadata files to be ingested" do
+        let(:object_type) { TestMetadataFileDatastreams }
+        let(:xls_file) { File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xls") { |f| f.read } }
+        let(:xml_file) { File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml") { |f| f.read } }
+        before do
+          FileUtils.mkdir "#{@ingestable_dir}/contentdm"
+          FileUtils.mkdir "#{@ingestable_dir}/digitizationguide"
+          FileUtils.mkdir "#{@ingestable_dir}/dpcmetadata"
+          FileUtils.mkdir "#{@ingestable_dir}/fmpexport"
+          FileUtils.mkdir "#{@ingestable_dir}/jhove"
+          FileUtils.mkdir "#{@ingestable_dir}/marcxml"
+          FileUtils.mkdir "#{@ingestable_dir}/tripodmets"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/contentdm/"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xls", "#{@ingestable_dir}/digitizationguide/"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/dpcmetadata/id001.xml"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/fmpexport/id001.xml"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/jhove/id001.xml"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/marcxml/"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/tripodmets/id001.xml"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/manifest_with_metadata_files.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          update_manifest(@manifest_file, {:model => object_type.to_s})
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
+        it_behaves_like "an ingested batch with metadata files"
       end
-      context "FileMaker Pro export to be ingested" do
-        context "FMP export is in canonical location and is named in manifest" do
-          before do
-            FileUtils.mkdir_p "#{@ingest_base}/collection/master"
-            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
-            FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master.xml", "#{@ingest_base}/collection/master/master.xml"
-            FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
-            @pre_existing_collection_pids = []
-            Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
-            update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
-            @ingested_identifiers = [ [ "collection_1" ] ]
-            @expected_content_size = File.open("#{@ingest_base}/collection/fmpexport/dpc_structural_metadata_vica.xls") { |f| f.size }
-          end
-          after do
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                c.preservation_events.each do |pe|
-                  pe.delete
-                end
-                c.reload
-                c.delete
-              end
-            end
-          end
-          it "should add a fmpExport datastream containing the named file" do
-            DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-            collections = []
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                collections << c
-              end
-            end
-            collections.each do |collection|
-              if collection.identifier == [ "collection_1" ]
-                collection.datastreams.keys.should include("fmpExport")
-                collection.fmpExport.label.should == "FileMakerPro Export Data for this object"
-                content = collection.datastreams["fmpExport"].content
-                content.size.should == @expected_content_size
-              end
-            end
-          end
-        end
-      end
-      context "Marc XML to be ingested" do
-        context "Marc XML is in canonical location and is named in manifest" do
-          before do
-            FileUtils.mkdir_p "#{@ingest_base}/collection/master"
-            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
-            FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master.xml", "#{@ingest_base}/collection/master/master.xml"
-            FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/collection_1.xml", "#{@ingest_base}/collection/qdc/"
-            @pre_existing_collection_pids = []
-            Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-            @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
-            update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
-            @ingested_identifiers = [ [ "collection_1" ] ]
-            @expected_content_size = File.open("#{@ingest_base}/collection/marcxml/marcxml.xml") { |f| f.size }
-          end
-          after do
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                c.preservation_events.each do |pe|
-                  pe.delete
-                end
-                c.reload
-                c.delete
-              end
-            end
-          end
-          it "should add a marcXML datastream containing the named file" do
-            DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-            collections = []
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                collections << c
-              end
-            end
-            collections.each do |collection|
-              if collection.identifier == [ "collection_1" ]
-                collection.datastreams.keys.should include("marcXML")
-                collection.marcXML.label.should == "Aleph MarcXML Data for this object"
-                content = collection.datastreams["marcXML"].content
-                content.size.should == @expected_content_size
-              end
-            end
-          end
-        end
-      end
+
+
+
       context "content to be ingested" do
         before do
           FileUtils.mkdir_p "#{@ingest_base}/component/master"

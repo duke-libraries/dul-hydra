@@ -1,0 +1,20 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: Ingestable
+adminpolicy: duke-apo:adminPolicy
+label: Manifest Label
+metadata:
+    - contentdm
+    - digitizationguide
+    - dpcmetadata
+    - fmpexport
+    - jhove
+    - marcxml
+    - qdc
+    - tripodmets
+objects:
+    - identifier: id001
+      contentdm: metadata.xml
+      digitizationguide: metadata.xls
+      marcxml: metadata.xml
+    

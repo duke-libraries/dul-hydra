@@ -73,13 +73,14 @@ module DulHydra::Scripts
         if model.blank?
           raise "Missing model"
         end
-        ingest_object = case model
-        when "Collection" then Collection.new
-        when "Item" then Item.new
-        when "Component" then Component.new
-        when "Target" then Target.new
-        else raise "Invalid model"
-        end
+        ingest_object = model.constantize.new
+        #ingest_object = case model
+        #when "Collection" then Collection.new
+        #when "Item" then Item.new
+        #when "Component" then Component.new
+        #when "Target" then Target.new
+        #else raise "Invalid model"
+        #end
         event_details << "Model: #{model}\n"
         event_details << "Identifier(s): "
         case
