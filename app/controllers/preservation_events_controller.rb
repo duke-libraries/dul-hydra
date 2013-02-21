@@ -5,7 +5,7 @@ class PreservationEventsController < ApplicationController
     
   def index
     self.solr_search_params_logic += [:preservation_events_filter]
-    @title = "Preservation Events for #{params[:object_id]}"
+    @title = params[:object_id]
     @response, @document_list = get_search_results
   end
     

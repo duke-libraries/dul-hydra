@@ -12,6 +12,9 @@ describe "preservation_events/index.html.erb" do
   it "should list the preservation events associated with the object" do
     object.preservation_events.each do |pe|
       expect(subject).to have_content(pe.pid)
+      expect(subject).to have_content(pe.event_type)
+      expect(subject).to have_content(pe.event_outcome)
+      # expect(subject).to have_content(pe.event_date_time)
     end
   end
 end
