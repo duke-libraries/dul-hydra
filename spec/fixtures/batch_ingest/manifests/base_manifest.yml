@@ -1,0 +1,13 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: Ingestable
+adminpolicy: duke-apo:adminPolicy
+label: Manifest Label
+metadata:
+    - qdc
+objects:
+    - identifier: id001
+    - identifier:
+        - id002
+        - id003
+    - identifier: id004

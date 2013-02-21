@@ -9,12 +9,14 @@ end
 
 module DulHydra::Scripts
   
-  FIXTURES_BATCH_INGEST_SAMPLES = "spec/fixtures/batch_ingest/samples"
+  FIXTURES_BATCH_INGEST = "spec/fixtures/batch_ingest"
 
   describe BatchIngest do
     before do
       setup_test_dir
-      FileUtils.cp "#{FIXTURES_BATCH_INGEST_SAMPLES}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+      FileUtils.mkdir "#{@ingestable_dir}/master"
+      FileUtils.mkdir "#{@ingestable_dir}/qdc"
+      FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
       @manifest_file = "#{@manifest_dir}/manifest.yml"
       update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
     end
@@ -26,13 +28,14 @@ module DulHydra::Scripts
         it "should create an appropriate master file" do
             DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
             result = File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) }
-            expected = File.open("#{FIXTURES_BATCH_INGEST_SAMPLES}/master/base_master.xml") { |f| Nokogiri::XML(f) }
+            expected = File.open("#{FIXTURES_BATCH_INGEST}/master/base_master.xml") { |f| Nokogiri::XML(f) }
             result.should be_equivalent_to(expected)
         end
         it "should create Qualified Dublin Core files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
           File.size?("#{@ingestable_dir}/qdc/id001.xml").should_not be_nil
           File.size?("#{@ingestable_dir}/qdc/id002.xml").should_not be_nil
+          File.size?("#{@ingestable_dir}/qdc/id004.xml").should_not be_nil
         end
         it "should create an appropriate log file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
@@ -41,26 +44,28 @@ module DulHydra::Scripts
           result.should match("Manifest: #{@manifest_file}")
           result.should match("Processing id001")
           result.should match("Processing id002")
-          result.should match("Processed 2 object\\(s\\)")
+          result.should match("Processing id004")
+          result.should match("Processed 3 object\\(s\\)")
         end
       end
       context "partially populated master file already exists" do
         before do
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST_SAMPLES}/master/preexisting_master.xml", "#{@ingestable_dir}/master/master.xml"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/preexisting_master.xml", "#{@ingestable_dir}/master/master.xml"
         end
         it "should add the new objects to those already in the master file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
             result = File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) }
-            expected = File.open("#{FIXTURES_BATCH_INGEST_SAMPLES}/master/base_added_to_preexisting_master.xml") { |f| Nokogiri::XML(f) }
+            expected = File.open("#{FIXTURES_BATCH_INGEST}/master/base_added_to_preexisting_master.xml") { |f| Nokogiri::XML(f) }
             result.should be_equivalent_to(expected)          
         end
       end
       context "consolidated file is to be split into individual files" do
         before do
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST_SAMPLES}/composite_to_be_split.xml", "#{@ingestable_dir}/zzz"
+          FileUtils.mkdir "#{@ingestable_dir}/a_test"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/composite_to_be_split.xml", "#{@ingestable_dir}/a_test"
           split_entry = Array.new
           split_entry << HashWithIndifferentAccess.new(
-            :type => "zzz",
+            :type => "a_test",
             :source => "composite_to_be_split.xml",
             :xpath => "/metadata/record",
             :idelement => "localid"
@@ -69,9 +74,9 @@ module DulHydra::Scripts
         end        
         it "should split the consolidated file into appropriate individual files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          result_1 = File.open("#{@ingestable_dir}/zzz/test010010010.xml") { |f| Nokogiri::XML(f) }
-          result_2 = File.open("#{@ingestable_dir}/zzz/test010010020.xml") { |f| Nokogiri::XML(f) }
-          result_3 = File.open("#{@ingestable_dir}/zzz/test010010030.xml") { |f| Nokogiri::XML(f) }
+          result_1 = File.open("#{@ingestable_dir}/a_test/test010010010.xml") { |f| Nokogiri::XML(f) }
+          result_2 = File.open("#{@ingestable_dir}/a_test/test010010020.xml") { |f| Nokogiri::XML(f) }
+          result_3 = File.open("#{@ingestable_dir}/a_test/test010010030.xml") { |f| Nokogiri::XML(f) }
           expected_1 = Nokogiri::XML("<record><Title>Title 1</Title><Date>1981-01</Date><localid>test010010010</localid></record>")
           expected_2 = Nokogiri::XML("<record><Title>Title 2</Title><Date>1987-09</Date><localid>test010010020</localid></record>")
           expected_3 = Nokogiri::XML("<record><Title>Title 3</Title><Date>1979-11</Date><localid>test010010030</localid></record>")
@@ -82,143 +87,41 @@ module DulHydra::Scripts
       end
     end
     describe "ingest" do
+      let!(:admin_policy) { AdminPolicy.create(:pid => "duke-apo:adminPolicy") }
+      let(:log_file) { File.open("#{@ingestable_dir}/log/batch_ingest.log") { |f| f.read } }
+      let(:manifest) { "#{@manifest_dir}/manifest.yml" }
+      let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) } }
       before do
-        @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
-        @adminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
-                                            DulHydra::Permissions::READER_GROUP_ACCESS,
-                                            DulHydra::Permissions::EDITOR_GROUP_ACCESS,
-                                            DulHydra::Permissions::ADMIN_GROUP_ACCESS]
-        @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
-        @adminPolicy.save!
+        FileUtils.cp "spec/fixtures/batch_ingest/master/base_master.xml", "#{@ingestable_dir}/master/master.xml"
+        FileUtils.cp "spec/fixtures/batch_ingest/qdc/id001.xml", "#{@ingestable_dir}/qdc"
+        FileUtils.cp "spec/fixtures/batch_ingest/qdc/id002.xml", "#{@ingestable_dir}/qdc"
+        FileUtils.cp "spec/fixtures/batch_ingest/qdc/id004.xml", "#{@ingestable_dir}/qdc"
+        update_manifest(@manifest_file, {:model => object_type.to_s})
+        DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
       end
       after do
-        @adminPolicy.delete
+        object_type.find_each do |object|
+          object.preservation_events.each { |pe| pe.delete }
+          object.reload
+          object.delete
+        end
+        admin_policy.delete
       end
-      context "applicable to all object types" do
-        before do
-          FileUtils.mkdir_p "#{@ingest_base}/item/master"
-          FileUtils.mkdir_p "#{@ingest_base}/item/qdc"          
-          FileUtils.cp "spec/fixtures/batch_ingest/results/item_master.xml", "#{@ingest_base}/item/master/master.xml"
-          FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_1.xml", "#{@ingest_base}/item/qdc"
-          FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_2.xml", "#{@ingest_base}/item/qdc"
-          FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_4.xml", "#{@ingest_base}/item/qdc"
-          @pre_existing_item_pids = []
-          Item.find_each { |i| @pre_existing_item_pids << i.pid }
-          @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
-          @ingested_identifiers = [ [ "item_1" ], [ "item_2", "item_3" ], [ "item_4" ] ]          
-          @collection = Collection.new(:pid => "test:collection1")
-          @collection.identifier = "collection_1"
-          @collection.save!
-        end
-        after do
-          @collection.delete
-          Item.find_each do |i|
-            if !@pre_existing_item_pids.include?(i.pid)
-              i.preservation_events.each do |pe|
-                pe.delete
-              end
-              i.reload
-              i.delete
-            end
-          end
-        end
-        it "should create an appropriate object in the repository" do
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-          items = []
-          Item.find_each do |i|
-            if !@pre_existing_item_pids.include?(i.pid)
-              items << i
-            end
-          end
-          items.should have(3).things
-          items.each do |item|
-            item.admin_policy.should == @adminPolicy
-            @ingested_identifiers.should include(item.identifier)
-            case item.identifier
-            when [ "item_1" ]
-              item.label.should == "Manifest Label"
-            when [ "item_2", "item_3" ]
-              item.label.should == "Second Object Label"
-            when [ "item_4" ]
-              item.label.should == "Manifest Label"
-            end
-          end
-        end
-        it "should update the master file with the ingested PIDs" do
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-          master = File.open("#{@ingest_base}/item/master/master.xml") { |f| Nokogiri::XML(f) }
-          master.xpath("/objects/object").each do |object|
-            identifier = object.xpath("identifier").first.content
-            object.xpath("pid").should_not be_empty
-            pid = object.xpath("pid").first.content
-            repo_object = Item.find(pid)
-            repo_object.identifier.should include(identifier)
-          end
-        end
-        it "should add a descMetadata datastream" do
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-          master = File.open("#{@ingest_base}/item/master/master.xml") { |f| Nokogiri::XML(f) }
-          master.xpath("/objects/object").each do |object|
-            identifier = object.xpath("identifier").first.content
-            pid = object.xpath("pid").first.content
-            item = Item.find(pid)
-            item.datastreams.keys.should include("descMetadata")
-            item.descMetadata.label.should == "Descriptive Metadata for this object"
-            content_xml = item.descMetadata.content { |f| Nokogiri::XML(f) }
-            expected_xml = Nokogiri::XML(File.open("#{@ingest_base}/item/qdc/#{identifier}.xml"))
-            content_xml.should be_equivalent_to(expected_xml)
-          end
-        end
-        it "should create an ingestion preservation event in the repository" do
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-          items = []
-          Item.find_each do |i|
-            if !@pre_existing_item_pids.include?(i.pid)
-              items << i
-            end
-          end
-          items.each do |item|
-            events = item.preservation_events
-            events.should_not be_empty
-            ingestion_events = []
-            events.each do |event|
-              if event.event_type == PreservationEvent::INGESTION
-                ingestion_events << event
-              end
-            end
-            ingestion_events.should_not be_empty
-            ingestion_events.size.should == 1
-            event = ingestion_events.first
-            DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
-            DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-            event.event_outcome.should == PreservationEvent::SUCCESS
-            event.linking_object_id_type.should == PreservationEvent::OBJECT
-            event.linking_object_id_value.should == item.internal_uri
-            case item.identifier
-            when [ "item_1" ]
-              event.event_detail.should include("Identifier(s): item_1")
-            when [ "item_2", "item_3" ]
-              event.event_detail.should include("Identifier(s): item_2,item_3")
-              event.event_detail.should_not include("Identifier(s): item_1")
-            when [ "item_4" ]
-              event.event_detail.should include("Identifier(s): item_4")
-              event.event_detail.should_not include("Identifier(s): item_1")
-              event.event_detail.should_not include("Identifier(s): item_2,item_3")
-            end
-            event.for_object.should == item
-          end
-        end
-        it "should create an appropriate log file" do
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-          result = File.open("#{@ingest_base}/item/log/batch_ingest.log") { |f| f.read }
-          result.should match("DulHydra version #{DulHydra::VERSION}")
-          result.should match("Manifest: #{@ingest_base}/manifests/item_manifest.yml")
-          result.should match("Ingested Item item_1 into #{Item.find_by_identifier("item_1").first.pid}")
-          result.should match("Ingested Item item_2 into #{Item.find_by_identifier("item_2").first.pid}")
-          result.should match("Ingested Item item_4 into #{Item.find_by_identifier("item_4").first.pid}")
-          result.should match("Ingested 3 object\\(s\\)")
-        end        
+      context "Collection" do
+        let(:object_type) { Collection }
+        it_behaves_like "an ingested batch"
+      end
+      context "Item" do
+        let(:object_type) { Item }
+        it_behaves_like "an ingested batch"        
+      end
+      context "Component" do
+        let(:object_type) { Component }
+        it_behaves_like "an ingested batch"        
+      end
+      context "Target" do
+        let(:object_type) { Target }
+        it_behaves_like "an ingested batch"        
       end
       context "digitization guide to be ingested" do
         context "digitization guide is in canonical location and is named in manifest" do

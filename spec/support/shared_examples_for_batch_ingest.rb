@@ -1,5 +1,62 @@
 require 'spec_helper'
 
-shared_examples "batch ingest" do
+shared_examples "an ingested batch" do
   
+  let(:expected_identifiers) { [ ["id001"], ["id002", "id003"], ["id004"] ] }
+  let(:expected_label) { "Manifest Label" }
+  let(:expected_desc_metadata_label) { "Descriptive Metadata for this object" }
+  
+  it "should be in the repository with a descMetadata datastream" do
+    found_identifiers = []
+    object_type.find_each do |object|
+      object.admin_policy.should eq(admin_policy)
+      object.label.should eq(expected_label)
+      object.datastreams.keys.should include("descMetadata")
+      object.descMetadata.label.should eq(expected_desc_metadata_label)
+      object.descMetadata.content.should_not be_empty
+      found_identifiers << object.identifier
+    end
+    found_identifiers.sort.should eq(expected_identifiers.sort)
+  end
+  
+  it "should have the object PID's in the master file" do
+    master.xpath("/objects/object").each do |object|
+      identifier = object.xpath("identifier").first.content
+      object.xpath("pid").should_not be_empty
+      pid = object.xpath("pid").first.content
+      repo_object = object_type.find(pid)
+      repo_object.identifier.should include(identifier)
+    end
+  end
+  
+  it "should have an ingestion preservation event for each object" do
+    object_type.find_each do |object|
+      events = object.preservation_events
+      ingestion_events = []
+      events.each do |event|
+        if event.event_type == PreservationEvent::INGESTION
+          ingestion_events << event
+        end
+      end
+      ingestion_events.size.should eq(1)
+      ingestion_event = ingestion_events.first
+      DateTime.strptime(ingestion_event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+      DateTime.strptime(ingestion_event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+      ingestion_event.event_outcome.should == PreservationEvent::SUCCESS
+      ingestion_event.linking_object_id_type.should eq(PreservationEvent::OBJECT)
+      ingestion_event.linking_object_id_value.should eq(object.internal_uri)
+      ingestion_event.event_detail.should include("Identifier(s): #{object.identifier.flatten.join(',')}")
+    end
+  end
+  
+  it "should have a ingestion log file" do
+    log_file.should match("DulHydra version #{DulHydra::VERSION}")
+    log_file.should match("Manifest: #{manifest}")
+    object_type.find_each do |object|
+      log_file.should match("Ingested #{object_type.to_s} #{object.identifier.first} into #{object.pid}")
+    end
+  end
+
 end
+
+

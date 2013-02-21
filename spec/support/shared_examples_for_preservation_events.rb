@@ -50,6 +50,11 @@ shared_examples "a fixity check failure preservation event" do
   it_should_behave_like "a preservation event having a failure outcome"
 end
 
+shared_examples "an ingestion success preservation event" do
+  it_should_behave_like "a validation preservation event"
+  it_should_behave_like "a preservation event having a success outcome"
+end
+
 shared_examples "a validation success preservation event" do
   it_should_behave_like "a validation preservation event"
   it_should_behave_like "a preservation event having a success outcome"

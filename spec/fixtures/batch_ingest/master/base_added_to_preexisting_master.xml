@@ -15,4 +15,7 @@
   <object model="info:fedora/afmodel:Ingestable">
     <identifier>id002</identifier>
   </object>
+  <object model="info:fedora/afmodel:Ingestable">
+    <identifier>id004</identifier>
+  </object>
 </objects>

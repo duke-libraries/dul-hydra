@@ -11,27 +11,27 @@ module BatchIngestSpecHelper
     FileUtils.mkdir_p @manifest_dir
     @ingestable_dir = "#{base_dir}/ingestable"
     FileUtils.mkdir_p @ingestable_dir
-    FileUtils.mkdir "#{@ingestable_dir}/checksum"
-    FileUtils.mkdir "#{@ingestable_dir}/contentdm"
-    FileUtils.mkdir "#{@ingestable_dir}/digitizationguide"
-    FileUtils.mkdir "#{@ingestable_dir}/fmpexport"
-    FileUtils.mkdir "#{@ingestable_dir}/jhove"
+#    FileUtils.mkdir "#{@ingestable_dir}/a_test"
+#    FileUtils.mkdir "#{@ingestable_dir}/checksum"
+#    FileUtils.mkdir "#{@ingestable_dir}/contentdm"
+#    FileUtils.mkdir "#{@ingestable_dir}/digitizationguide"
+#    FileUtils.mkdir "#{@ingestable_dir}/fmpexport"
+#    FileUtils.mkdir "#{@ingestable_dir}/jhove"
     FileUtils.mkdir "#{@ingestable_dir}/log"
-    FileUtils.mkdir "#{@ingestable_dir}/marcxml"
-    FileUtils.mkdir "#{@ingestable_dir}/master"
-    FileUtils.mkdir "#{@ingestable_dir}/qdc"
-    FileUtils.mkdir "#{@ingestable_dir}/tripodmets"
-    FileUtils.mkdir "#{@ingestable_dir}/zzz"
+#    FileUtils.mkdir "#{@ingestable_dir}/marcxml"
+#    FileUtils.mkdir "#{@ingestable_dir}/master"
+#    FileUtils.mkdir "#{@ingestable_dir}/qdc"
+#    FileUtils.mkdir "#{@ingestable_dir}/tripodmets"
   end
   def remove_test_dir
     FileUtils.remove_dir @test_dir
   end
-  def setup_test_temp_dir
-    @test_temp_dir = Dir.mktmpdir("dul_hydra_test")
-    ingest_base = "#{@test_temp_dir}/ingest"
-    FileUtils.cp_r "#{FIXTURES_BATCH_INGEST_BASE}", "#{ingest_base}"
-    return ingest_base
-  end
+  #def setup_test_temp_dir
+  #  @test_temp_dir = Dir.mktmpdir("dul_hydra_test")
+  #  ingest_base = "#{@test_temp_dir}/ingest"
+  #  FileUtils.cp_r "#{FIXTURES_BATCH_INGEST_BASE}", "#{ingest_base}"
+  #  return ingest_base
+  #end
   def locate_datastream_content_file(location_pattern)
     locations = []
     Find.find('jetty/fedora/test/data/datastreamStore/') do |f|
