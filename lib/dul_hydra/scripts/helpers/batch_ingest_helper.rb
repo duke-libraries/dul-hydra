@@ -71,7 +71,7 @@ module DulHydra::Scripts::Helpers
       def add_manifest_object_to_master(master, object, manifest_model)
         model = object[:model] || manifest_model
         object_node = Nokogiri::XML::Node.new :object.to_s, master
-        object_node[:model] = "#{FEDORA_URI_PREFIX}#{ACTIVE_FEDORA_MODEL_PREFIX}#{model}"
+#        object_node[:model] = "#{FEDORA_URI_PREFIX}#{ACTIVE_FEDORA_MODEL_PREFIX}#{model}"
         identifier_node = Nokogiri::XML::Node.new :identifier.to_s, master
         identifier_node.content = key_identifier(object)
         object_node.add_child(identifier_node)
@@ -322,12 +322,7 @@ module DulHydra::Scripts::Helpers
         if parent.blank?
           raise "Unable to find parent"
         end
-        case object_model
-        when "Item"
-          ingest_object.collection = parent
-        when "Component"
-          ingest_object.container = parent
-        end
+        ingest_object.parent = parent
         return ingest_object
       end
       
@@ -354,12 +349,25 @@ module DulHydra::Scripts::Helpers
       end
       
       def parent_class(child_model)
-        case child_model
-        when "Item"
-          Collection
-        when "Component"
-          Item
+        parent_model = nil
+        reflections = child_model.constantize.reflections
+        reflections.each do |reflection|
+          if (reflection[0] == :collection) || (reflection[0] == :container) || (reflection[0] == :parent)
+            parent_model = reflection[1].options[:class_name]
+#            The more robust version below covers the case where the class_name option is not explicitly provided but is
+#            rather inferred from the relationship name.  However, it requires finding or writing a function to turn
+#            the relationship name into a class name.  Apparently, Active Fedora knows how to do this but I haven't yet
+#            tracked it down.
+#            parent_model = reflection[1].options[:class_name] || reflection[1].name.magic_function_to_turn_into_class_name
+          end
         end
+        return parent_model.constantize
+        #case child_model
+        #when "Item"
+        #  Collection
+        #when "Component"
+        #  Item
+        #end
       end
       
       def write_preservation_event(ingest_object, event_type, event_outcome, details)

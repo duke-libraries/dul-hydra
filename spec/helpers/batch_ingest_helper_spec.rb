@@ -145,7 +145,7 @@ module DulHydra::Scripts::Helpers
           @master = Nokogiri::XML("<objects/>")
           @expected_master_xml = <<-END
             <objects>
-              <object model="info:fedora/afmodel:addedObjectModel">
+              <object>
                 <identifier>addedObjectIdentifier</identifier>
               </object>
             </objects>
@@ -160,7 +160,7 @@ module DulHydra::Scripts::Helpers
         before do
           existing_master_xml = <<-END
             <objects>
-              <object model="info:fedora/afmodel:existingObjectModel">
+              <object>
                 <identifier>existingObjectIdentifier</identifier>
               </object>
             </objects>        
@@ -168,10 +168,10 @@ module DulHydra::Scripts::Helpers
           @master = Nokogiri::XML(existing_master_xml)
           @expected_master_xml = <<-END
             <objects>
-              <object model="info:fedora/afmodel:existingObjectModel">
+              <object>
                 <identifier>existingObjectIdentifier</identifier>
               </object>
-              <object model="info:fedora/afmodel:addedObjectModel">
+              <object>
                 <identifier>addedObjectIdentifier</identifier>
               </object>
             </objects>

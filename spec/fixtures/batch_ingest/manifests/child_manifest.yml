@@ -1,13 +1,12 @@
 --- !map:HashWithIndifferentAccess
 basepath: placeholder
-model: TestModel
+model: TestChild
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
+autoparentidlength: 3
 metadata:
     - qdc
 objects:
     - identifier: id001
-    - identifier:
-        - id002
-        - id003
-    - identifier: id004
+    - identifier: id002
+      parentid: parent01

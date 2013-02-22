@@ -107,7 +107,7 @@ module DulHydra::Scripts
         end
         admin_policy.delete
       end
-      context "TestModel" do
+      context "any ingested object" do
         let(:object_type) { TestModel }
         before do
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
@@ -146,191 +146,85 @@ module DulHydra::Scripts
         end
         it_behaves_like "an ingested batch with files"
       end
-
-
-
-      context "object has parent object" do
-        context "child is part of parent" do
-          context "parent identifier is determined algorithmically" do
-            before do
-              FileUtils.mkdir_p "#{@ingest_base}/component/master"
-              FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
-              FileUtils.mkdir_p "#{@ingest_base}/component/content"          
-              FileUtils.cp "spec/fixtures/batch_ingest/results/component_master.xml", "#{@ingest_base}/component/master/master.xml"
-              FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/CCITT_2.xml", "#{@ingest_base}/component/qdc/"
-              FileUtils.cp "spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "#{@ingest_base}/component/content/"
-              @pre_existing_component_pids = []
-              Component.find_each { |c| @pre_existing_component_pids << c.pid }
-              @manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
-              update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
-              update_manifest(@manifest_file, {"autoparentidlength" => 5})
-              @item = Item.new(:pid => "test:item1")
-              @item.identifier = "CCITT"
-              @item.save!
-            end
-            after do
-              Component.find_each do |c|
-                if !@pre_existing_component_pids.include?(c.pid)
-                  c.preservation_events.each do |pe|
-                    pe.delete
-                  end
-                  c.reload
-                  c.delete
-                end
-              end
-              @item.reload
-              @item.delete
-            end
-            it "should establish an 'isPartOf' relationship between the child and parent" do
-              DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-              components = []
-              Component.find_each do |c|
-                if !@pre_existing_component_pids.include?(c.pid)
-                  components << c
-                end
-              end
-              components.each do |component|
-                component.container.should eq(@item)
-                @item.parts.should include(component)
-              end
-            end
-          end
+      context "child object" do
+        let(:object_type) { TestChild }
+        let!(:parents) do
+          Hash[
+               "id001" => FactoryGirl.create(:test_parent, :identifier => "id0"),
+               "id002" => FactoryGirl.create(:test_parent, :identifier => "parent01")
+              ]
         end
-        context "child is member of parent" do
-          context "parent identifier is specified is manifest" do
-            before do
-              FileUtils.mkdir_p "#{@ingest_base}/collection/master"
-              FileUtils.mkdir_p "#{@ingest_base}/item/master"
-              FileUtils.mkdir_p "#{@ingest_base}/item/qdc"          
-              FileUtils.mkdir_p "#{@ingest_base}/item/tripodmets"
-              FileUtils.cp "spec/fixtures/batch_ingest/results/item_master.xml", "#{@ingest_base}/item/master/master.xml"
-              FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master_with_pid.xml", "#{@ingest_base}/collection/master/master.xml"
-              FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_1.xml", "#{@ingest_base}/item/qdc"
-              FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_2.xml", "#{@ingest_base}/item/qdc"
-              FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/item_4.xml", "#{@ingest_base}/item/qdc"
-              FileUtils.cp "spec/fixtures/batch_ingest/BASE/item/tripodmets/item1.xml", "#{@ingest_base}/item/tripodmets"
-              FileUtils.cp "spec/fixtures/batch_ingest/BASE/item/tripodmets/item2.xml", "#{@ingest_base}/item/tripodmets"
-              FileUtils.cp "spec/fixtures/batch_ingest/BASE/item/tripodmets/item4.xml", "#{@ingest_base}/item/tripodmets"
-              @pre_existing_item_pids = []
-              Item.find_each { |i| @pre_existing_item_pids << i.pid }
-              @manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
-              update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
-              @collection = Collection.new(:pid => "test:collection1")
-              @collection.identifier = "collection_1"
-              @collection.save!
-            end
-            after do
-              Item.find_each do |i|
-                if !@pre_existing_item_pids.include?(i.pid)
-                  i.preservation_events.each do |pe|
-                    pe.delete
-                  end
-                  i.reload
-                  i.delete
-                end
-              end
-              @collection.reload
-              @collection.delete
-            end
-            it "should establish an 'isMemberOf' relationship between the child and parent" do
-              DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-              items = []
-              Item.find_each do |i|
-                if !@pre_existing_item_pids.include?(i.pid)
-                  items << i
-                end
-              end
-              items.each do |item|
-                item.collection.should eq(@collection)
-                @collection.items.should include(item)
-              end
-            end
-          end
-        end
-      end
-      context "target has associated collection" do
         before do
-          FileUtils.mkdir_p "#{@ingest_base}/collection/master"
-          FileUtils.mkdir_p "#{@ingest_base}/target/log"          
-          FileUtils.mkdir_p "#{@ingest_base}/target/master"
-          FileUtils.mkdir_p "#{@ingest_base}/target/qdc"          
-          FileUtils.cp "spec/fixtures/batch_ingest/results/target_master.xml", "#{@ingest_base}/target/master/master.xml"
-          FileUtils.cp "spec/fixtures/batch_ingest/results/collection_master_with_pid.xml", "#{@ingest_base}/collection/master/master.xml"
-          FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/T001.xml", "#{@ingest_base}/target/qdc"
-          @manifest_file = "#{@ingest_base}/manifests/target_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/target/"})
-          @pre_existing_target_pids = []
-          Target.find_each { |t| @pre_existing_target_pids << t.pid }
-          @collection = Collection.new(:pid => "test:collection1")
-          @collection.identifier = "collection_1"
-          @collection.save!
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/child_manifest.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          update_manifest(@manifest_file, {:model => object_type.to_s})
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
         after do
-          Target.find_each do |t|
-            if !@pre_existing_target_pids.include?(t.pid)
-              t.preservation_events.each do |pe|
-                pe.delete
-              end
-              t.reload
-              t.delete
-            end
+          parents.values.each do |parent|
+            parent.delete
           end
-          @collection.reload
-          @collection.delete          
         end
-        context "collection identifier is specified in manifest" do
-          it "should extablish an 'isExternalTargetOf' relationship between the target and the collection" do
+        it_behaves_like "a child object"
+      end
+      context "Target" do
+        context "target has associated collection" do
+          let(:object_type) { Target }
+          let!(:collection) { FactoryGirl.create(:collection, :identifier => "collection_1") }
+          before do
+            FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/target_manifest.yml", "#{@manifest_dir}/manifest.yml"
+            @manifest_file = "#{@manifest_dir}/manifest.yml"
+            update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
             DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-            targets = []
-            Target.find_each do |t|
-              if !@pre_existing_target_pids.include?(t.pid)
-                targets << t
-              end
-            end
-            targets.each do |target|
-              target.collection.should eq(@collection)
-              @collection.targets.should include(target)
-            end
           end
+          after do
+            collection.delete
+          end
+          it_behaves_like "a target object"
         end
       end
+
+
     end
     describe "post-process ingest" do
       context "content structural metadata" do
-        before do
-          FileUtils.mkdir_p "#{@ingest_base}/item/contentmetadata"          
-          @item = Item.new
-          @item.identifier = "test01"
-          @item.save!
-          @component1 = Component.new
-          @component1.identifier = "test010020010"
-          @component1.container = @item
-          @component1.save!
-          @component2 = Component.new
-          @component2.identifier = "test010030010"
-          @component2.container = @item
-          @component2.save!
-          @component3 = Component.new
-          @component3.identifier = "test010010010"
-          @component3.container = @item
-          @component3.save!
-          @manifest_file = "#{@ingest_base}/manifests/simple_item_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
-          @expected_doc = create_expected_content_metadata_document
-          @expected_xml = @expected_doc.to_xml
-        end
-        after do
-          @component3.delete
-          @component2.delete
-          @component1.delete
-          @item.delete
-        end
+        #before do
+        #  FileUtils.mkdir_p "#{@ingest_base}/item/contentmetadata"          
+        #  @item = Item.new
+        #  @item.identifier = "test01"
+        #  @item.save!
+        #  @component1 = Component.new
+        #  @component1.identifier = "test010020010"
+        #  @component1.container = @item
+        #  @component1.save!
+        #  @component2 = Component.new
+        #  @component2.identifier = "test010030010"
+        #  @component2.container = @item
+        #  @component2.save!
+        #  @component3 = Component.new
+        #  @component3.identifier = "test010010010"
+        #  @component3.container = @item
+        #  @component3.save!
+        #  @manifest_file = "#{@ingest_base}/manifests/simple_item_manifest.yml"
+        #  update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
+        #  @expected_doc = create_expected_content_metadata_document
+        #  @expected_xml = @expected_doc.to_xml
+        #end
+        #after do
+        #  @component3.delete
+        #  @component2.delete
+        #  @component1.delete
+        #  @item.delete
+        #end
         it "should add an appropriate contentMetadata datastream to the parent object" do
+          pending("not creating contentMetadata at this time")
           DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
           @item.reload
           @item.contentMetadata.content.should be_equivalent_to(@expected_xml)
         end
         it "should create an appropriate log file" do
+          pending("not creating contentMetadata at this time")
           DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
           result = File.open("#{@ingest_base}/item/log/ingest_postprocess.log") { |f| f.read }
           result.should match("DulHydra version #{DulHydra::VERSION}")
@@ -341,73 +235,86 @@ module DulHydra::Scripts
       end
     end
     describe "validate ingest" do
+      let!(:admin_policy) { AdminPolicy.create(:pid => "duke-apo:adminPolicy") }
+      let(:log_file) { File.open("#{@ingestable_dir}/log/ingest_validation.log") { |f| f.read } }
+      let(:manifest) { @manifest_file }
+      let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) } }
       context "any batch ingest" do
+        let(:object_type) { TestModel }
         before do
-          FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
-          FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
-          @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
-          DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
-          @adminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
-                                              DulHydra::Permissions::READER_GROUP_ACCESS,
-                                              DulHydra::Permissions::EDITOR_GROUP_ACCESS,
-                                              DulHydra::Permissions::ADMIN_GROUP_ACCESS]
-          @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
-          @adminPolicy.save!
-          @pre_existing_collection_pids = []
-          Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
+          @objects = [
+                      TestModel.create(:pid => "test:1", :identifier => "id001"),
+                      TestModel.create(:pid => "test:2", :identifier => "id002"),
+                      TestModel.create(:pid => "test:3", :identifier => "id004")
+                      ]
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
         end
         after do
-          @adminPolicy.delete
-          Collection.find_each do |c|
-            if !@pre_existing_collection_pids.include?(c.pid)
-              c.preservation_events.each do |pe|
-                pe.delete
-              end
-              c.reload
-              c.delete
-            end
+          @objects.each do |object|
+            object.preservation_events.each { |pe| pe.delete }
+            object.reload
+            object.delete
           end
+          admin_policy.delete
         end
         context "ingest is valid" do
-          it "should declare the ingest to be valid" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_true
-          end
-          it "should create a success validation preservation event in the repository" do
+          let(:outcome) { PreservationEvent::SUCCESS }
+          let(:outcomes) { Hash[ "id001" => "PASS", "id002" => "PASS", "id004" => "PASS" ] }
+          before do
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
-            collections = []
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                collections << c
-              end
-            end
-            collections.each do |collection|
-              events = collection.preservation_events
-              events.should_not be_empty
-              validation_events = []
-              events.each do |event|
-                if event.event_type == PreservationEvent::VALIDATION
-                  validation_events << event
-                end
-              end
-              validation_events.should_not be_empty
-              validation_events.size.should == 1
-              event = validation_events.first
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-              event.event_outcome.should == PreservationEvent::SUCCESS
-              event.linking_object_id_type.should == PreservationEvent::OBJECT
-              event.linking_object_id_value.should == collection.internal_uri
-              event.event_detail.should include("Identifier(s): collection_1")
-              event.event_detail.should include("PASS")
-              event.event_detail.should_not include("FAIL")
-              event.event_detail.should include ("VALIDATES")
-              event.for_object.should == collection
-            end
           end
-          it "should create an appropriate log file" do
+          it_behaves_like "a validated ingest"
+          it_behaves_like "a validated ingest with repository objects"
+        end
+        context "ingest is invalid" do
+          context "unable to obtain pid from master file" do
+            it_behaves_like "a validated ingest"
+          end
+          context "object not in repository" do
+            it_behaves_like "a validated ingest"
+          end
+          context "missing datastream content" do
+            it_behaves_like "a validated ingest"
+          end
+          context "stored file does not match" do
+            it_behaves_like "a validated ingest"
+          end
+        end
+        
+        #before do
+        #  FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
+        #  FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
+        #  @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
+        #  update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
+        #  DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
+        #  @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
+        #  @adminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
+        #                                      DulHydra::Permissions::READER_GROUP_ACCESS,
+        #                                      DulHydra::Permissions::EDITOR_GROUP_ACCESS,
+        #                                      DulHydra::Permissions::ADMIN_GROUP_ACCESS]
+        #  @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
+        #  @adminPolicy.save!
+        #  @pre_existing_collection_pids = []
+        #  Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
+        #  DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
+        #end
+        #after do
+        #  @adminPolicy.delete
+        #  Collection.find_each do |c|
+        #    if !@pre_existing_collection_pids.include?(c.pid)
+        #      c.preservation_events.each do |pe|
+        #        pe.delete
+        #      end
+        #      c.reload
+        #      c.delete
+        #    end
+        #  end
+        #end
+        context "ingest is valid" do
+    it "should create an appropriate log file" do
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
             result = File.open("#{@ingest_base}/collection/log/ingest_validation.log") { |f| f.read }
             result.should match("DulHydra version #{DulHydra::VERSION}")

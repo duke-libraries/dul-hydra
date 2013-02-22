@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <objects>
-  <object model="info:fedora/afmodel:Ingestable">
+  <object>
     <identifier>id001</identifier>
   </object>
-  <object model="info:fedora/afmodel:Ingestable">
+  <object>
     <identifier>id002</identifier>
   </object>
-  <object model="info:fedora/afmodel:Ingestable">
+  <object>
     <identifier>id004</identifier>
   </object>
 </objects>

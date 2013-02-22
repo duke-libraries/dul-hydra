@@ -168,7 +168,7 @@ module DulHydra::Scripts
       log.info "=================="
     end
     def self.validate_ingest(ingest_manifest)
-      ingest_valid = true
+   ingest_valid = true
       manifest = load_yaml(ingest_manifest)
       basepath = manifest[:basepath]
       log = config_logger("validation", basepath)

@@ -6,11 +6,11 @@ class TestContent < TestModel
 end
 
 class TestParent < TestModel
-  has_many :children, :property => :is_part_of, :class_name => 'TestModel', :inbound => true 
+  has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true 
 end
 
 class TestChild < TestModel
-  belongs_to :parent, :property => :is_part_of, :class_name => 'TestModel'
+  belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
 end
 
 class TestFileDatastreams < TestContent

@@ -1,13 +1,11 @@
 --- !map:HashWithIndifferentAccess
 basepath: placeholder
-model: TestModel
+model: Target
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
+collectionid: collection_1
 metadata:
     - qdc
 objects:
     - identifier: id001
-    - identifier:
-        - id002
-        - id003
-    - identifier: id004
+
