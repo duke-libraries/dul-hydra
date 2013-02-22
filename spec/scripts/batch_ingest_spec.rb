@@ -94,15 +94,10 @@ module DulHydra::Scripts
       let(:manifest) { @manifest_file }
       let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) } }
       before do
-        #FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
-        #@manifest_file = "#{@manifest_dir}/manifest.yml"
-        #update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})        
         FileUtils.cp "spec/fixtures/batch_ingest/master/base_master.xml", "#{@ingestable_dir}/master/master.xml"
         FileUtils.cp "spec/fixtures/batch_ingest/qdc/id001.xml", "#{@ingestable_dir}/qdc"
         FileUtils.cp "spec/fixtures/batch_ingest/qdc/id002.xml", "#{@ingestable_dir}/qdc"
         FileUtils.cp "spec/fixtures/batch_ingest/qdc/id004.xml", "#{@ingestable_dir}/qdc"
-#        update_manifest(@manifest_file, {:model => object_type.to_s})
-#        DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
       end
       after do
         object_type.find_each do |object|
@@ -123,8 +118,9 @@ module DulHydra::Scripts
         end
         it_behaves_like "an ingested batch"
       end
-      context "metadata files to be ingested" do
-        let(:object_type) { TestMetadataFileDatastreams }
+      context "files to be ingested" do
+        let(:object_type) { TestFileDatastreams }
+        let(:tif_file) { File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/id001.tif") { |f| f.read } }
         let(:xls_file) { File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xls") { |f| f.read } }
         let(:xml_file) { File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml") { |f| f.read } }
         before do
@@ -142,61 +138,17 @@ module DulHydra::Scripts
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/jhove/id001.xml"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/marcxml/"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/tripodmets/id001.xml"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/manifest_with_metadata_files.yml", "#{@manifest_dir}/manifest.yml"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/manifest_with_files.yml", "#{@manifest_dir}/manifest.yml"
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
           update_manifest(@manifest_file, {:model => object_type.to_s})
           DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
-        it_behaves_like "an ingested batch with metadata files"
+        it_behaves_like "an ingested batch with files"
       end
 
 
 
-      context "content to be ingested" do
-        before do
-          FileUtils.mkdir_p "#{@ingest_base}/component/master"
-          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
-          FileUtils.mkdir_p "#{@ingest_base}/component/content"          
-          FileUtils.cp "spec/fixtures/batch_ingest/results/component_master.xml", "#{@ingest_base}/component/master/master.xml"
-          FileUtils.cp "spec/fixtures/batch_ingest/results/qdc/CCITT_2.xml", "#{@ingest_base}/component/qdc/"
-          FileUtils.cp "spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "#{@ingest_base}/component/content/"
-          @pre_existing_component_pids = []
-          Component.find_each { |c| @pre_existing_component_pids << c.pid }
-          @manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
-          @ingested_identifiers = [ [ "CCITT_2" ] ]
-          @expected_content = File.open("spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "rb")
-        end
-        after do
-          @expected_content.close
-          Component.find_each do |c|
-            if !@pre_existing_component_pids.include?(c.pid)
-              c.preservation_events.each do |pe|
-                pe.delete
-              end
-              c.reload
-              c.delete
-            end
-          end
-        end
-        it "should add a content datastream containing the content file" do
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-          components = []
-          Component.find_each do |c|
-            if !@pre_existing_component_pids.include?(c.pid)
-              components << c
-            end
-          end
-          components.each do |component|
-            if component.identifier == [ "CCITT_2" ]
-              component.content.label.should == "Content file for this object"
-              content = component.datastreams["content"].content
-              FileUtils.compare_stream(StringIO.new(content, "rb"), @expected_content)
-            end
-          end
-        end
-      end
       context "object has parent object" do
         context "child is part of parent" do
           context "parent identifier is determined algorithmically" do

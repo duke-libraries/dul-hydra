@@ -13,7 +13,7 @@ class TestChild < TestModel
   belongs_to :parent, :property => :is_part_of, :class_name => 'TestModel'
 end
 
-class TestMetadataFileDatastreams < TestModel
+class TestFileDatastreams < TestContent
   include DulHydra::Models::HasContentdm
   include DulHydra::Models::HasDigitizationGuide
   include DulHydra::Models::HasDPCMetadata

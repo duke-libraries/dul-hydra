@@ -58,8 +58,9 @@ shared_examples "an ingested batch" do
 
 end
 
-shared_examples "an ingested batch with metadata files" do
+shared_examples "an ingested batch with files" do
   
+  let(:expected_content_label) { "Content file for this object" }
   let(:expected_contentdm_label) { "CONTENTdm Data for this object" }
   let(:expected_digitization_guide_label) { "Digitization Guide Data for this object" }
   let(:expected_dpc_metadata_label) { "DPC Metadata Data for this object" }
@@ -70,6 +71,8 @@ shared_examples "an ingested batch with metadata files" do
   
   it "should have the appropriate datastreams" do
     object_type.find_each do |object|
+      object.content.label.should eq(expected_content_label)
+      FileUtils.compare_stream(StringIO.new(object.content.content), StringIO.new(tif_file)).should be_true
       object.contentdm.label.should eq(expected_contentdm_label)
       FileUtils.compare_stream(StringIO.new(object.contentdm.content), StringIO.new(xml_file)).should be_true
       object.digitizationGuide.label.should eq(expected_digitization_guide_label)

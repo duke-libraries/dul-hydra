@@ -12,6 +12,9 @@ metadata:
     - marcxml
     - qdc
     - tripodmets
+content:
+    extension: .tif
+    location: spec/fixtures/batch_ingest/miscellaneous/
 objects:
     - identifier: id001
       contentdm: metadata.xml
