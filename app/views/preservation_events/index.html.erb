@@ -1,16 +1,32 @@
 <h1><%= @title %></h1>
 
+<h3>Preservation Events</h3>
+
 <div class="pagination">
   <%= render_pagination_info @response %>
 </div>
 
-<ul>
-  <% @document_list.each do |doc| %>
-  <li>
-    <%= link_to doc.id, catalog_path(doc.id) %>
-  </li>
-  <% end %>
-</ul>
+<table>
+	<thead>
+		<tr>
+			<th>PID</th>
+			<th>Event Type</th>
+			<th>Event Outcome</th>
+			<th>Event Date</th>
+		</tr>
+	</thead>
+	<tbody>
+  		<% @document_list.each do |doc| %>
+  		<tr>
+  			<td><%= link_to doc.id, catalog_path(doc.id) %></td>
+    	 	<td><%= doc.get(:event_type_s) %></td>
+    	 	<td><%= doc.get(:event_outcome_s) %></td>
+    	 	<td><%= doc.get(:event_date_time_dt) %></td>
+  		</tr>
+  		<% end %>
+		
+	</tbody>
+</table>
 
 <div class="pagination">
   <%= paginate_rsolr_response @response, :theme => 'blacklight' %>
