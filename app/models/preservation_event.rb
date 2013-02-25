@@ -22,6 +22,15 @@ class PreservationEvent < ActiveFedora::Base
   DATASTREAM = "datastream"
   OBJECT = "object"
   
+  # String template for fixity check/checksum validation event detail 
+  CHECKSUM_VALIDATION_EVENT_DETAIL = <<EOS
+Internal datastream checksum validation.
+Object URI: %{uri}
+Datastream ID: %{dsID}
+Datastream version: %{dsVersionID} (created on %{dsCreateDate})
+[DulHydra version #{DulHydra::VERSION}]
+EOS
+  
   has_metadata :name => "eventMetadata", :type => DulHydra::Datastreams::PremisEventDatastream, 
                :versionable => true, :label => "Preservation event metadata"
 
@@ -57,7 +66,12 @@ class PreservationEvent < ActiveFedora::Base
         :event_type => FIXITY_CHECK,
         :event_date_time => to_event_date_time,
         :event_outcome => ds.dsChecksumValid ? SUCCESS : FAILURE,
-        :event_detail => "Internal validation of checksum on repository object #{obj.internal_uri} datastream \"#{dsID}\" at version \"#{ds.dsVersionID}\" (created on #{DulHydra::Utils.ds_as_of_date_time(ds)}). DulHydra version #{DulHydra::VERSION}.",
+        :event_detail => CHECKSUM_VALIDATION_EVENT_DETAIL % {
+                           :uri => obj.internal_uri,
+                           :dsID => dsID,
+                           :dsVersionID => ds.dsVersionID,
+                           :dsCreateDate => DulHydra::Utils.ds_as_of_date_time(ds)
+                           },  
         :linking_object_id_type => DATASTREAM,
         :linking_object_id_value => obj.ds_internal_uri(dsID),
         :for_object => obj

@@ -22,7 +22,7 @@ describe PreservationEvent do
     end
   end
 
-  context "::validate_checksum" do
+  context ".validate_checksum" do
     subject { PreservationEvent.validate_checksum(obj, "content") }
     after { obj.destroy }
     context "success" do
@@ -36,7 +36,7 @@ describe PreservationEvent do
     end
   end
 
-  context "::validate_checksum!" do
+  context ".validate_checksum!" do
     subject { PreservationEvent.validate_checksum!(obj, "content") }
     after { obj.destroy }
     context "success" do
