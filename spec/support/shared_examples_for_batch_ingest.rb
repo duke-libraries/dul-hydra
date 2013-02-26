@@ -103,28 +103,27 @@ shared_examples "a child object" do
 end
 
 shared_examples "a target object" do
-  
   it "should be associated with a collection" do
     Target.find_each do |target|
       target.collection.should eq(collection)
     end
   end
-  
 end
+
 shared_examples "a validated ingest" do
-  let(:objects) { object_type.all }
   it "should have an ingest validation log file" do
-    # outcomes (hash)
     log_file.should_not be_empty
     log_file.should match("DulHydra version #{DulHydra::VERSION}")
     log_file.should match("Manifest: #{manifest}")
-    objects do |object|
-      log_file.should match("Validated #{object_type.to_s} #{object.identifier.first} in #{object.pid}...#{outcomes[object.identifier.first]}")
+    results.each do |key, value|
+      log_file.should match("Validated #{object_type.to_s} #{key} in .*...#{value}")
     end
-    log_file.should match("Validated #{objects.size} object\\(s\\)")
+    log_file.should match("Validated #{results.size} object\\(s\\)")
   end
 end
+
 shared_examples "a validated ingest with repository objects" do
+  let(:outcomes) { Hash[ "PASS" => PreservationEvent::SUCCESS, "FAIL" => PreservationEvent::FAILURE ] }
   it "should have ingest validation preservation events" do
     object_type.find_each do |object|
       events = object.preservation_events
@@ -138,11 +137,11 @@ shared_examples "a validated ingest with repository objects" do
       validation_event = validation_events.first
       DateTime.strptime(validation_event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
       DateTime.strptime(validation_event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-      validation_event.event_outcome.should == outcome
+      validation_event.event_outcome.should == outcomes[results[object.identifier.first]]
       validation_event.linking_object_id_type.should eq(PreservationEvent::OBJECT)
       validation_event.linking_object_id_value.should eq(object.internal_uri)
       validation_event.event_detail.should include("Identifier(s): #{object.identifier.flatten.join(',')}")
-      case outcome
+      case outcomes[results[object.identifier.first]]
       when PreservationEvent::SUCCESS
         validation_event.event_detail.should include("PASS")
         validation_event.event_detail.should_not include("FAIL")
@@ -150,6 +149,9 @@ shared_examples "a validated ingest with repository objects" do
       when PreservationEvent::FAILURE
         validation_event.event_detail.should include("FAIL")
         validation_event.event_detail.should include("DOES NOT VALIDATE")
+        if !details.blank?
+          validation_event.event_detail.should include(details[object.identifier.first])
+        end
       end
     end
   end  

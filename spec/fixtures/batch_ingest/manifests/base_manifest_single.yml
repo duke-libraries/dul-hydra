@@ -1,0 +1,10 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: TestFileDatastreams
+adminpolicy: duke-apo:adminPolicy
+label: Manifest Label
+metadata:
+    - contentdm
+    - qdc
+objects:
+    - identifier: id005

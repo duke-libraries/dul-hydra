@@ -8,7 +8,7 @@ RSpec.configure do |c|
 end
 
 module DulHydra::Scripts
-  
+
   FIXTURES_BATCH_INGEST = "spec/fixtures/batch_ingest"
 
   describe BatchIngest do
@@ -24,7 +24,7 @@ module DulHydra::Scripts
       before do
         FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
         @manifest_file = "#{@manifest_dir}/manifest.yml"
-        update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})        
+        update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
       end
       context "all object types" do
         it "should create an appropriate master file" do
@@ -58,7 +58,7 @@ module DulHydra::Scripts
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
             result = File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) }
             expected = File.open("#{FIXTURES_BATCH_INGEST}/master/base_added_to_preexisting_master.xml") { |f| Nokogiri::XML(f) }
-            result.should be_equivalent_to(expected)          
+            result.should be_equivalent_to(expected)
         end
       end
       context "consolidated file is to be split into individual files" do
@@ -73,7 +73,7 @@ module DulHydra::Scripts
             :idelement => "localid"
           )
           update_manifest(@manifest_file, {"split" => split_entry})
-        end        
+        end
         it "should split the consolidated file into appropriate individual files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
           result_1 = File.open("#{@ingestable_dir}/a_test/test010010010.xml") { |f| Nokogiri::XML(f) }
@@ -84,7 +84,7 @@ module DulHydra::Scripts
           expected_3 = Nokogiri::XML("<record><Title>Title 3</Title><Date>1979-11</Date><localid>test010010030</localid></record>")
           result_1.should be_equivalent_to(expected_1)
           result_2.should be_equivalent_to(expected_2)
-          result_3.should be_equivalent_to(expected_3)        
+          result_3.should be_equivalent_to(expected_3)
         end
       end
     end
@@ -141,7 +141,6 @@ module DulHydra::Scripts
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/manifest_with_files.yml", "#{@manifest_dir}/manifest.yml"
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
-          update_manifest(@manifest_file, {:model => object_type.to_s})
           DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
         it_behaves_like "an ingested batch with files"
@@ -184,39 +183,9 @@ module DulHydra::Scripts
           it_behaves_like "a target object"
         end
       end
-
-
     end
     describe "post-process ingest" do
       context "content structural metadata" do
-        #before do
-        #  FileUtils.mkdir_p "#{@ingest_base}/item/contentmetadata"          
-        #  @item = Item.new
-        #  @item.identifier = "test01"
-        #  @item.save!
-        #  @component1 = Component.new
-        #  @component1.identifier = "test010020010"
-        #  @component1.container = @item
-        #  @component1.save!
-        #  @component2 = Component.new
-        #  @component2.identifier = "test010030010"
-        #  @component2.container = @item
-        #  @component2.save!
-        #  @component3 = Component.new
-        #  @component3.identifier = "test010010010"
-        #  @component3.container = @item
-        #  @component3.save!
-        #  @manifest_file = "#{@ingest_base}/manifests/simple_item_manifest.yml"
-        #  update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/item/"})
-        #  @expected_doc = create_expected_content_metadata_document
-        #  @expected_xml = @expected_doc.to_xml
-        #end
-        #after do
-        #  @component3.delete
-        #  @component2.delete
-        #  @component1.delete
-        #  @item.delete
-        #end
         it "should add an appropriate contentMetadata datastream to the parent object" do
           pending("not creating contentMetadata at this time")
           DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
@@ -231,7 +200,7 @@ module DulHydra::Scripts
           result.should match("Manifest: #{@ingest_base}/manifests/simple_item_manifest.yml")
           result.should match("Added contentmetadata datastream for test01 to #{Item.find_by_identifier("test01").first.pid}")
           result.should match("Post-processed 1 object\\(s\\)")
-        end        
+        end
       end
     end
     describe "validate ingest" do
@@ -247,23 +216,26 @@ module DulHydra::Scripts
                       TestModel.create(:pid => "test:2", :identifier => "id002"),
                       TestModel.create(:pid => "test:3", :identifier => "id004")
                       ]
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
           @manifest_file = "#{@manifest_dir}/manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
         end
         after do
           @objects.each do |object|
-            object.preservation_events.each { |pe| pe.delete }
-            object.reload
-            object.delete
+            begin
+              object.preservation_events.each { |pe| pe.delete }
+              object.reload
+              object.delete
+            rescue ActiveFedora::ObjectNotFoundError
+              next
+            end
           end
           admin_policy.delete
         end
         context "ingest is valid" do
-          let(:outcome) { PreservationEvent::SUCCESS }
-          let(:outcomes) { Hash[ "id001" => "PASS", "id002" => "PASS", "id004" => "PASS" ] }
+          let(:results) { Hash[ "id001" => "PASS", "id002" => "PASS", "id004" => "PASS" ] }
           before do
+            FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+            update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+            FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
           end
           it_behaves_like "a validated ingest"
@@ -271,186 +243,101 @@ module DulHydra::Scripts
         end
         context "ingest is invalid" do
           context "unable to obtain pid from master file" do
+            let(:results) { Hash[ "id001" => "FAIL", "id002" => "PASS", "id004" => "FAIL" ] }
+            before do
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+              update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+              master = File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) }
+              object_node = master.xpath("/objects/object[identifier = 'id001']")
+              object_node.remove
+              object_node = master.xpath("/objects/object[identifier = 'id004']/pid")
+              object_node.remove
+              File.open("#{@ingestable_dir}/master/master.xml", 'w') { |f| master.write_xml_to f }
+              DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            end
             it_behaves_like "a validated ingest"
           end
           context "object not in repository" do
+            let(:results) { Hash[ "id001" => "PASS", "id002" => "FAIL", "id004" => "PASS" ] }
+            before do
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+              update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+              TestModel.find("test:2").delete
+              DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            end
             it_behaves_like "a validated ingest"
           end
           context "missing datastream content" do
+            let(:results) { Hash[ "id001" => "FAIL", "id002" => "FAIL", "id004" => "FAIL" ] }
+            let(:details) do
+              Hash[
+                "id001" => "marcXML datastream present and not empty...FAIL",
+                "id002" => "marcXML datastream present and not empty...FAIL",
+                "id004" => "marcXML datastream present and not empty...FAIL",
+              ]
+            end
+            before do
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+              update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+              manifest = File.open(@manifest_file) { |f| YAML::load(f) }
+              manifest[:metadata] = ["marcxml", "qdc"]
+              File.open(@manifest_file, "w") { |f| YAML::dump(manifest, f)}
+              DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            end
             it_behaves_like "a validated ingest"
+            it_behaves_like "a validated ingest with repository objects"
           end
           context "stored file does not match" do
+            let(:object_type) { TestFileDatastreams }
+            let(:results) { Hash[ "id005" => "FAIL" ] }
+            let(:details) { Hash[ "id005" => "contentdm datastream internal checksum...FAIL" ] }
+            before do
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest_single.yml", "#{@manifest_dir}/manifest.yml"
+              update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_single_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+              @object = TestFileDatastreams.create(:pid => "test:5", :identifier => "id005")
+              file = File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml")
+              @object.contentdm.content_file = file
+              @object.save!
+              file.close
+              location_pattern = @object.contentdm.profile["dsLocation"]
+              location_pattern.gsub!(":","%3A")
+              location_pattern.gsub!("+","%2F")
+              locations = locate_datastream_content_file(location_pattern)
+              location = locations.first
+              FileUtils.cp("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xls", location)
+              DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+            end
+            after do
+              @object.preservation_events.each { |pe| pe.delete }
+              @object.reload
+              @object.delete
+            end
             it_behaves_like "a validated ingest"
-          end
-        end
-        
-        #before do
-        #  FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
-        #  FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
-        #  @manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
-        #  update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
-        #  DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-        #  @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
-        #  @adminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
-        #                                      DulHydra::Permissions::READER_GROUP_ACCESS,
-        #                                      DulHydra::Permissions::EDITOR_GROUP_ACCESS,
-        #                                      DulHydra::Permissions::ADMIN_GROUP_ACCESS]
-        #  @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
-        #  @adminPolicy.save!
-        #  @pre_existing_collection_pids = []
-        #  Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-        #  DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
-        #end
-        #after do
-        #  @adminPolicy.delete
-        #  Collection.find_each do |c|
-        #    if !@pre_existing_collection_pids.include?(c.pid)
-        #      c.preservation_events.each do |pe|
-        #        pe.delete
-        #      end
-        #      c.reload
-        #      c.delete
-        #    end
-        #  end
-        #end
-        context "ingest is valid" do
-    it "should create an appropriate log file" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
-            result = File.open("#{@ingest_base}/collection/log/ingest_validation.log") { |f| f.read }
-            result.should match("DulHydra version #{DulHydra::VERSION}")
-            result.should match("Manifest: #{@ingest_base}/manifests/collection_manifest.yml")
-            result.should match("Validated Collection collection_1 in #{Collection.find_by_identifier("collection_1").first.pid}...PASS")
-            result.should match("Validated 1 object\\(s\\)")
-          end
-        end
-        context "manifest object is missing from master file" do
-          before do
-            master = File.open("#{@ingest_base}/collection/master/master.xml") { |f| Nokogiri::XML(f) }
-            object_node = master.xpath("/objects/object").first
-            object_node.remove
-            File.open("#{@ingest_base}/collection/master/master.xml", 'w') { |f| master.write_xml_to f }
-          end
-          it "should declare the ingest to be invalid" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false            
-          end
-        end
-        context "manifest object is missing pid in master file" do
-          before do
-            master = File.open("#{@ingest_base}/collection/master/master.xml") { |f| Nokogiri::XML(f) }
-            object_node = master.xpath("/objects/object").first
-            pid_node = object_node.xpath("pid").first
-            pid_node.remove
-            File.open("#{@ingest_base}/collection/master/master.xml", 'w') { |f| master.write_xml_to f }
-          end
-          it "should declare the ingest to be invalid" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false            
-          end
-        end
-        context "object does not exist in the repository" do
-          before do
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                c.preservation_events.each do |pe|
-                  pe.delete
-                end
-                c.reload
-                c.delete
-              end
-            end
-          end
-          it "should declare the ingest to be invalid" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
-          end
-        end
-        context "missing content in datastream" do
-          before do
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                c.marcXML.delete
-                c.save!
-              end
-            end
-          end
-          it "should declare the ingest to be invalid" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
-          end
-          it "should create a failure validation preservation event in the repository" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
-            collections = []
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                collections << c
-              end
-            end
-            collections.each do |collection|
-              events = collection.preservation_events
-              events.should_not be_empty
-              validation_events = []
-              events.each do |event|
-                if event.event_type == PreservationEvent::VALIDATION
-                  validation_events << event
-                end
-              end
-              validation_events.should_not be_empty
-              validation_events.size.should == 1
-              event = validation_events.first
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-              event.event_outcome.should == PreservationEvent::FAILURE
-              event.linking_object_id_value.should == collection.internal_uri
-              event.event_detail.should include("marcXML datastream present and not empty...FAIL")
-              event.event_detail.should include ("DOES NOT VALIDATE")
-              event.for_object.should == collection
-            end
-          end
-        end
-        context "stored file does not match" do
-          before do
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                location_pattern = c.digitizationGuide.profile["dsLocation"]
-                location_pattern.gsub!(":","%3A")
-                location_pattern.gsub!("+","%2F")
-                locations = locate_datastream_content_file(location_pattern)
-                location = locations.first
-                FileUtils.cp("spec/fixtures/batch_ingest/BASE/collection/fmpexport/dpc_structural_metadata_vica.xls", location)
-              end
-            end            
-          end
-          it "should declare the ingest to be invalid" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
-          end
-          it "should create a failure validation preservation event in the repository" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
-            collections = []
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                collections << c
-              end
-            end
-            collections.each do |collection|
-              events = collection.preservation_events
-              events.should_not be_empty
-              validation_events = []
-              events.each do |event|
-                if event.event_type == PreservationEvent::VALIDATION
-                  validation_events << event
-                end
-              end
-              validation_events.should_not be_empty
-              validation_events.size.should == 1
-              event = validation_events.first
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-              event.event_outcome.should == PreservationEvent::FAILURE
-              event.linking_object_id_value.should == collection.internal_uri
-              event.event_detail.should include("digitizationGuide datastream internal checksum...FAIL")
-              event.event_detail.should include ("DOES NOT VALIDATE")
-              event.for_object.should == collection
-            end
+            it_behaves_like "a validated ingest with repository objects"
           end
         end
       end
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       context "object is child to parent object" do
         before do
           @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
@@ -459,23 +346,23 @@ module DulHydra::Scripts
                                               DulHydra::Permissions::EDITOR_GROUP_ACCESS,
                                               DulHydra::Permissions::ADMIN_GROUP_ACCESS]
           @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
-          @adminPolicy.save!          
+          @adminPolicy.save!
         end
         after do
           @adminPolicy.delete
         end
         context "parent ID is explicitly specified in manifest" do
           before do
-            FileUtils.mkdir_p "#{@ingest_base}/collection/master"          
-            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"          
+            FileUtils.mkdir_p "#{@ingest_base}/collection/master"
+            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"
             collection_manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
             update_manifest(collection_manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
             DulHydra::Scripts::BatchIngest.prep_for_ingest(collection_manifest_file)
             @pre_existing_collection_pids = []
             Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
             DulHydra::Scripts::BatchIngest.ingest(collection_manifest_file)
-            FileUtils.mkdir_p "#{@ingest_base}/item/master"          
-            FileUtils.mkdir_p "#{@ingest_base}/item/qdc"          
+            FileUtils.mkdir_p "#{@ingest_base}/item/master"
+            FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
             @item_manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
             update_manifest(@item_manifest_file, {"basepath" => "#{@ingest_base}/item/"})
             DulHydra::Scripts::BatchIngest.prep_for_ingest(@item_manifest_file)
@@ -567,8 +454,8 @@ module DulHydra::Scripts
             @item = Item.new(:pid => "test:item1")
             @item.identifier = "CCITT"
             @item.save!
-            FileUtils.mkdir_p "#{@ingest_base}/component/master"          
-            FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
+            FileUtils.mkdir_p "#{@ingest_base}/component/master"
+            FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
             @component_manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
             update_manifest(@component_manifest_file, {"basepath" => "#{@ingest_base}/component/"})
             update_manifest(@component_manifest_file, {"autoparentidlength" => 5})
@@ -635,7 +522,7 @@ module DulHydra::Scripts
                 event.for_object.should == component
               end
             end
-          end          
+          end
         end
       end
       context "target has associated collection" do
@@ -650,13 +537,13 @@ module DulHydra::Scripts
       context "external checksum data exists" do
         before do
           FileUtils.mkdir_p "#{@ingest_base}/component/master"
-          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
+          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
           @manifest_file = "#{@ingest_base}/manifests/simple_component_manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
           @pre_existing_component_pids = []
           Component.find_each { |c| @pre_existing_component_pids << c.pid }
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
         after do
           Component.find_each do |c|
@@ -718,13 +605,13 @@ module DulHydra::Scripts
       context "object contains content" do
         before do
           FileUtils.mkdir_p "#{@ingest_base}/component/master"
-          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"          
+          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
           @manifest_file = "#{@ingest_base}/manifests/simple_component_manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
           @pre_existing_component_pids = []
           Component.find_each { |c| @pre_existing_component_pids << c.pid }
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)  
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
         after do
           Component.find_each do |c|
@@ -806,10 +693,10 @@ module DulHydra::Scripts
               event.linking_object_id_type.should == PreservationEvent::DATASTREAM
               event.linking_object_id_value.should == component.ds_internal_uri("content")
               event.for_object.should == component
-            end            
+            end
           end
-        end        
+        end
       end
-    end  
+    end
   end
 end

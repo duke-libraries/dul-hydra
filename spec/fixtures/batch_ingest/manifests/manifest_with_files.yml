@@ -1,6 +1,6 @@
 --- !map:HashWithIndifferentAccess
 basepath: placeholder
-model: Ingestable
+model: TestFileDatastreams
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 metadata:
