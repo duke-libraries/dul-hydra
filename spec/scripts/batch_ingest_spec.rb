@@ -763,7 +763,6 @@ module DulHydra::Scripts
               event.event_outcome.should == PreservationEvent::SUCCESS
               event.linking_object_id_type.should == PreservationEvent::DATASTREAM
               event.linking_object_id_value.should == component.ds_internal_uri("content")
-              event.event_detail.should include("Internal validation of checksum")
               event.for_object.should == component
             end
           end
@@ -806,7 +805,6 @@ module DulHydra::Scripts
               event.event_outcome.should == PreservationEvent::FAILURE
               event.linking_object_id_type.should == PreservationEvent::DATASTREAM
               event.linking_object_id_value.should == component.ds_internal_uri("content")
-              event.event_detail.should include("Internal validation of checksum")
               event.for_object.should == component
             end            
           end
