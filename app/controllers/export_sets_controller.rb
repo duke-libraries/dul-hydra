@@ -22,7 +22,7 @@ class ExportSetsController < ApplicationController
     # hack to filter just Components
     # would be nice to filter DulHydra::Models::HasContent
     @document_list.keep_if { |doc| doc.get(:active_fedora_model_s) == 'Component' }
-    if @document_list.empty
+    if @document_list.empty?
       flash[:notice] = "You have no bookmarks for content-bearing objects."
     end
   end
