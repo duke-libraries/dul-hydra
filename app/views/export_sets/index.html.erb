@@ -1,0 +1,32 @@
+<h1>Export Sets</h1>
+
+<p>
+	<% if current_user.bookmarks.empty? %>
+	  Export sets are created from bookmarks.  Please add one or more content-bearing objects to your bookmarks.
+	<% else %>
+	  <%= link_to "New Export Set", new_export_set_path %>
+	<% end %>
+</p>
+
+<% if !@export_sets.empty? %>
+<table border="1" cellpadding="3" cellspacing="0">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Created</th>
+			<th>Archive</th>
+			<th>PIDs</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% @export_sets.each do |es| %>
+		<tr>
+			<td><%= link_to es.id, es %></td>
+			<td><%= es.created_at %></td>
+			<td><%= link_to es.archive_file_name, es.archive.url %></td>
+			<td><%= es.pids.join(', ') %></td>
+		</tr>
+		<% end %>
+	</tbody>
+<table>
+<% end %>

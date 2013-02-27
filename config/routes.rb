@@ -2,6 +2,10 @@ DulHydra::Application.routes.draw do
 
   root :to => "catalog#index"
 
+  scope "bookmarks" do
+    match "download_content" => "download#bookmarked_content"
+  end
+
   Blacklight.add_routes(self)
 
   devise_for :users
@@ -11,5 +15,7 @@ DulHydra::Application.routes.draw do
     resources :preservation_events, :only => :index
     resources :audit_trail, :only => :index
   end
+  
+  resources :export_sets, :except => [:edit, :update]
   
 end
