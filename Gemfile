@@ -17,6 +17,10 @@ gem 'therubyracer', '~> 0.11.3', :require => 'v8'
 # For mapping file extensions to MIME types
 gem 'mime-types', '~> 1.19'
 
+# Export sets
+gem 'rubyzip'
+gem 'paperclip', '~> 3.0'
+
 group :development, :test do
   gem 'rspec-rails'
   gem 'capybara', '~> 2.0'
