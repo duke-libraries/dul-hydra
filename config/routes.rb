@@ -16,4 +16,6 @@ DulHydra::Application.routes.draw do
     resources :audit_trail, :only => :index
   end
   
+  resources :export_sets, :except => [:edit, :update]
+  
 end
