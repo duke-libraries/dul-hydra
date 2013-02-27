@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121023173059) do
+ActiveRecord::Schema.define(:version => 20130227171200) do
 
   create_table "bookmarks", :force => true do |t|
     t.integer  "user_id",     :null => false
@@ -20,6 +20,17 @@ ActiveRecord::Schema.define(:version => 20121023173059) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
     t.string   "user_type"
+  end
+
+  create_table "export_sets", :force => true do |t|
+    t.integer  "user_id"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
+    t.string   "archive_file_name"
+    t.string   "archive_content_type"
+    t.integer  "archive_file_size"
+    t.datetime "archive_updated_at"
+    t.text     "pids"
   end
 
   create_table "searches", :force => true do |t|
