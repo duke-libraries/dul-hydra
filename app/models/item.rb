@@ -9,9 +9,13 @@ class Item < DulHydra::Models::Base
   belongs_to :collection, :property => :is_member_of, :class_name => 'Collection'
 
   alias_method :components, :parts
+  alias_method :component_ids, :part_ids
   alias_method :children, :parts
+  alias_method :child_ids, :part_ids
 
   alias_method :parent, :collection
+  alias_method :parent_id, :collection_id
+  
   alias_method :parent=, :collection=
     
 end

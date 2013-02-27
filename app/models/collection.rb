@@ -11,5 +11,6 @@ class Collection < DulHydra::Models::Base
   has_many :targets, :property => :is_external_target_for, :inbound => true, :class_name => 'Target'
 
   alias_method :children, :items
+  alias_method :child_ids, :item_ids
   
 end

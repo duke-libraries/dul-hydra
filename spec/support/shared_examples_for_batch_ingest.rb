@@ -156,3 +156,17 @@ shared_examples "a validated ingest with repository objects" do
     end
   end  
 end
+
+shared_examples "a validated ingest with content" do
+  let(:outcomes) { Hash[ "PASS" => PreservationEvent::SUCCESS, "FAIL" => PreservationEvent::FAILURE ] }
+  it "should have fixity check preservation events" do
+    object_type.find_each do |object|
+      fixity_check_events = object.fixity_checks
+      fixity_check_events.to_a.size.should eq(1)
+      fixity_check_event = fixity_check_events.first
+      DateTime.strptime(fixity_check_event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
+      DateTime.strptime(fixity_check_event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
+      fixity_check_event.event_outcome.should == outcomes[results[object.identifier.first]]      
+    end
+  end
+end

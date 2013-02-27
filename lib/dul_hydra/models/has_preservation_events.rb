@@ -31,6 +31,18 @@ module DulHydra::Models
                               ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
     end
 
+    def ingestions
+      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri,
+                              ActiveFedora::SolrService.solr_name(:event_type, :symbol) => PreservationEvent::INGESTION
+                              ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
+    end
+
+    def validations
+      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri,
+                              ActiveFedora::SolrService.solr_name(:event_type, :symbol) => PreservationEvent::VALIDATION
+                              ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
+    end
+
     def last_fixity_check_to_solr
       e = fixity_checks.to_a.last
       e ? {

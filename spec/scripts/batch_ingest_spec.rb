@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'fileutils'
 require "#{Rails.root}/spec/scripts/batch_ingest_spec_helper"
 require 'support/shared_examples_for_batch_ingest'
+require 'support/shared_examples_for_preservation_events'
 
 RSpec.configure do |c|
   c.include BatchIngestSpecHelper
@@ -208,15 +209,21 @@ module DulHydra::Scripts
       let(:log_file) { File.open("#{@ingestable_dir}/log/ingest_validation.log") { |f| f.read } }
       let(:manifest) { @manifest_file }
       let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) } }
+      after do
+        admin_policy.delete  
+      end
       context "any batch ingest" do
         let(:object_type) { TestModel }
         before do
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
           @objects = [
                       TestModel.create(:pid => "test:1", :identifier => "id001"),
                       TestModel.create(:pid => "test:2", :identifier => "id002"),
                       TestModel.create(:pid => "test:3", :identifier => "id004")
                       ]
-          @manifest_file = "#{@manifest_dir}/manifest.yml"
         end
         after do
           @objects.each do |object|
@@ -228,14 +235,10 @@ module DulHydra::Scripts
               next
             end
           end
-          admin_policy.delete
         end
         context "ingest is valid" do
           let(:results) { Hash[ "id001" => "PASS", "id002" => "PASS", "id004" => "PASS" ] }
           before do
-            FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
-            update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
-            FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
           end
           it_behaves_like "a validated ingest"
@@ -245,9 +248,6 @@ module DulHydra::Scripts
           context "unable to obtain pid from master file" do
             let(:results) { Hash[ "id001" => "FAIL", "id002" => "PASS", "id004" => "FAIL" ] }
             before do
-              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
-              update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
-              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
               master = File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) }
               object_node = master.xpath("/objects/object[identifier = 'id001']")
               object_node.remove
@@ -261,9 +261,6 @@ module DulHydra::Scripts
           context "object not in repository" do
             let(:results) { Hash[ "id001" => "PASS", "id002" => "FAIL", "id004" => "PASS" ] }
             before do
-              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
-              update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
-              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
               TestModel.find("test:2").delete
               DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
             end
@@ -279,9 +276,6 @@ module DulHydra::Scripts
               ]
             end
             before do
-              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
-              update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
-              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
               manifest = File.open(@manifest_file) { |f| YAML::load(f) }
               manifest[:metadata] = ["marcxml", "qdc"]
               File.open(@manifest_file, "w") { |f| YAML::dump(manifest, f)}
@@ -290,411 +284,196 @@ module DulHydra::Scripts
             it_behaves_like "a validated ingest"
             it_behaves_like "a validated ingest with repository objects"
           end
-          context "stored file does not match" do
-            let(:object_type) { TestFileDatastreams }
-            let(:results) { Hash[ "id005" => "FAIL" ] }
-            let(:details) { Hash[ "id005" => "contentdm datastream internal checksum...FAIL" ] }
+        end
+      end      
+      context "object has stored file" do
+        before do
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest_single.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_single_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+          @object = TestFileDatastreams.create(:pid => "test:5", :identifier => "id005")
+          file = File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml")
+          @object.contentdm.content_file = file
+          @object.save!
+          file.close          
+        end
+        after do
+          @object.preservation_events.each { |pe| pe.delete }
+          @object.reload
+          @object.delete
+        end
+        context "stored file does not match" do
+          let(:object_type) { TestFileDatastreams }
+          let(:results) { Hash[ "id005" => "FAIL" ] }
+          let(:details) { Hash[ "id005" => "contentdm datastream internal checksum...FAIL" ] }
+          before do
+            location_pattern = @object.contentdm.profile["dsLocation"]
+            location_pattern.gsub!(":","%3A")
+            location_pattern.gsub!("+","%2F")
+            locations = locate_datastream_content_file(location_pattern)
+            location = locations.first
+            FileUtils.cp("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xls", location)
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+          end
+          it_behaves_like "a validated ingest"
+          it_behaves_like "a validated ingest with repository objects"
+        end
+      end
+      context "object is child to parent object" do
+        let(:object_type) { TestChild }
+        before do
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/child_manifest.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/child_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+          @objects = [
+                      TestChild.create(:pid => "test:1", :identifier => "id001"),
+                      TestChild.create(:pid => "test:2", :identifier => "id002")
+                      ]
+          @parent1 = TestParent.create(:pid => "test:3", :identifier => "id0")
+          @parent2 = TestParent.create(:pid => "test:4", :identifier => "parent01")
+        end
+        after do
+          @parent1.delete
+          @parent2.delete
+          @objects.each do |object|
+            object.preservation_events.each { |pe| pe.delete }
+            object.reload
+            object.delete
+          end          
+        end
+        context "correct parent-child relationship exists" do
+          let(:results) { Hash[ "id001" => "PASS", "id002" => "PASS" ] }
+          before do
+            @objects[0].parent = @parent1
+            @objects[0].save!
+            @objects[1].parent = @parent2
+            @objects[1].save!
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+          end
+          it_behaves_like "a validated ingest"
+          it_behaves_like "a validated ingest with repository objects"            
+        end
+        context "correct parent-child relationship does not exist" do
+          let(:results) { Hash[ "id001" => "FAIL", "id002" => "FAIL" ] }
+          let(:details) do
+            Hash[
+                 "id001" => "child relationship to identifier id0...FAIL",
+                 "id002" => "child relationship to identifier parent01...FAIL"
+            ]
+          end
+          before do
+            @objects[0].parent = @parent2
+            @objects[0].save!            
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+          end
+          it_behaves_like "a validated ingest"
+          it_behaves_like "a validated ingest with repository objects"                      
+        end
+      end
+      context "object contains content" do
+        let(:object_type) { TestContent }
+        before do
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/checksum_manifest.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/checksum_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+          FileUtils.mkdir "#{@ingestable_dir}/checksum"
+          @object = TestContent.create(:pid => "test:1", :identifier => "id001")
+          file = File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/id001.tif")
+          @object.content.content_file = file
+          @object.save!
+          file.close
+        end
+        after do
+          @object.preservation_events.each { |pe| pe.delete }
+          @object.reload
+          @object.delete
+        end
+        context "any ingest with content" do
+          before do
+            FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/checksums.xml", "#{@ingestable_dir}/checksum/checksums.xml"            
+          end
+          context "internal checksum matches" do
+            let(:results) { Hash[ "id001" => "PASS" ] }
             before do
-              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest_single.yml", "#{@manifest_dir}/manifest.yml"
-              update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
-              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_single_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
-              @object = TestFileDatastreams.create(:pid => "test:5", :identifier => "id005")
-              file = File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml")
-              @object.contentdm.content_file = file
-              @object.save!
-              file.close
-              location_pattern = @object.contentdm.profile["dsLocation"]
+              DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)            
+            end
+            it_behaves_like "a validated ingest with content"            
+          end
+          context "internal checksum does not match" do
+            let(:results) { Hash[ "id001" => "FAIL" ] }
+            before do
+              location_pattern = @object.content.profile["dsLocation"]
               location_pattern.gsub!(":","%3A")
               location_pattern.gsub!("+","%2F")
               locations = locate_datastream_content_file(location_pattern)
               location = locations.first
-              FileUtils.cp("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xls", location)
-              DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
+              FileUtils.cp("#{FIXTURES_BATCH_INGEST}/miscellaneous/T001.tif", location)
+              DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)            
             end
-            after do
-              @object.preservation_events.each { |pe| pe.delete }
-              @object.reload
-              @object.delete
+            it_behaves_like "a validated ingest with content"                        
+          end
+        end
+        context "external checksum data exists" do
+          context "external checksum matches" do
+            let(:results) { Hash[ "id001" => "PASS" ] }
+            before do
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/checksums.xml", "#{@ingestable_dir}/checksum/checksums.xml"
+              DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)            
             end
             it_behaves_like "a validated ingest"
-            it_behaves_like "a validated ingest with repository objects"
+            it_behaves_like "a validated ingest with repository objects"            
           end
-        end
+          context "external checksum does not match" do
+            let(:results) { Hash[ "id001" => "FAIL" ] }
+            let(:details) { Hash[ "id001" => "content datastream external checksum...FAIL" ] }
+            before do
+              FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/incorrect_checksums.xml", "#{@ingestable_dir}/checksum/checksums.xml"
+              DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)            
+            end
+            it_behaves_like "a validated ingest"
+            it_behaves_like "a validated ingest with repository objects"            
+          end
+        end        
       end
       
       
       
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      context "object is child to parent object" do
+      context "target has associated collection" do
+        let(:object_type) { Target }
         before do
-          @adminPolicy = AdminPolicy.new(pid: 'duke-apo:adminPolicy', label: 'Public Read')
-          @adminPolicy.default_permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS,
-                                              DulHydra::Permissions::READER_GROUP_ACCESS,
-                                              DulHydra::Permissions::EDITOR_GROUP_ACCESS,
-                                              DulHydra::Permissions::ADMIN_GROUP_ACCESS]
-          @adminPolicy.permissions = AdminPolicy::APO_PERMISSIONS
-          @adminPolicy.save!
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/target_manifest.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/target_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+          @target = Target.create(:pid => "test:1", :identifier => "id001")
+          @collection = Collection.create(:pid => "test:2", :identifier => "collection_1")
         end
         after do
-          @adminPolicy.delete
+          @collection.delete
+          @target.preservation_events.each { |pe| pe.delete }
+          @target.reload
+          @target.delete          
         end
-        context "parent ID is explicitly specified in manifest" do
-          before do
-            FileUtils.mkdir_p "#{@ingest_base}/collection/master"
-            FileUtils.mkdir_p "#{@ingest_base}/collection/qdc"
-            collection_manifest_file = "#{@ingest_base}/manifests/collection_manifest.yml"
-            update_manifest(collection_manifest_file, {"basepath" => "#{@ingest_base}/collection/"})
-            DulHydra::Scripts::BatchIngest.prep_for_ingest(collection_manifest_file)
-            @pre_existing_collection_pids = []
-            Collection.find_each { |c| @pre_existing_collection_pids << c.pid }
-            DulHydra::Scripts::BatchIngest.ingest(collection_manifest_file)
-            FileUtils.mkdir_p "#{@ingest_base}/item/master"
-            FileUtils.mkdir_p "#{@ingest_base}/item/qdc"
-            @item_manifest_file = "#{@ingest_base}/manifests/item_manifest.yml"
-            update_manifest(@item_manifest_file, {"basepath" => "#{@ingest_base}/item/"})
-            DulHydra::Scripts::BatchIngest.prep_for_ingest(@item_manifest_file)
-            @pre_existing_item_pids = []
-            Item.find_each { |i| @pre_existing_item_pids << i.pid }
-            DulHydra::Scripts::BatchIngest.ingest(@item_manifest_file)
-          end
-          after do
-            Item.find_each do |i|
-              if !@pre_existing_item_pids.include?(i.pid)
-                i.preservation_events.each do |pe|
-                  pe.delete
-                end
-                i.reload
-                i.delete
-              end
-            end
-            Collection.find_each do |c|
-              if !@pre_existing_collection_pids.include?(c.pid)
-                c.preservation_events.each do |pe|
-                  pe.delete
-                end
-                c.reload
-                c.delete
-              end
-            end
-          end
-          context "correct parent-child relationship exists" do
-            it "should declare the ingest to be valid" do
-              DulHydra::Scripts::BatchIngest.validate_ingest(@item_manifest_file).should be_true
-            end
-          end
-          context "correct parent-child relationship does not exist" do
-            before do
-              Item.find_each do |i|
-                if !@pre_existing_item_pids.include?(i.pid)
-                  i.collection = nil
-                  i.save!
-                end
-              end
-            end
-            it "should declare the ingest to be invalid" do
-              DulHydra::Scripts::BatchIngest.validate_ingest(@item_manifest_file).should be_false
-            end
-            it "should create a failure validation preservation event in the repository" do
-              DulHydra::Scripts::BatchIngest.validate_ingest(@item_manifest_file)
-              items = []
-              Item.find_each do |i|
-                if !@pre_existing_item_pids.include?(i.pid)
-                  items << i
-                end
-              end
-              items.each do |item|
-                events = item.preservation_events
-                events.should_not be_empty
-                validation_events = []
-                events.each do |event|
-                  if event.event_type == PreservationEvent::VALIDATION
-                    validation_events << event
-                  end
-                end
-                validation_events.should_not be_empty
-                validation_events.size.should == 1
-                event = validation_events.first
-                DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
-                DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-                event.event_outcome.should == PreservationEvent::FAILURE
-                event.linking_object_id_value.should == item.internal_uri
-                case item.identifier
-                when [ "item_1" ]
-                  event.event_detail.should include("Identifier(s): item_1")
-                when [ "item_2", "item_3" ]
-                  event.event_detail.should include("Identifier(s): item_2,item_3")
-                  event.event_detail.should_not include("Identifier(s): item_1")
-                when [ "item_4" ]
-                  event.event_detail.should include("Identifier(s): item_4")
-                  event.event_detail.should_not include("Identifier(s): item_1")
-                  event.event_detail.should_not include("Identifier(s): item_2,item_3")
-                end
-                event.event_detail.should include("child relationship to identifier collection_1...FAIL")
-                event.event_detail.should include ("DOES NOT VALIDATE")
-                event.for_object.should == item
-              end
-            end
-          end
-        end
-        context "parent ID can be determined algorithmically from child ID" do
-          before do
-            @item = Item.new(:pid => "test:item1")
-            @item.identifier = "CCITT"
-            @item.save!
-            FileUtils.mkdir_p "#{@ingest_base}/component/master"
-            FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
-            @component_manifest_file = "#{@ingest_base}/manifests/component_manifest.yml"
-            update_manifest(@component_manifest_file, {"basepath" => "#{@ingest_base}/component/"})
-            update_manifest(@component_manifest_file, {"autoparentidlength" => 5})
-            DulHydra::Scripts::BatchIngest.prep_for_ingest(@component_manifest_file)
-            @pre_existing_component_pids = []
-            Component.find_each { |c| @pre_existing_component_pids << c.pid }
-            DulHydra::Scripts::BatchIngest.ingest(@component_manifest_file)
-          end
-          after do
-            Component.find_each do |c|
-              if !@pre_existing_component_pids.include?(c.pid)
-                c.preservation_events.each do |pe|
-                  pe.delete
-                end
-                c.reload
-                c.delete
-              end
-            end
-            @item.delete
-          end
-          context "correct parent-child relationship exists" do
-            it "should declare the ingest to be valid" do
-              DulHydra::Scripts::BatchIngest.validate_ingest(@component_manifest_file).should be_true
-            end
-          end
-          context "correct parent-child relationship does not exist" do
-            before do
-              Component.find_each do |c|
-                if !@pre_existing_component_pids.include?(c.pid)
-                  c.container = nil
-                  c.save!
-                end
-              end
-            end
-            it "should declare the ingest to be invalid" do
-              DulHydra::Scripts::BatchIngest.validate_ingest(@component_manifest_file).should be_false
-            end
-            it "should create a failure validation preservation event in the repository" do
-              DulHydra::Scripts::BatchIngest.validate_ingest(@component_manifest_file)
-              components = []
-              Component.find_each do |c|
-                if !@pre_existing_component_pids.include?(c.pid)
-                  components << c
-                end
-              end
-              components.each do |component|
-                events = component.preservation_events
-                events.should_not be_empty
-                validation_events = []
-                events.each do |event|
-                  if event.event_type == PreservationEvent::VALIDATION
-                    validation_events << event
-                  end
-                end
-                validation_events.should_not be_empty
-                validation_events.size.should == 1
-                event = validation_events.first
-                DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
-                DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-                event.event_outcome.should == PreservationEvent::FAILURE
-                event.linking_object_id_value.should == component.internal_uri
-                event.event_detail.should include ("child relationship to identifier CCITT...FAIL")
-                event.event_detail.should include ("DOES NOT VALIDATE")
-                event.for_object.should == component
-              end
-            end
-          end
-        end
-      end
-      context "target has associated collection" do
         context "correct target-collection relationship exists" do
-          it "should declare the ingest to be valid"
+          let(:results) { Hash[ "id001" => "PASS" ] }
+          before do
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)            
+          end
+          it_behaves_like "a validated ingest"
+          it_behaves_like "a validated ingest with repository objects"
         end
         context "correct target-collection relationship does not exist" do
-          it "should declare the ingest to be invalid"
-          it "should create a failure validation preservation event in the repository"
-        end
-      end
-      context "external checksum data exists" do
-        before do
-          FileUtils.mkdir_p "#{@ingest_base}/component/master"
-          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
-          @manifest_file = "#{@ingest_base}/manifests/simple_component_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
-          DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          @pre_existing_component_pids = []
-          Component.find_each { |c| @pre_existing_component_pids << c.pid }
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-        end
-        after do
-          Component.find_each do |c|
-            if !@pre_existing_component_pids.include?(c.pid)
-              c.preservation_events.each do |pe|
-                pe.delete
-              end
-              c.reload
-              c.delete
-            end
-          end
-        end
-        context "checksum matches" do
-          it "should declare the ingest to be valid" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_true
-          end
-        end
-        context "checksum does not match" do
+          let(:results) { Hash[ "id001" => "FAIL" ] }
+          let(:details) { Hash[ "id001" => "target relationship to collection collection_1...FAIL" ] }
           before do
-            FileUtils.cp "spec/fixtures/batch_ingest/samples/incorrect_checksums_component_manifest.yml", "#{@ingest_base}/manifests"
-            FileUtils.cp "spec/fixtures/batch_ingest/samples/incorrect_checksums.xml", "#{@ingest_base}/component/checksum"
-            @manifest_file = "#{@ingest_base}/manifests/incorrect_checksums_component_manifest.yml"
-            update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
+            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)            
           end
-          it "should declare the ingest to be invalid" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file).should be_false
-          end
-          it "should create a failure validation preservation event in the repository" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
-            components = []
-            Component.find_each do |c|
-              if !@pre_existing_component_pids.include?(c.pid)
-                components << c
-              end
-            end
-            components.each do |component|
-              events = component.preservation_events
-              events.should_not be_empty
-              validation_events = []
-              events.each do |event|
-                if event.event_type == PreservationEvent::VALIDATION
-                  validation_events << event
-                end
-              end
-              validation_events.should_not be_empty
-              validation_events.size.should == 1
-              event = validation_events.first
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-              event.event_outcome.should == PreservationEvent::FAILURE
-              event.linking_object_id_value.should == component.internal_uri
-              event.event_detail.should include ("content datastream external checksum...FAIL")
-              event.event_detail.should include ("DOES NOT VALIDATE")
-              event.for_object.should == component
-            end
-          end
-        end
-      end
-      context "object contains content" do
-        before do
-          FileUtils.mkdir_p "#{@ingest_base}/component/master"
-          FileUtils.mkdir_p "#{@ingest_base}/component/qdc"
-          @manifest_file = "#{@ingest_base}/manifests/simple_component_manifest.yml"
-          update_manifest(@manifest_file, {"basepath" => "#{@ingest_base}/component/"})
-          DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          @pre_existing_component_pids = []
-          Component.find_each { |c| @pre_existing_component_pids << c.pid }
-          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
-        end
-        after do
-          Component.find_each do |c|
-            if !@pre_existing_component_pids.include?(c.pid)
-              c.preservation_events.each do |pe|
-                pe.delete
-              end
-              c.reload
-              c.delete
-            end
-          end
-        end
-        context "internal checksum validates for content datastream" do
-          it "should create a success fixity check event in the repository" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
-            components = []
-            Component.find_each do |c|
-              if !@pre_existing_component_pids.include?(c.pid)
-                components << c
-              end
-            end
-            components.each do |component|
-              events = component.preservation_events
-              events.should_not be_empty
-              fixity_check_events = []
-              events.each do |event|
-                if event.event_type == PreservationEvent::FIXITY_CHECK
-                  fixity_check_events << event
-                end
-              end
-              fixity_check_events.should_not be_empty
-              fixity_check_events.size.should == 1
-              event = fixity_check_events.first
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-              event.event_outcome.should == PreservationEvent::SUCCESS
-              event.linking_object_id_type.should == PreservationEvent::DATASTREAM
-              event.linking_object_id_value.should == component.ds_internal_uri("content")
-              event.for_object.should == component
-            end
-          end
-        end
-        context "internal checksum does not validate for content datastream" do
-          before do
-            Component.find_each do |c|
-              if !@pre_existing_component_pids.include?(c.pid)
-                location_pattern = c.content.profile["dsLocation"]
-                location_pattern.gsub!(":","%3A")
-                location_pattern.gsub!("+","%2F")
-                locations = locate_datastream_content_file(location_pattern)
-                location = locations.first
-                FileUtils.cp("spec/fixtures/library-devil.tiff", location)
-              end
-            end
-          end
-          it "should create a failure fixity check event in the repository" do
-            DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
-            components = []
-            Component.find_each do |c|
-              if !@pre_existing_component_pids.include?(c.pid)
-                components << c
-              end
-            end
-            components.each do |component|
-              events = component.preservation_events
-              events.should_not be_empty
-              fixity_check_events = []
-              events.each do |event|
-                if event.event_type == PreservationEvent::FIXITY_CHECK
-                  fixity_check_events << event
-                end
-              end
-              fixity_check_events.should_not be_empty
-              fixity_check_events.size.should == 1
-              event = fixity_check_events.first
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
-              DateTime.strptime(event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-              event.event_outcome.should == PreservationEvent::FAILURE
-              event.linking_object_id_type.should == PreservationEvent::DATASTREAM
-              event.linking_object_id_value.should == component.ds_internal_uri("content")
-              event.for_object.should == component
-            end
-          end
+          it_behaves_like "a validated ingest"
+          it_behaves_like "a validated ingest with repository objects"
         end
       end
     end

@@ -168,7 +168,7 @@ module DulHydra::Scripts
       log.info "=================="
     end
     def self.validate_ingest(ingest_manifest)
-   ingest_valid = true
+      ingest_valid = true
       manifest = load_yaml(ingest_manifest)
       basepath = manifest[:basepath]
       log = config_logger("validation", basepath)
@@ -278,12 +278,12 @@ module DulHydra::Scripts
             end
             if !parentid.blank?
               event_details << "#{VERIFYING}child relationship to identifier #{parentid}"
-              parent = get_parent(repository_object)
+              parent = repository_object.parent
               if parent.nil? || !parent.identifier.include?(parentid)
                 parent_child_correct = false
               end
               if parent_child_correct
-                child_ids = get_child_ids(parent)
+                child_ids = parent.child_ids
                 if child_ids.blank? || !child_ids.include?(repository_object.pid)
                   parent_child_correct = false
                 end
