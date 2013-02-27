@@ -1,0 +1,13 @@
+<ul class="bookmarkTools">
+<!--
+  <li class="email">
+    <%= link_to t('blacklight.tools.email'), email_catalog_path(:sort=>params[:sort], :per_page=>params[:per_page], :id => @bookmarks.collect {|doc| doc.document_id}), :class=>"lightboxLink btn", :id => "emailLink" %>
+  </li>
+-->
+  <li>
+    <%= link_to t('blacklight.bookmarks.clear.action_title'), clear_bookmarks_path, :method => :delete, :data => { :confirm => t('blacklight.bookmarks.clear.action_confirm') }, :class => 'btn' %>
+  </li>
+  <li>
+  	<%= link_to "Create Export Set", new_export_set_path, :class => 'btn' %>
+  </li>
+</ul>
