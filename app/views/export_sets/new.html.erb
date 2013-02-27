@@ -1,0 +1,13 @@
+<h1>New Export Set</h1>
+
+<%= form_for @export_set do |f| %>
+  <p>Select content-bearing objects from your bookmarks to export:</p>
+  <ul>
+  <% @document_list.each do |doc| %>
+ 	<li>
+ 		<%= check_box_tag 'export_set[pids][]', doc.id, true %> <%= doc.id %>
+ 	</li>
+  <% end %>
+  </ul>
+  <%= f.submit %>
+<% end %>
