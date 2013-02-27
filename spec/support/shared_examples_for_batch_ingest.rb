@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 shared_examples "an ingested batch" do
-  
+
   let(:expected_identifiers) { [ ["id001"], ["id002", "id003"], ["id004"] ] }
   let(:expected_label) { "Manifest Label" }
   let(:expected_desc_metadata_label) { "Descriptive Metadata for this object" }
-  
+
   it "should be in the repository with a descMetadata datastream" do
     found_identifiers = []
     object_type.find_each do |object|
@@ -17,7 +17,7 @@ shared_examples "an ingested batch" do
     end
     found_identifiers.sort.should eq(expected_identifiers.sort)
   end
-  
+
   it "should have the object PID's in the master file" do
     master.xpath("/objects/object").each do |object|
       identifier = object.xpath("identifier").first.content
@@ -27,7 +27,7 @@ shared_examples "an ingested batch" do
       repo_object.identifier.should include(identifier)
     end
   end
-  
+
   it "should have an ingestion preservation event for each object" do
     object_type.find_each do |object|
       events = object.preservation_events
@@ -47,7 +47,7 @@ shared_examples "an ingested batch" do
       ingestion_event.event_detail.should include("Identifier(s): #{object.identifier.flatten.join(',')}")
     end
   end
-  
+
   it "should have a ingestion log file" do
     log_file.should match("DulHydra version #{DulHydra::VERSION}")
     log_file.should match("Manifest: #{manifest}")
@@ -59,7 +59,7 @@ shared_examples "an ingested batch" do
 end
 
 shared_examples "an ingested batch with files" do
-  
+
   let(:expected_content_label) { "Content file for this object" }
   let(:expected_contentdm_label) { "CONTENTdm Data for this object" }
   let(:expected_digitization_guide_label) { "Digitization Guide Data for this object" }
@@ -68,7 +68,7 @@ shared_examples "an ingested batch with files" do
   let(:expected_jhove_label) { "JHOVE Data for this object" }
   let(:expected_marc_xml_label) { "Aleph MarcXML Data for this object" }
   let(:expected_tripod_mets_label) { "Tripod METS Data for this object" }
-  
+
   it "should have the appropriate datastreams" do
     object_type.find_each do |object|
       object.content.label.should eq(expected_content_label)
@@ -89,17 +89,17 @@ shared_examples "an ingested batch with files" do
       FileUtils.compare_stream(StringIO.new(object.tripodMets.content), StringIO.new(xml_file)).should be_true
     end
   end
-  
+
 end
 
 shared_examples "a child object" do
-  
+
   it "should have the correct parent object" do
     object_type.find_each do |object|
       object.parent.should eq(parents[object.identifier.first])
     end
   end
-  
+
 end
 
 shared_examples "a target object" do
@@ -154,7 +154,7 @@ shared_examples "a validated ingest with repository objects" do
         end
       end
     end
-  end  
+  end
 end
 
 shared_examples "a validated ingest with content" do
@@ -166,7 +166,7 @@ shared_examples "a validated ingest with content" do
       fixity_check_event = fixity_check_events.first
       DateTime.strptime(fixity_check_event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should < Time.now
       DateTime.strptime(fixity_check_event.event_date_time, PreservationEvent::DATE_TIME_FORMAT).should > 3.minutes.ago
-      fixity_check_event.event_outcome.should == outcomes[results[object.identifier.first]]      
+      fixity_check_event.event_outcome.should == outcomes[results[object.identifier.first]]
     end
   end
 end

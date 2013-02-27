@@ -197,6 +197,7 @@ module DulHydra::Scripts
         datastreams_populated = true
         checksum_matches = true
         parent_child_correct = true
+        target_collection_correct = true
         event_details << "Identifier(s): "
         case
         when object[:identifier].is_a?(String)
@@ -220,7 +221,7 @@ module DulHydra::Scripts
             raise "Missing model for #{key_identifier(object)}"
           end
           event_details << "#{VERIFYING}#{model} object found in repository"
-          begin 
+          begin
             repository_object = ActiveFedora::Base.find(pid, :cast => true)
             if repository_object.nil? || !repository_object.conforms_to?(model.constantize)
               object_exists = false
@@ -282,17 +283,23 @@ module DulHydra::Scripts
               if parent.nil? || !parent.identifier.include?(parentid)
                 parent_child_correct = false
               end
-              if parent_child_correct
-                child_ids = parent.child_ids
-                if child_ids.blank? || !child_ids.include?(repository_object.pid)
-                  parent_child_correct = false
-                end
-              end
               event_details << (parent_child_correct ? PASS : FAIL) << "\n"
+            end
+            if (model == "Target")
+              collectionid = object[:collectionid] || manifest[:collectionid]
+              if !collectionid.blank?
+                event_details << "#{VERIFYING}target relationship to collection #{collectionid}"
+                collection = repository_object.collection
+                if collection.nil? || !collection.identifier.include?(collectionid)
+                  target_collection_correct = false
+                end
+                event_details << (target_collection_correct ? PASS : FAIL) << "\n"
+              end
             end
           end
         end
-        object_valid = pid_in_master && object_exists && datastream_checksums_valid && datastreams_populated && checksum_matches && parent_child_correct
+        object_valid = pid_in_master && object_exists && datastream_checksums_valid && datastreams_populated \
+          && checksum_matches && parent_child_correct && target_collection_correct
         event_details << "Object ingest..." << (object_valid ? "VALIDATES" : "DOES NOT VALIDATE")
         if !object_valid
           ingest_valid = false

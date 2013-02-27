@@ -324,50 +324,6 @@ module DulHydra::Scripts::Helpers
       end
     end
 
-    #describe "#get_parent" do
-    #  before do
-    #    @item = Item.create!
-    #  end
-    #  after do
-    #    @item.delete
-    #  end
-    #  context "object is an item" do
-    #    before do
-    #      @collection = Collection.create!
-    #      @item.collection = @collection
-    #      @item.save!
-    #    end
-    #    after do
-    #      @collection.delete
-    #    end
-    #    it "should return the appropriate collection" do
-    #      MockBatchIngest.get_parent(@item).should eq(@collection)
-    #    end
-    #  end
-    #end
-    #
-    #describe "#get_child" do
-    #  before do
-    #    @item = Item.create!
-    #  end
-    #  after do
-    #    @item.delete
-    #  end
-    #  context "object is a collection" do
-    #    before do
-    #      @collection = Collection.create!
-    #      @item.collection = @collection
-    #      @item.save!
-    #    end
-    #    after do
-    #      @collection.delete
-    #    end
-    #    it "should return the appropriate item" do
-    #      MockBatchIngest.get_children(@collection).should include(@item)
-    #    end
-    #  end
-    #end
-    #
     describe "#set_parent" do
       before do
         @item = Item.new

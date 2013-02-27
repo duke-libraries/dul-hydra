@@ -71,7 +71,6 @@ module DulHydra::Scripts::Helpers
       def add_manifest_object_to_master(master, object, manifest_model)
         model = object[:model] || manifest_model
         object_node = Nokogiri::XML::Node.new :object.to_s, master
-#        object_node[:model] = "#{FEDORA_URI_PREFIX}#{ACTIVE_FEDORA_MODEL_PREFIX}#{model}"
         identifier_node = Nokogiri::XML::Node.new :identifier.to_s, master
         identifier_node.content = key_identifier(object)
         object_node.add_child(identifier_node)
@@ -271,39 +270,6 @@ module DulHydra::Scripts::Helpers
         end
       end
       
-      #def get_parent(repository_object)
-      #  parent = nil
-      #  case
-      #  when repository_object.class == Item
-      #    parent = repository_object.collection
-      #  when repository_object.class == Component
-      #    parent = repository_object.container
-      #  end
-      #  return parent
-      #end
-      
-      #def get_children(repository_object)
-      #  children = []
-      #  case
-      #  when repository_object.class == Collection
-      #    children = repository_object.items
-      #  when repository_object.class == Item
-      #    children = repository_object.parts
-      #  end
-      #  return children
-      #end
-      
-      #def get_child_ids(repository_object)
-      #  child_ids = []
-      #  case
-      #  when repository_object.class == Collection
-      #    child_ids = repository_object.item_ids
-      #  when repository_object.class == Item
-      #    child_ids = repository_object.part_ids
-      #  end
-      #  return child_ids
-      #end
-      #
       def set_parent(ingest_object, object_model, parent_identifier_type, parent_identifier)
         parent = case parent_identifier_type
         when :id
@@ -362,12 +328,6 @@ module DulHydra::Scripts::Helpers
           end
         end
         return parent_model.constantize
-        #case child_model
-        #when "Item"
-        #  Collection
-        #when "Component"
-        #  Item
-        #end
       end
       
       def write_preservation_event(ingest_object, event_type, event_outcome, details)
