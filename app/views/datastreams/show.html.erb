@@ -6,12 +6,5 @@
   <p>
     <%= link_to "Download Content", {:action => 'show', :object_id => @object, :id => @datastream.dsid, :download => 'true'} %>
   </p>
-  <dl class="dl-horizontal dl-invert">
-    <% @datastream.profile.each do |key, value| %>
-    <dt><%= key.sub(/^ds/, "") %>:</dt>
-    <dd>
-      <% if value.blank? %>&nbsp;<% else %><%= value %><% end %>
-    </dd>
-    <% end %>
-  </dl>
+  <%= render :partial => 'profile_table', :locals => {:datastream => @datastream} %>
 </div>

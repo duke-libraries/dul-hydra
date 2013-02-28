@@ -1,0 +1,6 @@
+<dl class="dl-horizontal dl-invert">
+	<% datastream.profile.each do |key, value| %>
+	<dt><%= key.sub(/^ds/, "") %>:</dt>
+	<dd><% if value.blank? %>&nbsp;<% else %><%= value %><% end %></dd>
+    <% end %>
+</dl>

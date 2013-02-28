@@ -1,0 +1,8 @@
+<table class="table">
+	<% datastream.profile.each do |key, value| %>
+	<tr>
+		<th scope="row"><%= key.sub(/^ds/, "") %>:</th>
+		<td><% if value.blank? %>&nbsp;<% else %><%= value %><% end %></td>
+	</tr>
+    <% end %>
+</table>
