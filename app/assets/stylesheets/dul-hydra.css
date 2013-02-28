@@ -1,6 +1,6 @@
-/*
-body, * {
-    background-image: none;
-    background-color: white;
+.navbar .brand {
+	background-image: url(/assets/dul_hydra/logo_wide.png);
+	min-height: 42px;
+	min-width: 200px;
+	padding-bottom: 0;
 }
-*/
