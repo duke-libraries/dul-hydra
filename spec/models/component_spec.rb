@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'support/shared_examples_for_dul_hydra_objects'
 require 'support/shared_examples_for_has_content'
+require 'support/shared_examples_for_has_thumbnail'
 
 shared_examples "a Component related to an Item" do
   it "should be the first part of the item" do
@@ -26,6 +27,7 @@ describe Component do
 
   it_behaves_like "a DulHydra object"
   it_behaves_like "an object that has content"
+  it_behaves_like "an object that has a thumbnail"
 
   context "relationships" do
     let!(:component) { FactoryGirl.create(:component) }

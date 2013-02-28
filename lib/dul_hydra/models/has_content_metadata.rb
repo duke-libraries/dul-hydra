@@ -3,7 +3,7 @@ module DulHydra::Models
     extend ActiveSupport::Concern
 
     included do
-      has_file_datastream :name => "contentMetadata", :type => DulHydra::Datastreams::FileContentDatastream
+      has_file_datastream :name => DulHydra::Datastreams::CONTENT_METADATA, :type => DulHydra::Datastreams::FileContentDatastream
     end
       
   end

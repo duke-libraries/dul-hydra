@@ -4,7 +4,7 @@ module DulHydra::Models
 
     included do
       # add rightsMetadata datastream with Hydra XML terminology
-      has_metadata :name => "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
+      has_metadata :name => DulHydra::Datastreams::RIGHTS_METADATA, :type => Hydra::Datastream::RightsMetadata
     end
 
     # adds methods for managing Hydra rightsMetadata content

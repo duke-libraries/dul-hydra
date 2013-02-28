@@ -3,7 +3,7 @@ module DulHydra::Models
     extend ActiveSupport::Concern
 
     included do
-      has_file_datastream :name => "jhove", :type => DulHydra::Datastreams::FileContentDatastream
+      has_file_datastream :name => DulHydra::Datastreams::JHOVE, :type => DulHydra::Datastreams::FileContentDatastream
     end
       
   end

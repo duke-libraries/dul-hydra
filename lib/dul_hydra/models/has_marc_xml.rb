@@ -3,7 +3,7 @@ module DulHydra::Models
     extend ActiveSupport::Concern
 
     included do
-      has_file_datastream :name => "marcXML", :type => DulHydra::Datastreams::FileContentDatastream
+      has_file_datastream :name => DulHydra::Datastreams::MARCXML, :type => DulHydra::Datastreams::FileContentDatastream
     end
       
   end
