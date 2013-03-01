@@ -21,6 +21,9 @@ gem 'mime-types', '~> 1.19'
 gem 'rubyzip'
 gem 'paperclip', '~> 3.0'
 
+# Image manipulation
+gem 'rmagick'
+
 group :development, :test do
   gem 'rspec-rails'
   gem 'capybara', '~> 2.0'

@@ -202,6 +202,7 @@ GEM
     ref (1.0.2)
     rest-client (1.6.7)
       mime-types (>= 1.16)
+    rmagick (2.13.2)
     rsolr (1.0.8)
       builder (>= 2.1.2)
     rspec-core (2.12.1)
@@ -289,6 +290,7 @@ DEPENDENCIES
   mime-types (~> 1.19)
   paperclip (~> 3.0)
   rails (~> 3.2.11)
+  rmagick
   rspec-rails
   rubyzip
   sass-rails (~> 3.2.3)
