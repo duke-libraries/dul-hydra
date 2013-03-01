@@ -19,9 +19,6 @@
 # Except for this one
 !/config/predicate_mappings.yml
 
-# Ignore jetty
-/jetty
-
 # Pre-compiled assets
 /public/assets
 
@@ -29,7 +26,3 @@
 /public/system
 
 .sass-cache
-
-# Eclipse
-.buildpath
-.project
