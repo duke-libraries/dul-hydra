@@ -28,18 +28,18 @@ shared_examples "an object that has a thumbnail" do
       let(:expected_thumbnail) { Magick::Image.read(thumbnail_file_path).first }
       context "using defaults" do
         it "should generate a thumbnail image" do
-          Magick::Image.from_blob(thumbnail.to_blob).first.should == expected_thumbnail
+          Magick::Image.from_blob(thumbnail.to_blob).first.should eq(expected_thumbnail)
         end
       end
     end
     context "#generate_thumbnail!" do
-      let(:expected_thumbnail) { Magick::Image.read(thumbnail_file_path).first }
+      let(:expected_thumbnail) { File.open(thumbnail_file_path, 'rb') { |f| f.read } }
       before do
         object.generate_thumbnail!
       end
       context "using defaults" do
         it "should generate a thumbnail image" do
-          Magick::Image.from_blob(object.thumbnail.content).first.should == expected_thumbnail
+          object.thumbnail.content.should eq(expected_thumbnail)
         end
       end
     end

@@ -8,7 +8,7 @@ module DulHydra::Models
     DEFAULT_SIZE = 100
     DEFAULT_PRESERVE_ASPECT_RATIO = true
     DEFAULT_SOURCE_DATASTREAM = DulHydra::Datastreams::CONTENT
-    DEFAULT_THUMBNAIL_FORMAT = "jpg"
+    DEFAULT_THUMBNAIL_FORMAT = "jpeg"
     
     included do
       has_file_datastream :name => DulHydra::Datastreams::THUMBNAIL, :type => DulHydra::Datastreams::FileContentDatastream
