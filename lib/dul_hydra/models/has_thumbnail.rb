@@ -22,16 +22,19 @@ module DulHydra::Models
                            source_datastream=DEFAULT_SOURCE_DATASTREAM
                           )
       rows ||= cols
-      source_image = Magick::Image.from_blob(self.datastreams[source_datastream].content).first
-      thumbnail = case preserve_aspect_ratio
-      when true
-        source_image.change_geometry(Magick::Geometry.new(cols, rows)) do |cols, rows, img|
-          img.resize(cols,rows)
+      thumbnail = nil
+      if self.datastreams[source_datastream].mimeType.start_with?("image")
+        source_image = Magick::Image.from_blob(self.datastreams[source_datastream].content).first
+        thumbnail = case preserve_aspect_ratio
+        when true
+          source_image.change_geometry(Magick::Geometry.new(cols, rows)) do |cols, rows, img|
+            img.resize(cols,rows)
+          end
+        when false
+          source_image.resize(cols, rows)
         end
-      when false
-        source_image.resize(cols, rows)
-      end
-      thumbnail.format = thumbnail_format
+        thumbnail.format = thumbnail_format
+        end
       return thumbnail
     end
     
@@ -43,14 +46,16 @@ module DulHydra::Models
                             source_datastream=DEFAULT_SOURCE_DATASTREAM
                             )
       thumbnail = self.generate_thumbnail(cols, rows, preserve_aspect_ratio, thumbnail_format, source_datastream)
-      tmp_dir = Dir.mktmpdir("dul_hydra_thumbnail")
-      tmp_file = "#{tmp_dir}/thumbnail.#{DEFAULT_THUMBNAIL_FORMAT}"
-      thumbnail.write(tmp_file)
-      file = File.open(tmp_file)
-      self.thumbnail.content_file = file
-      self.save
-      file.close
-      FileUtils.remove_dir(tmp_dir)
+      if !thumbnail.nil?
+        tmp_dir = Dir.mktmpdir("dul_hydra_thumbnail")
+        tmp_file = "#{tmp_dir}/thumbnail.#{DEFAULT_THUMBNAIL_FORMAT}"
+        thumbnail.write(tmp_file)
+        file = File.open(tmp_file)
+        self.thumbnail.content_file = file
+        self.save
+        file.close
+        FileUtils.remove_dir(tmp_dir)
+      end
     end
   end
   

@@ -17,7 +17,6 @@ shared_examples "an object that has a thumbnail" do
     end
   end
   context "generate thumbnail" do
-    let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
     let(:thumbnail_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil-thumbnail.jpg') }
     before do
       object.content.content_file = File.new(master_file_path, "rb")
@@ -25,10 +24,19 @@ shared_examples "an object that has a thumbnail" do
     end
     context "#generate_thumbnail" do
       let(:thumbnail) { object.generate_thumbnail }
-      let(:expected_thumbnail) { Magick::Image.read(thumbnail_file_path).first }
-      context "using defaults" do
-        it "should generate a thumbnail image" do
-          Magick::Image.from_blob(thumbnail.to_blob).first.should eq(expected_thumbnail)
+      context "source datastream is an image" do
+        let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
+        context "using defaults" do
+          let(:expected_thumbnail) { Magick::Image.read(thumbnail_file_path).first }
+          it "should generate a thumbnail image" do
+            Magick::Image.from_blob(thumbnail.to_blob).first.should eq(expected_thumbnail)
+          end
+        end
+      end
+      context "source datastream is not an image" do
+        let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'sample.pdf') }
+        it "should not generate a thumbnail image" do
+          thumbnail.should be_nil
         end
       end
     end
@@ -37,9 +45,18 @@ shared_examples "an object that has a thumbnail" do
       before do
         object.generate_thumbnail!
       end
-      context "using defaults" do
-        it "should generate a thumbnail image" do
-          object.thumbnail.content.should eq(expected_thumbnail)
+      context "source datastream is an image" do
+        let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
+        context "using defaults" do
+          it "should generate a thumbnail image" do
+            object.thumbnail.content.should eq(expected_thumbnail)
+          end
+        end
+      end
+      context "source datastream is not an image" do
+        let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'sample.pdf') }
+        it "should not generate a thumbnail image" do
+          object.thumbnail.content.should be_nil
         end
       end
     end
