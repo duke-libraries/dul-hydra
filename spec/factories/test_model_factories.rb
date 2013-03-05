@@ -5,6 +5,10 @@ class TestContent < TestModel
   include DulHydra::Models::HasContent
 end
 
+class TestContentThumbnail < TestContent
+  include DulHydra::Models::HasThumbnail
+end
+
 class TestParent < TestModel
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true 
 end
@@ -13,7 +17,7 @@ class TestChild < TestModel
   belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
 end
 
-class TestFileDatastreams < TestContent
+class TestFileDatastreams < TestContentThumbnail
   include DulHydra::Models::HasContentdm
   include DulHydra::Models::HasDigitizationGuide
   include DulHydra::Models::HasDPCMetadata

@@ -1,0 +1,12 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: TestContentThumbnail
+label: Manifest Label
+metadata:
+    - qdc
+content:
+    extension: .tif
+    location: /tmp/
+objects:
+    - identifier: id001
+

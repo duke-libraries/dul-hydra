@@ -93,6 +93,14 @@ module DulHydra::Scripts
     end
   end
   
+  shared_examples "an ingested batch with image content" do
+    it "should have a thumbnail" do
+      object_type.find_each do |object|
+        object.thumbnail.content.should eq(expected_thumbnail)
+      end
+    end
+  end
+  
   shared_examples "a child object" do
     it "should have the correct parent object" do
       object_type.find_each do |object|
@@ -303,6 +311,20 @@ module DulHydra::Scripts
           DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
         it_behaves_like "an ingested batch with files"
+      end
+      context "image content to be ingested" do
+        let(:object_type) { TestContentThumbnail }
+        let(:expected_thumbnail) { File.open("spec/fixtures/batch_ingest/miscellaneous/id001-thumbnail.jpg", 'rb') { |f| f.read } }
+        before do
+          FileUtils.mkdir "#{@ingestable_dir}/content"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/id001.tif", "#{@ingestable_dir}/content"
+          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/content_manifest.yml", "#{@manifest_dir}/manifest.yml"
+          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          update_manifest(@manifest_file, {"content" => { "extension" => ".tif", "location" => "#{@ingestable_dir}/content/" } })
+          DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
+        end
+        it_behaves_like "an ingested batch with image content"
       end
       context "child object" do
         let(:object_type) { TestChild }

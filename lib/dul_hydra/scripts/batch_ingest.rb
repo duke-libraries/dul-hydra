@@ -102,6 +102,7 @@ module DulHydra::Scripts
         if !content_spec.blank?
           filename = "#{content_spec[:location]}#{key_identifier(object)}#{content_spec[:extension]}"
           ingest_object = add_content_file(ingest_object, filename)
+          ingest_object.generate_thumbnail!
           event_details << "Content file: #{filename}\n"
         end
         parentid = object[:parentid] || manifest[:parentid]

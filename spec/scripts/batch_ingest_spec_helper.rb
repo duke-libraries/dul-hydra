@@ -27,12 +27,7 @@ module BatchIngestSpecHelper
   def update_manifest(manifest_filepath, attributes_hash)
     manifest = File.open(manifest_filepath) { |f| YAML::load(f) }
     attributes_hash.each do |key, value|
-      case
-      when manifest[key].blank?
-        manifest[key] = value
-      when manifest[key].kind_of?(String)
-        manifest[key] = value
-      end
+      manifest[key] = value
     end
     File.open(manifest_filepath, "w") { |f| YAML::dump(manifest, f)}            
   end
