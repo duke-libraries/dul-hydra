@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'RMagick'
+#require 'RMagick'
 
 shared_examples "an object that has a thumbnail" do
   let!(:object) { described_class.create! }
@@ -27,9 +27,11 @@ shared_examples "an object that has a thumbnail" do
       context "source datastream is an image" do
         let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
         context "using defaults" do
-          let(:expected_thumbnail) { Magick::Image.read(thumbnail_file_path).first }
+          let(:expected_thumbnail) { MiniMagick::Image.open(thumbnail_file_path) }
           it "should generate a thumbnail image" do
-            Magick::Image.from_blob(thumbnail.to_blob).first.should eq(expected_thumbnail)
+            thumbnail[:size].should eq(expected_thumbnail[:size])
+            thumbnail[:format].should eq(expected_thumbnail[:format])
+#            Magick::Image.from_blob(thumbnail.to_blob).first.should eq(expected_thumbnail)
           end
         end
       end

@@ -22,7 +22,8 @@ gem 'rubyzip'
 gem 'paperclip', '~> 3.0'
 
 # Image manipulation
-gem 'rmagick'
+#gem 'rmagick'
+gem 'mini_magick'
 
 group :development, :test do
   gem 'rspec-rails'
