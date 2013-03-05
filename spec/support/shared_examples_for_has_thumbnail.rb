@@ -29,9 +29,10 @@ shared_examples "an object that has a thumbnail" do
         context "using defaults" do
           let(:expected_thumbnail) { MiniMagick::Image.open(thumbnail_file_path) }
           it "should generate a thumbnail image" do
-            thumbnail[:size].should eq(expected_thumbnail[:size])
             thumbnail[:format].should eq(expected_thumbnail[:format])
-#            Magick::Image.from_blob(thumbnail.to_blob).first.should eq(expected_thumbnail)
+            thumbnail[:size].should eq(expected_thumbnail[:size])
+            thumbnail[:width].should eq(expected_thumbnail[:width])
+            thumbnail[:height].should eq(expected_thumbnail[:height])
           end
         end
       end
