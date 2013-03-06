@@ -1,5 +1,4 @@
 require 'fileutils'
-require 'RMagick'
 
 module DulHydra::Models
   module HasThumbnail
@@ -8,7 +7,7 @@ module DulHydra::Models
     DEFAULT_SIZE = 100
     DEFAULT_PRESERVE_ASPECT_RATIO = true
     DEFAULT_SOURCE_DATASTREAM = DulHydra::Datastreams::CONTENT
-    DEFAULT_THUMBNAIL_FORMAT = "jpeg"
+    DEFAULT_THUMBNAIL_FORMAT = "PNG"
     
     included do
       has_file_datastream :name => DulHydra::Datastreams::THUMBNAIL, :type => DulHydra::Datastreams::FileContentDatastream
@@ -24,17 +23,13 @@ module DulHydra::Models
       rows ||= cols
       thumbnail = nil
       if self.datastreams[source_datastream].mimeType.start_with?("image")
-        source_image = Magick::Image.from_blob(self.datastreams[source_datastream].content).first
-        thumbnail = case preserve_aspect_ratio
-        when true
-          source_image.change_geometry(Magick::Geometry.new(cols, rows)) do |cols, rows, img|
-            img.resize(cols,rows)
-          end
-        when false
-          source_image.resize(cols, rows)
-        end
-        thumbnail.format = thumbnail_format
-        end
+        image = MiniMagick::Image.read(self.datastreams[source_datastream].content)
+        geometry = "#{cols}x#{rows}"
+        if !preserve_aspect_ratio then geometry << "!" end
+        image.thumbnail "#{geometry}"
+        image.format thumbnail_format
+        thumbnail = image
+      end
       return thumbnail
     end
     

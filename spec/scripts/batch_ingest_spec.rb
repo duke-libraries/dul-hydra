@@ -96,7 +96,8 @@ module DulHydra::Scripts
   shared_examples "an ingested batch with image content" do
     it "should have a thumbnail" do
       object_type.find_each do |object|
-        object.thumbnail.content.should eq(expected_thumbnail)
+        object.thumbnail.content.should_not be_nil
+        object.thumbnail.mimeType.should eq("image/png")
       end
     end
   end
@@ -314,7 +315,6 @@ module DulHydra::Scripts
       end
       context "image content to be ingested" do
         let(:object_type) { TestContentThumbnail }
-        let(:expected_thumbnail) { File.open("spec/fixtures/batch_ingest/miscellaneous/id001-thumbnail.jpg", 'rb') { |f| f.read } }
         before do
           FileUtils.mkdir "#{@ingestable_dir}/content"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/id001.tif", "#{@ingestable_dir}/content"
