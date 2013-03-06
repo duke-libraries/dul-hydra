@@ -1,3 +1,7 @@
+require 'log4r'
+require 'log4r/yamlconfigurator'
+require 'log4r/outputter/datefileoutputter'
+
 module DulHydra::Scripts
   module FixityCheck
     
@@ -8,6 +12,8 @@ module DulHydra::Scripts
     SORT = "last_fixity_check_on_dt asc"
 
     def execute(limit=DEFAULT_LIMIT, period=DEFAULT_PERIOD, dryrun=false)
+      logconfig = Log4r::YamlConfigurator
+      logconfig['HOME'] = 
       # log info - Starting fixity check run ...
       if dryrun
         # log info 
