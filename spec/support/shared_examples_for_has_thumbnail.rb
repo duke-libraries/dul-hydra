@@ -1,11 +1,10 @@
 require 'spec_helper'
-#require 'RMagick'
 
 shared_examples "an object that has a thumbnail" do
   let!(:object) { described_class.create! }
   after { object.delete }
   context "thumbnail datastream" do
-    let(:file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil-thumbnail.jpg') }
+    let(:file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
     before do
       object.thumbnail.content_file = File.new(file_path, "rb")
       object.save!
@@ -17,7 +16,6 @@ shared_examples "an object that has a thumbnail" do
     end
   end
   context "generate thumbnail" do
-    let(:thumbnail_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil-thumbnail.jpg') }
     before do
       object.content.content_file = File.new(master_file_path, "rb")
       object.save!
@@ -27,12 +25,10 @@ shared_examples "an object that has a thumbnail" do
       context "source datastream is an image" do
         let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
         context "using defaults" do
-          let(:expected_thumbnail) { MiniMagick::Image.open(thumbnail_file_path) }
           it "should generate a thumbnail image" do
-            thumbnail[:format].should eq(expected_thumbnail[:format])
-            thumbnail[:size].should eq(expected_thumbnail[:size])
-            thumbnail[:width].should eq(expected_thumbnail[:width])
-            thumbnail[:height].should eq(expected_thumbnail[:height])
+            thumbnail[:format].should eq("PNG")
+            thumbnail[:width].should eq(79)
+            thumbnail[:height].should eq(100)
           end
         end
       end
@@ -52,7 +48,8 @@ shared_examples "an object that has a thumbnail" do
         let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
         context "using defaults" do
           it "should generate a thumbnail image" do
-            object.thumbnail.content.should eq(expected_thumbnail)
+            object.thumbnail.content.should_not be_nil
+            object.thumbnail.mimeType.should eq("image/png")
           end
         end
       end
