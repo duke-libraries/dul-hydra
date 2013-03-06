@@ -11,38 +11,53 @@ module DulHydra::Scripts
     QUERY = "last_fixity_check_on_dt:[* TO NOW-%s] AND (active_fedora_model_s:Component OR active_fedora_model_s:Target)"
     SORT = "last_fixity_check_on_dt asc"
 
-    def execute(limit=DEFAULT_LIMIT, period=DEFAULT_PERIOD, dryrun=false)
+    def self.execute(opts={})
+      # configure logging
       logconfig = Log4r::YamlConfigurator
-      logconfig['HOME'] = 
-      # log info - Starting fixity check run ...
+      logconfig['HOME'] = Rails.root.to_s
+      logconfig.load_yaml_file File.join(Rails.root, 'config', 'log4r_fixity_check.yml')
+      log = Log4r::Logger['fixity_check']
+      log.info "Starting fixity check routine ..."
+      
+      # options
+      limit = opts.fetch(:limit, DEFAULT_LIMIT).to_i
+      period = opts.fetch(:period, DEFAULT_PERIOD)
+      dryrun = opts.fetch(:dryrun, false)
+      
       if dryrun
-        # log info 
+        log.info "DRY RUN -- No changes will be made to the repository."
       end
       query = QUERY % period
-      # log info - querying index for objects: query (limit: limit)
+      log.info "Querying index: #{query} (limit: #{limit}) ..."
       result = ActiveFedora::SolrService.query(query, :rows => limit, :sort => SORT)
-      # log info - # objects found (result.size)
+      log.info "#{result.size} matching objects found."
       result.each do |r|
         doc = SolrDocument.new(r)
-        unless doc.datastreams.has_key? 'content'
-          # log warning - no content
+        unless doc.datastreams.has_key? DulHydra::Datastreams::CONTENT
+          log.warn "#{doc.id} does not have a \"#{DulHydra::Datastreams::CONTENT}\" datastream, so will be skipped."
           next
         end
         begin
-          # log info - retrieving object for fixity check
+          log.info "Retrieving #{doc.id} for fixity check ..."
           obj = ActiveFedora::Base.find(doc.id, :cast => true) # need :cast => true ?
+          log.debug "Performing fixity check ..."
           if dryrun
             event = obj.validate_content_checksum
           else
             event = obj.validate_content_checksum!
           end
-          # log_level = event.success? ? INFO : ERROR
-          # log outcome
+          msg = "Fixity check outcome: #{event.outcome}."
+          if event.success?
+            log.info msg
+          else
+            log.error msg
+          end
         rescue ActiveFedora::ObjectNotFoundError
-          # log not found error
+          log.error "Object #{doc.id} not found."
         end
       end
-      # log info - Fixity check run complete.
+      log.info "Fixity check routine complete."
+      return true
     end
 
   end
