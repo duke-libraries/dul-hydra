@@ -46,7 +46,7 @@ module DulHydra::Scripts
           else
             event = obj.validate_content_checksum!
           end
-          msg = "Fixity check outcome: #{event.outcome}."
+          msg = "Fixity check outcome: #{event.event_outcome}."
           if event.success?
             log.info msg
           else
