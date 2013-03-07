@@ -21,3 +21,7 @@
   	<%= link_to "Audit Trail", audit_trail_index_path(document.id) %>
   </li>
 </ul>
+
+<% if document.has_thumbnail? %>
+  <%= image_tag "#{datastream_path(document.id, 'thumbnail')}?download=1" %>
+<% end %>

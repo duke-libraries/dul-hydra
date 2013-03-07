@@ -10,6 +10,10 @@ module DulHydra::Models
     def datastreams
       object_profile["datastreams"]
     end
+    
+    def has_datastream?(dsID)
+      !(datastreams[dsID].nil? || datastreams[dsID].empty?)
+    end
 
     def admin_policy?
       !admin_policy_uri.blank?
@@ -39,6 +43,10 @@ module DulHydra::Models
 
     def active_fedora_model
       get(:active_fedora_model_s)
+    end
+    
+    def has_thumbnail?
+      has_datastream? DulHydra::Datastreams::THUMBNAIL
     end
 
   end
