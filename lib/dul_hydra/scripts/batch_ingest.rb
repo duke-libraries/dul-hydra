@@ -102,6 +102,15 @@ module DulHydra::Scripts
         if !content_spec.blank?
           filename = "#{content_spec[:location]}#{key_identifier(object)}#{content_spec[:extension]}"
           ingest_object = add_content_file(ingest_object, filename)
+          ingest_object.creator = content_spec[:creator]
+          ingest_object.source = case
+          when content_spec[:pathroot].blank?
+            filename.split("#{File::SEPARATOR}").last
+          else
+            pathindex = filename.index(content_spec[:pathroot])
+            filename.slice(pathindex, filename.length - pathindex)
+          end
+          ingest_object.save
           ingest_object.generate_thumbnail!
           event_details << "Content file: #{filename}\n"
         end

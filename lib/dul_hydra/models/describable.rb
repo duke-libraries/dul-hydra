@@ -4,7 +4,7 @@ module DulHydra::Models
    
     included do
       has_metadata :name => DulHydra::Datastreams::DESC_METADATA, :type => ActiveFedora::QualifiedDublinCoreDatastream
-      delegate_to DulHydra::Datastreams::DESC_METADATA, [:title, :identifier]
+      delegate_to DulHydra::Datastreams::DESC_METADATA, [:title, :identifier, :creator, :source]
     end
 
     def has_title?
