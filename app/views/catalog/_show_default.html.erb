@@ -1,3 +1,9 @@
+<% if document.has_thumbnail? %>
+  <div class="dulhydra-image dulhydra-thumbnail" style="float: right;">
+    <%= image_tag "#{datastream_path(document.id, 'thumbnail')}?download=1" %>
+  </div>
+<% end %>
+
 <%# default partial to display solr document fields in catalog show view -%>
 <dl class="dl-horizontal  dl-invert">
   <% document_show_fields.each do |solr_fname, field| -%>
@@ -18,10 +24,6 @@
     <%= link_to "Preservation Events", preservation_events_path(document.id) %>
   </li>
   <li>
-  	<%= link_to "Audit Trail", audit_trail_index_path(document.id) %>
+    <%= link_to "Audit Trail", audit_trail_index_path(document.id) %>
   </li>
 </ul>
-
-<% if document.has_thumbnail? %>
-  <%= image_tag "#{datastream_path(document.id, 'thumbnail')}?download=1" %>
-<% end %>

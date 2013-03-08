@@ -15,7 +15,7 @@ module DulHydra::Models
       !(datastreams[dsID].nil? || datastreams[dsID].empty?)
     end
 
-    def admin_policy?
+    def has_admin_policy?
       !admin_policy_uri.blank?
     end
 
@@ -28,7 +28,7 @@ module DulHydra::Models
       uri &&= ActiveFedora::Base.pids_from_uris(uri)
     end
 
-    def parent?
+    def has_parent?
       !parent_uri
     end
 

@@ -50,7 +50,9 @@ describe "catalog/show.html.erb" do
   end
   context "object has a thumbnail" do
     let(:object) { FactoryGirl.create(:test_content_thumbnail) }
-    it "should display the thumbnail"
+    it "should display the thumbnail" do
+      expect(subject).to have_css(".dulhydra-thumbnail")
+    end
   end
   context "object has admin policy" do
     let(:object) { FactoryGirl.create(:collection_public_read) }
