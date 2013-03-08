@@ -15,4 +15,14 @@ class DatastreamsController < ApplicationController
     end     
   end
 
+  def thumbnail
+    @object = ActiveFedora::Base.find(params[:object_id], :cast => true)
+    # skip authz
+    if @object.is_a?(DulHydra::Models::HasThumbnail) && @object.has_thumbnail?
+      send_data @object.thumbnail.content, :type => @object.thumbnail.mimeType
+    else
+      render :text => '404 Not Found', :status => 404
+    end
+  end
+
 end
