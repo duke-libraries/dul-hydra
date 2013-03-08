@@ -48,6 +48,12 @@ describe "catalog/show.html.erb" do
       expect(subject).to have_link("Preservation Events", :href => preservation_events_path(object))
     end
   end
+  context "object has a thumbnail" do
+    let(:object) { FactoryGirl.create(:test_content_thumbnail) }
+    it "should display the thumbnail" do
+      expect(subject).to have_css(".dulhydra-thumbnail")
+    end
+  end
   context "object has admin policy" do
     let(:object) { FactoryGirl.create(:collection_public_read) }
     let(:apo) { FactoryGirl.create(:public_read_policy) }
