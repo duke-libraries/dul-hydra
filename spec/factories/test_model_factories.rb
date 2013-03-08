@@ -62,9 +62,9 @@ FactoryGirl.define do
   
   factory :test_content do
     title "DulHydra Test Content Object"
-    sequence(:identifier) { |n| "testchild%05d" % n }
+    sequence(:identifier) { |n| "testcontent%05d" % n }
     permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
-    after(:build) { |c| c.content.content_file = File.new("#{Rails.root}/spec/fixtures/library-devil.tiff", "rb") }
+    after(:build) { |c| c.content.content_file = File.new(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb") }
       
     factory :test_content_with_fixity_check do
       after(:create) do |c| 
@@ -74,7 +74,17 @@ FactoryGirl.define do
         p.save!
       end 
     end
-  end    
+  end
+  
+  factory :test_content_thumbnail do
+    title "DulHydra Test Content Thumbnail Object"
+    sequence(:identifier) { |n| "testcontentthumbnail%05d" % n }
+    permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
+    after(:build) do |c|
+      c.content.content_file = File.new(File.join(Rails.root, "spec", "fixtures", "batch_ingest", "miscellaneous", "id001.tif"), "rb")
+      c.generate_thumbnail!
+    end
+  end
   
 end
   

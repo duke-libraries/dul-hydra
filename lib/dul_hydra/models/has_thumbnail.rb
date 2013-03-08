@@ -13,6 +13,10 @@ module DulHydra::Models
       has_file_datastream :name => DulHydra::Datastreams::THUMBNAIL, :type => DulHydra::Datastreams::FileContentDatastream
     end
 
+    def has_thumbnail?
+      !datastreams[DulHydra::Datastreams::THUMBNAIL].profile.empty?
+    end
+
     def generate_thumbnail(
                            cols=DEFAULT_SIZE,
                            rows=nil,
