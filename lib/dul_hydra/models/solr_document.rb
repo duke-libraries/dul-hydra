@@ -46,7 +46,11 @@ module DulHydra::Models
     end
     
     def has_thumbnail?
-      has_datastream? DulHydra::Datastreams::THUMBNAIL
+      has_datastream?(DulHydra::Datastreams::THUMBNAIL)
+    end
+
+    def has_content?
+      has_datastream?(DulHydra::Datastreams::CONTENT)
     end
 
   end

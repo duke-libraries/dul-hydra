@@ -1,8 +1,13 @@
 class User < ActiveRecord::Base
-# Connects this user object to Hydra behaviors. 
- include Hydra::User
-# Connects this user object to Blacklights Bookmarks and Folders. 
- include Blacklight::User
+
+  has_many :export_sets, :dependent => :destroy
+
+  # Connects this user object to Hydra behaviors. 
+  include Hydra::User
+
+  # Connects this user object to Blacklights Bookmarks and Folders. 
+  include Blacklight::User
+  
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
@@ -19,4 +24,5 @@ class User < ActiveRecord::Base
   def to_s
     email
   end
+
 end
