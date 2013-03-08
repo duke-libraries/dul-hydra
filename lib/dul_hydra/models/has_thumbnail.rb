@@ -22,8 +22,9 @@ module DulHydra::Models
                           )
       rows ||= cols
       thumbnail = nil
-      if self.datastreams[source_datastream].mimeType.start_with?("image")
-        image = MiniMagick::Image.read(self.datastreams[source_datastream].content)
+      mimetype = self.datastreams[source_datastream].mimeType
+      if mimetype.start_with?("image") || mimetype.end_with?("pdf")
+       image = MiniMagick::Image.read(self.datastreams[source_datastream].content)
         geometry = "#{cols}x#{rows}"
         if !preserve_aspect_ratio then geometry << "!" end
         image.thumbnail "#{geometry}"

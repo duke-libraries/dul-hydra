@@ -32,8 +32,18 @@ shared_examples "an object that has a thumbnail" do
           end
         end
       end
-      context "source datastream is not an image" do
+      context "source datastream is a pdf" do
         let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'sample.pdf') }
+        context "using defaults" do
+          it "should generate a thumbnail image" do
+            thumbnail[:format].should eq("PNG")
+            thumbnail[:width].should eq(77)
+            thumbnail[:height].should eq(100)
+          end
+        end
+      end
+      context "source datastream is not an image or a pdf" do
+        let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'sample.docx') }
         it "should not generate a thumbnail image" do
           thumbnail.should be_nil
         end
@@ -53,8 +63,17 @@ shared_examples "an object that has a thumbnail" do
           end
         end
       end
-      context "source datastream is not an image" do
+      context "source datastream is a pdf" do
         let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'sample.pdf') }
+        context "using defaults" do
+          it "should generate a thumbnail image" do
+            object.thumbnail.content.should_not be_nil
+            object.thumbnail.mimeType.should eq("image/png")
+          end
+        end
+      end
+      context "source datastream is not an image" do
+        let(:master_file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'sample.docx') }
         it "should not generate a thumbnail image" do
           object.thumbnail.content.should be_nil
         end
