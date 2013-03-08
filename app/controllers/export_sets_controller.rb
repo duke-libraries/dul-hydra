@@ -30,6 +30,7 @@ class ExportSetsController < ApplicationController
   def create
     @export_set = ExportSet.new(params[:export_set])
     @export_set.user = current_user
+    # XXX move archive generation to model?
     Dir.mktmpdir do |tmpdir|
       # create the zip archive
       zip_name = "export_set_#{Time.now.strftime('%Y%m%d%H%M%S')}.zip"
@@ -38,13 +39,18 @@ class ExportSetsController < ApplicationController
         @export_set.pids.each do |pid|
           # get Fedora object
           object = ActiveFedora::Base.find(pid, :cast => true)
+          # use guaranteed unique file name based on PID and dsID 
+          temp_file_name = object.content.default_file_name
+          temp_file_path = File.join(tmpdir, temp_file_name)
           # write content to file
-          file_name = object.content.default_file_name
-          file_path = File.join(tmpdir, file_name)
-          File.open(file_path, 'wb', :encoding => 'ascii-8bit') do |f|
+          File.open(temp_file_path, 'wb', :encoding => 'ascii-8bit') do |f|
             object.content.write_content(f)
           end
-          zip_file.add(file_name, file_path)
+          # use original source file name, if available; otherwise default name
+          file_name = object.source.first || temp_file_name
+          # discard leading slash, if present
+          file_name = file_name[1..-1] if file_name.start_with? '/'
+          zip_file.add(file_name, temp_file_path)
         end # document_list
       end # zip_file
       # update_attributes seems to be the way to get paperclip to work 
@@ -52,9 +58,6 @@ class ExportSetsController < ApplicationController
       @export_set.update_attributes({:archive => File.new(zip_path, "rb")})
     end # tmpdir is removed
     flash[:notice] = "Export Set created."
-    # stream the zip file to client
-    #send_file @export_set.archive.path, :filename => @export_set.archive_file_name, 
-    #      :type => @export_set.archive.content_type || 'application/zip'
     redirect_to :action => :show, :id => @export_set
   end
   
