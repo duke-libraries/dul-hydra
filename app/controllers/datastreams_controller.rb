@@ -1,17 +1,17 @@
-require 'mime/types'
+# require 'mime/types'
 
 class DatastreamsController < ApplicationController
   
-  INLINE_MEDIA_TYPES = ['text', 'image']
+  INLINE_MIME_TYPES = ['application/rdf+xml', 'application/xml', 'text/xml']
 
   def show
     @object = ActiveFedora::Base.find(params[:object_id], :cast => true)
     authorize! :read, @object
     @datastream = @object.datastreams[params[:id]]
+    @display_inline = INLINE_MIME_TYPES.include?(@datastream.mimeType)
     if params[:download]  
       mimetype = MIME::Types[@datastream.mimeType].first
-      disposition = INLINE_MEDIA_TYPES.include?(mimetype.media_type) ? 'inline' : 'attachment'
-      send_data @datastream.content, :disposition => disposition, :type => @datastream.mimeType, :filename => "#{@datastream.dsid}.#{mimetype.extensions.first}"    
+      send_data @datastream.content, :disposition => 'attachment', :type => @datastream.mimeType, :filename => "#{@datastream.dsid}.#{mimetype.extensions.first}"    
     end     
   end
 

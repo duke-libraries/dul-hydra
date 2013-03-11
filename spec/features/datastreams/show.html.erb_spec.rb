@@ -8,7 +8,7 @@ shared_examples "a datastream show page" do
     end
   end
   it "should have a link to download the datastream content" do
-    expect(subject).to have_link("Download Content", :href => "#{datastream_path(object, dsid)}?download=true")
+    expect(subject).to have_link("Download", :href => "#{datastream_path(object, dsid)}?download=true")
   end
 end
 
