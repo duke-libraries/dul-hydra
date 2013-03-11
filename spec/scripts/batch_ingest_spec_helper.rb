@@ -69,6 +69,9 @@ module BatchIngestSpecHelper
       expected.root.add_child(fileSec)
       structMap = Nokogiri::XML::Node.new "structMap", expected
       div0 = Nokogiri::XML::Node.new "div", expected
+      div0['ID'] = 'DIV01'
+      div0['TYPE'] = 'image'
+      div0['LABEL'] = 'Images'
       div11 = Nokogiri::XML::Node.new "div", expected
       div11['ORDER'] = '1'
       fptr11 = Nokogiri::XML::Node.new "fptr", expected

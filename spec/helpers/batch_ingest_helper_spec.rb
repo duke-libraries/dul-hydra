@@ -372,6 +372,7 @@ module DulHydra::Scripts::Helpers
         @component3.container = @item
         @component3.save!
         @expected = create_expected_content_metadata_document
+        @contentspec = { :sequencestart => 6, :sequencelength => 3 }
       end
       after do
         @component3.delete
@@ -381,7 +382,7 @@ module DulHydra::Scripts::Helpers
         @item.delete
       end
       it "should return the appropriate content metadata document" do
-        content_metadata = MockBatchIngest.create_content_metadata_document(@item, 6, 3)
+        content_metadata = MockBatchIngest.create_content_metadata_document(@item, @contentspec)
         content_metadata.should be_equivalent_to(@expected)
       end
     end

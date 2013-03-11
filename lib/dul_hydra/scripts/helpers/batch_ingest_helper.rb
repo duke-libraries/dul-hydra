@@ -14,6 +14,7 @@ module DulHydra::Scripts::Helpers
     LOG_CONFIG_FILEPATH = "#{Rails.root}/config/log4r_batch_ingest.yml"
     FEDORA_URI_PREFIX = "info:fedora/"
     ACTIVE_FEDORA_MODEL_PREFIX = "afmodel:"
+    GENERATE = "generate"
     PROVIDED = "provided"
     JHOVE_DATE_XPATH = "/xmlns:jhove/xmlns:date"
     JHOVE_SPLIT_XPATH = "/xmlns:jhove/xmlns:repInfo"
@@ -348,11 +349,13 @@ module DulHydra::Scripts::Helpers
         event.save
       end
       
-      def create_content_metadata_document(repository_object, sequencing_start, sequencing_length)
+      def create_content_metadata_document(repository_object, contentstructure)
+        sequence_start = contentstructure[:sequencestart]
+        sequence_length = contentstructure[:sequencelength]
         parts = repository_object.parts
         hash = Hash.new
         parts.each do |part|
-          hash[part.identifier.first.slice(sequencing_start, sequencing_length)] = part.pid
+          hash[part.identifier.first.slice(sequence_start, sequence_length)] = part.pid
         end
         sorted_keys = hash.keys.sort
         cm = Nokogiri::XML::Document.new
@@ -362,10 +365,13 @@ module DulHydra::Scripts::Helpers
         cm.root.add_namespace_definition('xlink', 'http://www.w3.org/1999/xlink')
         fileSec_node = Nokogiri::XML::Node.new "fileSec", cm
         fileGrp_node = Nokogiri::XML::Node.new "fileGrp", cm
-        fileGrp_node['ID'] = 'GRP01'
-        fileGrp_node['USE'] = 'Master Image'
+        fileGrp_node['ID'] = contentstructure[:filegrp_id] || 'GRP01'
+        fileGrp_node['USE'] = contentstructure[:filegrp_use] || 'Master Image'
         structMap_node = Nokogiri::XML::Node.new "structMap", cm
-        div0_node = Nokogiri::XML::Node.new "div", cm        
+        div0_node = Nokogiri::XML::Node.new "div", cm
+        div0_node['ID'] = contentstructure[:div0_id] || 'DIV01'
+        div0_node['TYPE'] = contentstructure[:div0_type] || "image"
+        div0_node['LABEL'] = contentstructure[:div0_label] || "Images"
         sorted_keys.each_with_index do |key, index|
           file_node = Nokogiri::XML::Node.new "file", cm
           file_node['ID'] = "FILE#{key}"

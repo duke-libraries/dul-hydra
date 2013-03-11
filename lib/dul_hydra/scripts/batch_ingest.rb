@@ -147,31 +147,20 @@ module DulHydra::Scripts
       log.info "DulHydra version #{DulHydra::VERSION}"
       log.info "Manifest: #{ingest_manifest}"
       object_count = 0
+      master = File.open(master_path(manifest[:master], manifest[:basepath])) { |f| Nokogiri::XML(f) }
       if !manifest[:contentstructure].blank?
-        case manifest[:contentstructure][:type]
-        when "generate"
-          sequence_start = manifest[:contentstructure][:sequencestart]
-          sequence_length = manifest[:contentstructure][:sequencelength]
-          manifest_items = manifest[:objects]
-          manifest_items.each do |manifest_item|
-            object_count += 1
-            identifier = key_identifier(manifest_item)
-            items = Item.find_by_identifier(identifier)
-            case items.size
-            when 1
-              item = items.first
-              content_metadata = create_content_metadata_document(item, sequence_start, sequence_length)
-              filename = "#{manifest[:basepath]}contentmetadata/#{identifier}.xml"
-              File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
-              item = add_metadata_content_file(item, manifest_item, "contentmetadata", manifest[:basepath])
-              item.save
-              log.info "Added contentmetadata datastream for #{identifier} to #{item.pid}"
-            when 0
-              raise "Item #{identifier} not found"
-            else
-              raise "Multiple items #{identifier} found"
-            end
+        manifest_items = manifest[:objects]
+        manifest_items.each do |manifest_item|
+          object_count += 1
+          item = Item.find(get_pid_from_master(master, key_identifier(manifest_item)))
+          if manifest[:contentstruture][:type].eql?(GENERATE)
+            content_metadata = create_content_metadata_document(item, manifest[:contentstructure])
+            filename = "#{manifest[:basepath]}contentmetadata/#{identifier}.xml"
+            File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
           end
+          item = add_metadata_content_file(item, manifest_item, "contentmetadata", manifest[:basepath])
+          item.save
+          log.info "Added contentmetadata datastream for #{identifier} to #{item.pid}"          
         end
       end
       log.info "Post-processed #{object_count} object(s)"
