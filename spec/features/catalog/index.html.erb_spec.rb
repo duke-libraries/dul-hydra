@@ -6,12 +6,13 @@ shared_examples "a catalog index view" do
     expect(subject).to have_content(object.class.to_s)
     expect(subject).to have_content(object.title_display)
     expect(subject).to have_content(object.identifier.first)
+    expect(subject).to have_css(".thumbnail")
   end
 end
 
 describe "catalog/index.html.erb" do
   subject { page }
-  let(:object) { FactoryGirl.create(:test_model) }
+  let(:object) { FactoryGirl.create(:test_content_thumbnail) }
   after { object.delete }
   context "search by title" do
     before do

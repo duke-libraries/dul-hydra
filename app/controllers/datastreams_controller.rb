@@ -17,7 +17,7 @@ class DatastreamsController < ApplicationController
     @datastream = @object.datastreams[params[:id]]
     mimetypes = MIME::Types[@datastream.mimeType]
     # XXX refactor - use utility method to get file name
-    send_data @datastream.content, :disposition => 'attachment', :type => @datastream.mimeType, :filename => "#{@datastream.pid.replace(':', '_')}_#{@datastream.dsid}.#{mimetypes.first.extensions.first}"        
+    send_data @datastream.content, :disposition => 'attachment', :type => @datastream.mimeType, :filename => "#{@datastream.pid.sub(/:/, '_')}_#{@datastream.dsid}.#{mimetypes.first.extensions.first}"        
   end
 
 end

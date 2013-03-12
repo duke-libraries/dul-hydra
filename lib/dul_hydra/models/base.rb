@@ -15,11 +15,7 @@ module DulHydra::Models
     end
 
     def title_display
-      title.first || no_title
-    end
-
-    def no_title
-      "<#{pid}>"
+      title.first || identifier.first || "[#{pid}]"
     end
 
   end
