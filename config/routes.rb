@@ -7,10 +7,9 @@ DulHydra::Application.routes.draw do
   devise_for :users
 
   scope "catalog/:object_id" do
-    get 'thumbnail' => 'datastreams#thumbnail'
+    get 'thumbnail' => 'thumbnail#show'
     resources :datastreams, :only => :show do
       member do
-        get 'image_content'
         get 'download'
       end
     end
