@@ -394,20 +394,20 @@ module DulHydra::Scripts
         update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
         FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
         @parent = TestContentMetadata.create!(:pid => 'test:1', :identifier => 'id001')
-        @component1 = TestChild.create!(:identifier => 'id00100020')
-        @component2 = TestChild.create!(:identifier => 'id00100030')
-        @component3 = TestChild.create!(:identifier => 'id00100010')
-        @component1.parent = @parent
-        @component2.parent = @parent
-        @component3.parent = @parent
-        @component1.save!
-        @component2.save!
-        @component3.save!
+        @child1 = TestChild.create!(:identifier => 'id00100030')
+        @child2 = TestChild.create!(:identifier => 'id00100010')
+        @child3 = TestChild.create!(:identifier => 'id00100020')
+        @child1.parent = @parent
+        @child2.parent = @parent
+        @child3.parent = @parent
+        @child1.save!
+        @child2.save!
+        @child3.save!
       end
       after do
-        @component1.delete
-        @component2.delete
-        @component3.delete
+        @child1.delete
+        @child2.delete
+        @child3.delete
         @parent.delete
       end
       context "content structural metadata" do
