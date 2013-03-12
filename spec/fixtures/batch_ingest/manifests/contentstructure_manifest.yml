@@ -1,0 +1,13 @@
+--- !map:HashWithIndifferentAccess
+basepath: placeholder
+model: TestModel
+adminpolicy: duke-apo:adminPolicy
+label: Manifest Label
+contentstructure:
+    type: generate
+    sequencestart: 6
+    sequencelength: 3
+metadata:
+    - qdc
+objects:
+    - identifier: id001

@@ -352,7 +352,7 @@ module DulHydra::Scripts::Helpers
       def create_content_metadata_document(repository_object, contentstructure)
         sequence_start = contentstructure[:sequencestart]
         sequence_length = contentstructure[:sequencelength]
-        parts = repository_object.parts
+        parts = repository_object.children
         hash = Hash.new
         parts.each do |part|
           hash[part.identifier.first.slice(sequence_start, sequence_length)] = part.pid

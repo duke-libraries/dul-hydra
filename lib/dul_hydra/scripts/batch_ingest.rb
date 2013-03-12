@@ -152,15 +152,16 @@ module DulHydra::Scripts
         manifest_items = manifest[:objects]
         manifest_items.each do |manifest_item|
           object_count += 1
-          item = Item.find(get_pid_from_master(master, key_identifier(manifest_item)))
-          if manifest[:contentstruture][:type].eql?(GENERATE)
-            content_metadata = create_content_metadata_document(item, manifest[:contentstructure])
+          identifier = key_identifier(manifest_item)
+          repository_object = ActiveFedora::Base.find(get_pid_from_master(master, identifier), :cast => true)
+          if manifest[:contentstructure][:type].eql?(GENERATE)
+            content_metadata = create_content_metadata_document(repository_object, manifest[:contentstructure])
             filename = "#{manifest[:basepath]}contentmetadata/#{identifier}.xml"
             File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
           end
-          item = add_metadata_content_file(item, manifest_item, "contentmetadata", manifest[:basepath])
-          item.save
-          log.info "Added contentmetadata datastream for #{identifier} to #{item.pid}"          
+          repository_object = add_metadata_content_file(repository_object, manifest_item, "contentmetadata", manifest[:basepath])
+          repository_object.save
+          log.info "Added contentmetadata datastream for #{identifier} to #{repository_object.pid}"          
         end
       end
       log.info "Post-processed #{object_count} object(s)"

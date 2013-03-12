@@ -383,20 +383,46 @@ module DulHydra::Scripts
       end
     end
     describe "post-process ingest" do
+      let(:object_type) { TestContentMetadata }
+      let(:log_file) { File.open("#{@ingestable_dir}/log/ingest_postprocess.log") { |f| f.read } }
+      let(:manifest) { @manifest_file }
+      let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| f.read } }
+      before do
+        FileUtils.mkdir "#{@ingestable_dir}/contentmetadata"
+        FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/contentstructure_manifest.yml", "#{@manifest_dir}/manifest.yml"
+        @manifest_file = "#{@manifest_dir}/manifest.yml"
+        update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+        FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+        @parent = TestContentMetadata.create!(:pid => 'test:1', :identifier => 'id001')
+        @component1 = TestChild.create!(:identifier => 'id00100020')
+        @component2 = TestChild.create!(:identifier => 'id00100030')
+        @component3 = TestChild.create!(:identifier => 'id00100010')
+        @component1.parent = @parent
+        @component2.parent = @parent
+        @component3.parent = @parent
+        @component1.save!
+        @component2.save!
+        @component3.save!
+      end
+      after do
+        @component1.delete
+        @component2.delete
+        @component3.delete
+        @parent.delete
+      end
       context "content structural metadata" do
+        let(:expected_xml) { create_expected_content_metadata_document.to_xml}
         it "should add an appropriate contentMetadata datastream to the parent object" do
-          pending("not creating contentMetadata at this time")
           DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
-          @item.reload
-          @item.contentMetadata.content.should be_equivalent_to(@expected_xml)
+          @parent.reload
+          @parent.contentMetadata.content.should be_equivalent_to(expected_xml)
         end
         it "should create an appropriate log file" do
-          pending("not creating contentMetadata at this time")
           DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
-          result = File.open("#{@ingest_base}/item/log/ingest_postprocess.log") { |f| f.read }
+          result = File.open("#{@ingestable_dir}/log/ingest_postprocess.log") { |f| f.read }
           result.should match("DulHydra version #{DulHydra::VERSION}")
-          result.should match("Manifest: #{@ingest_base}/manifests/simple_item_manifest.yml")
-          result.should match("Added contentmetadata datastream for test01 to #{Item.find_by_identifier("test01").first.pid}")
+          result.should match("Manifest: #{@manifest_dir}/manifest.yml")
+          result.should match("Added contentmetadata datastream for id001 to test:1")
           result.should match("Post-processed 1 object\\(s\\)")
         end
       end
