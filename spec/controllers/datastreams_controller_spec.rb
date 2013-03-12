@@ -19,15 +19,4 @@ describe DatastreamsController do
       it { should be_successful }
     end
   end
-  context "#thumbnail" do
-    subject { get :thumbnail, :object_id => object }
-    context "object has thumbnail" do
-      let(:object) { FactoryGirl.create(:test_content_thumbnail) }
-      it { should be_successful }
-    end
-    context "object doesn't have thumbnail" do
-      let(:object) { FactoryGirl.create(:test_model) }
-      it { should_not be_successful }
-    end
-  end
 end

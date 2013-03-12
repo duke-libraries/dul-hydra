@@ -1,5 +1,10 @@
-<% if display_inline %>
+<% if inline %>
   <pre class="prettyprint pre-scrollable"><%= datastream.content %></pre>
+  <p>
+    <%= link_to "Download", {:action => 'download', :object_id => datastream.pid, :id => datastream.dsid} %>
+  </p>
 <% else %>
-  The datastream content cannot be displayed inline. Please <%= link_to "download", {:action => 'show', :object_id => @object, :id => @datastream.dsid, :download => 'true'} %>.
+  <p>
+    The datastream content is not text.  Please <%= link_to "download", {:action => 'download', :object_id => datastream.pid, :id => datastream.dsid} %>.
+  </p>
 <% end %>
