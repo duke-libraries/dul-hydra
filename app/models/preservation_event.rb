@@ -1,4 +1,6 @@
 class PreservationEvent < ActiveFedora::Base
+
+  before_create :assign_admin_policy
     
   include DulHydra::Models::Governable
   include DulHydra::Models::AccessControllable
@@ -102,6 +104,21 @@ EOS
   # Return a date/time formatted as a string suitable for use as a PREMIS eventDateTime.
   def self.to_event_date_time(t=Time.now.utc)
     t.strftime(DATE_TIME_FORMAT)
+  end
+
+  private
+
+  def assign_admin_policy
+    unless self.admin_policy
+      begin
+        self.admin_policy = AdminPolicy.find(DulHydra::AdminPolicies::PRESERVATION_EVENTS)
+      rescue ActiveFedora::ObjectNotFoundError
+        return false
+      else
+        return true
+      end
+    end
+    return false
   end
 
 end
