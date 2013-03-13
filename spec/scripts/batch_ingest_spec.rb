@@ -128,6 +128,12 @@ module DulHydra::Scripts
   end
   
   shared_examples "a validated ingest" do
+    before do
+      @passes = 0
+      @fails = 0
+      results.values.each { |value| value.eql?("PASS") ? @passes += 1 : @fails += 1 }
+      @overall_result =  @fails.eql?(0) ? "PASS" : "FAIL"
+    end
     it "should have an ingest validation log file" do
       log_file.should_not be_empty
       log_file.should match("DulHydra version #{DulHydra::VERSION}")
@@ -136,6 +142,9 @@ module DulHydra::Scripts
         log_file.should match("Validated #{object_type.to_s} #{key} in .*...#{value}")
       end
       log_file.should match("Validated #{results.size} object\\(s\\)")
+      log_file.should match("PASS: #{@passes}")
+      log_file.should match("FAIL: #{@fails}")
+      log_file.should match("Validation ...#{@overall_result}")
     end
   end
   
@@ -661,10 +670,6 @@ module DulHydra::Scripts
           end
         end        
       end
-      
-      
-      
-      
       context "target has associated collection" do
         let(:object_type) { Target }
         before do

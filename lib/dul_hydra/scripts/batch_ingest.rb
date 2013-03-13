@@ -186,6 +186,8 @@ module DulHydra::Scripts
       end
       objects = manifest[:objects]
       object_count = 0;
+      pass_count = 0;
+      fail_count = 0;
       objects.each do |object|
         event_details = String.new(event_details_header)
         object_count += 1
@@ -309,8 +311,12 @@ module DulHydra::Scripts
           write_preservation_event(repository_object, PreservationEvent::VALIDATION, outcome, event_details)
         end
         log.info "Validated #{model} #{key_identifier(object)} in #{pid_in_master ? pid : nil}#{object_valid ? PASS : FAIL}"
+        object_valid ? pass_count += 1 : fail_count += 1
       end
       log.info "Validated #{object_count} object(s)"
+      log.info "PASS: #{pass_count}"
+      log.info "FAIL: #{fail_count}"
+      log.info "Validation #{ingest_valid ? PASS : FAIL}"
       log.info "=================="
       return ingest_valid
     end
