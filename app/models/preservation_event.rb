@@ -106,19 +106,14 @@ EOS
     t.strftime(DATE_TIME_FORMAT)
   end
 
+  def self.default_admin_policy
+    AdminPolicy.find(DulHydra::AdminPolicies::PRESERVATION_EVENTS) rescue nil
+  end
+
   private
 
   def assign_admin_policy
-    unless self.admin_policy
-      begin
-        self.admin_policy = AdminPolicy.find(DulHydra::AdminPolicies::PRESERVATION_EVENTS)
-      rescue ActiveFedora::ObjectNotFoundError
-        return false
-      else
-        return true
-      end
-    end
-    return false
+    self.admin_policy = PreservationEvent.default_admin_policy unless self.admin_policy
   end
 
 end
