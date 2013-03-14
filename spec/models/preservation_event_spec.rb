@@ -44,21 +44,39 @@ describe PreservationEvent do
       end
     end
     context "preservation event without an admin policy" do
-      before(:all) { @apo = AdminPolicy.create(:pid => DulHydra::AdminPolicies::PRESERVATION_EVENTS) }
-      after(:all) { @apo.delete }
-      context "#save" do
-        let(:object) { PreservationEvent.new }
-        before { object.save }
-        it "should be assigned the default policy" do
-          object.admin_policy.should == @apo
+      context "given that the default admin policy exists" do
+        before(:all) { @apo = AdminPolicy.create(:pid => DulHydra::AdminPolicies::PRESERVATION_EVENTS) }
+        after(:all) { @apo.delete }
+        after(:each) { object.delete }
+        context "#save" do
+          let(:object) { PreservationEvent.new }
+          before { object.save }
+          it "should be assigned the default policy" do
+            object.admin_policy.should == @apo
+          end
         end
+        context "#create" do
+          let(:object) { PreservationEvent.create }
+          it "should be assigned the default policy" do
+            object.admin_policy.should == @apo
+          end
+        end        
       end
-      context "#create" do
-        let(:object) { PreservationEvent.create }
-        it "should be assigned the default policy" do
-          object.admin_policy.should == @apo
+      context "given that the default policy does not exist" do
+        context "#save" do
+          let(:object) { PreservationEvent.new }
+          before { object.save }
+          it "should retain no admin policy" do
+            object.admin_policy.should be_nil
+          end
         end
-      end        
+        context "#create" do
+          let(:object) { PreservationEvent.create }
+          it "should retain no admin policy" do
+            object.admin_policy.should be_nil
+          end
+        end                
+      end
     end
   end
 
