@@ -4,7 +4,7 @@ class ExportSet < ActiveRecord::Base
 
   belongs_to :user
   has_attached_file :archive
-  attr_accessible :archive, :pids
+  attr_accessible :archive, :pids, :title
   serialize :pids
 
   def create_archive
