@@ -27,6 +27,10 @@ class TestFileDatastreams < TestContentThumbnail
   include DulHydra::Models::HasTripodMets
 end
 
+class TestContentMetadata < TestParent
+  include DulHydra::Models::HasContentMetadata
+end
+
 FactoryGirl.define do
   
   factory :test_model do

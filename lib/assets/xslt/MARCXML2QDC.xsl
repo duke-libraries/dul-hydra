@@ -166,12 +166,13 @@
 				</xsl:call-template>
 			</dcterms:relation>
 		</xsl:for-each>
-		<xsl:for-each select="marc:datafield[@tag=856]">
+<!-- For our purposes, we will not consider the electronic resource URI from the MARC record to be an identifier -->
+<!--		<xsl:for-each select="marc:datafield[@tag=856]">
 			<dcterms:identifier>
 				<xsl:value-of select="marc:subfield[@code='u']"/>
 			</dcterms:identifier>
 		</xsl:for-each>
-		<xsl:for-each select="marc:datafield[@tag=020]">
+-->		<xsl:for-each select="marc:datafield[@tag=020]">
 			<dcterms:identifier>
 				<xsl:text>URN:ISBN:</xsl:text>
 				<xsl:value-of select="marc:subfield[@code='a']"/>

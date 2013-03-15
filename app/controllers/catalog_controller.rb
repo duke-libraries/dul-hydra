@@ -18,12 +18,13 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
-    config.index.show_link = 'id'
+    #config.index.show_link = 'id'
+    config.index.show_link = 'title_display'
     config.index.record_display_type = 'active_fedora_model_s'
 
     # solr field configuration for document/show views
-    config.show.html_title = 'id'
-    config.show.heading = 'id'
+    config.show.html_title = 'title_display'
+    config.show.heading = 'title_display'
     config.show.display_type = 'active_fedora_model_s'
 
     # solr fields that will be treated as facets by the blacklight application
@@ -45,7 +46,7 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field 'active_fedora_model_s', :label => 'Object Type'
+    config.add_facet_field 'active_fedora_model_s', :label => 'Type'
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -58,16 +59,16 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
     #config.add_index_field 'title_display', :label => 'Title:' 
-    config.add_index_field 'active_fedora_model_s', :label => 'Object Type:'
-    #config.add_index_field 'id', :label => 'PID:'
-    config.add_index_field 'title_t', :label => 'Title:'
+    config.add_index_field 'active_fedora_model_s', :label => 'Type:'
+    config.add_index_field 'id', :label => 'PID:'
+    #config.add_index_field 'title_t', :label => 'Title:'
     config.add_index_field 'identifier_t', :label => 'Identifier:'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
-    config.add_show_field 'active_fedora_model_s', :label => 'Object Type:'
-    #config.add_show_field 'id', :label => 'PID:'
-    config.add_show_field 'title_t', :label => 'Title:' 
+    config.add_show_field 'active_fedora_model_s', :label => 'Type:'
+    config.add_show_field 'id', :label => 'PID:'
+    #config.add_show_field 'title_t', :label => 'Title:' 
     config.add_show_field 'identifier_t', :label => 'Identifier:'
     config.add_show_field 'is_part_of_s', :label => 'Part of:', :helper_method => :internal_uri_to_pid
     config.add_show_field 'is_member_of_s', :label => 'Member of:', :helper_method => :internal_uri_to_pid

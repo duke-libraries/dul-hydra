@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <fileSec>
+    <fileGrp ID="GRP01" USE="Master Image">
+      <file ID="FILE001">
+        <FLocat xlink:href="test:1/content" LOCTYPE="URL"/>
+      </file>
+      <file ID="FILE002">
+        <FLocat xlink:href="test:2/content" LOCTYPE="URL"/>
+      </file>
+      <file ID="FILE003">
+        <FLocat xlink:href="test:3/content" LOCTYPE="URL"/>
+      </file>
+    </fileGrp>
+    <fileGrp ID="GRP00" USE="Composite PDF">
+      <file ID="FILE000">
+        <FLocat xlink:href="test:4/content" LOCTYPE="URL"/>
+      </file>
+    </fileGrp>
+  </fileSec>
+  <structMap>
+    <div ID="DIV01" TYPE="image" LABEL="Images">
+      <div ORDER="1">
+        <fptr FILEID="FILE001"/>
+      </div>
+      <div ORDER="2">
+        <fptr FILEID="FILE002"/>
+      </div>
+      <div ORDER="10">
+        <fptr FILEID="FILE003"/>
+      </div>
+    </div>
+    <div ID="DIV00" TYPE="pdf" LABEL="PDF">
+      <fptr FILEID="FILE000"/>
+    </div>
+  </structMap>
+</mets>

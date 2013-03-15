@@ -4,7 +4,7 @@ module DulHydra::Models
   module SolrDocument
 
     def object_profile
-      JSON.parse(self[:object_profile_display].first)
+      @object_profile ||= JSON.parse(self[:object_profile_display].first)
     end
 
     def datastreams

@@ -147,31 +147,21 @@ module DulHydra::Scripts
       log.info "DulHydra version #{DulHydra::VERSION}"
       log.info "Manifest: #{ingest_manifest}"
       object_count = 0
+      master = File.open(master_path(manifest[:master], manifest[:basepath])) { |f| Nokogiri::XML(f) }
       if !manifest[:contentstructure].blank?
-        case manifest[:contentstructure][:type]
-        when "generate"
-          sequence_start = manifest[:contentstructure][:sequencestart]
-          sequence_length = manifest[:contentstructure][:sequencelength]
-          manifest_items = manifest[:objects]
-          manifest_items.each do |manifest_item|
-            object_count += 1
-            identifier = key_identifier(manifest_item)
-            items = Item.find_by_identifier(identifier)
-            case items.size
-            when 1
-              item = items.first
-              content_metadata = create_content_metadata_document(item, sequence_start, sequence_length)
-              filename = "#{manifest[:basepath]}contentmetadata/#{identifier}.xml"
-              File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
-              item = add_metadata_content_file(item, manifest_item, "contentmetadata", manifest[:basepath])
-              item.save
-              log.info "Added contentmetadata datastream for #{identifier} to #{item.pid}"
-            when 0
-              raise "Item #{identifier} not found"
-            else
-              raise "Multiple items #{identifier} found"
-            end
+        manifest_items = manifest[:objects]
+        manifest_items.each do |manifest_item|
+          object_count += 1
+          identifier = key_identifier(manifest_item)
+          repository_object = ActiveFedora::Base.find(get_pid_from_master(master, identifier), :cast => true)
+          if manifest[:contentstructure][:type].eql?(GENERATE)
+            content_metadata = create_content_metadata_document(repository_object, manifest[:contentstructure])
+            filename = "#{manifest[:basepath]}contentmetadata/#{identifier}.xml"
+            File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
           end
+          repository_object = add_metadata_content_file(repository_object, manifest_item, "contentmetadata", manifest[:basepath])
+          repository_object.save
+          log.info "Added contentmetadata datastream for #{identifier} to #{repository_object.pid}"          
         end
       end
       log.info "Post-processed #{object_count} object(s)"
@@ -196,6 +186,8 @@ module DulHydra::Scripts
       end
       objects = manifest[:objects]
       object_count = 0;
+      pass_count = 0;
+      fail_count = 0;
       objects.each do |object|
         event_details = String.new(event_details_header)
         object_count += 1
@@ -319,8 +311,12 @@ module DulHydra::Scripts
           write_preservation_event(repository_object, PreservationEvent::VALIDATION, outcome, event_details)
         end
         log.info "Validated #{model} #{key_identifier(object)} in #{pid_in_master ? pid : nil}#{object_valid ? PASS : FAIL}"
+        object_valid ? pass_count += 1 : fail_count += 1
       end
       log.info "Validated #{object_count} object(s)"
+      log.info "PASS: #{pass_count}"
+      log.info "FAIL: #{fail_count}"
+      log.info "Validation #{ingest_valid ? PASS : FAIL}"
       log.info "=================="
       return ingest_valid
     end

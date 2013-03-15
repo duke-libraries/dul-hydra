@@ -1,18 +1,41 @@
 require 'spec_helper'
 
 describe AdminPolicy do
-  it "should raise an exception when calling default and default APO has not been created" do
-    lambda { AdminPolicy.get_default_apo }.should raise_error(ActiveFedora::ObjectNotFoundError)
-  end
-  context "#create_default_apo!" do
+  context "terms delegated to defaultRights" do
+    let(:apo) { AdminPolicy.new }
     before do
-      AdminPolicy.create_default_apo!
+      apo.default_license_title = "License Title"
+      apo.default_license_description = "License Description"
+      apo.default_license_url = "http://library.duke.edu"
     end
-    after do
-      AdminPolicy.get_default_apo.delete
+    it "should set the terms correctly" do
+      apo.defaultRights.license.title.first.should == "License Title"
+      apo.defaultRights.license.description.first.should == "License Description"
+      apo.defaultRights.license.url.first.should == "http://library.duke.edu"
     end
-    it "should have a default admin policy object" do
-      AdminPolicy.get_default_apo.should be_kind_of(AdminPolicy)
+  end
+  context ".load_policies" do
+    before do
+      @pid = 'duke-apo:TestPolicy'
+      @file_path = File.join(Rails.root, 'spec', 'fixtures', 'admin_policies.yml')
+    end
+    context "policy exists" do
+      before do
+        @apo = AdminPolicy.create(:pid => @pid, :title => 'Not loaded from file')
+        AdminPolicy.load_policies(@file_path)
+      end
+      after { @apo.delete }
+      it "should not overwrite the existing policy" do
+        AdminPolicy.find(@pid).title.should == 'Not loaded from file'
+      end
+    end
+    context "policy does not exist" do
+      after { AdminPolicy.find(@pid).delete }
+      it "should create the policy" do
+        lambda { AdminPolicy.find(@pid) }.should raise_error(ActiveFedora::ObjectNotFoundError)
+        AdminPolicy.load_policies(@file_path)
+        lambda { AdminPolicy.find(@pid) }.should_not raise_error(ActiveFedora::ObjectNotFoundError)
+      end
     end
   end
 end

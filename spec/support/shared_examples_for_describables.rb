@@ -7,22 +7,6 @@ shared_examples "a describable object" do
   after do
     @describable.delete
   end
-  context "#display_title" do
-    context "not having a title" do
-      it "should return the pid" do
-        @describable.display_title.should eq(@describable.pid)
-      end
-    end
-    context "having a title" do
-      before do
-        @describable.title = @title
-        @describable.save
-      end
-      it "should return the title" do
-        @describable.display_title.should eq(@describable.title.first)
-      end
-    end
-  end
   context "having an identifier" do
     before do
       @describable.identifier = @identifier

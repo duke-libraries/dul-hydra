@@ -358,30 +358,31 @@ module DulHydra::Scripts::Helpers
     
     describe "#create_content_metadata_document" do
       before do
-        @item = Item.create!
-        @component1 = Component.new
-        @component1.identifier = "test010020010"
-        @component1.container = @item
-        @component1.save!
-        @component2 = Component.new
-        @component2.identifier = "test010030010"
-        @component2.container = @item
-        @component2.save!
-        @component3 = Component.new
-        @component3.identifier = "test010010010"
-        @component3.container = @item
-        @component3.save!
+        @parent = TestContentMetadata.create!
+        @child1 = TestChild.new
+        @child1.identifier = "id00100030010"
+        @child1.parent = @parent
+        @child1.save!
+        @child2 = TestChild.new
+        @child2.identifier = "id00100010010"
+        @child2.parent = @parent
+        @child2.save!
+        @child3 = TestChild.new
+        @child3.identifier = "id00100020010"
+        @child3.parent = @parent
+        @child3.save!
         @expected = create_expected_content_metadata_document
+        @contentspec = { :sequencestart => 6, :sequencelength => 3 }
       end
       after do
-        @component3.delete
-        @component2.delete
-        @component1.delete
-        @item.reload
-        @item.delete
+        @child3.delete
+        @child2.delete
+        @child1.delete
+        @parent.reload
+        @parent.delete
       end
       it "should return the appropriate content metadata document" do
-        content_metadata = MockBatchIngest.create_content_metadata_document(@item, 6, 3)
+        content_metadata = MockBatchIngest.create_content_metadata_document(@parent, @contentspec)
         content_metadata.should be_equivalent_to(@expected)
       end
     end

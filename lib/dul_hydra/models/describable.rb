@@ -7,14 +7,6 @@ module DulHydra::Models
       delegate_to DulHydra::Datastreams::DESC_METADATA, [:title, :identifier, :creator, :source]
     end
 
-    def has_title?
-      !(title.empty? || title.first.length == 0)
-    end
-
-    def display_title
-      has_title? ? title.first : pid
-    end
-
     module ClassMethods
       def find_by_identifier(identifier)
         find(:identifier_t => identifier)

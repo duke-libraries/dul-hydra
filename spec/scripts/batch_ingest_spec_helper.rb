@@ -47,19 +47,19 @@ module BatchIngestSpecHelper
       file1 = Nokogiri::XML::Node.new "file", expected
       file1['ID'] = 'FILE001'
       fLocat1 = Nokogiri::XML::Node.new "FLocat", expected
-      fLocat1['xlink:href'] = "#{@component3.pid}/content"
+      fLocat1['xlink:href'] = "#{@child2.pid}/content"
       fLocat1['LOCTYPE'] = 'URL'
       file1.add_child(fLocat1)
       file2 = Nokogiri::XML::Node.new "file", expected
       file2['ID'] = 'FILE002'
       fLocat2 = Nokogiri::XML::Node.new "FLocat", expected
-      fLocat2['xlink:href'] = "#{@component1.pid}/content"
+      fLocat2['xlink:href'] = "#{@child3.pid}/content"
       fLocat2['LOCTYPE'] = 'URL'
       file2.add_child(fLocat2)
       file3 = Nokogiri::XML::Node.new "file", expected
       file3['ID'] = 'FILE003'
       fLocat3 = Nokogiri::XML::Node.new "FLocat", expected
-      fLocat3['xlink:href'] = "#{@component2.pid}/content"
+      fLocat3['xlink:href'] = "#{@child1.pid}/content"
       fLocat3['LOCTYPE'] = 'URL'
       file3.add_child(fLocat3)
       fileGrp.add_child(file1)
@@ -69,6 +69,9 @@ module BatchIngestSpecHelper
       expected.root.add_child(fileSec)
       structMap = Nokogiri::XML::Node.new "structMap", expected
       div0 = Nokogiri::XML::Node.new "div", expected
+      div0['ID'] = 'DIV01'
+      div0['TYPE'] = 'image'
+      div0['LABEL'] = 'Images'
       div11 = Nokogiri::XML::Node.new "div", expected
       div11['ORDER'] = '1'
       fptr11 = Nokogiri::XML::Node.new "fptr", expected
