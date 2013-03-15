@@ -23,23 +23,21 @@ describe PreservationEvent do
   end
 
   context "before_create callback" do
+    after { object.delete }
     context "preservation event with an admin policy" do
-      let!(:apo) { FactoryGirl.create(:public_read_policy) }
-      after do
-        apo.delete
-        object.delete
-      end
+      before(:all) { @apo = FactoryGirl.create(:public_read_policy) }
+      after(:all) { @apo.delete }
       context "#save" do
-        let(:object) { PreservationEvent.new(:admin_policy => apo) }
+        let(:object) { PreservationEvent.new(:admin_policy => @apo) }
         before { object.save }
         it "should retain the assigned policy" do
-          object.admin_policy.should == apo
+          object.admin_policy.should == @apo
         end
       end
       context "#create" do
-        let(:object) { PreservationEvent.create(:admin_policy => apo) }
+        let(:object) { PreservationEvent.create(:admin_policy => @apo) }
         it "should retain the assigned policy" do
-          object.admin_policy.should == apo
+          object.admin_policy.should == @apo
         end
       end
     end
@@ -47,7 +45,6 @@ describe PreservationEvent do
       context "given that the default admin policy exists" do
         before(:all) { @apo = AdminPolicy.create(:pid => DulHydra::AdminPolicies::PRESERVATION_EVENTS) }
         after(:all) { @apo.delete }
-        after(:each) { object.delete }
         context "#save" do
           let(:object) { PreservationEvent.new }
           before { object.save }
