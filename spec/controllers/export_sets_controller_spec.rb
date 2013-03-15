@@ -14,20 +14,21 @@ describe ExportSetsController do
     end
   end
   context "#update" do
-    subject { put :update, :id => export_set, :export_set => {:title => "Title Changed"} }
     let(:export_set) { FactoryGirl.create(:export_set) }
     before { sign_in export_set.user }
     after { export_set.user.delete }
     it "should change the title" do
-      export_set.title.should = "Title Changed"
-      expect(subject).to redirect_to(export_set_path(export_set))
+      put :update, :id => export_set, :export_set => {:title => "Title Changed"}
+      ExportSet.find(export_set.id).title.should == "Title Changed"
+      expect(response).to redirect_to(export_set_path(export_set))
     end
   end
   context "#destroy" do
-    subject { delete :destroy, :id => export_set }
     before { sign_in export_set.user }
-    after { export_set.user.delete }
+    let(:export_set) { FactoryGirl.create(:export_set) }
     it "should delete the export set and redirect to the index page" do
+      delete :destroy, :id => export_set
+      lambda { ExportSet.find(export_set.id) }.should raise_error(ActiveRecord::RecordNotFound)
       expect(subject).to redirect_to(export_sets_path)
     end
   end
