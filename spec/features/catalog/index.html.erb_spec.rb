@@ -4,9 +4,11 @@ shared_examples "a catalog index view" do
   it "should display the PID, model, title and identifier(s)" do
     expect(subject).to have_content(object.pid)
     expect(subject).to have_content(object.class.to_s)
-    expect(subject).to have_content(object.title_display)
     expect(subject).to have_content(object.identifier.first)
-    expect(subject).to have_css(".thumbnail")
+    # title link
+    expect(subject).to have_link(object.title_display, :href => catalog_path(object))
+    # thumbnail
+    expect(subject).to have_xpath("//a[@href = \"#{catalog_path(object)}\"]/img[@src = \"#{thumbnail_path(object)}\"]")
   end
 end
 
