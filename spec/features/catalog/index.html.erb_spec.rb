@@ -8,7 +8,7 @@ shared_examples "a catalog index view" do
     # title link
     expect(subject).to have_link(object.title_display, :href => catalog_path(object))
     # thumbnail
-    expect(subject).to have_xpath('//a[@href = "#{catalog_path(object)}"]/img[@src = "#{thumbnail_path(object)}"]')
+    expect(subject).to have_xpath("//a[@href = \"#{catalog_path(object)}\"]/img[@src = \"#{thumbnail_path(object)}\"]")
   end
 end
 

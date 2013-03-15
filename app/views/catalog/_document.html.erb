@@ -3,7 +3,7 @@
   <%= render :partial => 'document_header', :locals => { :document => document, :document_counter => document_counter } %>
   <div class="row">
     <div class="span1">
-      <%= render :partial => 'thumbnail', :locals => {:document => document} %>
+      <%= render :partial => 'thumbnail', :locals => {:document => document, :thumbnail_link => catalog_path(document)} %>
     </div>
     <div class="span8">
       <% # main container for doc partial view -%>
