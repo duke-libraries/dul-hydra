@@ -14,19 +14,27 @@ module DulHydra::Datastreams
         div_nodes.each do |div_node|
           div_array << parse_div(fileSec_nodes, div_node)
         end
-        structMap_hash[:div] = div_array
+        structMap_hash["div"] = div_array
         parsed << structMap_hash
       end
       return parsed
     end
     
+    def to_solr(solr_doc=Hash.new)
+      solr_doc = super(solr_doc)
+      if self.content
+        solr_doc.merge!({ActiveFedora::SolrService.solr_name(:content_metadata_parsed, :symbol) => parse.to_json})
+      end
+      solr_doc
+    end    
+    
     private
     
     def parse_div(fileSec_nodes, div_node)
       div_hash = {}
-      div_hash[:label] = div_node["LABEL"] unless div_node["LABEL"].nil?
-      div_hash[:orderlabel] = div_node["ORDERLABEL"] unless div_node["ORDERLABEL"].nil?
-      div_hash[:type] = div_node["TYPE"] unless div_node["TYPE"].nil?
+      div_hash["label"] = div_node["LABEL"] unless div_node["LABEL"].nil?
+      div_hash["orderlabel"] = div_node["ORDERLABEL"] unless div_node["ORDERLABEL"].nil?
+      div_hash["type"] = div_node["TYPE"] unless div_node["TYPE"].nil?
       div_subnodes = div_node.xpath("xmlns:div").sort{ |x,y| sort_nodes(x, y) }
       if div_subnodes.empty?
         fptr_nodes = div_node.xpath("xmlns:fptr")
@@ -36,18 +44,18 @@ module DulHydra::Datastreams
           if !fptr_node["FILEID"].nil?
             pid = get_pid(fileSec_nodes, fptr_node["FILEID"])
             file_use = get_use(fileSec_nodes, fptr_node["FILEID"])
-            fptr_hash[:pid] = pid unless pid.nil?
-            fptr_hash[:use] = file_use unless file_use.nil?
+            fptr_hash["pid"] = pid unless pid.nil?
+            fptr_hash["use"] = file_use unless file_use.nil?
           end
           fptr_array << fptr_hash
         end
-        div_hash[:pids] = fptr_array
+        div_hash["pids"] = fptr_array
       else
         div_array = []
         div_subnodes.each do |div_subnode|
           div_array << parse_div(fileSec_nodes, div_subnode)
         end
-        div_hash[:div] = div_array
+        div_hash["div"] = div_array
       end
       return div_hash
     end
