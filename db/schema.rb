@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130227171200) do
+ActiveRecord::Schema.define(:version => 20130315171936) do
 
   create_table "bookmarks", :force => true do |t|
     t.integer  "user_id",     :null => false
@@ -31,6 +31,7 @@ ActiveRecord::Schema.define(:version => 20130227171200) do
     t.integer  "archive_file_size"
     t.datetime "archive_updated_at"
     t.text     "pids"
+    t.string   "title"
   end
 
   create_table "searches", :force => true do |t|

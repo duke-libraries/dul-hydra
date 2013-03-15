@@ -1,21 +1,25 @@
 <h1>Export Set</h1>
 
 <p>
-	<%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :confirm => "Are you sure?" %>
+  <%= link_to "Edit", {:action => 'edit', :id => @export_set}, :method => 'get' %> 
+  |
+  <%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :confirm => "Are you sure?" %>
 </p>
 
 <dl>
-	<dt>Created:</dt>
-	<dd><%= @export_set.created_at %></dd>
-	<dt>PIDS:</dt>
-	<dd>
-		<ul>
-		<% @export_set.pids.each do |pid| %>
-		<li><%= link_to pid, catalog_path(pid) %></li>
-		<% end %>		
-		</ul>
-	</dd>
-	<dt>Archive:</dt>
-	<dd><%= link_to @export_set.archive_file_name, @export_set.archive.url %></dd>
+  <dt>Title:</dt>
+  <dd><%= @export_set.title %></dd>
+  <dt>Created:</dt>
+  <dd><%= @export_set.created_at %></dd>
+  <dt>PIDS:</dt>
+  <dd>
+    <ul>
+      <% @export_set.pids.each do |pid| %>
+      <li><%= link_to pid, catalog_path(pid) %></li>
+      <% end %>		
+    </ul>
+  </dd>
+  <dt>Archive:</dt>
+  <dd><%= link_to @export_set.archive_file_name, @export_set.archive.url %></dd>
 </dl>
 
