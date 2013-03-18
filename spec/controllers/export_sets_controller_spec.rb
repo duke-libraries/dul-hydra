@@ -5,7 +5,7 @@ describe ExportSetsController do
     let(:user) { FactoryGirl.create(:user) }
     let(:object) { FactoryGirl.create(:test_content) }
     before { sign_in user }
-    after { user.delete }
+    after { user.delete; object.delete }
     it "should create an export set and redirect to the show page" do
       user.export_sets.count.should == 0
       post :create, :export_set => {:pids => [object.pid]}
