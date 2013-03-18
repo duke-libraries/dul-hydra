@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'zip/zip'
 
 describe ExportSetsController do
   context "#create" do
@@ -11,6 +12,9 @@ describe ExportSetsController do
       post :create, :export_set => {:pids => [object.pid]}
       user.export_sets.count.should == 1
       expect(response).to redirect_to(export_set_path(assigns[:export_set]))
+      Zip::ZipFile.open(assigns[:export_set].archive.path) do |arch|
+        arch.find_entry(ExportSet::MANIFEST_FILE_NAME).should_not be_nil
+      end
     end
   end
   context "#update" do
