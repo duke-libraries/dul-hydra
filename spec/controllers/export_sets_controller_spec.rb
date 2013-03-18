@@ -36,4 +36,19 @@ describe ExportSetsController do
       expect(subject).to redirect_to(export_sets_path)
     end
   end
+  context "#archive" do 
+    let(:export_set) { FactoryGirl.create(:export_set) }
+    let(:object) { FactoryGirl.create(:test_content) }
+    before do 
+      sign_in export_set.user
+      export_set.pids = [object.pid]
+      export_set.create_archive
+    end
+    after { export_set.user.delete }
+    it "should delete the archive and redirect to the show page" do
+      delete :archive, :id => export_set
+      ExportSet.find(export_set.id).archive_file_name.should be_nil
+      response.should redirect_to(export_set_path(export_set))
+    end
+  end
 end

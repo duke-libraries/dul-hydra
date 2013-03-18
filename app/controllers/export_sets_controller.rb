@@ -13,6 +13,7 @@ class ExportSetsController < ApplicationController
   def show
     # XXX authz
     @export_set = ExportSet.find(params[:id])
+    @response, @document_list = get_solr_response_for_field_values(SolrDocument.unique_key, @export_set.pids)
   end
   
   def new
@@ -55,6 +56,17 @@ class ExportSetsController < ApplicationController
     @export_set.destroy
     flash[:notice] = "Export Set destroyed."
     redirect_to :action => 'index'
+  end
+
+  def archive
+    # XXX authz
+    @export_set = ExportSet.find(params[:id])
+    unless @export_set.archive.nil?
+      @export_set.archive = nil
+      @export_set.save
+      flash[:notice] = "Archive file deleted."
+    end
+    redirect_to :action => :show, :id => @export_set
   end
   
 end
