@@ -16,4 +16,8 @@ class Component < DulHydra::Models::Base
   alias_method :container, :parent
   alias_method :container=, :parent=
 
+  def collection
+    self.parent.parent rescue nil
+  end
+
 end
