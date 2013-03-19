@@ -9,37 +9,47 @@ module DulHydra::Helpers
       display = ""
       if sm.has_key?("div")
         pids = walk_div(sm["div"], "pids", [])
-        query = ActiveFedora::SolrService.construct_query_for_pids(pids)
-        children = ActiveFedora::SolrService.query(query, :rows => 999)
-        walk_div(sm["div"], "display", display, children)
+        children_info = get_children_info(pids)
+        walk_div(sm["div"], "display", display, children_info)
       end
       return display
     end
     
-    def walk_div(div, mode, collector, children=nil)
+    def walk_div(div, mode, collector, children_info=nil)
       div.each do |d|
         collector << d["label"] if mode.eql?("display") && d.has_key?("label")
         if d.has_key?("div")
-          walk_div(d["div"], mode, collector)
+          walk_div(d["div"], mode, collector, children_info)
         else
-          walk_pids(d["pids"], mode, collector)
+          walk_pids(d["pids"], mode, collector, children_info)
         end
       end
       return collector
     end
     
-    def walk_pids(pids, mode, collector, children=nil)
+    def walk_pids(pids, mode, collector, children_info=nil)
       collector << "<ul>" if mode.eql?("display")
       pids.each do |pid|
         collector << case mode
         when "pids"
           pid["pid"]
         when "display"
-          "<li>" << pid["pid"] << " [" << pid["use"] << "]</li>"
+          "<li>" << link_to(children_info[pid["pid"]]["title_display"], catalog_path(pid["pid"])) << " [" << pid["use"] << "]</li>"
         end
       end
       collector << "</ul>" if mode.eql?("display")
       return collector
     end
+    
+    def get_children_info(pids)
+      children_info = {}
+      query = ActiveFedora::SolrService.construct_query_for_pids(pids)
+      children = ActiveFedora::SolrService.query(query, :rows => 999)
+      children.each do |child|
+        children_info[child["id"]] = child
+      end
+      return children_info
+    end
+    
   end
 end
