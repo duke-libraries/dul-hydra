@@ -24,8 +24,9 @@ shared_examples "an object that has content" do
       end
     end
     context "#write_content" do
+      let(:tmpfile) { Tempfile.new('content', :encoding => 'ascii-8bit') }
+      after { tmpfile.unlink }
       it "should write the content to a file" do
-        tmpfile = Tempfile.new('content', :encoding => 'ascii-8bit')
         tmppath = tmpfile.path
         object.content.write_content(tmpfile)
         tmpfile.close
