@@ -44,7 +44,10 @@ describe ExportSetsController do
       export_set.pids = [object.pid]
       export_set.create_archive
     end
-    after { export_set.user.delete }
+    after do
+      object.delete
+      export_set.user.delete
+    end
     it "should delete the archive and redirect to the show page" do
       delete :archive, :id => export_set
       ExportSet.find(export_set.id).archive_file_name.should be_nil
