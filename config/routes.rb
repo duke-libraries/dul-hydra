@@ -17,6 +17,11 @@ DulHydra::Application.routes.draw do
     resources :audit_trail, :only => :index
   end
   
-  resources :export_sets
+  resources :export_sets do
+    member do
+      post 'archive'
+      delete 'archive'
+    end
+  end
   
 end

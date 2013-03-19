@@ -13,6 +13,7 @@
 	<thead>
 		<tr>
 			<th scope="col">ID</th>
+			<th scope="col">Title</th>
 			<th scope="col">Created</th>
 			<th scope="col">Archive</th>
 			<th scope="col">PIDs</th>
@@ -22,6 +23,7 @@
 		<% @export_sets.each do |es| %>
 		<tr>
 			<td><%= link_to es.id, es %></td>
+		        <td><%= es.title %></td>
 			<td><%= es.created_at %></td>
 			<td><%= link_to es.archive_file_name, es.archive.url %></td>
 			<td><%= es.pids.join(', ') %></td>

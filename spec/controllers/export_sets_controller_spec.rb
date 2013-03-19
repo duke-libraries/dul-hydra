@@ -23,7 +23,7 @@ describe ExportSetsController do
     after { export_set.user.delete }
     it "should change the title" do
       put :update, :id => export_set, :export_set => {:title => "Title Changed"}
-      ExportSet.find(export_set.id).title.should == "Title Changed"
+      export_set.reload.title.should == "Title Changed"
       expect(response).to redirect_to(export_set_path(export_set))
     end
   end
@@ -34,6 +34,24 @@ describe ExportSetsController do
       delete :destroy, :id => export_set
       lambda { ExportSet.find(export_set.id) }.should raise_error(ActiveRecord::RecordNotFound)
       expect(subject).to redirect_to(export_sets_path)
+    end
+  end
+  context "#archive" do 
+    let(:export_set) { FactoryGirl.create(:export_set) }
+    let(:object) { FactoryGirl.create(:test_content) }
+    before do 
+      sign_in export_set.user
+      export_set.pids = [object.pid]
+      export_set.create_archive
+    end
+    after do
+      object.delete
+      export_set.user.delete
+    end
+    it "should delete the archive and redirect to the show page" do
+      delete :archive, :id => export_set
+      export_set.reload.archive_file_name.should be_nil
+      response.should redirect_to(export_set_path(export_set))
     end
   end
 end
