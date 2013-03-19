@@ -29,6 +29,36 @@ describe Component do
   it_behaves_like "an object that has content"
   it_behaves_like "an object that has a thumbnail"
 
+  context "#collection" do
+    context "orphan component" do
+      subject { component }
+      after { component.delete }
+      let(:component) { FactoryGirl.create(:component) }
+      its(:collection) { should be_nil }
+    end
+    context "belongs to orphan item" do
+      subject { component }
+      after do
+        component.item.delete
+        component.delete
+      end
+      let(:component) { FactoryGirl.create(:component_part_of_item) }
+      its(:collection) { should be_nil }
+    end
+    context "belongs to item in collection" do
+      subject { component }
+      before { item.children << component }
+      after do
+        item.collection.delete
+        item.delete
+        component.delete
+      end
+      let(:component) { FactoryGirl.create(:component) }
+      let(:item) { FactoryGirl.create(:item_in_collection) }
+      its(:collection) { should eq(component.parent.parent) }
+    end
+  end
+
   context "relationships" do
     let!(:component) { FactoryGirl.create(:component) }
     let!(:item) { FactoryGirl.create(:item) }
