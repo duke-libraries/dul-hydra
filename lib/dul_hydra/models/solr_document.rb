@@ -52,6 +52,10 @@ module DulHydra::Models
     def has_content?
       has_datastream?(DulHydra::Datastreams::CONTENT)
     end
+    
+    def parsed_content_metadata
+      JSON.parse(self[:content_metadata_parsed_s].first)
+    end
 
   end
 end
