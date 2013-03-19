@@ -61,10 +61,19 @@ class ExportSetsController < ApplicationController
   def archive
     # XXX authz
     @export_set = ExportSet.find(params[:id])
-    unless @export_set.archive.nil?
-      @export_set.archive = nil
-      @export_set.save
-      flash[:notice] = "Archive file deleted."
+    if request.delete?
+      unless @export_set.archive_file_name.nil?
+        @export_set.archive = nil
+        @export_set.save
+        flash[:notice] = "Archive deleted."
+      end
+    elsif request.post?
+      if @export_set.archive_file_name.nil?
+        @export_set.create_archive
+        flash[:notice] = "Archive created."
+      end
+    else
+      # XXX 404
     end
     redirect_to :action => :show, :id => @export_set
   end

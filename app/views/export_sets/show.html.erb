@@ -1,9 +1,8 @@
 <h1>Export Set</h1>
 
 <p>
-  <%= link_to "Edit", {:action => 'edit', :id => @export_set}, :method => 'get' %> 
-  |
-  <%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :confirm => "Are you sure?" %>
+  <%= link_to "Edit", {:action => 'edit', :id => @export_set}, :method => 'get', :class => "btn btn-primary" %> 
+  <%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :confirm => "Are you sure?", :class => "btn btn-danger" %>
 </p>
 
 <table class="table">
@@ -17,7 +16,14 @@
   </tr>
   <tr>
     <th scope="row">Archive:</th>
-    <td><%= link_to @export_set.archive_file_name, @export_set.archive.url %></td>
+    <td>
+      <% if @export_set.archive_file_name %>
+        <%= link_to @export_set.archive_file_name, @export_set.archive.url %>
+	<%= link_to "Delete Archive", {:action => 'archive', :id => @export_set}, :method => 'delete', :class => "btn btn-warning", :confirm => "Are you sure?" %>
+      <% else %>
+        <%= link_to "Create Archive", {:action => 'archive', :id => @export_set}, :method => 'post', :class => "btn" %>
+      <% end %>
+    </td>
   </tr>
 </table>
 
