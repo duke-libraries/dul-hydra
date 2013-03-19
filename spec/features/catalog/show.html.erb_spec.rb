@@ -36,6 +36,17 @@ describe "catalog/show.html.erb" do
       expect(subject).to have_content(object.parent.pid)
     end
   end
+  context "Object has children" do
+    context "Object has contentMetadata datastream" do
+      let(:object) { FactoryGirl.create(:test_content_metadata_has_children) }
+      it "should should display the children in proper order" do
+        expect(subject).to have_link("DulHydra Test Child Object", catalog_path(object.children.first.pid))
+        expect(subject).to have_link("DulHydra Test Child Object", catalog_path(object.children[1].pid))
+        expect(subject).to have_link("DulHydra Test Child Object", catalog_path(object.children.last.pid))
+        catalog_path(object.children.last.pid).should appear_before(catalog_path(object.children.first.pid))
+      end
+    end
+  end
   context "Object has preservation events" do
     let(:object) { FactoryGirl.create(:component_with_content_public_read) }
     let(:preservation_event) { object.validate_content_checksum! }

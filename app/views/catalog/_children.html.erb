@@ -1,7 +1,7 @@
 <% if document[:content_metadata_parsed_s] %>
-  <% cm = document.parsed_content_metadata %>
-  <% cm.each do |sm| %>
-    <%= display_sm(sm).html_safe %>
+  <% content_metadata = document.parsed_content_metadata %>
+  <% content_metadata.each do |structure| %>
+    <%= display_structure(structure).html_safe %>
   <% end %>
 <% end %>
 

@@ -5,50 +5,50 @@ module DulHydra::Helpers
       ActiveFedora::Base.pids_from_uris(args[:document][args[:field]])
     end
 
-    def display_sm(sm)
+    def display_structure(structure)
       display = ""
-      if sm.has_key?("div")
-        pids = walk_div(sm["div"], "pids", [])
-        children_info = get_children_info(pids)
-        walk_div(sm["div"], "display", display, children_info)
+      if structure.has_key?("div")
+        pids = walk_structure_div(structure["div"], "pids", [])
+        structure_contents_info = get_structure_contents_info(pids)
+        walk_structure_div(structure["div"], "display", display, structure_contents_info)
       end
       return display
     end
     
-    def walk_div(div, mode, collector, children_info=nil)
-      div.each do |d|
-        collector << d["label"] if mode.eql?("display") && d.has_key?("label")
-        if d.has_key?("div")
-          walk_div(d["div"], mode, collector, children_info)
+    def walk_structure_div(structure_div, mode, collector, structure_contents_info=nil)
+      structure_div.each do |div|
+        collector << div["label"] if mode.eql?("display") && div.has_key?("label")
+        if div.has_key?("div")
+          walk_structure_div(div["div"], mode, collector, structure_contents_info)
         else
-          walk_pids(d["pids"], mode, collector, children_info)
+          walk_structure_pids(div["pids"], mode, collector, structure_contents_info)
         end
       end
       return collector
     end
     
-    def walk_pids(pids, mode, collector, children_info=nil)
+    def walk_structure_pids(structure_pids, mode, collector, structure_contents_info=nil)
       collector << "<ul>" if mode.eql?("display")
-      pids.each do |pid|
+      structure_pids.each do |pid|
         collector << case mode
         when "pids"
           pid["pid"]
         when "display"
-          "<li>" << link_to(children_info[pid["pid"]]["title_display"], catalog_path(pid["pid"])) << " [" << pid["use"] << "]</li>"
+          "<li>" << link_to(structure_contents_info[pid["pid"]]["title_display"], catalog_path(pid["pid"])) << " [" << pid["use"] << "]</li>"
         end
       end
       collector << "</ul>" if mode.eql?("display")
       return collector
     end
     
-    def get_children_info(pids)
-      children_info = {}
+    def get_structure_contents_info(pids)
+      structure_contents_info = {}
       query = ActiveFedora::SolrService.construct_query_for_pids(pids)
-      children = ActiveFedora::SolrService.query(query, :rows => 999)
-      children.each do |child|
-        children_info[child["id"]] = child
+      contents_docs = ActiveFedora::SolrService.query(query, :rows => 999)
+      contents_docs.each do |contents_doc|
+        structure_contents_info[contents_doc["id"]] = contents_doc
       end
-      return children_info
+      return structure_contents_info
     end
     
   end
