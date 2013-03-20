@@ -23,7 +23,7 @@ describe "export_sets/show.html.erb" do
   context "archive has been generated" do
     it "should be able to delete the archive" do
       visit export_set_path(export_set)
-      click_link "Delete Archive"
+      click_link "export_set_archive_delete"
       page.should have_content("Archive deleted.")
       export_set.reload.archive_file_name.should be_nil
     end
@@ -35,7 +35,7 @@ describe "export_sets/show.html.erb" do
     end
     it "should be able to (re-)generate the archive" do
       visit export_set_path(export_set)
-      click_link "Create Archive"
+      click_link "export_set_archive_create"
       page.should have_content("Archive created.")
       export_set.reload.archive_file_name.should_not be_nil
     end

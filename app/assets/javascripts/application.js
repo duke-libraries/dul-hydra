@@ -16,8 +16,10 @@
 // Required by Blacklight
 //= require blacklight/blacklight
 //
-// bootstrap-tab jQuery plugin
-//= require bootstrap/bootstrap-tab
+// Extra bootstrap plugins loaded by bootstrap-sass
+//= require bootstrap-tab
+//= require bootstrap-dropdown
+//= require bootstrap-button
 //
 // Syntax lighlighting with google-code-prettify
 //= require google-code-prettify/run_prettify
