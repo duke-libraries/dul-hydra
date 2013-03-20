@@ -10,6 +10,12 @@ describe "catalog/show.html.erb" do
   before { visit catalog_path(object) }
   after do
     object.parent.delete if object.respond_to?(:parent) && object.parent
+    if object.respond_to?(:children) && object.children
+      object.children.each do |child|
+        child.delete
+      end
+      object.reload
+    end
     object.admin_policy.delete if object.admin_policy
     object.delete
   end
