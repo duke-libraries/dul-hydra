@@ -70,10 +70,9 @@ class CatalogController < ApplicationController
     config.add_show_field 'id', :label => 'PID:'
     #config.add_show_field 'title_t', :label => 'Title:' 
     config.add_show_field 'identifier_t', :label => 'Identifier:'
-    config.add_show_field 'is_part_of_s', :label => 'Part of:', :helper_method => :internal_uri_to_pid
-    config.add_show_field 'is_member_of_s', :label => 'Member of:', :helper_method => :internal_uri_to_pid
-    config.add_show_field 'is_member_of_collection_s', :label => 'Member of Collection:', :helper_method => :internal_uri_to_pid
-    config.add_show_field 'is_governed_by_s', :label => 'Admin Policy:', :helper_method => :internal_uri_to_pid
+    config.add_show_field 'is_part_of_s', :label => 'Part of:', :helper_method => :internal_uri_to_link
+    config.add_show_field 'is_member_of_collection_s', :label => 'Member of Collection:', :helper_method => :internal_uri_to_link
+    config.add_show_field 'is_governed_by_s', :label => 'Admin Policy:', :helper_method => :internal_uri_to_link
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields

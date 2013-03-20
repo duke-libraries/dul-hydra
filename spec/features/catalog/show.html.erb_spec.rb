@@ -38,8 +38,9 @@ describe "catalog/show.html.erb" do
   end
   context "Object has a parent" do
     let(:object) { FactoryGirl.create(:item_in_collection_public_read) }
-    it "should display its parent object PID" do
-      expect(subject).to have_content(object.parent.pid)
+    it "should display its parent object" do
+      #expect(subject).to have_link(object.parent.title_display, :href => catalog_path(object.parent))
+      expect(subject).to have_content(object.parent.title_display)
     end
   end
   context "Object has children" do
