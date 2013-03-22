@@ -29,4 +29,8 @@
   <li>
     <%= link_to "Audit Trail", audit_trail_index_path(document.id) %>
   </li>
+  <li>
+    <%= link_to "Targets", targets_path(document.id) %>
+    <%= link_to "Targets2", "/catalog/?qt=standard&q=is_external_target_for_s:info\\:fedora/changeme\\:1120"  %>
+  </li>
 </ul>

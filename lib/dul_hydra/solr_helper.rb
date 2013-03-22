@@ -10,4 +10,9 @@ module DulHydra::SolrHelper
     solr_params[:fq] << "+is_preservation_event_for_s:\"info:fedora/#{user_params[:object_id]}\""
   end
 
+  def targets_filter(solr_params, user_params)
+    solr_params[:fq] ||= []
+    solr_params[:fq] << "+is_external_target_for_s:\"info:fedora/#{user_params[:object_id]}\""
+  end
+
 end

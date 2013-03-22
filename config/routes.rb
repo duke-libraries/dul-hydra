@@ -15,6 +15,7 @@ DulHydra::Application.routes.draw do
     end
     resources :preservation_events, :only => :index
     resources :audit_trail, :only => :index
+    resources :targets, :only => :index
   end
   
   resources :export_sets do
