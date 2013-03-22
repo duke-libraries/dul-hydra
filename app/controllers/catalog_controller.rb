@@ -72,6 +72,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'identifier_t', :label => 'Identifier:'
     config.add_show_field 'is_part_of_s', :label => 'Part of:', :helper_method => :internal_uri_to_link
     config.add_show_field 'is_member_of_collection_s', :label => 'Member of Collection:', :helper_method => :internal_uri_to_link
+    config.add_show_field 'is_external_target_for_s', :label => 'Target for:', :helper_method => :internal_uri_to_link
     config.add_show_field 'is_governed_by_s', :label => 'Admin Policy:', :helper_method => :internal_uri_to_link
 
     # "fielded" search configuration. Used by pulldown among other places.

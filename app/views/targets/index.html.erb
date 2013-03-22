@@ -1,0 +1,49 @@
+<h1><%= @title %></h1>
+
+<h3>Targets</h3>
+
+<div class="pagination">
+  <%= render_pagination_info @response %>
+</div>
+
+<% if false %>
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">&nbsp;</th>
+			<th scope="col">Target</th>
+		</tr>
+	</thead>
+	<tbody>
+  		<% @document_list.each do |doc| %>
+  		<tr>
+		<td><%= render :partial => 'catalog/thumbnail', :locals => {:document => doc, :thumbnail_link => false} %></td>
+  		<td><%= link_to doc.get(:title_display), catalog_path(doc.id) %></td>
+  		</tr>
+  		<% end %>
+		
+	</tbody>
+</table>
+<% end %>
+
+<% document_counter = 0 %>
+<% @document_list.each do |document| %>
+  <div class="document <%= render_document_class document %>">
+    <%= render :partial => 'catalog/document_header', :locals => { :document => document, :document_counter => document_counter } %>
+    <div class="row">
+      <div class="span1">
+	<%= render :partial => 'catalog/thumbnail', :locals => {:document => document, :thumbnail_link => catalog_path(document)} %>
+      </div>
+      <div class="span8">
+	<% # main container for doc partial view -%>
+	<%= render_document_partial document, :index %>
+      </div>
+    </div>
+  </div>
+  <% document_counter += 1 %>
+<% end %>
+
+
+<div class="pagination">
+  <%= paginate_rsolr_response @response, :theme => 'blacklight' %>
+</div>
