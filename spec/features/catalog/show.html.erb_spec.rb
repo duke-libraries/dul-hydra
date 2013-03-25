@@ -17,6 +17,12 @@ describe "catalog/show.html.erb" do
       object.reload
     end
     object.admin_policy.delete if object.admin_policy
+    if object.respond_to?(:targets) && object.targets
+      object.targets.each do |target|
+        target.delete
+      end
+      object.reload
+    end
     object.delete
   end
   context "Basic object" do
@@ -83,5 +89,19 @@ describe "catalog/show.html.erb" do
     it "should display its admin policy PID" #do
 #      expect(subject).to have_content(object.admin_policy.pid)
 #    end
+  end
+  context "object can have targets" do
+    context "object has target" do
+      let (:object) { FactoryGirl.create(:collection_has_target_public_read) }
+      it "should have a link to the list of associated targets" do
+        expect(subject).to have_link("Targets", :href => targets_path(object))
+      end
+    end
+    context "object does not have target" do
+      let (:object) { FactoryGirl.create(:collection_public_read) }
+      it "should have a link to the list of associated targets" do
+        expect(subject).to_not have_link("Targets", :href => targets_path(object))
+      end
+    end
   end
 end

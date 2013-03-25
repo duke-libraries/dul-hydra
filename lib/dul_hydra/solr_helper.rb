@@ -13,7 +13,7 @@ module DulHydra::SolrHelper
   def targets_filter(solr_params, user_params)
     solr_params[:fq] ||= []
     solr_params[:fq] << "+is_external_target_for_s:\"info:fedora/#{user_params[:object_id]}\""
-#    solr_params[:sort] = ["title_display asc"]
+    solr_params[:sort] = ["title_display_sort asc"]
   end
 
 end
