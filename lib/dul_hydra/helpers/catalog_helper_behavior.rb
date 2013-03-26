@@ -7,12 +7,12 @@ module DulHydra::Helpers
 
     def internal_uri_to_link(args)
       pid = internal_uri_to_pid(args).first
-      query = ActiveFedora::SolrService.construct_query_for_pids([pid])
-      doc = ActiveFedora::SolrService.query(query).first
+      # Depends on Blacklight::SolrHelper#get_solr_response_for_doc_id 
+      # having been added as a helper method to CatalogController
+      response, doc = get_solr_response_for_doc_id(pid)
       title = doc.nil? ? pid : doc.fetch('title_display', pid)
       link_to(title, catalog_path(pid), :class => "parent-link").html_safe
     end
-
 
     def display_structure(structure)
       display = ""
