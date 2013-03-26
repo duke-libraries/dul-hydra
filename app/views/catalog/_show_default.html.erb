@@ -19,13 +19,13 @@
 <h3>Datastreams</h3>
 <%= render :partial => 'datastreams', :locals => {:document => document} %>
 
-<% if document.has_children? %>
-  <h3>Children</h3>
-  <%= render :partial => 'children', :locals => {:document => document} %>
-<% end %>
-
 <h3>More Information</h3>
 <ul>
+  <% if document.has_children? %>
+    <li>
+      <%= link_to "Children", children_path(document.id) %>
+    </li>
+  <% end %>
   <li>
     <%= link_to "Preservation Events", preservation_events_path(document.id) %>
   </li>

@@ -49,14 +49,30 @@ describe "catalog/show.html.erb" do
       expect(subject).to have_content(object.parent.title_display)
     end
   end
-  context "Object has children" do
-    context "Object has contentMetadata datastream" do
-      let(:object) { FactoryGirl.create(:test_content_metadata_has_children) }
-      it "should should display the children in proper order" do
-        expect(subject).to have_link("DulHydra Test Child Object", catalog_path(object.children.first.pid))
-        expect(subject).to have_link("DulHydra Test Child Object", catalog_path(object.children[1].pid))
-        expect(subject).to have_link("DulHydra Test Child Object", catalog_path(object.children.last.pid))
-        catalog_path(object.children.last.pid).should appear_before(catalog_path(object.children.first.pid))
+  # inline display of children is now deprecated in favor of displaying children on a separate page
+  # see context "object can have children" for tests related to displaying the link to the children page on this page
+  #context "Object has children" do
+  #  context "Object has contentMetadata datastream" do
+  #    let(:object) { FactoryGirl.create(:test_content_metadata_has_children) }
+  #    it "should should display the children in proper order" do
+  #      expect(subject).to have_link("DulHydra Test Child Object", catalog_path(object.children.first.pid))
+  #      expect(subject).to have_link("DulHydra Test Child Object", catalog_path(object.children[1].pid))
+  #      expect(subject).to have_link("DulHydra Test Child Object", catalog_path(object.children.last.pid))
+  #      catalog_path(object.children.last.pid).should appear_before(catalog_path(object.children.first.pid))
+  #    end
+  #  end
+  #end
+  context "object can have children" do
+    context "object has children" do
+      let (:object) { FactoryGirl.create(:test_parent_has_children) }
+      it "should have a link to the list of its children" do
+        expect(subject).to have_link("Children", :href => children_path(object))
+      end
+    end
+    context "object does not have children" do
+      let (:object) { FactoryGirl.create(:test_parent) }
+      it "should not have a link to children" do
+        expect(subject).to_not have_link("Children", :href => children_path(object))
       end
     end
   end
@@ -99,7 +115,7 @@ describe "catalog/show.html.erb" do
     end
     context "object does not have target" do
       let (:object) { FactoryGirl.create(:collection_public_read) }
-      it "should have a link to the list of associated targets" do
+      it "should not have a link to targets" do
         expect(subject).to_not have_link("Targets", :href => targets_path(object))
       end
     end

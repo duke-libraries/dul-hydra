@@ -44,7 +44,7 @@ FactoryGirl.define do
     sequence(:identifier) { |n| "testparent%05d" % n }
     permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
     
-    factory ":test_parent_has_children" do
+    factory :test_parent_has_children do
       ignore do
         child_count 3
       end
