@@ -194,7 +194,6 @@ module DulHydra::Scripts::Helpers
         if ingest_object.datastreams.keys.include?("content")
           file = File.open(filename)
           ingest_object.content.content_file = file
-          ingest_object.content.dsLabel = "Content file for this object"
           ingest_object.save
           file.close
           ingest_object.reload
@@ -214,35 +213,25 @@ module DulHydra::Scripts::Helpers
             "#{basepath}#{metadata_type}/#{object[metadata_type]}"
           end
           content = File.open(dsLocation)
-          label = nil
           datastream = case metadata_type
           when "contentdm"
-            label = "CONTENTdm Data for this object"
             ingest_object.contentdm
           when "contentmetadata"
-            label = "Structural Content Data for this object"
             ingest_object.contentMetadata
           when "digitizationguide"
-            label = "Digitization Guide Data for this object"
             ingest_object.digitizationGuide
           when "dpcmetadata"
-            label = "DPC Metadata Data for this object"
             ingest_object.dpcMetadata
           when "fmpexport"
-            label = "FileMakerPro Export Data for this object"
             ingest_object.fmpExport
           when "jhove"
-            label = "JHOVE Data for this object"
             ingest_object.jhove
           when "marcxml"
-            label = "Aleph MarcXML Data for this object"
             ingest_object.marcXML
           when "tripodmets"
-            label = "Tripod METS Data for this object"
             ingest_object.tripodMets
           end
           datastream.content_file = content
-          datastream.dsLabel = label
           return ingest_object
       end
       
