@@ -201,7 +201,7 @@ module DulHydra::Scripts
     before do
       setup_test_dir
       FileUtils.mkdir "#{@ingestable_dir}/master"
-      FileUtils.mkdir "#{@ingestable_dir}/qdc"
+      FileUtils.mkdir "#{@ingestable_dir}/descmetadata"
     end
     after do
       remove_test_dir
@@ -221,9 +221,9 @@ module DulHydra::Scripts
         end
         it "should create Qualified Dublin Core files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          File.size?("#{@ingestable_dir}/qdc/id001.xml").should_not be_nil
-          File.size?("#{@ingestable_dir}/qdc/id002.xml").should_not be_nil
-          File.size?("#{@ingestable_dir}/qdc/id004.xml").should_not be_nil
+          File.size?("#{@ingestable_dir}/descmetadata/id001.xml").should_not be_nil
+          File.size?("#{@ingestable_dir}/descmetadata/id002.xml").should_not be_nil
+          File.size?("#{@ingestable_dir}/descmetadata/id004.xml").should_not be_nil
         end
         it "should create an appropriate log file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
@@ -281,9 +281,9 @@ module DulHydra::Scripts
       let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) } }
       before do
         FileUtils.cp "spec/fixtures/batch_ingest/master/base_master.xml", "#{@ingestable_dir}/master/master.xml"
-        FileUtils.cp "spec/fixtures/batch_ingest/qdc/id001.xml", "#{@ingestable_dir}/qdc"
-        FileUtils.cp "spec/fixtures/batch_ingest/qdc/id002.xml", "#{@ingestable_dir}/qdc"
-        FileUtils.cp "spec/fixtures/batch_ingest/qdc/id004.xml", "#{@ingestable_dir}/qdc"
+        FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id001.xml", "#{@ingestable_dir}/descmetadata"
+        FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id002.xml", "#{@ingestable_dir}/descmetadata"
+        FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id004.xml", "#{@ingestable_dir}/descmetadata"
       end
       after do
         object_type.find_each do |object|
@@ -509,7 +509,7 @@ module DulHydra::Scripts
             end
             before do
               manifest = File.open(@manifest_file) { |f| YAML::load(f) }
-              manifest[:metadata] = ["marcxml", "qdc"]
+              manifest[:metadata] = ["marcxml", "descmetadata"]
               File.open(@manifest_file, "w") { |f| YAML::dump(manifest, f)}
               DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
             end
