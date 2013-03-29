@@ -325,26 +325,16 @@ module DulHydra::Scripts::Helpers
     end
 
     describe "#set_parent" do
-      before do
-        @item = Item.new
-        @model = "Item"
-        @collection = Collection.new(:pid => "test:collectionPid")
-        @collection.identifier = "collectionIdentifier"
-        @collection.save!
-      end
+      let!(:parent) { FactoryGirl.create(:test_parent) }
+      let!(:child) { FactoryGirl.create(:test_child) }
       after do
-        @collection.delete
+        parent.delete
+        child.delete
       end
-      context "item child object with parent identifier" do
-        it "should set the collection attribute of the item to the collection parent" do
-          object = MockBatchIngest.set_parent(@item, @model, :id, "collectionIdentifier")
-          object.collection.should eq(@collection)
-        end
-      end
-      context "item child object with parent pid" do
-        it "should set the collection attribute of the item to the collection parent" do
-          object = MockBatchIngest.set_parent(@item, @model, :pid, "test:collectionPid")
-          object.collection.should eq(@collection)
+      context "child object with parent pid" do
+        it "should set the parent attribute of the child object to the parent" do
+          object = MockBatchIngest.set_parent(child, :pid, parent.pid)
+          object.parent.pid.should eq(parent.pid)
         end
       end
     end

@@ -3,10 +3,13 @@ basepath: placeholder
 model: TestChild
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
-autoparentidlength: 3
+parent:
+    master: placeholder
+    autoidlength: 3
 metadata:
     - descmetadata
 objects:
     - identifier: id001
     - identifier: id002
-      parentid: parent01
+      parent:
+        id: parent01

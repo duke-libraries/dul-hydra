@@ -200,8 +200,6 @@ module DulHydra::Scripts
   describe BatchIngest do
     before do
       setup_test_dir
-      FileUtils.mkdir "#{@ingestable_dir}/master"
-      FileUtils.mkdir "#{@ingestable_dir}/descmetadata"
     end
     after do
       remove_test_dir
@@ -238,6 +236,7 @@ module DulHydra::Scripts
       end
       context "partially populated master file already exists" do
         before do
+          FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/preexisting_master.xml", "#{@ingestable_dir}/master/master.xml"
         end
         it "should add the new objects to those already in the master file" do
@@ -280,7 +279,9 @@ module DulHydra::Scripts
       let(:manifest) { @manifest_file }
       let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) } }
       before do
+        FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
         FileUtils.cp "spec/fixtures/batch_ingest/master/base_master.xml", "#{@ingestable_dir}/master/master.xml"
+        FileUtils.mkdir_p(File.join(@ingestable_dir, 'descmetadata')) unless File.exists?(File.join(@ingestable_dir, 'descmetadata'))
         FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id001.xml", "#{@ingestable_dir}/descmetadata"
         FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id002.xml", "#{@ingestable_dir}/descmetadata"
         FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id004.xml", "#{@ingestable_dir}/descmetadata"
@@ -365,6 +366,10 @@ module DulHydra::Scripts
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
           update_manifest(@manifest_file, {:model => object_type.to_s})
+          # need to create a temp parent_master file and set [:parent][:master] to its path in (child) manifest
+          parent_master = create_parent_master(parents.values) # this works
+          @parent_master_file = File.open("/tmp/foo.xml", 'w') { |f| parent_master.write_xml_to f } # need to have better way to place file
+          update_manifest(@manifest_file, {:parent => {:master => "/tmp/foo.xml"}}) # this doesn't work -- need to review update_manifest
           DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
         after do
@@ -401,6 +406,7 @@ module DulHydra::Scripts
         FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/contentstructure_manifest.yml", "#{@manifest_dir}/manifest.yml"
         @manifest_file = "#{@manifest_dir}/manifest.yml"
         update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+        FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
         FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
         @parent = TestContentMetadata.create!(:pid => 'test:1', :identifier => 'id001')
         @child1 = TestChild.create!(:identifier => 'id00100030')
@@ -450,6 +456,7 @@ module DulHydra::Scripts
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
           @objects = [
                       TestModel.create(:pid => "test:1", :identifier => "id001"),
@@ -523,6 +530,7 @@ module DulHydra::Scripts
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest_single.yml", "#{@manifest_dir}/manifest.yml"
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_single_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
           @object = TestFileDatastreams.create(:pid => "test:5", :identifier => "id005")
           file = File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml")
@@ -558,6 +566,7 @@ module DulHydra::Scripts
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/child_manifest.yml", "#{@manifest_dir}/manifest.yml"
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/child_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
           @objects = [
                       TestChild.create(:pid => "test:1", :identifier => "id001"),
@@ -610,6 +619,7 @@ module DulHydra::Scripts
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/checksum_manifest.yml", "#{@manifest_dir}/manifest.yml"
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/checksum_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
           FileUtils.mkdir "#{@ingestable_dir}/checksum"
           @object = TestContent.create(:pid => "test:1", :identifier => "id001")
@@ -676,6 +686,7 @@ module DulHydra::Scripts
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/target_manifest.yml", "#{@manifest_dir}/manifest.yml"
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+          FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/target_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
           @target = Target.create(:pid => "test:1", :identifier => "id001")
           @collection = Collection.create(:pid => "test:2", :identifier => "collection_1")

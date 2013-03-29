@@ -1,24 +1,22 @@
 require 'find'
 
 module BatchIngestSpecHelper
-  FIXTURES_BATCH_INGEST_BASE = "spec/fixtures/batch_ingest/BASE"
   
   def setup_test_dir
     @test_dir = Dir.mktmpdir("dul_hydra_test")
-    base_dir = "#{@test_dir}/ingest/BASE"
-    @manifest_dir = "#{base_dir}/manifests"
+    base_dir = File.join(@test_dir, 'ingest', 'BASE')
+    @manifest_dir = File.join(base_dir, 'manifests')
     FileUtils.mkdir_p @manifest_dir
-    @ingestable_dir = "#{base_dir}/ingestable"
+    @ingestable_dir = File.join(base_dir, 'ingestable')
     FileUtils.mkdir_p @ingestable_dir
-    FileUtils.mkdir "#{@ingestable_dir}/log"
   end
   def remove_test_dir
     FileUtils.remove_dir @test_dir
   end
   def locate_datastream_content_file(location_pattern)
     locations = []
-    Find.find('jetty/fedora/test/data/datastreamStore/') do |f|
-      if f.match("#{location_pattern}")
+    Find.find(File.join('jetty', 'fedora', 'test', 'data', 'datastreamStore')) do |f|
+      if f.match(location_pattern)
         locations << f
       end
     end
@@ -33,6 +31,22 @@ module BatchIngestSpecHelper
   end
   def remove_temp_dir
     FileUtils.remove_dir @test_temp_dir
+  end
+  def create_parent_master(parents)
+    master = Nokogiri::XML::Document.new
+    objects_node = Nokogiri::XML::Node.new :objects.to_s, master
+    master.root = objects_node
+    parents.each do |parent|
+      object_node = Nokogiri::XML::Node.new :object.to_s, master
+      identifier_node = Nokogiri::XML::Node.new :identifier.to_s, master
+      identifier_node.content = parent.identifier.first
+      object_node.add_child(identifier_node)
+      pid_node = Nokogiri::XML::Node.new :pid.to_s, master
+      pid_node.content = parent.pid
+      object_node.add_child(pid_node)
+      objects_node.add_child(object_node)
+    end
+    return master
   end
   def create_expected_content_metadata_document
       expected = Nokogiri::XML::Document.new

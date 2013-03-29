@@ -16,16 +16,16 @@ module DulHydra::Scripts
       if manifest[:split]
         for entry in manifest[:split]
           source_doc_path = case
-          when entry[:source].start_with?("/")
+          when entry[:source].start_with?(File::SEPARATOR)
             entry[:source]
           else
-            "#{basepath}#{entry[:type]}/#{entry[:source]}"
+            File.join(basepath, entry[:type], entry[:source])
           end
           source_doc = File.open(source_doc_path) { |f| Nokogiri::XML(f) }
           parts = split(source_doc, entry[:xpath], entry[:idelement])
           parts.each { | key, value |
-            target_path = entry[:targetpath] || "#{basepath}#{entry[:type]}/"
-            File.open("#{target_path}#{key}.xml", 'w') { |f| value.write_xml_to f }
+            target_path = entry[:targetpath] || File.join(basepath, entry[:type])
+            File.open(File.join(target_path, "#{key}.xml"), 'w') { |f| value.write_xml_to f }
           }
         end
       end
@@ -43,12 +43,11 @@ module DulHydra::Scripts
         else
           stub_desc_metadata()
         end
-        result_xml_path = "#{basepath}descmetadata/#{key_identifier(object)}.xml"
-        File.open(result_xml_path, 'w') { |f| desc_metadata.write_xml_to f }
+        write_xml_file(desc_metadata, File.join(basepath, 'descmetadata', "#{key_identifier(object)}.xml"))
         object_count += 1
       end
       unless master_source == PROVIDED
-        File.open(master_path(manifest[:master], manifest[:basepath]), "w") { |f| master.write_xml_to f }
+        write_xml_file(master, master_path(manifest[:master], manifest[:basepath]))
       end
       log.info "Processed #{object_count} object(s)"
       log.info "=================="
@@ -88,7 +87,7 @@ module DulHydra::Scripts
         metadata = object_metadata(object, manifest[:metadata])
         event_details << "Metadata: #{metadata.join(",")}\n"
         if object_metadata(object, manifest_metadata).include?("descmetadata")
-          desc_metadata = File.open("#{manifest[:basepath]}descmetadata/#{key_identifier(object)}.xml") { |f| f.read }
+          desc_metadata = File.open(File.join(manifest[:basepath], 'descmetadata', "#{key_identifier(object)}.xml")) { |f| f.read }
           ingest_object.descMetadata.content = desc_metadata
           ingest_object.identifier = merge_identifiers(object[:identifier], ingest_object.identifier)
         end
@@ -99,12 +98,12 @@ module DulHydra::Scripts
         end
         content_spec = object[:content] || manifest[:content]
         if !content_spec.blank?
-          filename = "#{content_spec[:location]}#{key_identifier(object)}#{content_spec[:extension]}"
+          filename = File.join(content_spec[:location], "#{key_identifier(object)}#{content_spec[:extension]}")
           ingest_object = add_content_file(ingest_object, filename)
           ingest_object.creator = content_spec[:creator]
           ingest_object.source = case
           when content_spec[:pathroot].blank?
-            filename.split("#{File::SEPARATOR}").last
+            filename.split(File::SEPARATOR).last
           else
             pathindex = filename.index(content_spec[:pathroot])
             filename.slice(pathindex, filename.length - pathindex)
@@ -113,14 +112,17 @@ module DulHydra::Scripts
           ingest_object.generate_thumbnail!
           event_details << "Content file: #{filename}\n"
         end
-        parentid = object[:parentid] || manifest[:parentid]
+        parentid = object[:parent][:id] || manifest[:parent][:id] # need to test for existence of xxx[:parent] before calling [:parent][:id]
         if parentid.blank?
-          if !manifest[:autoparentidlength].blank?
-            parentid = key_identifier(object).slice(0, manifest[:autoparentidlength])
+          autoidlength = object[:parent][:autoidlength] || manifest[:parent][:autoidlength]
+          if autoidlength
+            parentid = key_identifier(object).slice(0, autoidlength)
           end
         end
         if !parentid.blank?
-          ingest_object = set_parent(ingest_object, model, :id, parentid)
+          parent_master = File.open(object[:parent][:master] || manifest[:parent][:master]) { |f| Nokogiri.XML(f) }
+          parentpid = get_pid_from_master(parent_master, parentid)
+          ingest_object = set_parent(ingest_object, :pid, parentpid)
           event_details << "Parent id: #{parentid}\n"
         end
         collectionid = object[:collectionid] || manifest[:collectionid]
@@ -134,7 +136,7 @@ module DulHydra::Scripts
         log.info "Ingested #{model} #{key_identifier(object)} into #{ingest_object.pid}"
         object_count += 1
       end
-      File.open(master_path(manifest[:master], manifest[:basepath]), "w") { |f| master.write_xml_to f }
+      write_xml_file(master, master_path(manifest[:master], manifest[:basepath]))
       log.info "Ingested #{object_count} object(s)"
       log.info "=================="
     end

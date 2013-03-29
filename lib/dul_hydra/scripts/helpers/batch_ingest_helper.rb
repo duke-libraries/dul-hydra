@@ -11,7 +11,7 @@ module DulHydra::Scripts::Helpers
     include Log4r
     
     # Constants
-    LOG_CONFIG_FILEPATH = "#{Rails.root}/config/log4r_batch_ingest.yml"
+    LOG_CONFIG_FILEPATH = File.join(Rails.root, 'config', 'log4r_batch_ingest.yml')
     FEDORA_URI_PREFIX = "info:fedora/"
     ACTIVE_FEDORA_MODEL_PREFIX = "afmodel:"
     GENERATE = "generate"
@@ -21,9 +21,9 @@ module DulHydra::Scripts::Helpers
     JHOVE_URI_ATTRIBUTE = "uri"
     CONTENT_FILE_TYPES = Set[:pdf, :tif]
     DESC_METADATA_GENERATION_SOURCES = Set[:contentdm, :digitizationguide, :marcxml]
-    CONTENTDM_TO_DESC_METADATA_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/CONTENTdm2QDC.xsl"
-    DIGITIZATIONGUIDE_TO_DESC_METADATA_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/DigitizationGuide2QDC.xsl"
-    MARCXML_TO_DESC_METADATA_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/MARCXML2QDC.xsl"
+    CONTENTDM_TO_DESC_METADATA_XSLT_FILEPATH = File.join(Rails.root, 'lib', 'assets', 'xslt', 'CONTENTdm2QDC.xsl')
+    DIGITIZATIONGUIDE_TO_DESC_METADATA_XSLT_FILEPATH = File.join(Rails.root, 'lib', 'assets', 'xslt', 'DigitizationGuide2QDC.xsl')
+    MARCXML_TO_DESC_METADATA_XSLT_FILEPATH = File.join(Rails.root, 'lib', 'assets', 'xslt', 'MARCXML2QDC.xsl')
     VERIFYING = "Verifying..."
     PASS = "...PASS"
     FAIL = "...FAIL"
@@ -43,13 +43,34 @@ module DulHydra::Scripts::Helpers
 
     module ClassMethods
       
+      # prep ingest
       def config_logger(logger_name, basepath)
         log_config = YAML.load_file(LOG_CONFIG_FILEPATH)
         YamlConfigurator['basepath'] = basepath
+        loggers = log_config['log4r_config']['loggers']
+        outputters = log_config['log4r_config']['outputters']
+        this_logger = loggers.detect { |logger| logger['name'].eql?(logger_name) }
+        this_logger_outputter_names = this_logger['outputters']
+        this_logger_outputters = outputters.select { |outputter| this_logger_outputter_names.include?(outputter['name']) }
+        this_logger_outputters.each do |this_logger_outputter|
+          if this_logger_outputter['filename']
+            dirname = File.dirname(this_logger_outputter['filename'])
+            dirname.gsub!('#{basepath}', basepath)
+            FileUtils.mkdir_p dirname unless File.exists?(dirname)
+          end
+        end
         YamlConfigurator.decode_yaml(log_config['log4r_config'])
         return Log4r::Logger[logger_name]
       end
       
+      # prep
+      def write_xml_file(xmldoc, filepath)
+        dirname = File.dirname(filepath)
+        FileUtils.mkdir_p dirname unless File.exists?(dirname)
+        File.open(filepath, "w") { |f| xmldoc.write_xml_to f }        
+      end
+
+      # prep
       def split(source_doc, unit_xpath, identifier_element)
         parts = Hash.new
         elements = source_doc.xpath(unit_xpath)
@@ -62,10 +83,12 @@ module DulHydra::Scripts::Helpers
         return parts
       end
 
+      # prep ingest
       def load_yaml(path_to_yaml)
         File.open(path_to_yaml) { |f| YAML::load(f) }
       end
       
+      #prep
       def master_document(master_path)
         case
         when File.exists?(master_path)
@@ -75,6 +98,7 @@ module DulHydra::Scripts::Helpers
         end
       end
 
+      # internal master_document()
       def create_master_document()
         master = Nokogiri::XML::Document.new
         objects_node = Nokogiri::XML::Node.new :objects.to_s, master
@@ -82,6 +106,7 @@ module DulHydra::Scripts::Helpers
         return master
       end
 
+      # prep
       def add_manifest_object_to_master(master, object, manifest_model)
         model = object[:model] || manifest_model
         object_node = Nokogiri::XML::Node.new :object.to_s, master
@@ -107,15 +132,16 @@ module DulHydra::Scripts::Helpers
         return master
       end
       
-      def get_pid_from_master(master, key_identifier)
-        object_node = master.xpath("/objects/object[identifier[text() = '#{key_identifier}']]")
+      # ingest
+      def get_pid_from_master(master, identifier)
+        object_node = master.xpath("/objects/object[identifier[text() = '#{identifier}']]")
         case object_node.size()
         when 1
           pid = object_node.xpath("pid").text
         when 0
-          raise "Object #{key_identifier} not found in master file"
+          raise "Object #{identifier} not found in master file"
         else
-          raise "Multiple objects found for #{key_identifier} in master file"
+          raise "Multiple objects found for #{identifier} in master file"
         end
         return pid
       end
@@ -130,6 +156,7 @@ module DulHydra::Scripts::Helpers
         return fedoraChecksumValidation && externalChecksumValidation
       end
       
+      # prep
       def generate_desc_metadata(object, descmetadatasource, basepath)
           xslt_filepath = eval "#{descmetadatasource.upcase}_TO_DESC_METADATA_XSLT_FILEPATH"
           xml = File.open(metadata_filepath(object, descmetadatasource, basepath)) { |f| Nokogiri::XML(f) }
@@ -137,6 +164,7 @@ module DulHydra::Scripts::Helpers
           desc_metadata = xslt.transform(xml)
       end
       
+      # prep
       def stub_desc_metadata()
         desc_metadata = Nokogiri::XML::Document.new
         dc_node = Nokogiri::XML::Node.new :dc.to_s, desc_metadata
@@ -146,6 +174,7 @@ module DulHydra::Scripts::Helpers
         return desc_metadata
       end
       
+      # ingest
       def merge_identifiers(manifest_object_identifier, ingest_object_identifier)
         manifest_identifiers = case manifest_object_identifier
         when String
@@ -156,6 +185,7 @@ module DulHydra::Scripts::Helpers
         identifiers = Set.new(ingest_object_identifier).merge(Set.new(manifest_identifiers)).to_a
       end
       
+      # prep
       def key_identifier(manifest_object)
         case manifest_object[:identifier]
         when String
@@ -165,30 +195,31 @@ module DulHydra::Scripts::Helpers
         end
       end
       
-      def metadata_filepath(object, descmetadatasource, basepath)
-        type = descmetadatasource
+      # internal generate_desc_metadata()
+      def metadata_filepath(object, metadata, basepath)
         case
-        when object["#{type}"].blank?
-          "#{basepath}#{type}#{File::SEPARATOR}#{key_identifier(object)}.xml"
-        when object["#{type}"].start_with?("/")
-          object["#{type}"]
+        when object[metadata].blank?
+          File.join(basepath, metadata, "#{key_identifier(object)}.xml")
+        when object[metadata].start_with?(File::SEPARATOR)
+          object[metadata]
         else
-          filename = object["#{type}"]
-          "#{basepath}#{type}#{File::SEPARATOR}#{filename}"
+          File.join(basepath, metadata, object[metadata])
         end
       end
       
+      # prep ingest
       def master_path(manifest_master, manifest_basepath)
         master_path = case
         when manifest_master.blank?
-          "#{manifest_basepath}master/master.xml"
-        when manifest_master.start_with?("/")
+          File.join(manifest_basepath, 'master', 'master.xml')
+        when manifest_master.start_with?(File::SEPARATOR)
           manifest_master
         else
-          "#{manifest_basepath}master/#{manifest_master}"
+          File.join(manifest_basepath, 'master', manifest_master)
         end      
       end
       
+      # ingest
       def object_apo(object, manifest_apo)
         case
         when object[:adminpolicy] then AdminPolicy.find(object[:adminpolicy])
@@ -196,6 +227,7 @@ module DulHydra::Scripts::Helpers
         end
       end
       
+      # ingest
       def object_metadata(object, manifest_metadata)
         metadata = Array.new
         metadata.concat(manifest_metadata) unless manifest_metadata.blank?
@@ -203,65 +235,34 @@ module DulHydra::Scripts::Helpers
         return metadata
       end
       
+      # ingest
       def add_content_file(ingest_object, filename)
-        if ingest_object.datastreams.keys.include?("content")
+        if ingest_object.datastreams.keys.include?(DulHydra::Datastreams::CONTENT)
           file = File.open(filename)
           ingest_object.content.content_file = file
           ingest_object.save
           file.close
           ingest_object.reload
         else
-          raise "Ingest object does not have a 'content' datastream"
+          raise "Ingest object does not have a #{DulHydra::Datastreams::CONTENT} datastream"
         end
         return ingest_object
       end
       
+      # ingest
       def add_metadata_content_file(ingest_object, object, metadata_type, basepath)
-          dsLocation = case
-          when object[metadata_type].blank?
-            "#{basepath}#{metadata_type}/#{key_identifier(object)}.xml"
-          when object[metadata_type].start_with?("/")
-            "#{object[metadata_type]}"
-          else
-            "#{basepath}#{metadata_type}/#{object[metadata_type]}"
-          end
-          content = File.open(dsLocation)
-          datastream = case metadata_type
-          when "contentdm"
-            ingest_object.contentdm
-          when "contentmetadata"
-            ingest_object.contentMetadata
-          when "digitizationguide"
-            ingest_object.digitizationGuide
-          when "dpcmetadata"
-            ingest_object.dpcMetadata
-          when "fmpexport"
-            ingest_object.fmpExport
-          when "jhove"
-            ingest_object.jhove
-          when "marcxml"
-            ingest_object.marcXML
-          when "tripodmets"
-            ingest_object.tripodMets
-          end
-          datastream.content_file = content
-          return ingest_object
+        dsLocation = metadata_filepath(object, metadata_type, basepath)
+        content = File.open(dsLocation)
+        datastream = DATA_TYPE_TO_DATASTREAM_NAME[metadata_type.downcase]
+        ingest_object.datastreams[datastream].content_file = content
+        return ingest_object
       end
       
-      def set_parent(ingest_object, object_model, parent_identifier_type, parent_identifier)
+      # ingest
+      def set_parent(ingest_object, parent_identifier_type, parent_identifier)
         parent = case parent_identifier_type
-        when :id
-          parent_results = parent_class(object_model).find_by_identifier(parent_identifier)
-          case
-          when parent_results.size == 1
-            parent_results.first
-          when parent_results.size > 1
-            raise "Found multiple parent objects"
-          else
-            parent_results
-          end
         when :pid
-          parent_class(object_model).find(parent_identifier)
+          DulHydra::Models::Base.find(parent_identifier, :cast => true)
         end
         if parent.blank?
           raise "Unable to find parent"
@@ -290,22 +291,6 @@ module DulHydra::Scripts::Helpers
         end
         ingest_object.collection = collection
         return ingest_object
-      end
-      
-      def parent_class(child_model)
-        parent_model = nil
-        reflections = child_model.constantize.reflections
-        reflections.each do |reflection|
-          if (reflection[0] == :collection) || (reflection[0] == :container) || (reflection[0] == :parent)
-            parent_model = reflection[1].options[:class_name]
-#            The more robust version below covers the case where the class_name option is not explicitly provided but is
-#            rather inferred from the relationship name.  However, it requires finding or writing a function to turn
-#            the relationship name into a class name.  Apparently, Active Fedora knows how to do this but I haven't yet
-#            tracked it down.
-#            parent_model = reflection[1].options[:class_name] || reflection[1].name.magic_function_to_turn_into_class_name
-          end
-        end
-        return parent_model.constantize
       end
       
       def write_preservation_event(ingest_object, event_type, event_outcome, details)
