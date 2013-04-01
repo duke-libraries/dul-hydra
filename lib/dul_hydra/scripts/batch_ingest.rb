@@ -112,15 +112,19 @@ module DulHydra::Scripts
           ingest_object.generate_thumbnail!
           event_details << "Content file: #{filename}\n"
         end
-        parentid = object[:parent][:id] || manifest[:parent][:id] # need to test for existence of xxx[:parent] before calling [:parent][:id]
+        parentid = object[:parent][:id] if object[:parent]
+        parentid = manifest[:parent][:id] if parentid.blank? && manifest[:parent]
         if parentid.blank?
-          autoidlength = object[:parent][:autoidlength] || manifest[:parent][:autoidlength]
+          autoidlength = object[:parent][:autoidlength] if object[:parent]
+          autoidlength = manifest[:parent][:autoidlength] if autoidlength.blank? && manifest[:parent]
           if autoidlength
             parentid = key_identifier(object).slice(0, autoidlength)
           end
         end
         if !parentid.blank?
-          parent_master = File.open(object[:parent][:master] || manifest[:parent][:master]) { |f| Nokogiri.XML(f) }
+          parent_master_path = object[:parent][:master] if object[:parent]
+          parent_master_path = manifest[:parent][:master] if parent_master_path.blank? && manifest[:parent]
+          parent_master = File.open(parent_master_path) { |f| Nokogiri.XML(f) }
           parentpid = get_pid_from_master(parent_master, parentid)
           ingest_object = set_parent(ingest_object, :pid, parentpid)
           event_details << "Parent id: #{parentid}\n"
@@ -274,16 +278,41 @@ module DulHydra::Scripts
               checksum_matches = verify_checksum(repository_object, key_identifier(object), checksum_doc)
               event_details << (checksum_matches ? PASS : FAIL) << "\n"
             end
-            parentid = object[:parentid] || manifest[:parentid]
+        #parentid = object[:parent][:id] if object[:parent]
+        #parentid = manifest[:parent][:id] if parentid.blank? && manifest[:parent]
+        #if parentid.blank?
+        #  autoidlength = object[:parent][:autoidlength] if object[:parent]
+        #  autoidlength = manifest[:parent][:autoidlength] if autoidlength.blank? && manifest[:parent]
+        #  if autoidlength
+        #    parentid = key_identifier(object).slice(0, autoidlength)
+        #  end
+        #end
+        #if !parentid.blank?
+        #  parent_master_path = object[:parent][:master] if object[:parent]
+        #  parent_master_path = manifest[:parent][:master] if parent_master_path.blank? && manifest[:parent]
+        #  parent_master = File.open(parent_master_path) { |f| Nokogiri.XML(f) }
+        #  parentpid = get_pid_from_master(parent_master, parentid)
+        #  ingest_object = set_parent(ingest_object, :pid, parentpid)
+        #  event_details << "Parent id: #{parentid}\n"
+        #end
+            parentid = object[:parent][:id] if object[:parent]
+            parentid = manifest[:parent][:id] if parentid.blank? && manifest[:parent]
             if parentid.blank?
-              if !manifest[:autoparentidlength].blank?
-                parentid = key_identifier(object).slice(0, manifest[:autoparentidlength])
+              autoidlength = object[:parent][:autoidlength] if object[:parent]
+              autoidlength = manifest[:parent][:autoidlength] if autoidlength.blank? && manifest[:parent]
+              if autoidlength
+                parentid = key_identifier(object).slice(0, autoidlength)
               end
             end
             if !parentid.blank?
               event_details << "#{VERIFYING}child relationship to identifier #{parentid}"
+              parent_master_path = object[:parent][:master] if object[:parent]
+              parent_master_path = manifest[:parent][:master] if parent_master_path.blank? && manifest[:parent]
+              parent_master = File.open(parent_master_path) { |f| Nokogiri.XML(f) }
+              parentpid = get_pid_from_master(parent_master, parentid)
               parent = repository_object.parent
-              if parent.nil? || !parent.identifier.include?(parentid)
+#              if parent.nil? || !parent.identifier.include?(parentid)
+              if parent.nil? || !parent.pid.eql?(parentpid)
                 parent_child_correct = false
               end
               event_details << (parent_child_correct ? PASS : FAIL) << "\n"

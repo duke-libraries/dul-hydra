@@ -24,10 +24,22 @@ module BatchIngestSpecHelper
   end
   def update_manifest(manifest_filepath, attributes_hash)
     manifest = File.open(manifest_filepath) { |f| YAML::load(f) }
-    attributes_hash.each do |key, value|
-      manifest[key] = value
-    end
+    #attributes_hash.each do |key, value|
+    #  manifest[key] = value
+    #end
+    #manifest.merge!(attributes_hash)
+    update_manifest_hash(manifest, attributes_hash)
+    #puts manifest
     File.open(manifest_filepath, "w") { |f| YAML::dump(manifest, f)}            
+  end
+  def update_manifest_hash(manifest_hash, update_hash)
+    update_hash.each do |key, value|
+      if value.is_a?(Hash)
+        update_manifest_hash(manifest_hash[key], update_hash[key])
+      else
+        manifest_hash.merge!(update_hash)
+      end
+    end
   end
   def remove_temp_dir
     FileUtils.remove_dir @test_temp_dir
