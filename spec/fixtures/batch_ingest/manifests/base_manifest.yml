@@ -4,7 +4,7 @@ model: TestModel
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 metadata:
-    - qdc
+    - descmetadata
 objects:
     - identifier: id001
     - identifier:

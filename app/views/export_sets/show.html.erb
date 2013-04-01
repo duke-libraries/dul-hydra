@@ -1,21 +1,53 @@
 <h1>Export Set</h1>
 
 <p>
-	<%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :confirm => "Are you sure?" %>
+  <%= link_to "Edit", {:action => 'edit', :id => @export_set}, :method => 'get', :class => "btn btn-primary" %> 
+  <%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :confirm => "Are you sure you want to delete the export set?", :class => "btn btn-danger" %>
 </p>
 
-<dl>
-	<dt>Created:</dt>
-	<dd><%= @export_set.created_at %></dd>
-	<dt>PIDS:</dt>
-	<dd>
-		<ul>
-		<% @export_set.pids.each do |pid| %>
-		<li><%= link_to pid, catalog_path(pid) %></li>
-		<% end %>		
-		</ul>
-	</dd>
-	<dt>Archive:</dt>
-	<dd><%= link_to @export_set.archive_file_name, @export_set.archive.url %></dd>
-</dl>
+<table class="table">
+  <tr>
+    <th scope="row">Title:</th>
+    <td><%= @export_set.title %></td>
+  </tr>
+  <tr>
+    <th scope="row">Created:</th>
+    <td><%= @export_set.created_at %></td>
+  </tr>
+  <tr>
+    <th scope="row">Archive:</th>
+    <td>
+      <% if @export_set.archive_file_name %>
+        <%= link_to @export_set.archive_file_name, @export_set.archive.url %>
+	<%= link_to content_tag(:i, "", :class => "icon-trash"), {:action => 'archive', :id => @export_set}, :method => 'delete', :id => "export_set_archive_delete", :confirm => "Are you sure you want to delete the archive file?" %>
+      <% else %>
+        <%= link_to "Create Archive", {:action => 'archive', :id => @export_set}, :method => 'post', :class => "btn", :id => "export_set_archive_create" %>
+      <% end %>
+    </td>
+  </tr>
+</table>
 
+<h3>Exported Objects: Metadata</h3>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">PID</th>
+      <th scope="col">Type</th>
+      <th scope="col">Title</th>
+      <th scope="col">Identifier</th>
+      <th scope="col">Source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @document_list.each do |doc| %>
+    <tr>
+      <td><%= link_to doc.id, catalog_path(doc.id) %></td>
+      <td><%= doc.active_fedora_model %></td>
+      <td><%= doc.get(:title_t) %></td>
+      <td><%= doc.get(:identifier_t) %></td>
+      <td><%= doc.get(:source_t) %></td>
+    </tr>
+    <% end %>		
+  </tbody>
+</table>

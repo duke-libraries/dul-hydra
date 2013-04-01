@@ -5,7 +5,7 @@ adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 collectionid: collection_1
 metadata:
-    - qdc
+    - descmetadata
 objects:
     - identifier: id001
 

@@ -36,15 +36,15 @@ module DulHydra::Scripts
         if master_source == :objects
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
-        qdcsource = object[:qdcsource] || manifest[:qdcsource]
-        qdc = case
-        when qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)
-          generate_qdc(object, qdcsource, basepath)
+        descmetadatasource = object[:descmetadatasource] || manifest[:descmetadatasource]
+        desc_metadata = case
+        when descmetadatasource && DESC_METADATA_GENERATION_SOURCES.include?(descmetadatasource.to_sym)
+          generate_desc_metadata(object, descmetadatasource, basepath)
         else
-          stub_qdc()
+          stub_desc_metadata()
         end
-        result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
-        File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }
+        result_xml_path = "#{basepath}descmetadata/#{key_identifier(object)}.xml"
+        File.open(result_xml_path, 'w') { |f| desc_metadata.write_xml_to f }
         object_count += 1
       end
       unless master_source == PROVIDED
@@ -87,10 +87,9 @@ module DulHydra::Scripts
         ingest_object.save
         metadata = object_metadata(object, manifest[:metadata])
         event_details << "Metadata: #{metadata.join(",")}\n"
-        if object_metadata(object, manifest_metadata).include?("qdc")
-          qdc = File.open("#{manifest[:basepath]}qdc/#{key_identifier(object)}.xml") { |f| f.read }
-          ingest_object.descMetadata.content = qdc
-          ingest_object.descMetadata.dsLabel = "Descriptive Metadata for this object"
+        if object_metadata(object, manifest_metadata).include?("descmetadata")
+          desc_metadata = File.open("#{manifest[:basepath]}descmetadata/#{key_identifier(object)}.xml") { |f| f.read }
+          ingest_object.descMetadata.content = desc_metadata
           ingest_object.identifier = merge_identifiers(object[:identifier], ingest_object.identifier)
         end
         ["contentdm", "digitizationguide", "dpcmetadata", "fmpexport", "jhove", "marcxml", "tripodmets"].each do |metadata_type|
@@ -102,6 +101,15 @@ module DulHydra::Scripts
         if !content_spec.blank?
           filename = "#{content_spec[:location]}#{key_identifier(object)}#{content_spec[:extension]}"
           ingest_object = add_content_file(ingest_object, filename)
+          ingest_object.creator = content_spec[:creator]
+          ingest_object.source = case
+          when content_spec[:pathroot].blank?
+            filename.split("#{File::SEPARATOR}").last
+          else
+            pathindex = filename.index(content_spec[:pathroot])
+            filename.slice(pathindex, filename.length - pathindex)
+          end
+          ingest_object.save
           ingest_object.generate_thumbnail!
           event_details << "Content file: #{filename}\n"
         end
@@ -138,31 +146,21 @@ module DulHydra::Scripts
       log.info "DulHydra version #{DulHydra::VERSION}"
       log.info "Manifest: #{ingest_manifest}"
       object_count = 0
+      master = File.open(master_path(manifest[:master], manifest[:basepath])) { |f| Nokogiri::XML(f) }
       if !manifest[:contentstructure].blank?
-        case manifest[:contentstructure][:type]
-        when "generate"
-          sequence_start = manifest[:contentstructure][:sequencestart]
-          sequence_length = manifest[:contentstructure][:sequencelength]
-          manifest_items = manifest[:objects]
-          manifest_items.each do |manifest_item|
-            object_count += 1
-            identifier = key_identifier(manifest_item)
-            items = Item.find_by_identifier(identifier)
-            case items.size
-            when 1
-              item = items.first
-              content_metadata = create_content_metadata_document(item, sequence_start, sequence_length)
-              filename = "#{manifest[:basepath]}contentmetadata/#{identifier}.xml"
-              File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
-              item = add_metadata_content_file(item, manifest_item, "contentmetadata", manifest[:basepath])
-              item.save
-              log.info "Added contentmetadata datastream for #{identifier} to #{item.pid}"
-            when 0
-              raise "Item #{identifier} not found"
-            else
-              raise "Multiple items #{identifier} found"
-            end
+        manifest_items = manifest[:objects]
+        manifest_items.each do |manifest_item|
+          object_count += 1
+          identifier = key_identifier(manifest_item)
+          repository_object = ActiveFedora::Base.find(get_pid_from_master(master, identifier), :cast => true)
+          if manifest[:contentstructure][:type].eql?(GENERATE)
+            content_metadata = create_content_metadata_document(repository_object, manifest[:contentstructure])
+            filename = "#{manifest[:basepath]}contentmetadata/#{identifier}.xml"
+            File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
           end
+          repository_object = add_metadata_content_file(repository_object, manifest_item, "contentmetadata", manifest[:basepath])
+          repository_object.save
+          log.info "Added contentmetadata datastream for #{identifier} to #{repository_object.pid}"          
         end
       end
       log.info "Post-processed #{object_count} object(s)"
@@ -187,6 +185,8 @@ module DulHydra::Scripts
       end
       objects = manifest[:objects]
       object_count = 0;
+      pass_count = 0;
+      fail_count = 0;
       objects.each do |object|
         event_details = String.new(event_details_header)
         object_count += 1
@@ -235,13 +235,13 @@ module DulHydra::Scripts
             metadata = object_metadata(object, manifest[:metadata])
             expected_datastreams = [ "DC", "RELS-EXT" ]
             metadata.each do |m|
-              expected_datastreams << datastream_name(m)
+              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME[m.downcase]
             end
             if !object[:content].blank? || !manifest[:content].blank?
-              expected_datastreams << datastream_name("content")
+              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME("content")
             end
             if !object[:contentstructure].blank? || !manifest[:contentstructure].blank?
-              expected_datastreams << datastream_name("contentstructure")
+              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME("contentstructure")
             end
             expected_datastreams.flatten.each do |datastream|
               event_details << "#{VERIFYING}#{datastream} datastream present and not empty"
@@ -310,8 +310,12 @@ module DulHydra::Scripts
           write_preservation_event(repository_object, PreservationEvent::VALIDATION, outcome, event_details)
         end
         log.info "Validated #{model} #{key_identifier(object)} in #{pid_in_master ? pid : nil}#{object_valid ? PASS : FAIL}"
+        object_valid ? pass_count += 1 : fail_count += 1
       end
       log.info "Validated #{object_count} object(s)"
+      log.info "PASS: #{pass_count}"
+      log.info "FAIL: #{fail_count}"
+      log.info "Validation #{ingest_valid ? PASS : FAIL}"
       log.info "=================="
       return ingest_valid
     end

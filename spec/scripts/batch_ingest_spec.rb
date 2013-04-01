@@ -93,6 +93,15 @@ module DulHydra::Scripts
     end
   end
   
+  shared_examples "an ingested batch with content" do
+    it "should have a creator and source" do
+      object_type.find_each do |object|
+        object.creator.first.should eq(content_creator)
+        object.source.first.should eq(content_source)
+      end
+    end
+  end
+  
   shared_examples "an ingested batch with image content" do
     it "should have a thumbnail" do
       object_type.find_each do |object|
@@ -119,6 +128,12 @@ module DulHydra::Scripts
   end
   
   shared_examples "a validated ingest" do
+    before do
+      @passes = 0
+      @fails = 0
+      results.values.each { |value| value.eql?("PASS") ? @passes += 1 : @fails += 1 }
+      @overall_result =  @fails.eql?(0) ? "PASS" : "FAIL"
+    end
     it "should have an ingest validation log file" do
       log_file.should_not be_empty
       log_file.should match("DulHydra version #{DulHydra::VERSION}")
@@ -127,6 +142,9 @@ module DulHydra::Scripts
         log_file.should match("Validated #{object_type.to_s} #{key} in .*...#{value}")
       end
       log_file.should match("Validated #{results.size} object\\(s\\)")
+      log_file.should match("PASS: #{@passes}")
+      log_file.should match("FAIL: #{@fails}")
+      log_file.should match("Validation ...#{@overall_result}")
     end
   end
   
@@ -183,7 +201,7 @@ module DulHydra::Scripts
     before do
       setup_test_dir
       FileUtils.mkdir "#{@ingestable_dir}/master"
-      FileUtils.mkdir "#{@ingestable_dir}/qdc"
+      FileUtils.mkdir "#{@ingestable_dir}/descmetadata"
     end
     after do
       remove_test_dir
@@ -203,9 +221,9 @@ module DulHydra::Scripts
         end
         it "should create Qualified Dublin Core files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          File.size?("#{@ingestable_dir}/qdc/id001.xml").should_not be_nil
-          File.size?("#{@ingestable_dir}/qdc/id002.xml").should_not be_nil
-          File.size?("#{@ingestable_dir}/qdc/id004.xml").should_not be_nil
+          File.size?("#{@ingestable_dir}/descmetadata/id001.xml").should_not be_nil
+          File.size?("#{@ingestable_dir}/descmetadata/id002.xml").should_not be_nil
+          File.size?("#{@ingestable_dir}/descmetadata/id004.xml").should_not be_nil
         end
         it "should create an appropriate log file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
@@ -263,9 +281,9 @@ module DulHydra::Scripts
       let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) } }
       before do
         FileUtils.cp "spec/fixtures/batch_ingest/master/base_master.xml", "#{@ingestable_dir}/master/master.xml"
-        FileUtils.cp "spec/fixtures/batch_ingest/qdc/id001.xml", "#{@ingestable_dir}/qdc"
-        FileUtils.cp "spec/fixtures/batch_ingest/qdc/id002.xml", "#{@ingestable_dir}/qdc"
-        FileUtils.cp "spec/fixtures/batch_ingest/qdc/id004.xml", "#{@ingestable_dir}/qdc"
+        FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id001.xml", "#{@ingestable_dir}/descmetadata"
+        FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id002.xml", "#{@ingestable_dir}/descmetadata"
+        FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id004.xml", "#{@ingestable_dir}/descmetadata"
       end
       after do
         object_type.find_each do |object|
@@ -315,15 +333,23 @@ module DulHydra::Scripts
       end
       context "image content to be ingested" do
         let(:object_type) { TestContentThumbnail }
+        let(:content_creator) { "DPC" }
+        let(:content_source) { "BASE/ingestable/content/id001.tif" }
         before do
           FileUtils.mkdir "#{@ingestable_dir}/content"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/id001.tif", "#{@ingestable_dir}/content"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/content_manifest.yml", "#{@manifest_dir}/manifest.yml"
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
-          update_manifest(@manifest_file, {"content" => { "extension" => ".tif", "location" => "#{@ingestable_dir}/content/" } })
+          update_manifest(@manifest_file, {"content" => {
+                              "extension" => ".tif",
+                              "location" => "#{@ingestable_dir}/content/",
+                              "creator" => "DPC",
+                              "pathroot" => "BASE/"
+                              } })
           DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
+        it_behaves_like "an ingested batch with content"
         it_behaves_like "an ingested batch with image content"
       end
       context "child object" do
@@ -366,20 +392,46 @@ module DulHydra::Scripts
       end
     end
     describe "post-process ingest" do
+      let(:object_type) { TestContentMetadata }
+      let(:log_file) { File.open("#{@ingestable_dir}/log/ingest_postprocess.log") { |f| f.read } }
+      let(:manifest) { @manifest_file }
+      let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| f.read } }
+      before do
+        FileUtils.mkdir "#{@ingestable_dir}/contentmetadata"
+        FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/contentstructure_manifest.yml", "#{@manifest_dir}/manifest.yml"
+        @manifest_file = "#{@manifest_dir}/manifest.yml"
+        update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+        FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/base_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
+        @parent = TestContentMetadata.create!(:pid => 'test:1', :identifier => 'id001')
+        @child1 = TestChild.create!(:identifier => 'id00100030')
+        @child2 = TestChild.create!(:identifier => 'id00100010')
+        @child3 = TestChild.create!(:identifier => 'id00100020')
+        @child1.parent = @parent
+        @child2.parent = @parent
+        @child3.parent = @parent
+        @child1.save!
+        @child2.save!
+        @child3.save!
+      end
+      after do
+        @child1.delete
+        @child2.delete
+        @child3.delete
+        @parent.delete
+      end
       context "content structural metadata" do
+        let(:expected_xml) { create_expected_content_metadata_document.to_xml}
         it "should add an appropriate contentMetadata datastream to the parent object" do
-          pending("not creating contentMetadata at this time")
           DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
-          @item.reload
-          @item.contentMetadata.content.should be_equivalent_to(@expected_xml)
+          @parent.reload
+          @parent.contentMetadata.content.should be_equivalent_to(expected_xml)
         end
         it "should create an appropriate log file" do
-          pending("not creating contentMetadata at this time")
           DulHydra::Scripts::BatchIngest.post_process_ingest(@manifest_file)
-          result = File.open("#{@ingest_base}/item/log/ingest_postprocess.log") { |f| f.read }
+          result = File.open("#{@ingestable_dir}/log/ingest_postprocess.log") { |f| f.read }
           result.should match("DulHydra version #{DulHydra::VERSION}")
-          result.should match("Manifest: #{@ingest_base}/manifests/simple_item_manifest.yml")
-          result.should match("Added contentmetadata datastream for test01 to #{Item.find_by_identifier("test01").first.pid}")
+          result.should match("Manifest: #{@manifest_dir}/manifest.yml")
+          result.should match("Added contentmetadata datastream for id001 to test:1")
           result.should match("Post-processed 1 object\\(s\\)")
         end
       end
@@ -457,7 +509,7 @@ module DulHydra::Scripts
             end
             before do
               manifest = File.open(@manifest_file) { |f| YAML::load(f) }
-              manifest[:metadata] = ["marcxml", "qdc"]
+              manifest[:metadata] = ["marcxml", "descmetadata"]
               File.open(@manifest_file, "w") { |f| YAML::dump(manifest, f)}
               DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)
             end
@@ -618,10 +670,6 @@ module DulHydra::Scripts
           end
         end        
       end
-      
-      
-      
-      
       context "target has associated collection" do
         let(:object_type) { Target }
         before do

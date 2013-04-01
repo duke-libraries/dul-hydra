@@ -4,14 +4,18 @@ module DulHydra::Models
   module SolrDocument
 
     def object_profile
-      JSON.parse(self[:object_profile_display].first)
+      @object_profile ||= JSON.parse(self[:object_profile_display].first)
     end
 
     def datastreams
       object_profile["datastreams"]
     end
+    
+    def has_datastream?(dsID)
+      !(datastreams[dsID].nil? || datastreams[dsID].empty?)
+    end
 
-    def admin_policy?
+    def has_admin_policy?
       !admin_policy_uri.blank?
     end
 
@@ -24,7 +28,7 @@ module DulHydra::Models
       uri &&= ActiveFedora::Base.pids_from_uris(uri)
     end
 
-    def parent?
+    def has_parent?
       !parent_uri
     end
 
@@ -39,6 +43,38 @@ module DulHydra::Models
 
     def active_fedora_model
       get(:active_fedora_model_s)
+    end
+    
+    def has_thumbnail?
+      has_datastream?(DulHydra::Datastreams::THUMBNAIL)
+    end
+
+    def has_content?
+      has_datastream?(DulHydra::Datastreams::CONTENT)
+    end
+    
+    def targets
+      object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
+      query = "is_external_target_for_s:#{object_uri}"
+      @targets ||= ActiveFedora::SolrService.query(query)
+    end
+    
+    def has_target?
+      targets.size > 0 ? true : false
+    end
+    
+    def children
+      object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
+      query = "is_member_of_s:#{object_uri} OR is_member_of_collection_s:#{object_uri} OR is_part_of_s:#{object_uri}"
+      @children ||= ActiveFedora::SolrService.query(query)
+    end
+    
+    def has_children?
+      children.size > 0 ? true : false
+    end
+    
+    def parsed_content_metadata
+      JSON.parse(self[:content_metadata_parsed_s].first)
     end
 
   end

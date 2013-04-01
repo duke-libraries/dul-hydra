@@ -19,6 +19,9 @@
 # Except for this one
 !/config/predicate_mappings.yml
 
+# Environment configs
+/config/environments
+
 # Pre-compiled assets
 /public/assets
 

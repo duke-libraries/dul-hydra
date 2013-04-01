@@ -3,10 +3,12 @@ basepath: placeholder
 model: TestContentThumbnail
 label: Manifest Label
 metadata:
-    - qdc
+    - descmetadata
 content:
     extension: .tif
     location: /tmp/
+    creator: DPC
+    pathroot: tmp/
 objects:
     - identifier: id001
 

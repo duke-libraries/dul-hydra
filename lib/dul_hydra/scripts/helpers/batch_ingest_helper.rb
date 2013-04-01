@@ -14,18 +14,32 @@ module DulHydra::Scripts::Helpers
     LOG_CONFIG_FILEPATH = "#{Rails.root}/config/log4r_batch_ingest.yml"
     FEDORA_URI_PREFIX = "info:fedora/"
     ACTIVE_FEDORA_MODEL_PREFIX = "afmodel:"
+    GENERATE = "generate"
     PROVIDED = "provided"
     JHOVE_DATE_XPATH = "/xmlns:jhove/xmlns:date"
     JHOVE_SPLIT_XPATH = "/xmlns:jhove/xmlns:repInfo"
     JHOVE_URI_ATTRIBUTE = "uri"
     CONTENT_FILE_TYPES = Set[:pdf, :tif]
-    QDC_GENERATION_SOURCES = Set[:contentdm, :digitizationguide, :marcxml]
-    CONTENTDM_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/CONTENTdm2QDC.xsl"
-    DIGITIZATIONGUIDE_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/DigitizationGuide2QDC.xsl"
-    MARCXML_TO_QDC_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/MARCXML2QDC.xsl"
+    DESC_METADATA_GENERATION_SOURCES = Set[:contentdm, :digitizationguide, :marcxml]
+    CONTENTDM_TO_DESC_METADATA_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/CONTENTdm2QDC.xsl"
+    DIGITIZATIONGUIDE_TO_DESC_METADATA_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/DigitizationGuide2QDC.xsl"
+    MARCXML_TO_DESC_METADATA_XSLT_FILEPATH = "#{Rails.root}/lib/assets/xslt/MARCXML2QDC.xsl"
     VERIFYING = "Verifying..."
     PASS = "...PASS"
     FAIL = "...FAIL"
+    DATA_TYPE_TO_DATASTREAM_NAME = {
+      "content" => DulHydra::Datastreams::CONTENT,
+      "contentdm" => DulHydra::Datastreams::CONTENTDM,
+      "contentmetadata" => DulHydra::Datastreams::CONTENT_METADATA,
+      "contentstructure" => DulHydra::Datastreams::CONTENT_METADATA,
+      "descmetadata" => DulHydra::Datastreams::DESC_METADATA,
+      "digitizationguide" => DulHydra::Datastreams::DIGITIZATION_GUIDE,
+      "dpcmetadata" => DulHydra::Datastreams::DPC_METADATA,
+      "fmpexport" => DulHydra::Datastreams::FMP_EXPORT,
+      "jhove" => DulHydra::Datastreams::JHOVE,
+      "marcxml" => DulHydra::Datastreams::MARCXML,
+      "tripodmets" => DulHydra::Datastreams::TRIPOD_METS
+    }
 
     module ClassMethods
       
@@ -116,20 +130,20 @@ module DulHydra::Scripts::Helpers
         return fedoraChecksumValidation && externalChecksumValidation
       end
       
-      def generate_qdc(object, qdcsource, basepath)
-          xslt_filepath = eval "#{qdcsource.upcase}_TO_QDC_XSLT_FILEPATH"
-          xml = File.open(metadata_filepath(object, qdcsource, basepath)) { |f| Nokogiri::XML(f) }
+      def generate_desc_metadata(object, descmetadatasource, basepath)
+          xslt_filepath = eval "#{descmetadatasource.upcase}_TO_DESC_METADATA_XSLT_FILEPATH"
+          xml = File.open(metadata_filepath(object, descmetadatasource, basepath)) { |f| Nokogiri::XML(f) }
           xslt = File.open(xslt_filepath) { |f| Nokogiri::XSLT(f) }
-          qdc = xslt.transform(xml)
+          desc_metadata = xslt.transform(xml)
       end
       
-      def stub_qdc()
-        qdc = Nokogiri::XML::Document.new
-        dc_node = Nokogiri::XML::Node.new :dc.to_s, qdc
-        qdc.root = dc_node
-        qdc.root.add_namespace('dcterms', 'http://purl.org/dc/terms/')
-        qdc.root.add_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
-        return qdc        
+      def stub_desc_metadata()
+        desc_metadata = Nokogiri::XML::Document.new
+        dc_node = Nokogiri::XML::Node.new :dc.to_s, desc_metadata
+        desc_metadata.root = dc_node
+        desc_metadata.root.add_namespace('dcterms', 'http://purl.org/dc/terms/')
+        desc_metadata.root.add_namespace('xsi', 'http://www.w3.org/2001/XMLSchema-instance')
+        return desc_metadata
       end
       
       def merge_identifiers(manifest_object_identifier, ingest_object_identifier)
@@ -151,8 +165,8 @@ module DulHydra::Scripts::Helpers
         end
       end
       
-      def metadata_filepath(object, qdcsource, basepath)
-        type = qdcsource
+      def metadata_filepath(object, descmetadatasource, basepath)
+        type = descmetadatasource
         case
         when object["#{type}"].blank?
           "#{basepath}#{type}#{File::SEPARATOR}#{key_identifier(object)}.xml"
@@ -193,7 +207,6 @@ module DulHydra::Scripts::Helpers
         if ingest_object.datastreams.keys.include?("content")
           file = File.open(filename)
           ingest_object.content.content_file = file
-          ingest_object.content.dsLabel = "Content file for this object"
           ingest_object.save
           file.close
           ingest_object.reload
@@ -213,61 +226,26 @@ module DulHydra::Scripts::Helpers
             "#{basepath}#{metadata_type}/#{object[metadata_type]}"
           end
           content = File.open(dsLocation)
-          label = nil
           datastream = case metadata_type
           when "contentdm"
-            label = "CONTENTdm Data for this object"
             ingest_object.contentdm
           when "contentmetadata"
-            label = "Structural Content Data for this object"
             ingest_object.contentMetadata
           when "digitizationguide"
-            label = "Digitization Guide Data for this object"
             ingest_object.digitizationGuide
           when "dpcmetadata"
-            label = "DPC Metadata Data for this object"
             ingest_object.dpcMetadata
           when "fmpexport"
-            label = "FileMakerPro Export Data for this object"
             ingest_object.fmpExport
           when "jhove"
-            label = "JHOVE Data for this object"
             ingest_object.jhove
           when "marcxml"
-            label = "Aleph MarcXML Data for this object"
             ingest_object.marcXML
           when "tripodmets"
-            label = "Tripod METS Data for this object"
             ingest_object.tripodMets
           end
           datastream.content_file = content
-          datastream.dsLabel = label
           return ingest_object
-      end
-      
-      def datastream_name(alternate_term)
-        case alternate_term
-        when "contentmetadata"
-          "contentMetadata"
-        when "contentstructure"
-          "contentMetadata"
-        when "digitizationguide"
-          "digitizationGuide"
-        when "dpcmetadata"
-          "dpcMetadata"
-        when "fmpexport"
-          "fmpExport"
-        when "jhove"
-          "jhove"
-        when "marcxml"
-          "marcXML"
-        when "qdc"
-          "descMetadata"
-        when "tripodmets"
-          "tripodMets"
-        else
-          alternate_term
-        end
       end
       
       def set_parent(ingest_object, object_model, parent_identifier_type, parent_identifier)
@@ -348,11 +326,13 @@ module DulHydra::Scripts::Helpers
         event.save
       end
       
-      def create_content_metadata_document(repository_object, sequencing_start, sequencing_length)
-        parts = repository_object.parts
+      def create_content_metadata_document(repository_object, contentstructure)
+        sequence_start = contentstructure[:sequencestart]
+        sequence_length = contentstructure[:sequencelength]
+        parts = repository_object.children
         hash = Hash.new
         parts.each do |part|
-          hash[part.identifier.first.slice(sequencing_start, sequencing_length)] = part.pid
+          hash[part.identifier.first.slice(sequence_start, sequence_length)] = part.pid
         end
         sorted_keys = hash.keys.sort
         cm = Nokogiri::XML::Document.new
@@ -362,10 +342,13 @@ module DulHydra::Scripts::Helpers
         cm.root.add_namespace_definition('xlink', 'http://www.w3.org/1999/xlink')
         fileSec_node = Nokogiri::XML::Node.new "fileSec", cm
         fileGrp_node = Nokogiri::XML::Node.new "fileGrp", cm
-        fileGrp_node['ID'] = 'GRP01'
-        fileGrp_node['USE'] = 'Master Image'
+        fileGrp_node['ID'] = contentstructure[:filegrp_id] || 'GRP01'
+        fileGrp_node['USE'] = contentstructure[:filegrp_use] || 'Master Image'
         structMap_node = Nokogiri::XML::Node.new "structMap", cm
-        div0_node = Nokogiri::XML::Node.new "div", cm        
+        div0_node = Nokogiri::XML::Node.new "div", cm
+        div0_node['ID'] = contentstructure[:div0_id] || 'DIV01'
+        div0_node['TYPE'] = contentstructure[:div0_type] || "image"
+        div0_node['LABEL'] = contentstructure[:div0_label] || "Images"
         sorted_keys.each_with_index do |key, index|
           file_node = Nokogiri::XML::Node.new "file", cm
           file_node['ID'] = "FILE#{key}"

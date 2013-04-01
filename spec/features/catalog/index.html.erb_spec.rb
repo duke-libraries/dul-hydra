@@ -4,14 +4,17 @@ shared_examples "a catalog index view" do
   it "should display the PID, model, title and identifier(s)" do
     expect(subject).to have_content(object.pid)
     expect(subject).to have_content(object.class.to_s)
-    expect(subject).to have_content(object.title_display)
     expect(subject).to have_content(object.identifier.first)
+    # title link
+    expect(subject).to have_link(object.title_display, :href => catalog_path(object))
+    # thumbnail
+    expect(subject).to have_xpath("//a[@href = \"#{catalog_path(object)}\"]/img[@src = \"#{thumbnail_path(object)}\"]")
   end
 end
 
 describe "catalog/index.html.erb" do
   subject { page }
-  let(:object) { FactoryGirl.create(:test_model) }
+  let(:object) { FactoryGirl.create(:test_content_thumbnail) }
   after { object.delete }
   context "search by title" do
     before do

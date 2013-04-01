@@ -1,1 +1,0 @@
-{"basepath"=>"someBasepath", "model"=>"someModel", "adminpolicy"=>"someAdminpolicy", "label"=>"someLabel", "title"=>"someTitle", "objects"=>[{"identifier"=>"someIdentifier1", "marcxml"=>"someMarcxml", "qdcsource"=>"someQdcsource"}, {"identifier"=>["someIdentifier2", "someIdentifier3"]}, {"identifier"=>"someIdentifier4"}]}

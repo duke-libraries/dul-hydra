@@ -3,7 +3,7 @@ basepath: placeholder
 model: TestContent
 label: Manifest Label
 metadata:
-    - qdc
+    - descmetadata
 checksum:
     location: checksums.xml
     source: test

@@ -22,6 +22,11 @@ FactoryGirl.define do
     factory :collection_has_apo,     :traits => [:has_admin_policy]
     factory :collection_public_read, :traits => [:public_read]
 
+    factory :collection_has_target do
+      after(:create) { |c| c.targets << FactoryGirl.create(:target) }
+      factory :collection_has_target_has_apo,     :traits => [:has_admin_policy]
+      factory :collection_has_target_public_read, :traits => [:public_read]
+    end
   end
 
 end

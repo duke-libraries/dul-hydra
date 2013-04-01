@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'support/shared_examples_for_dul_hydra_objects'
+require 'support/shared_examples_for_has_content_metadata'
 
 shared_examples "an Item related to a Collection" do
   it "should have the collection as parent and collection" do
@@ -24,6 +25,7 @@ end
 
 describe Item do
   it_behaves_like "a DulHydra object"
+  it_behaves_like "an object that has content metadata"
 
   context "relationships" do
     let!(:item) { FactoryGirl.create(:item) }

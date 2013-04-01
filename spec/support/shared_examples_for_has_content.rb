@@ -3,13 +3,13 @@ require 'tempfile'
 
 shared_examples "an object that has content" do
   let!(:object) { described_class.create! }
-  let(:file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
-  before do
-    object.content.content_file = File.new(file_path, "rb")
-    object.save!
-  end
   after { object.delete }
-  context "content datastream" do
+  context "object does have content" do
+    let(:file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
+    before do
+      object.content.content_file = File.new(file_path, "rb")
+      object.save!
+    end
     context "#content_file=" do
       it "should store the file content" do
         object.content.content.size.should == File.size(file_path)
@@ -24,12 +24,25 @@ shared_examples "an object that has content" do
       end
     end
     context "#write_content" do
+      let(:tmpfile) { Tempfile.new('content', :encoding => 'ascii-8bit') }
+      after { tmpfile.unlink }
       it "should write the content to a file" do
-        tmpfile = Tempfile.new('content', :encoding => 'ascii-8bit')
         tmppath = tmpfile.path
         object.content.write_content(tmpfile)
         tmpfile.close
         object.content.content.size.should == File.size(tmppath)
+      end
+    end
+    context "#has_content?" do
+      it "should return true" do
+        object.has_content?.should be_true
+      end
+    end
+  end
+  context "object does not have content" do
+    context "#has_content?" do
+      it "should return false" do
+        object.has_content?.should be_false
       end
     end
   end
