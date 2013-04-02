@@ -18,7 +18,6 @@
 /config/*.yml
 # Except for these ...
 !/config/predicate_mappings.yml
-!/config/log4r_fixity_check.yml
 
 # Environment configs
 /config/environments
