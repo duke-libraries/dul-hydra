@@ -16,8 +16,9 @@
 
 # Ignore all config yaml files
 /config/*.yml
-# Except for this one
+# Except for these ...
 !/config/predicate_mappings.yml
+!/config/log4r_fixity_check.yml
 
 # Environment configs
 /config/environments
