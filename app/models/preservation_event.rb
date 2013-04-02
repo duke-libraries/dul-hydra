@@ -84,7 +84,9 @@ EOS
   def self.validate_checksum!(obj, dsID)
     pe = validate_checksum(obj, dsID)
     pe.save!
-    obj.update_index # index last fixity check on for_object
+    # index last fixity check on for_object
+    # XXX should this be in an after_save callback?
+    obj.update_index 
     return pe
   end
 

@@ -62,6 +62,7 @@ module DulHydra::Models
     end
 
     protected
+
     def delete_preservation_events
       PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri).delete_all
     end

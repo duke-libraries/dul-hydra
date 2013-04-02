@@ -16,7 +16,7 @@
 
 # Ignore all config yaml files
 /config/*.yml
-# Except for this one
+# Except for these ...
 !/config/predicate_mappings.yml
 
 # Environment configs
