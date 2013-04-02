@@ -578,7 +578,7 @@ module DulHydra::Scripts
           @parent2 = TestParent.create(:pid => "test:4", :identifier => "parent01")
           @manifest_file = "#{@manifest_dir}/manifest.yml"
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
-          parent_master = create_parent_master([@parent1, @parent2])
+          parent_master = create_supporting_master([@parent1, @parent2])
           @parent_master_file = File.open("/tmp/foo.xml", 'w') { |f| parent_master.write_xml_to f } # need to have better way to place file
           update_manifest(@manifest_file, {:parent => {:master => "/tmp/foo.xml", :autoidlength => 3}})
           FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
@@ -693,26 +693,28 @@ module DulHydra::Scripts
       end
       context "target has associated collection" do
         let(:object_type) { Target }
+        let(:target) { Target.create(:pid => "test:1", :identifier => "id001") }
+        let(:collection) { Collection.create(:pid => "test:2", :identifier => "collection_1") }
         before do
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/target_manifest.yml", "#{@manifest_dir}/manifest.yml"
-          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'manifests', 'target_manifest.yml'), File.join(@manifest_dir, 'manifest.yml')
+          @manifest_file = File.join(@manifest_dir, 'manifest.yml')
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
           FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/target_master_with_pids.xml", "#{@ingestable_dir}/master/master.xml"
-          @target = Target.create(:pid => "test:1", :identifier => "id001")
-          @collection = Collection.create(:pid => "test:2", :identifier => "collection_1")
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'master', 'target_master_with_pids.xml'), File.join(@ingestable_dir, 'master', 'master.xml')
+          collection_master = create_supporting_master([collection])
+          @collection_dir = Dir.mktmpdir("dul_hydra_test_collection")
+          File.open(File.join(@collection_dir, 'manifest.xml'), 'w') { |f| collection_master.write_xml_to f }
+          update_manifest(@manifest_file, {:collection => {:master => File.join(@collection_dir, 'manifest.xml')}})
         end
         after do
-          @collection.delete
-          @target.preservation_events.each { |pe| pe.delete }
-          @target.reload
-          @target.delete          
+          collection.delete
+          target.destroy
         end
         context "correct target-collection relationship exists" do
           let(:results) { Hash[ "id001" => "PASS" ] }
           before do
-            @target.collection = @collection
-            @target.save!
+            target.collection = collection
+            target.save!
             DulHydra::Scripts::BatchIngest.validate_ingest(@manifest_file)            
           end
           it_behaves_like "a validated ingest"
