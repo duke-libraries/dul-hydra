@@ -36,15 +36,15 @@ module DulHydra::Scripts
         if master_source == :objects
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
-        qdcsource = object[:qdcsource] || manifest[:qdcsource]
-        qdc = case
-        when qdcsource && QDC_GENERATION_SOURCES.include?(qdcsource.to_sym)
-          generate_qdc(object, qdcsource, basepath)
+        descmetadatasource = object[:descmetadatasource] || manifest[:descmetadatasource]
+        desc_metadata = case
+        when descmetadatasource && DESC_METADATA_GENERATION_SOURCES.include?(descmetadatasource.to_sym)
+          generate_desc_metadata(object, descmetadatasource, basepath)
         else
-          stub_qdc()
+          stub_desc_metadata()
         end
-        result_xml_path = "#{basepath}qdc/#{key_identifier(object)}.xml"
-        File.open(result_xml_path, 'w') { |f| qdc.write_xml_to f }
+        result_xml_path = "#{basepath}descmetadata/#{key_identifier(object)}.xml"
+        File.open(result_xml_path, 'w') { |f| desc_metadata.write_xml_to f }
         object_count += 1
       end
       unless master_source == PROVIDED
@@ -87,10 +87,9 @@ module DulHydra::Scripts
         ingest_object.save
         metadata = object_metadata(object, manifest[:metadata])
         event_details << "Metadata: #{metadata.join(",")}\n"
-        if object_metadata(object, manifest_metadata).include?("qdc")
-          qdc = File.open("#{manifest[:basepath]}qdc/#{key_identifier(object)}.xml") { |f| f.read }
-          ingest_object.descMetadata.content = qdc
-          ingest_object.descMetadata.dsLabel = "Descriptive Metadata for this object"
+        if object_metadata(object, manifest_metadata).include?("descmetadata")
+          desc_metadata = File.open("#{manifest[:basepath]}descmetadata/#{key_identifier(object)}.xml") { |f| f.read }
+          ingest_object.descMetadata.content = desc_metadata
           ingest_object.identifier = merge_identifiers(object[:identifier], ingest_object.identifier)
         end
         ["contentdm", "digitizationguide", "dpcmetadata", "fmpexport", "jhove", "marcxml", "tripodmets"].each do |metadata_type|
@@ -236,13 +235,13 @@ module DulHydra::Scripts
             metadata = object_metadata(object, manifest[:metadata])
             expected_datastreams = [ "DC", "RELS-EXT" ]
             metadata.each do |m|
-              expected_datastreams << datastream_name(m)
+              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME[m.downcase]
             end
             if !object[:content].blank? || !manifest[:content].blank?
-              expected_datastreams << datastream_name("content")
+              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME("content")
             end
             if !object[:contentstructure].blank? || !manifest[:contentstructure].blank?
-              expected_datastreams << datastream_name("contentstructure")
+              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME("contentstructure")
             end
             expected_datastreams.flatten.each do |datastream|
               event_details << "#{VERIFYING}#{datastream} datastream present and not empty"

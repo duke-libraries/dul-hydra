@@ -1,0 +1,1 @@
+{"basepath"=>"someBasepath", "model"=>"someModel", "adminpolicy"=>"someAdminpolicy", "label"=>"someLabel", "title"=>"someTitle", "objects"=>[{"identifier"=>"someIdentifier1", "marcxml"=>"someMarcxml", "descmetadatasource"=>"somedescmetadatasource"}, {"identifier"=>["someIdentifier2", "someIdentifier3"]}, {"identifier"=>"someIdentifier4"}]}

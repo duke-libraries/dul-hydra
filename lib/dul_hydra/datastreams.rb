@@ -7,6 +7,7 @@ module DulHydra::Datastreams
   DESC_METADATA = "descMetadata"
   DIGITIZATION_GUIDE = "digitizationGuide"
   DPC_METADATA = "dpcMetadata"
+  EVENT_METADATA = "eventMetadata"
   FMP_EXPORT = "fmpExport"
   JHOVE = "jhove"
   MARCXML = "marcXML"

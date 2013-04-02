@@ -1,8 +1,16 @@
+<%# This is now deprecated in favor of displaying children on a separate page and will likely be removed %>
+
 <% if document[:content_metadata_parsed_s] %>
-  <h3>Children</h3>
   <% content_metadata = document.parsed_content_metadata %>
   <% content_metadata.each do |structure| %>
     <%= display_structure(structure).html_safe %>
   <% end %>
+<% else %>
+  <ul>
+    <% document.children.each do |child| %>
+      <% child_doc = SolrDocument.new(child) %>
+      <li><%= child_doc[:title_display] %></li>
+    <% end %>
+  </ul>
 <% end %>
 

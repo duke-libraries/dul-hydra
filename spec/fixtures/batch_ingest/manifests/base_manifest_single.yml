@@ -5,6 +5,6 @@ adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 metadata:
     - contentdm
-    - qdc
+    - descmetadata
 objects:
     - identifier: id005

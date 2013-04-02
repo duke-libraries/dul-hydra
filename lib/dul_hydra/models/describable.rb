@@ -3,7 +3,8 @@ module DulHydra::Models
     extend ActiveSupport::Concern
    
     included do
-      has_metadata :name => DulHydra::Datastreams::DESC_METADATA, :type => ActiveFedora::QualifiedDublinCoreDatastream
+      has_metadata :name => DulHydra::Datastreams::DESC_METADATA, :type => ActiveFedora::QualifiedDublinCoreDatastream,
+                   :versionable => true, :label => "Descriptive Metadata for this object", :control_group => 'X'
       delegate_to DulHydra::Datastreams::DESC_METADATA, [:title, :identifier, :creator, :source]
     end
 

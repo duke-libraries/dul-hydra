@@ -41,11 +41,11 @@ module DulHydra::Scripts::Helpers
   
     describe "#load_yaml" do
       before do
-        yaml_hash_string = File.open("spec/fixtures/batch_ingest/samples/sample_yaml_hash.txt") { |f| f.read }
+        yaml_hash_string = File.open("spec/fixtures/batch_ingest/miscellaneous/yaml_hash.txt") { |f| f.read }
         @expected_yaml = eval yaml_hash_string
       end
       it "should load the YAML file" do
-        yaml = MockBatchIngest.load_yaml("spec/fixtures/batch_ingest/samples/sample.yml")
+        yaml = MockBatchIngest.load_yaml("spec/fixtures/batch_ingest/miscellaneous/yaml.yml")
         yaml.should be_a_kind_of Hash
         yaml.should == @expected_yaml
       end
@@ -60,8 +60,8 @@ module DulHydra::Scripts::Helpers
       end
       context "master file does exist" do
         it "should return the existing master file document" do
-          master = MockBatchIngest.master_document("spec/fixtures/batch_ingest/results/item_master.xml")
-          master.should be_equivalent_to File.open("spec/fixtures/batch_ingest/results/item_master.xml") { |f| Nokogiri::XML(f) }
+          master = MockBatchIngest.master_document("spec/fixtures/batch_ingest/master/base_master.xml")
+          master.should be_equivalent_to File.open("spec/fixtures/batch_ingest/master/base_master.xml") { |f| Nokogiri::XML(f) }
         end
       end
     end
@@ -186,7 +186,7 @@ module DulHydra::Scripts::Helpers
     
     describe "#metadata_filepath" do
       before do
-        @object = HashWithIndifferentAccess.new({"identifier" => "identifier", "qdcsource" => "marcxml"})
+        @object = HashWithIndifferentAccess.new({"identifier" => "identifier", "descmetadatasource" => "marcxml"})
         @basepath = "/basepath/"
         @canonical_subpath = "marcxml/"
       end
@@ -196,13 +196,13 @@ module DulHydra::Scripts::Helpers
             @object["marcxml"] = "metadata.xml"
           end
           it "should return a file path for the named file in the canonical location" do
-            filepath = MockBatchIngest.metadata_filepath(@object, @object[:qdcsource], @basepath)
+            filepath = MockBatchIngest.metadata_filepath(@object, @object[:descmetadatasource], @basepath)
             filepath.should == "#{@basepath}#{@canonical_subpath}metadata.xml"
           end
         end
         context "when the metadata file is not named in the object manifest" do
           it "should return a file path for an identifier-named file in the canonical location" do
-            filepath = MockBatchIngest.metadata_filepath(@object, @object[:qdcsource], @basepath)
+            filepath = MockBatchIngest.metadata_filepath(@object, @object[:descmetadatasource], @basepath)
             filepath.should == "#{@basepath}#{@canonical_subpath}identifier.xml"
           end
         end
@@ -212,34 +212,34 @@ module DulHydra::Scripts::Helpers
           @object["marcxml"] = "/metadatapath/metadata.xml"
         end
         it "should return the specified file path" do
-          filepath = MockBatchIngest.metadata_filepath(@object, @object[:qdcsource], @basepath)
+          filepath = MockBatchIngest.metadata_filepath(@object, @object[:descmetadatasource], @basepath)
           filepath.should == "/metadatapath/metadata.xml"
         end
       end
     end
       
-    describe "#generate_qdc" do
-      context "QDC source is CONTENTdm" do
-        it "should create an appropriate Qualified Dublin Core document"
+    describe "#generate_desc_metadata" do
+      context "desc metadata source is CONTENTdm" do
+        it "should create an appropriate desc metadata document"
       end
-      context "QDC source is digitization guide" do
-        it "should create an appropriate Qualified Dublin Core document"
+      context "desc metadata source is digitization guide" do
+        it "should create an appropriate desc metadata document"
       end
-      context "QDC source is MarcXML" do
-        it "should create an appropriate Qualified Dublin Core document"
+      context "desc metadata source is MarcXML" do
+        it "should create an appropriate desc metadata document"
       end
     end
     
-    describe "#stub_qdc" do
+    describe "#stub_desc_metadata" do
       before do
-        @expected_qdc_xml = <<-END
+        @expected_desc_metadata_xml = <<-END
           <dc xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           </dc>
         END
       end
-      it "should create a shell Qualified Dublin Core document" do
-        qdc = MockBatchIngest.stub_qdc()
-        qdc.should be_equivalent_to Nokogiri::XML(@expected_qdc_xml)
+      it "should create a shell desc metadata document" do
+        desc_metadata = MockBatchIngest.stub_desc_metadata()
+        desc_metadata.should be_equivalent_to Nokogiri::XML(@expected_desc_metadata_xml)
       end
     end
     
@@ -451,7 +451,7 @@ module DulHydra::Scripts::Helpers
     describe "#verify_checksum(repository_object, checksum_doc)" do
       before do
         @component = Component.create!
-        file = File.open("spec/fixtures/batch_ingest/samples/CCITT_2.TIF", "rb")
+        file = File.open("spec/fixtures/batch_ingest/miscellaneous/id001.tif", "rb")
         @component.content.content_file = file
         @component.save!
         file.close
@@ -461,18 +461,18 @@ module DulHydra::Scripts::Helpers
       end
       context "checksum matches" do
         before do
-          @checksum_doc = File.open("spec/fixtures/batch_ingest/BASE/component/checksum/checksums.xml") { |f| Nokogiri::XML(f) }
+          @checksum_doc = File.open("spec/fixtures/batch_ingest/miscellaneous/checksums.xml") { |f| Nokogiri::XML(f) }
         end
         it "should return true" do
-          MockBatchIngest.verify_checksum(@component, "CCITT_2", @checksum_doc).should be_true
+          MockBatchIngest.verify_checksum(@component, "id001", @checksum_doc).should be_true
         end
       end
       context "checksum does not match" do
         before do
-          @checksum_doc = File.open("spec/fixtures/batch_ingest/samples/incorrect_checksums.xml") { |f| Nokogiri::XML(f) }
+          @checksum_doc = File.open("spec/fixtures/batch_ingest/miscellaneous/incorrect_checksums.xml") { |f| Nokogiri::XML(f) }
         end
         it "should return true" do
-          MockBatchIngest.verify_checksum(@component, "CCITT_2", @checksum_doc).should be_false
+          MockBatchIngest.verify_checksum(@component, "id001", @checksum_doc).should be_false
         end
       end
 

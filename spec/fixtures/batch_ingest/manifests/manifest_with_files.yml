@@ -5,12 +5,12 @@ adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 metadata:
     - contentdm
+    - descmetadata
     - digitizationguide
     - dpcmetadata
     - fmpexport
     - jhove
     - marcxml
-    - qdc
     - tripodmets
 content:
     extension: .tif

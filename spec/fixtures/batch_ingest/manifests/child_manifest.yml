@@ -5,7 +5,7 @@ adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
 autoparentidlength: 3
 metadata:
-    - qdc
+    - descmetadata
 objects:
     - identifier: id001
     - identifier: id002

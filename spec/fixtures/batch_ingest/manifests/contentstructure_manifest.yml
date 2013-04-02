@@ -8,6 +8,6 @@ contentstructure:
     sequencestart: 6
     sequencelength: 3
 metadata:
-    - qdc
+    - descmetadata
 objects:
     - identifier: id001

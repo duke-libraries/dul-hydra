@@ -53,6 +53,26 @@ module DulHydra::Models
       has_datastream?(DulHydra::Datastreams::CONTENT)
     end
     
+    def targets
+      object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
+      query = "is_external_target_for_s:#{object_uri}"
+      @targets ||= ActiveFedora::SolrService.query(query)
+    end
+    
+    def has_target?
+      targets.size > 0 ? true : false
+    end
+    
+    def children
+      object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
+      query = "is_member_of_s:#{object_uri} OR is_member_of_collection_s:#{object_uri} OR is_part_of_s:#{object_uri}"
+      @children ||= ActiveFedora::SolrService.query(query)
+    end
+    
+    def has_children?
+      children.size > 0 ? true : false
+    end
+    
     def parsed_content_metadata
       JSON.parse(self[:content_metadata_parsed_s].first)
     end

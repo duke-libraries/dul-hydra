@@ -530,6 +530,7 @@
    <field name="author_vern_display" type="string" indexed="false" stored="true" multiValued="false"/>
    
    <!-- these fields are also used for display, so they must be stored -->
+   <field name="title_display_sort" type="string" indexed="true" stored="false" multiValued="false"/>
    <field name="isbn_t" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="language_facet" type="string" indexed="true" stored="true" multiValued="true" />
    <field name="subject_topic_facet" type="string" indexed="true" stored="true" multiValued="true" />
@@ -625,6 +626,7 @@
    <copyField source="subject_topic_facet" dest="subject_topic_unstem_search"/>
    
    <!-- sort fields -->
+   <copyField source="title_display" dest="title_display_sort"/>
    <copyField source="pub_date" dest="pub_date_sort"/>
    
         
