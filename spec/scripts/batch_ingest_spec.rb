@@ -362,20 +362,21 @@ module DulHydra::Scripts
               ]
         end
         before do
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/child_manifest.yml", "#{@manifest_dir}/manifest.yml"
-          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'manifests', 'child_manifest.yml'), File.join(@manifest_dir, 'manifest.yml')
+          @manifest_file = File.join(@manifest_dir, 'manifest.yml')
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
           update_manifest(@manifest_file, {:model => object_type.to_s})
-          # need to create a temp parent_master file and set [:parent][:master] to its path in (child) manifest
-          parent_master = create_parent_master(parents.values)
-          @parent_master_file = File.open("/tmp/foo.xml", 'w') { |f| parent_master.write_xml_to f } # need to have better way to place file
-          update_manifest(@manifest_file, {:parent => {:master => "/tmp/foo.xml", :autoidlength => 3}})
+          parent_master = create_supporting_master(parents.values)
+          @parent_dir = Dir.mktmpdir("dul_hydra_test_parent")
+          File.open(File.join(@parent_dir, 'manifest.xml'), 'w') { |f| parent_master.write_xml_to f }
+          update_manifest(@manifest_file, {:parent => {:master => File.join(@parent_dir, 'manifest.xml')}})
           DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end
         after do
           parents.values.each do |parent|
             parent.delete
           end
+          FileUtils.remove_dir @parent_dir
         end
         it_behaves_like "a child object"
       end
@@ -384,13 +385,18 @@ module DulHydra::Scripts
           let(:object_type) { Target }
           let!(:collection) { FactoryGirl.create(:collection, :identifier => "collection_1") }
           before do
-            FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/target_manifest.yml", "#{@manifest_dir}/manifest.yml"
-            @manifest_file = "#{@manifest_dir}/manifest.yml"
+            FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'manifests', 'target_manifest.yml'), File.join(@manifest_dir, 'manifest.yml')
+            @manifest_file = File.join(@manifest_dir, 'manifest.yml')
             update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
+            collection_master = create_supporting_master([collection])
+            @collection_dir = Dir.mktmpdir("dul_hydra_test_collection")
+            File.open(File.join(@collection_dir, 'manifest.xml'), 'w') { |f| collection_master.write_xml_to f }
+            update_manifest(@manifest_file, {:collection => {:master => File.join(@collection_dir, 'manifest.xml')}})
             DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
           end
           after do
             collection.delete
+            FileUtils.remove_dir @collection_dir
           end
           it_behaves_like "a target object"
         end

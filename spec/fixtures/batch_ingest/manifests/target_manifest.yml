@@ -3,7 +3,9 @@ basepath: placeholder
 model: Target
 adminpolicy: duke-apo:adminPolicy
 label: Manifest Label
-collectionid: collection_1
+collection:
+    master: placeholder
+    id: collection_1
 metadata:
     - descmetadata
 objects:

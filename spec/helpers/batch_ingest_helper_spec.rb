@@ -339,13 +339,6 @@ module DulHydra::Scripts::Helpers
       end
     end
     
-    describe "#parent_class" do
-      it "should return the correct parent class for a given child model" do
-        MockBatchIngest.parent_class("Item").should eq(Collection)
-        MockBatchIngest.parent_class("Component").should eq(Item)      
-      end
-    end
-    
     describe "#create_content_metadata_document" do
       before do
         @parent = TestContentMetadata.create!

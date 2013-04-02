@@ -44,17 +44,17 @@ module BatchIngestSpecHelper
   def remove_temp_dir
     FileUtils.remove_dir @test_temp_dir
   end
-  def create_parent_master(parents)
+  def create_supporting_master(repository_objects)
     master = Nokogiri::XML::Document.new
     objects_node = Nokogiri::XML::Node.new :objects.to_s, master
     master.root = objects_node
-    parents.each do |parent|
+    repository_objects.each do |object|
       object_node = Nokogiri::XML::Node.new :object.to_s, master
       identifier_node = Nokogiri::XML::Node.new :identifier.to_s, master
-      identifier_node.content = parent.identifier.first
+      identifier_node.content = object.identifier.first
       object_node.add_child(identifier_node)
       pid_node = Nokogiri::XML::Node.new :pid.to_s, master
-      pid_node.content = parent.pid
+      pid_node.content = object.pid
       object_node.add_child(pid_node)
       objects_node.add_child(object_node)
     end

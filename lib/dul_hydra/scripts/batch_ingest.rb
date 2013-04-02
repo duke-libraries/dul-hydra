@@ -129,9 +129,14 @@ module DulHydra::Scripts
           ingest_object = set_parent(ingest_object, :pid, parentpid)
           event_details << "Parent id: #{parentid}\n"
         end
-        collectionid = object[:collectionid] || manifest[:collectionid]
+        collectionid = object[:collection][:id] if object[:collection]
+        collectionid = manifest[:collection][:id] if collectionid.blank? && manifest[:collection]
         if !collectionid.blank?
-          ingest_object = set_collection(ingest_object, :id, collectionid)
+          collection_master_path = object[:collection][:master] if object[:collection]
+          collection_master_path = manifest[:collection][:master] if collection_master_path.blank? && manifest[:collection]
+          collection_master = File.open(collection_master_path) { |f| Nokogiri::XML(f) }
+          collectionpid = get_pid_from_master(collection_master, collectionid)
+          ingest_object = set_collection(ingest_object, :pid, collectionpid)
           event_details << "Collection id: #{collectionid}\n"
         end
         ingest_object.save
@@ -278,23 +283,6 @@ module DulHydra::Scripts
               checksum_matches = verify_checksum(repository_object, key_identifier(object), checksum_doc)
               event_details << (checksum_matches ? PASS : FAIL) << "\n"
             end
-        #parentid = object[:parent][:id] if object[:parent]
-        #parentid = manifest[:parent][:id] if parentid.blank? && manifest[:parent]
-        #if parentid.blank?
-        #  autoidlength = object[:parent][:autoidlength] if object[:parent]
-        #  autoidlength = manifest[:parent][:autoidlength] if autoidlength.blank? && manifest[:parent]
-        #  if autoidlength
-        #    parentid = key_identifier(object).slice(0, autoidlength)
-        #  end
-        #end
-        #if !parentid.blank?
-        #  parent_master_path = object[:parent][:master] if object[:parent]
-        #  parent_master_path = manifest[:parent][:master] if parent_master_path.blank? && manifest[:parent]
-        #  parent_master = File.open(parent_master_path) { |f| Nokogiri.XML(f) }
-        #  parentpid = get_pid_from_master(parent_master, parentid)
-        #  ingest_object = set_parent(ingest_object, :pid, parentpid)
-        #  event_details << "Parent id: #{parentid}\n"
-        #end
             parentid = object[:parent][:id] if object[:parent]
             parentid = manifest[:parent][:id] if parentid.blank? && manifest[:parent]
             if parentid.blank?
@@ -311,7 +299,6 @@ module DulHydra::Scripts
               parent_master = File.open(parent_master_path) { |f| Nokogiri.XML(f) }
               parentpid = get_pid_from_master(parent_master, parentid)
               parent = repository_object.parent
-#              if parent.nil? || !parent.identifier.include?(parentid)
               if parent.nil? || !parent.pid.eql?(parentpid)
                 parent_child_correct = false
               end
