@@ -7,19 +7,15 @@
   <table class="table">
     <thead>
       <tr>
-	<th scope="col">#</th>
-	<th scope="col">PID</th>
-	<th scope="col">Identifier</th>
-	<th scope="col">Title</th>
+		<th scope="col">#</th>
+		<%= render :partial => 'object_metadata_labels' %>
       </tr>
     </thead>
     <tbody>
       <% @document_list.each do |doc| %>
       <tr>
-	<td><%= check_box_tag 'export_set[pids][]', doc.id, true %></td>
-	<td><%= doc.id %></td>
-	<td><%= doc.identifier %></td>
-	<td><%= doc.title %></td>
+		<td><%= check_box_tag 'export_set[pids][]', doc.id, true %></td>
+		<%= render :partial => 'object_metadata_values', :locals => {:doc => doc} %>
       </tr>
       <% end %>
     </tbody>
