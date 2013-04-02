@@ -23,9 +23,15 @@
 		<% @export_sets.each do |es| %>
 		<tr>
 			<td><%= link_to es.id, es %></td>
-		        <td><%= es.title %></td>
+		    <td><%= link_to es.title, es %></td>
 			<td><%= es.created_at %></td>
-			<td><%= link_to es.archive_file_name, es.archive.url %></td>
+			<td>
+			  <% if es.archive_file_name %>
+			    <%= link_to es.archive_file_name, es.archive.url %>
+			  <% else %>
+			    (Not created)
+			  <% end %>
+			</td>
 			<td><%= es.pids.join(', ') %></td>
 		</tr>
 		<% end %>

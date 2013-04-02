@@ -32,21 +32,13 @@
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">PID</th>
-      <th scope="col">Type</th>
-      <th scope="col">Title</th>
-      <th scope="col">Identifier</th>
-      <th scope="col">Source</th>
+	  <%= render :partial => 'object_metadata_labels' %>
     </tr>
   </thead>
   <tbody>
     <% @document_list.each do |doc| %>
     <tr>
-      <td><%= link_to doc.id, catalog_path(doc.id) %></td>
-      <td><%= doc.active_fedora_model %></td>
-      <td><%= doc.get(:title_t) %></td>
-      <td><%= doc.get(:identifier_t) %></td>
-      <td><%= doc.get(:source_t) %></td>
+	  <%= render :partial => 'object_metadata_values', :locals => {:doc => doc} %>
     </tr>
     <% end %>		
   </tbody>
