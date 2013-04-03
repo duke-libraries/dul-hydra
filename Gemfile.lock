@@ -148,6 +148,7 @@ GEM
     mini_magick (3.5.0)
       subexec (~> 0.2.1)
     multi_json (1.5.0)
+    mysql2 (0.3.11)
     nokogiri (1.5.6)
     nom-xml (0.5.1)
       activesupport
@@ -292,6 +293,7 @@ DEPENDENCIES
   log4r
   mime-types (~> 1.19)
   mini_magick
+  mysql2
   orderly
   paperclip (~> 3.0)
   rails (~> 3.2.11)
