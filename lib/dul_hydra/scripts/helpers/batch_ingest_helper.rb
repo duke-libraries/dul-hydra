@@ -43,7 +43,7 @@ module DulHydra::Scripts::Helpers
 
     module ClassMethods
       
-      # prep ingest
+      # prep ingest post
       def config_logger(logger_name, basepath)
         log_config = YAML.load_file(LOG_CONFIG_FILEPATH)
         YamlConfigurator['basepath'] = basepath
@@ -63,7 +63,7 @@ module DulHydra::Scripts::Helpers
         return Log4r::Logger[logger_name]
       end
       
-      # prep
+      # prep ingest post
       def write_xml_file(xmldoc, filepath)
         dirname = File.dirname(filepath)
         FileUtils.mkdir_p dirname unless File.exists?(dirname)
@@ -117,6 +117,7 @@ module DulHydra::Scripts::Helpers
         return master
       end
       
+      #ingest
       def add_pid_to_master(master, key_identifier, pid)
         object_node = master.xpath("/objects/object[identifier[text() = '#{key_identifier}']]")
         case object_node.size()
@@ -207,7 +208,7 @@ module DulHydra::Scripts::Helpers
         end
       end
       
-      # prep ingest
+      # prep ingest post
       def master_path(manifest_master, manifest_basepath)
         master_path = case
         when manifest_master.blank?
@@ -271,6 +272,7 @@ module DulHydra::Scripts::Helpers
         return ingest_object
       end
       
+      # ingest
       def set_collection(ingest_object, collection_identifier_type, collection_identifer)
         collection = case collection_identifier_type
         when :id
@@ -293,6 +295,7 @@ module DulHydra::Scripts::Helpers
         return ingest_object
       end
       
+      # ingest
       def write_preservation_event(ingest_object, event_type, event_outcome, details)
         event_label = case event_type
         when PreservationEvent::INGESTION
@@ -311,6 +314,7 @@ module DulHydra::Scripts::Helpers
         event.save
       end
       
+      # post
       def create_content_metadata_document(repository_object, contentstructure)
         sequence_start = contentstructure[:sequencestart]
         sequence_length = contentstructure[:sequencelength]

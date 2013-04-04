@@ -166,8 +166,7 @@ module DulHydra::Scripts
           repository_object = ActiveFedora::Base.find(get_pid_from_master(master, identifier), :cast => true)
           if manifest[:contentstructure][:type].eql?(GENERATE)
             content_metadata = create_content_metadata_document(repository_object, manifest[:contentstructure])
-            filename = "#{manifest[:basepath]}contentmetadata/#{identifier}.xml"
-            File.open(filename, 'w') { |f| content_metadata.write_xml_to f }
+            File.open(File.join(manifest[:basepath], 'contentmetadata', "#{identifier}.xml"), 'w') { |f| content_metadata.write_xml_to f }
           end
           repository_object = add_metadata_content_file(repository_object, manifest_item, "contentmetadata", manifest[:basepath])
           repository_object.save
