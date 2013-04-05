@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'fileutils'
-require "#{Rails.root}/spec/scripts/batch_ingest_spec_helper"
+require File.join(Rails.root, 'spec', 'scripts', 'batch_ingest_spec_helper')
 
 RSpec.configure do |c|
   c.include BatchIngestSpecHelper
@@ -8,7 +8,7 @@ end
 
 module DulHydra::Scripts
 
-  FIXTURES_BATCH_INGEST = "spec/fixtures/batch_ingest"
+  FIXTURES_BATCH_INGEST = File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest')
 
   shared_examples "an ingested batch" do  
     let(:expected_identifiers) { [ ["id001"], ["id002", "id003"], ["id004"] ] }
@@ -206,26 +206,26 @@ module DulHydra::Scripts
     end
     describe "prepare for ingest" do
       before do
-        FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
-        @manifest_file = "#{@manifest_dir}/manifest.yml"
+        FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'manifests', 'base_manifest.yml'), File.join(@manifest_dir, 'manifest.yml')
+        @manifest_file = File.join(@manifest_dir, 'manifest.yml')
         update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
       end
       context "all object types" do
         it "should create an appropriate master file" do
             DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
             result = File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) }
-            expected = File.open("#{FIXTURES_BATCH_INGEST}/master/base_master.xml") { |f| Nokogiri::XML(f) }
+            expected = File.open(File.join(FIXTURES_BATCH_INGEST, 'master', 'base_master.xml')) { |f| Nokogiri::XML(f) }
             result.should be_equivalent_to(expected)
         end
         it "should create Qualified Dublin Core files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          File.size?("#{@ingestable_dir}/descmetadata/id001.xml").should_not be_nil
-          File.size?("#{@ingestable_dir}/descmetadata/id002.xml").should_not be_nil
-          File.size?("#{@ingestable_dir}/descmetadata/id004.xml").should_not be_nil
+          File.size?(File.join(@ingestable_dir, 'descmetadata', 'id001.xml')).should_not be_nil
+          File.size?(File.join(@ingestable_dir, 'descmetadata', 'id002.xml')).should_not be_nil
+          File.size?(File.join(@ingestable_dir, 'descmetadata', 'id004.xml')).should_not be_nil
         end
         it "should create an appropriate log file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          result = File.open("#{@ingestable_dir}/log/ingest_preparation.log") { |f| f.read }
+          result = File.open(File.join(@ingestable_dir, 'log', 'ingest_preparation.log')) { |f| f.read }
           result.should match("DulHydra version #{DulHydra::VERSION}")
           result.should match("Manifest: #{@manifest_file}")
           result.should match("Processing id001")
@@ -237,19 +237,19 @@ module DulHydra::Scripts
       context "partially populated master file already exists" do
         before do
           FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/master/preexisting_master.xml", "#{@ingestable_dir}/master/master.xml"
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'master', 'preexisting_master.xml'), File.join(@ingestable_dir, 'master', 'master.xml')
         end
         it "should add the new objects to those already in the master file" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-            result = File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) }
-            expected = File.open("#{FIXTURES_BATCH_INGEST}/master/base_added_to_preexisting_master.xml") { |f| Nokogiri::XML(f) }
+            result = File.open(File.join(@ingestable_dir, 'master', 'master.xml')) { |f| Nokogiri::XML(f) }
+            expected = File.open(File.join(FIXTURES_BATCH_INGEST, 'master', 'base_added_to_preexisting_master.xml')) { |f| Nokogiri::XML(f) }
             result.should be_equivalent_to(expected)
         end
       end
       context "consolidated file is to be split into individual files" do
         before do
-          FileUtils.mkdir "#{@ingestable_dir}/a_test"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/composite_to_be_split.xml", "#{@ingestable_dir}/a_test"
+          FileUtils.mkdir File.join(@ingestable_dir, 'a_test')
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'composite_to_be_split.xml'), File.join(@ingestable_dir, 'a_test')
           split_entry = Array.new
           split_entry << HashWithIndifferentAccess.new(
             :type => "a_test",
@@ -261,9 +261,9 @@ module DulHydra::Scripts
         end
         it "should split the consolidated file into appropriate individual files" do
           DulHydra::Scripts::BatchIngest.prep_for_ingest(@manifest_file)
-          result_1 = File.open("#{@ingestable_dir}/a_test/test010010010.xml") { |f| Nokogiri::XML(f) }
-          result_2 = File.open("#{@ingestable_dir}/a_test/test010010020.xml") { |f| Nokogiri::XML(f) }
-          result_3 = File.open("#{@ingestable_dir}/a_test/test010010030.xml") { |f| Nokogiri::XML(f) }
+          result_1 = File.open(File.join(@ingestable_dir, 'a_test', 'test010010010.xml')) { |f| Nokogiri::XML(f) }
+          result_2 = File.open(File.join(@ingestable_dir, 'a_test', 'test010010020.xml')) { |f| Nokogiri::XML(f) }
+          result_3 = File.open(File.join(@ingestable_dir, 'a_test', 'test010010030.xml')) { |f| Nokogiri::XML(f) }
           expected_1 = Nokogiri::XML("<record><Title>Title 1</Title><Date>1981-01</Date><localid>test010010010</localid></record>")
           expected_2 = Nokogiri::XML("<record><Title>Title 2</Title><Date>1987-09</Date><localid>test010010020</localid></record>")
           expected_3 = Nokogiri::XML("<record><Title>Title 3</Title><Date>1979-11</Date><localid>test010010030</localid></record>")
@@ -275,30 +275,28 @@ module DulHydra::Scripts
     end
     describe "ingest" do
       let!(:admin_policy) { AdminPolicy.create(:pid => "duke-apo:adminPolicy") }
-      let(:log_file) { File.open("#{@ingestable_dir}/log/batch_ingest.log") { |f| f.read } }
+      let(:log_file) { File.open(File.join(@ingestable_dir, 'log', 'batch_ingest.log')) { |f| f.read } }
       let(:manifest) { @manifest_file }
-      let(:master) { File.open("#{@ingestable_dir}/master/master.xml") { |f| Nokogiri::XML(f) } }
+      let(:master) { File.open(File.join(@ingestable_dir, 'master', 'master.xml')) { |f| Nokogiri::XML(f) } }
       before do
         FileUtils.mkdir_p(File.join(@ingestable_dir, 'master')) unless File.exists?(File.join(@ingestable_dir, 'master'))
-        FileUtils.cp "spec/fixtures/batch_ingest/master/base_master.xml", "#{@ingestable_dir}/master/master.xml"
+        FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'master', 'base_master.xml'), File.join(@ingestable_dir, 'master', 'master.xml')
         FileUtils.mkdir_p(File.join(@ingestable_dir, 'descmetadata')) unless File.exists?(File.join(@ingestable_dir, 'descmetadata'))
-        FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id001.xml", "#{@ingestable_dir}/descmetadata"
-        FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id002.xml", "#{@ingestable_dir}/descmetadata"
-        FileUtils.cp "spec/fixtures/batch_ingest/descmetadata/id004.xml", "#{@ingestable_dir}/descmetadata"
+        FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'descmetadata', 'id001.xml'), File.join(@ingestable_dir, 'descmetadata')
+        FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'descmetadata', 'id002.xml'), File.join(@ingestable_dir, 'descmetadata')
+        FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'descmetadata', 'id004.xml'), File.join(@ingestable_dir, 'descmetadata')
       end
       after do
         object_type.find_each do |object|
-          object.preservation_events.each { |pe| pe.delete }
-          object.reload
-          object.delete
+          object.destroy
         end
         admin_policy.delete
       end
       context "any ingested object" do
         let(:object_type) { TestModel }
         before do
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/base_manifest.yml", "#{@manifest_dir}/manifest.yml"
-          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'manifests', 'base_manifest.yml'), File.join(@manifest_dir, 'manifest.yml')
+          @manifest_file = File.join(@manifest_dir, 'manifest.yml')
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
           update_manifest(@manifest_file, {:model => object_type.to_s})
           DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
@@ -307,26 +305,26 @@ module DulHydra::Scripts
       end
       context "files to be ingested" do
         let(:object_type) { TestFileDatastreams }
-        let(:tif_file) { File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/id001.tif") { |f| f.read } }
-        let(:xls_file) { File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xls") { |f| f.read } }
-        let(:xml_file) { File.open("#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml") { |f| f.read } }
+        let(:tif_file) { File.open(File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'id001.tif')) { |f| f.read } }
+        let(:xls_file) { File.open(File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'metadata.xls')) { |f| f.read } }
+        let(:xml_file) { File.open(File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'metadata.xml')) { |f| f.read } }
         before do
-          FileUtils.mkdir "#{@ingestable_dir}/contentdm"
-          FileUtils.mkdir "#{@ingestable_dir}/digitizationguide"
-          FileUtils.mkdir "#{@ingestable_dir}/dpcmetadata"
-          FileUtils.mkdir "#{@ingestable_dir}/fmpexport"
-          FileUtils.mkdir "#{@ingestable_dir}/jhove"
-          FileUtils.mkdir "#{@ingestable_dir}/marcxml"
-          FileUtils.mkdir "#{@ingestable_dir}/tripodmets"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/contentdm/"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xls", "#{@ingestable_dir}/digitizationguide/"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/dpcmetadata/id001.xml"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/fmpexport/id001.xml"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/jhove/id001.xml"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/marcxml/"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/tripodmets/id001.xml"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/manifest_with_files.yml", "#{@manifest_dir}/manifest.yml"
-          @manifest_file = "#{@manifest_dir}/manifest.yml"
+          FileUtils.mkdir File.join(@ingestable_dir, 'contentdm')
+          FileUtils.mkdir File.join(@ingestable_dir, 'digitizationguide')
+          FileUtils.mkdir File.join(@ingestable_dir, 'dpcmetadata')
+          FileUtils.mkdir File.join(@ingestable_dir, 'fmpexport')
+          FileUtils.mkdir File.join(@ingestable_dir, 'jhove')
+          FileUtils.mkdir File.join(@ingestable_dir, 'marcxml')
+          FileUtils.mkdir File.join(@ingestable_dir, 'tripodmets')
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'metadata.xml'), File.join(@ingestable_dir, 'contentdm')
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'metadata.xls'), File.join(@ingestable_dir, 'digitizationguide')
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'metadata.xml'), File.join(@ingestable_dir, 'dpcmetadata', 'id001.xml')
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'metadata.xml'), File.join(@ingestable_dir, 'fmpexport', 'id001.xml')
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'metadata.xml'), File.join(@ingestable_dir, 'jhove', 'id001.xml')
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'metadata.xml'), File.join(@ingestable_dir, 'marcxml')
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'miscellaneous', 'metadata.xml'), File.join(@ingestable_dir, 'tripodmets', 'id001.xml')
+          FileUtils.cp File.join(FIXTURES_BATCH_INGEST, 'manifests', 'manifest_with_files.yml'), File.join(@manifest_dir, 'manifest.yml')
+          @manifest_file = File.join(@manifest_dir, 'manifest.yml')
           update_manifest(@manifest_file, {"basepath" => "#{@ingestable_dir}/"})
           DulHydra::Scripts::BatchIngest.ingest(@manifest_file)
         end

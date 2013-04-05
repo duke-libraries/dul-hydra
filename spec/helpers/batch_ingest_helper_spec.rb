@@ -1,5 +1,5 @@
 require 'spec_helper'
-require "#{Rails.root}/spec/scripts/batch_ingest_spec_helper"
+require File.join(Rails.root, 'spec', 'scripts', 'batch_ingest_spec_helper')
 
 RSpec.configure do |c|
   c.include BatchIngestSpecHelper
@@ -7,7 +7,7 @@ end
 
 module DulHydra::Scripts::Helpers
 
-  FIXTURES_BATCH_INGEST = "spec/fixtures/batch_ingest"
+  FIXTURES_BATCH_INGEST = File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest')
 
   describe BatchIngestHelper do
   
@@ -231,8 +231,8 @@ module DulHydra::Scripts::Helpers
         it "should create an appropriate desc metadata document"
       end
       context "desc metadata source is TripodMETS" do
-        let(:expected_desc_metadata) { File.open(File.join(Rails.root, FIXTURES_BATCH_INGEST, 'descmetadata', 'id009.xml')) { |f| Nokogiri.XML(f) } }
-        let(:object) { { "tripodmets" =>  File.join(Rails.root, FIXTURES_BATCH_INGEST, 'tripodmets', 'id009.xml') } }
+        let(:expected_desc_metadata) { File.open(File.join(FIXTURES_BATCH_INGEST, 'descmetadata', 'id009.xml')) { |f| Nokogiri.XML(f) } }
+        let(:object) { { "tripodmets" =>  File.join(FIXTURES_BATCH_INGEST, 'tripodmets', 'id009.xml') } }
         it "should create an appropriate desc metadata document" do
           desc_metadata = MockBatchIngest.generate_desc_metadata(object, "tripodmets", nil)
           desc_metadata.should be_equivalent_to expected_desc_metadata
