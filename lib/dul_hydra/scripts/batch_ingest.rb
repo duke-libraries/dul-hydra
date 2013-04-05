@@ -37,13 +37,21 @@ module DulHydra::Scripts
           master = add_manifest_object_to_master(master, object, manifest[:model])
         end
         descmetadatasource = object[:descmetadatasource] || manifest[:descmetadatasource]
-        desc_metadata = case
-        when descmetadatasource && DESC_METADATA_GENERATION_SOURCES.include?(descmetadatasource.to_sym)
-          generate_desc_metadata(object, descmetadatasource, basepath)
+        desc_metadata = nil
+        if descmetadatasource
+          if descmetadatasource.casecmp(PROVIDED).zero?
+            # do nothing - desc metadata is being provided from elsewhere
+          elsif DESC_METADATA_GENERATION_SOURCES.include?(descmetadatasource.to_sym)
+            desc_metadata = generate_desc_metadata(object, descmetadatasource, basepath)
+          else
+            desc_metadata = stub_desc_metadata()
+          end
         else
-          stub_desc_metadata()
+          desc_metadata = stub_desc_metadata()
         end
-        write_xml_file(desc_metadata, File.join(basepath, 'descmetadata', "#{key_identifier(object)}.xml"))
+        if desc_metadata
+          write_xml_file(desc_metadata, File.join(basepath, 'descmetadata', "#{key_identifier(object)}.xml"))
+        end        
         object_count += 1
       end
       unless master_source == PROVIDED
@@ -164,7 +172,7 @@ module DulHydra::Scripts
           object_count += 1
           identifier = key_identifier(manifest_item)
           repository_object = ActiveFedora::Base.find(get_pid_from_master(master, identifier), :cast => true)
-          if manifest[:contentstructure][:type].eql?(GENERATE)
+          if manifest[:contentstructure][:type].casecmp(GENERATE).zero?
             content_metadata = create_content_metadata_document(repository_object, manifest[:contentstructure])
             File.open(File.join(manifest[:basepath], 'contentmetadata', "#{identifier}.xml"), 'w') { |f| content_metadata.write_xml_to f }
           end

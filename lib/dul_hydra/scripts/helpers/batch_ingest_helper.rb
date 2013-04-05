@@ -20,10 +20,11 @@ module DulHydra::Scripts::Helpers
     JHOVE_SPLIT_XPATH = "/xmlns:jhove/xmlns:repInfo"
     JHOVE_URI_ATTRIBUTE = "uri"
     CONTENT_FILE_TYPES = Set[:pdf, :tif]
-    DESC_METADATA_GENERATION_SOURCES = Set[:contentdm, :digitizationguide, :marcxml]
+    DESC_METADATA_GENERATION_SOURCES = Set[:contentdm, :digitizationguide, :marcxml, :tripodmets]
     CONTENTDM_TO_DESC_METADATA_XSLT_FILEPATH = File.join(Rails.root, 'lib', 'assets', 'xslt', 'CONTENTdm2QDC.xsl')
     DIGITIZATIONGUIDE_TO_DESC_METADATA_XSLT_FILEPATH = File.join(Rails.root, 'lib', 'assets', 'xslt', 'DigitizationGuide2QDC.xsl')
     MARCXML_TO_DESC_METADATA_XSLT_FILEPATH = File.join(Rails.root, 'lib', 'assets', 'xslt', 'MARCXML2QDC.xsl')
+    TRIPODMETS_TO_DESC_METADATA_XSLT_FILEPATH = File.join(Rails.root, 'lib', 'assets', 'xslt', 'TripodMETS2QDC.xsl')
     VERIFYING = "Verifying..."
     PASS = "...PASS"
     FAIL = "...FAIL"
@@ -160,7 +161,17 @@ module DulHydra::Scripts::Helpers
       # prep
       def generate_desc_metadata(object, descmetadatasource, basepath)
           xslt_filepath = eval "#{descmetadatasource.upcase}_TO_DESC_METADATA_XSLT_FILEPATH"
-          xml = File.open(metadata_filepath(object, descmetadatasource, basepath)) { |f| Nokogiri::XML(f) }
+          xml = case descmetadatasource
+          when "tripodmets"
+            raw = File.open(metadata_filepath(object, "tripodmets", basepath)) { |f| f.read }
+            tripodmets_dcterms_namespace_uri = "http://purl.org/dc/terms"
+            canonical_dcterms_namespace_uri = "http://purl.org/dc/terms/"
+            canonicalized = raw.gsub("#{tripodmets_dcterms_namespace_uri}\"", "#{canonical_dcterms_namespace_uri}\"")
+            Nokogiri::XML(canonicalized)
+          else
+            File.open(metadata_filepath(object, descmetadatasource, basepath)) { |f| Nokogiri::XML(f) }
+          end
+#          xml = File.open(metadata_filepath(object, descmetadatasource, basepath)) { |f| Nokogiri::XML(f) }
           xslt = File.open(xslt_filepath) { |f| Nokogiri::XSLT(f) }
           desc_metadata = xslt.transform(xml)
       end

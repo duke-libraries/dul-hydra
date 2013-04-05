@@ -7,6 +7,8 @@ end
 
 module DulHydra::Scripts::Helpers
 
+  FIXTURES_BATCH_INGEST = "spec/fixtures/batch_ingest"
+
   describe BatchIngestHelper do
   
     module MockBatchIngest
@@ -227,6 +229,14 @@ module DulHydra::Scripts::Helpers
       end
       context "desc metadata source is MarcXML" do
         it "should create an appropriate desc metadata document"
+      end
+      context "desc metadata source is TripodMETS" do
+        let(:expected_desc_metadata) { File.open(File.join(Rails.root, FIXTURES_BATCH_INGEST, 'descmetadata', 'id009.xml')) { |f| Nokogiri.XML(f) } }
+        let(:object) { { "tripodmets" =>  File.join(Rails.root, FIXTURES_BATCH_INGEST, 'tripodmets', 'id009.xml') } }
+        it "should create an appropriate desc metadata document" do
+          desc_metadata = MockBatchIngest.generate_desc_metadata(object, "tripodmets", nil)
+          desc_metadata.should be_equivalent_to expected_desc_metadata
+        end
       end
     end
     

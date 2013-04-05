@@ -1,0 +1,52 @@
+<mets xmlns:duke="http://library.duke.edu/metadata/terms" xmlns:dcterms="http://purl.org/dc/terms" xmlns:xlink="http://www.w3.org/TR/xlink/" ID="id009" TYPE="Resource:image">
+  <metsHdr>
+    <agent ID="sample" ROLE="CUSTODIAN">
+      <name>Sample Archive</name>
+    </agent>
+  </metsHdr>
+  <dmdSec ID="id009">
+    <mdWrap>
+      <xmlData>
+        <dcterms:type>black-and-white photographs</dcterms:type>
+        <dcterms:type>documentary photographs</dcterms:type>
+        <dcterms:creator>Sample, Example</dcterms:creator>
+        <dcterms:type>photographs</dcterms:type>
+        <dcterms:spatial>North Carolina</dcterms:spatial>
+        <dcterms:spatial>Durham County (NC)</dcterms:spatial>
+        <dcterms:spatial>Durham (NC)</dcterms:spatial>
+        <dcterms:provenance>The Sample Items were purchased by someone from 1991 to 2010.</dcterms:provenance>
+        <dcterms:title>Sample title</dcterms:title>
+        <dcterms:date>1981-01</dcterms:date>
+        <dcterms:temporal>1981-01</dcterms:temporal>
+        <dcterms:type>Image</dcterms:type>
+        <dcterms:type>Still Image</dcterms:type>
+        <duke:print_number>12-345-6</duke:print_number>
+        <duke:box_number>Box PHO 1</duke:box_number>
+        <dcterms:extent>11 x 14 in.</dcterms:extent>
+        <duke:series>Photographic Materials Series</duke:series>
+        <duke:subseries>Sample Location</duke:subseries>
+        <dcterms:rights>The copyright in the materials included in this sample collection is unknown.</dcterms:rights>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <structMap>
+    <fileSec>
+      <fileGrp ID="id009" USE="DEFAULT">
+        <file USE="THUMBNAIL" ID="id009-thm">
+          <FLocat LOCTYPE="URL" xlink:href="http://nowhere.com/thm/id009.jpg"/>
+        </file>
+        <file USE="MEDIUM" ID="id009-med">
+          <FLocat LOCTYPE="URL" xlink:href="http://nowhere.com/med/id009.jpg"/>
+        </file>
+        <file USE="LARGE" ID="id009-lrg">
+          <FLocat LOCTYPE="URL" xlink:href="http://nowhere.com/lrg/id009.jpg"/>
+        </file>
+      </fileGrp>
+    </fileSec>
+    <div LABEL="1" TYPE="Image" ID="id009" ORDER="1">
+      <fptr fileID="id009-thm"/>
+      <fptr fileID="id009-med"/>
+      <fptr fileID="id009-lrg"/>
+    </div>
+  </structMap>
+</mets>
