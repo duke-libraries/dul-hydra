@@ -10,7 +10,7 @@ module DulHydra::Models
 
     module ClassMethods
       def find_by_identifier(identifier)
-        find(:identifier_t => identifier)
+        find(ActiveFedora::SolrService.solr_name(:identifier, :stored_searchable) => identifier)
       end
     end
 
