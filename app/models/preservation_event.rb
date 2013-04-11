@@ -93,7 +93,7 @@ EOS
   # Overriding to_solr here seems cleaner than using :index_as on eventMetadata OM terminology.
   def to_solr(solr_doc=Hash.new, opts={})
     solr_doc = super(solr_doc, opts)
-    solr_doc.merge!(Solrizer.default_field_mapper.solr_name(:event_date_time, :sortable, type: :date) => event_date_time,
+    solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :sortable, type: :date) => event_date_time,
                     ActiveFedora::SolrService.solr_name(:event_type, :symbol) => event_type,
                     ActiveFedora::SolrService.solr_name(:event_outcome, :symbol) => event_outcome,
                     ActiveFedora::SolrService.solr_name(:event_id_type, :symbol) => event_id_type,
