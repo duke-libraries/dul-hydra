@@ -10,7 +10,8 @@ module DulHydra::Helpers
       # Depends on Blacklight::SolrHelper#get_solr_response_for_doc_id 
       # having been added as a helper method to CatalogController
       response, doc = get_solr_response_for_doc_id(pid)
-      title = doc.nil? ? pid : doc.fetch('title_display', pid)
+      # XXX This is not consistent with DulHydra::Models::Base#title_display
+      title = doc.nil? ? pid : doc.fetch(ActiveFedora::SolrService.solr_name(:title, :displayable), pid)
       link_to(title, catalog_path(pid), :class => "parent-link").html_safe
     end
 
@@ -43,7 +44,7 @@ module DulHydra::Helpers
         when "pids"
           pid["pid"]
         when "display"
-          "<li>" << link_to(structure_contents_info[pid["pid"]]["title_display"], catalog_path(pid["pid"])) << " [" << pid["use"] << "]</li>"
+          "<li>" << link_to(structure_contents_info[pid["pid"]][ActiveFedora::SolrService.solr_name(:title, :displayable)], catalog_path(pid["pid"])) << " [" << pid["use"] << "]</li>"
         end
       end
       collector << "</ul>" if mode.eql?("display")

@@ -22,13 +22,13 @@ class CatalogController < ApplicationController
 
     # solr field configuration for search results/index views
     #config.index.show_link = 'id'
-    config.index.show_link = 'title_display'
-    config.index.record_display_type = 'active_fedora_model_s'
+    config.index.show_link = solr_name(:title, :displayable)
+    config.index.record_display_type = solr_name(:active_fedora_model, :symbol)
 
     # solr field configuration for document/show views
-    config.show.html_title = 'title_display'
-    config.show.heading = 'title_display'
-    config.show.display_type = 'active_fedora_model_s'
+    config.show.html_title = solr_name(:title, :displayable)
+    config.show.heading = solr_name(:title, :displayable)
+    config.show.display_type = solr_name(:active_fedora_model, :symbol)
 
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
@@ -49,7 +49,7 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field 'active_fedora_model_s', :label => 'Type'
+    config.add_facet_field solr_name(:active_fedora_model, :symbol), :label => 'Type'
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -61,22 +61,22 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    #config.add_index_field 'title_display', :label => 'Title:' 
-    config.add_index_field 'active_fedora_model_s', :label => 'Type:'
+    #config.add_index_field solr_name(:title, :displayable), :label => 'Title:' 
+    config.add_index_field solr_name(:active_fedora_model, :symbol), :label => 'Type:'
     config.add_index_field 'id', :label => 'PID:'
     #config.add_index_field 'title_t', :label => 'Title:'
-    config.add_index_field 'identifier_t', :label => 'Identifier:'
+    config.add_index_field solr_name(:identifier, :stored_searchable, type: :text), :label => 'Identifier:'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
-    config.add_show_field 'active_fedora_model_s', :label => 'Type:'
+    config.add_show_field solr_name(:active_fedora_model, :symbol), :label => 'Type:'
     config.add_show_field 'id', :label => 'PID:'
     #config.add_show_field 'title_t', :label => 'Title:' 
-    config.add_show_field 'identifier_t', :label => 'Identifier:'
-    config.add_show_field 'is_part_of_s', :label => 'Part of:', :helper_method => :internal_uri_to_link
-    config.add_show_field 'is_member_of_collection_s', :label => 'Member of Collection:', :helper_method => :internal_uri_to_link
-    config.add_show_field 'is_external_target_for_s', :label => 'Target for:', :helper_method => :internal_uri_to_link
-    config.add_show_field 'is_governed_by_s', :label => 'Admin Policy:', :helper_method => :internal_uri_to_link
+    config.add_show_field solr_name(:identifier, :stored_searchable, type: :text), :label => 'Identifier:'
+    config.add_show_field solr_name(:is_part_of, :symbol), :label => 'Part of:', :helper_method => :internal_uri_to_link
+    config.add_show_field solr_name(:is_member_of_collection, :symbol), :label => 'Member of Collection:', :helper_method => :internal_uri_to_link
+    config.add_show_field solr_name(:is_external_target_for, :symbol), :label => 'Target for:', :helper_method => :internal_uri_to_link
+    config.add_show_field solr_name(:is_governed_by, :symbol), :label => 'Admin Policy:', :helper_method => :internal_uri_to_link
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -126,10 +126,11 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc, pub_date_sort desc, title_sort asc', :label => 'relevance'
-    config.add_sort_field 'pub_date_sort desc, title_sort asc', :label => 'year'
-    config.add_sort_field 'author_sort asc, title_sort asc', :label => 'author'
-    config.add_sort_field 'title_sort asc, pub_date_sort desc', :label => 'title'
+    # FIXME - restore title sort
+    config.add_sort_field 'score desc', :label => 'relevance'
+    #config.add_sort_field 'pub_date_sort desc, title_sort asc', :label => 'year'
+    #config.add_sort_field 'author_sort asc, title_sort asc', :label => 'author'
+    #config.add_sort_field 'title_sort asc, pub_date_sort desc', :label => 'title'
 
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.

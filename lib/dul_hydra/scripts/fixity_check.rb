@@ -8,8 +8,8 @@ module DulHydra::Scripts
     # TODO migrate defaults to config
     DEFAULT_LIMIT = 100
     DEFAULT_PERIOD = "6MONTHS"
-    QUERY = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)}:[* TO NOW-%s] AND (#{ActiveFedora::SolrService.solr_name(:active_fedora_model, :symbol)}:Component OR #{ActiveFedora::SolrService.solr_name(:active_fedora_model, :symbol)}:Target)"
-    SORT = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)} asc"
+    QUERY = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :sortable, type: :date)}:[* TO NOW-%s] AND (#{ActiveFedora::SolrService.solr_name(:active_fedora_model, :symbol)}:Component OR #{ActiveFedora::SolrService.solr_name(:active_fedora_model, :symbol)}:Target)"
+    SORT = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :sortable, type: :date)} asc"
 
     def self.execute(opts={})
       # configure logging
