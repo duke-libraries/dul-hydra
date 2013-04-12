@@ -1,11 +1,9 @@
 module DulHydra::BatchIngest
   class IngestObject
 
-    MODELS = ["Collection", "Component", "Item", "Target"]
     PAYLOAD_TYPES = ["bytes", "uri"]
     
-    attr_accessor :identifier,   # String identifier
-                  :model,        # Name of ActiveFedora class
+    attr_accessor :model,        # Name of ActiveFedora class
                   :admin_policy, # Admin Policy Object PID
                   :label,        # String to use as object label
                   :metadata,     # Array of hashes containing :datastream_name, :payload, :payload_type
@@ -14,7 +12,11 @@ module DulHydra::BatchIngest
                   :collection    # PID of collection (for Targets)
     
     def valid?()
-      return false unless MODELS.include?(model)
+      begin
+        model.constantize
+      rescue NameError
+        return false
+      end
       return true
     end
     
