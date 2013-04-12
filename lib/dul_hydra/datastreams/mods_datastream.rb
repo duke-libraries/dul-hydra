@@ -1,6 +1,6 @@
 module DulHydra::Datastreams
 
-  class ModsDatastream < ActiveFedora::NokogiriDatastream
+  class ModsDatastream < ActiveFedora::OmDatastream
     
     set_terminology do |t|
       t.root(:path=>"mods", :xmlns=>"http://www.loc.gov/mods/v3", 
