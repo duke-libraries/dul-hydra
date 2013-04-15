@@ -5,7 +5,7 @@ module DulHydra::BatchIngest
   describe IngestObject do
     
     context "valid object" do
-      let(:object) { FactoryGirl.build(:collection_ingest_object) }
+      let(:object) { FactoryGirl.build(:test_model_ingest_object) }
       it "should be valid" do
         expect(object.valid?).to be_true
       end
