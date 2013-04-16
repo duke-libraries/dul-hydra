@@ -119,7 +119,10 @@ class CatalogController < ApplicationController
 
     # FIXME https://github.com/duke-libraries/dul-hydra/issues/42
     config.add_search_field('identifier') do |field|
-      field.qt = 'standard'
+      #field.qt = 'standard'
+      field.solr_local_parameters = {
+        :qf => solr_name(:identifier, :stored_searchable)
+      }
     end
 
     # "sort results by" select (pulldown)
