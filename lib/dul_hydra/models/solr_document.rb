@@ -12,7 +12,7 @@ module DulHydra::Models
     end
     
     def has_datastream?(dsID)
-      !(datastreams[dsID].nil? || datastreams[dsID].empty?)
+      !datastreams[dsID].blank?
     end
 
     def has_admin_policy?
