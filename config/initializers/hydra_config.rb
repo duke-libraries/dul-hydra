@@ -30,6 +30,7 @@ if Hydra.respond_to?(:configure)
       :owner => ActiveFedora::SolrService.solr_name("inheritable_depositor", indexer),
       :embargo_release_date => ActiveFedora::SolrService.solr_name("inheritable_embargo_release_date", Solrizer::Descriptor.new(:date, :stored, :indexed))
     }
+    config[:permissions][:policy_class] = AdminPolicy
     
   end
 end
