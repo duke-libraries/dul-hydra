@@ -31,6 +31,21 @@ class TestContentMetadata < TestParent
   include DulHydra::Models::HasContentMetadata
 end
 
+class TestModelOmnibus < TestModel
+  include DulHydra::Models::HasContentdm
+  include DulHydra::Models::HasDigitizationGuide
+  include DulHydra::Models::HasDPCMetadata
+  include DulHydra::Models::HasFMPExport
+  include DulHydra::Models::HasJhove
+  include DulHydra::Models::HasMarcXML
+  include DulHydra::Models::HasTripodMets
+  include DulHydra::Models::HasContent
+  include DulHydra::Models::HasThumbnail
+  include DulHydra::Models::HasContentMetadata
+  has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true
+  belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
+end
+
 FactoryGirl.define do
   
   factory :test_model do
@@ -143,6 +158,11 @@ FactoryGirl.define do
     end
   end
 
+  factory :test_model_omnibus do
+    title "DulHydra Test Omnibus Object"
+    sequence(:identifier) { |n| "test%05d" % n }
+    permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
+  end
   
 end
   

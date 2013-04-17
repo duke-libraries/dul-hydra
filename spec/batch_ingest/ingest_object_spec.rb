@@ -5,39 +5,39 @@ module DulHydra::BatchIngest
   shared_examples "a valid object" do
     it "should be valid" do
       expect(object.valid?).to be_true
-      expect(object.validate).to be_empty
+      expect(object.validate.errors).to be_empty
     end
   end
   
   shared_examples "an invalid object" do
     it "should not be valid" do
       expect(object.valid?).to be_false
-      expect(object.validate).to include(error_message)
+      expect(object.validate.errors).to include(error_message)
     end
   end
 
   describe IngestObject do
     
     context "valid object" do
-      context "not child object" do
-        let(:object) { FactoryGirl.build(:test_model_ingest_object) }
+      context "common objects" do
+        let(:object) { FactoryGirl.build(:test_model_omnibus_ingest_object) }
         let(:apo) { FactoryGirl.create(:public_read_policy) }
-        let(:collection) { FactoryGirl.create(:collection) }
+        let(:parent) { FactoryGirl.create(:test_parent) }
         before do
           object.admin_policy = apo.pid
-          object.collection = collection.pid
+          object.parent = parent.pid
         end
         after do
           apo.destroy
-          collection.destroy
+          parent.destroy
         end
         it_behaves_like "a valid object"
       end
-      context "child object" do
-        let(:object) { FactoryGirl.build(:test_child_ingest_object) }
-        let(:parent) { FactoryGirl.create(:test_parent) }
-        before { object.parent = parent.pid }
-        after { parent.destroy }
+      context "target object" do
+        let(:object) { FactoryGirl.build(:target_ingest_object) }
+        let(:collection) { FactoryGirl.create(:collection) }
+        before { object.collection = collection.pid }
+        after { collection.destroy }
         it_behaves_like "a valid object"
       end
     end
@@ -112,6 +112,45 @@ module DulHydra::BatchIngest
           end
           after { @not_collection.destroy }
           it_behaves_like "an invalid object"
+        end
+      end
+    end
+
+    context "yaml operations" do
+      let(:object) { FactoryGirl.build(:test_model_omnibus_ingest_object) }
+      let(:expected_yaml) do
+        "--- !ruby/object:DulHydra::BatchIngest::IngestObject\nidentifier: #{object.identifier}\nmodel: TestModelOmnibus\nlabel: Test Model Label\ndata:\n- :datastream_name: descMetadata\n  :payload: <dc xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dcterms:title>Test\n    Object Title</dcterms:title></dc>\n  :payload_type: bytes\n- :datastream_name: digitizationGuide\n  :payload: /home/coblej/workspace/dul-hydra/spec/fixtures/batch_ingest/miscellaneous/metadata.xls\n  :payload_type: filename\n- :datastream_name: content\n  :payload: /home/coblej/workspace/dul-hydra/spec/fixtures/batch_ingest/miscellaneous/id001.tif\n  :payload_type: filename\n"
+      end
+      context "to yaml" do
+        it "should produce the appropriate yaml" do
+          expect(object.to_yaml).to eq(expected_yaml)
+        end
+      end
+      context "from_yaml" do
+        it "should produce the appropriate object" do
+          expect(IngestObject.from_yaml(expected_yaml)).to eq(object)
+        end
+      end
+      context "yaml file operations" do
+        before { @tmpdir = Dir.mktmpdir("dul_hydra_test") }
+        after { FileUtils.remove_dir @tmpdir }
+        context "write yaml file" do
+          before do
+            object.write_to_yaml_file(File.join(@tmpdir, "#{object.identifier}.yml"))
+            @yaml_file = File.open(File.join(@tmpdir, "#{object.identifier}.yml")) { |f| f.read }
+          end
+          it "should produce the appropriate file" do
+            FileUtils.compare_stream(StringIO.new(object.to_yaml), StringIO.new(@yaml_file)).should be_true
+          end
+        end
+        context "read yaml file" do
+          before do
+            object.write_to_yaml_file(File.join(@tmpdir, "#{object.identifier}.yml"))
+            @new_object = IngestObject.read_from_yaml_file(File.join(@tmpdir, "#{object.identifier}.yml"))
+          end
+          it "should produce the appropriate object" do
+            expect(@new_object).to eq(object)
+          end
         end
       end
     end

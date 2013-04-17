@@ -1,9 +1,10 @@
 FactoryGirl.define do
   
   factory :ingest_object, class: DulHydra::BatchIngest::IngestObject do
+    sequence(:identifier) { |n| "test%05d" % n }
     
-    factory :test_model_ingest_object do
-      model "TestFileDatastreams"
+    factory :test_model_omnibus_ingest_object do
+      model "TestModelOmnibus"
       label "Test Model Label"
       data [
               {
@@ -24,8 +25,8 @@ FactoryGirl.define do
             ]
     end
     
-    factory :test_child_ingest_object do
-      model "TestChild"
+    factory :target_ingest_object do
+      model "Target"
     end
     
   end
