@@ -1,25 +1,10 @@
 log4r_config:
     loggers:
-        - name      : preparation
+        - name      : batch
           level     : INFO
           trace     : 'false'
           outputters:
-            - file_preparation
-        - name      : ingest
-          level     : INFO
-          trace     : 'false'
-          outputters:
-            - file_ingest
-        - name      : postprocess
-          level     : INFO
-          trace     : 'false'
-          outputters:
-            - file_postprocess
-        - name      : validation
-          level     : INFO
-          trace     : 'false'
-          outputters:
-            - file_validation
+            - file_batch
     outputters:
         - type      : StdoutOutputter
           name      : stdout
@@ -28,29 +13,8 @@ log4r_config:
             pattern     : '%d %l: %m '
             type        : PatternFormatter
         - type      : FileOutputter
-          name      : file_preparation
-          filename  : "#{basepath}log/ingest_preparation.log"
-          formatter :
-            date_pattern: '%F %T'
-            pattern     : '%d %l: %m '
-            type        : PatternFormatter
-        - type      : FileOutputter
-          name      : file_ingest
-          filename  : "#{basepath}log/batch_ingest.log"
-          formatter :
-            date_pattern: '%F %T'
-            pattern     : '%d %l: %m '
-            type        : PatternFormatter
-        - type      : FileOutputter
-          name      : file_postprocess
-          filename  : "#{basepath}log/ingest_postprocess.log"
-          formatter :
-            date_pattern: '%F %T'
-            pattern     : '%d %l: %m '
-            type        : PatternFormatter
-        - type      : FileOutputter
-          name      : file_validation
-          filename  : "#{basepath}log/ingest_validation.log"
+          name      : file_batch
+          filename  : "#{filename}"
           formatter :
             date_pattern: '%F %T'
             pattern     : '%d %l: %m '

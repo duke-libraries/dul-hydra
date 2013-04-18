@@ -11,7 +11,7 @@ module DulHydra::BatchIngest
                   :label,        # String to use as object label
                   :data,         # Array of hashes containing :datastream_name, :payload, :payload_type
                   :parent,       # PID of parent object
-                  :collection    # PID of collection (for Targets)
+                  :target_for    # PID of collection (for Targets)
     
     def initialize(identifier=nil)
       if identifier
@@ -31,7 +31,7 @@ module DulHydra::BatchIngest
       validation.errors += validate_pid(admin_policy, AdminPolicy) if admin_policy
       validation.errors += validate_data() if data
       validation.errors += validate_pid(parent, parent_class()) if parent
-      validation.errors += validate_pid(collection, Collection) if collection
+      validation.errors += validate_pid(target_for, Collection) if target_for
       return validation
     end
     
@@ -68,7 +68,7 @@ module DulHydra::BatchIngest
         @label == o.label &&
         @data == o.data &&
         @parent == o.parent &&
-        @collection == o.collection
+        @target_for == o.target_for
       else
         false
       end

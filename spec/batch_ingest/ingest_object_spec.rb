@@ -36,7 +36,7 @@ module DulHydra::BatchIngest
       context "target object" do
         let(:object) { FactoryGirl.build(:target_ingest_object) }
         let(:collection) { FactoryGirl.create(:collection) }
-        before { object.collection = collection.pid }
+        before { object.target_for = collection.pid }
         after { collection.destroy }
         it_behaves_like "a valid object"
       end
@@ -98,17 +98,17 @@ module DulHydra::BatchIngest
           it_behaves_like "an invalid object"
         end
       end
-      context "invalid collection" do
-        context "collection pid object does not exist" do
-          let(:error_message) { "Specified Collection does not exist: #{object.collection}" }
-          before { object.collection = "bogus:Collection" }
+      context "invalid target_for" do
+        context "target_for pid object does not exist" do
+          let(:error_message) { "Specified Collection does not exist: #{object.target_for}" }
+          before { object.target_for = "bogus:Collection" }
           it_behaves_like "an invalid object"
         end
-        context "collection pid object exists but is not collection" do
-          let(:error_message) { "#{object.collection} exists but is not a(n) Collection" }
+        context "target_for pid object exists but is not collection" do
+          let(:error_message) { "#{object.target_for} exists but is not a(n) Collection" }
           before do
             @not_collection = FactoryGirl.create(:test_model)
-            object.collection = @not_collection.pid
+            object.target_for = @not_collection.pid
           end
           after { @not_collection.destroy }
           it_behaves_like "an invalid object"
