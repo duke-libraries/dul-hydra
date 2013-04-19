@@ -11,7 +11,49 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130315171936) do
+ActiveRecord::Schema.define(:version => 20130419173351) do
+
+  create_table "batch_object_datastreams", :force => true do |t|
+    t.integer  "batch_object_id"
+    t.string   "operation"
+    t.string   "name"
+    t.text     "payload"
+    t.string   "payload_type"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
+  create_table "batch_objects", :force => true do |t|
+    t.integer  "batch_id"
+    t.string   "operation"
+    t.string   "identifier"
+    t.string   "model"
+    t.string   "admin_policy"
+    t.string   "label"
+    t.string   "parent"
+    t.string   "target_for"
+    t.string   "pid"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  create_table "batch_runs", :force => true do |t|
+    t.integer  "batch_id"
+    t.string   "status"
+    t.datetime "start"
+    t.datetime "stop"
+    t.string   "outcome"
+    t.text     "outcome_details"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
+  end
+
+  create_table "batches", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
 
   create_table "bookmarks", :force => true do |t|
     t.integer  "user_id",     :null => false
