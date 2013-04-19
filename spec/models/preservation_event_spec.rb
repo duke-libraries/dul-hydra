@@ -77,8 +77,8 @@ describe PreservationEvent do
     end
   end
 
-  context ".validate_checksum" do
-    subject { PreservationEvent.validate_checksum(obj, "content") }
+  context ".validate_checksums" do
+    subject { PreservationEvent.validate_checksum(obj) }
     after { obj.destroy }
     context "success" do
       let(:obj) { FactoryGirl.create(:component_with_content) }
@@ -91,8 +91,8 @@ describe PreservationEvent do
     end
   end
 
-  context ".validate_checksum!" do
-    subject { PreservationEvent.validate_checksum!(obj, "content") }
+  context ".validate_checksums!" do
+    subject { PreservationEvent.validate_checksums!(obj) }
     after { obj.destroy }
     context "success" do
       let(:obj) { FactoryGirl.create(:component_with_content) }

@@ -1,3 +1,5 @@
+require 'json'
+
 class PreservationEvent < ActiveFedora::Base
 
   before_create :assign_admin_policy
@@ -24,19 +26,16 @@ class PreservationEvent < ActiveFedora::Base
   DATASTREAM = "datastream"
   OBJECT = "object"
   
-  # String template for fixity check/checksum validation event detail 
-  CHECKSUM_VALIDATION_EVENT_DETAIL = <<EOS
-Internal datastream checksum validation.
-Object URI: %{uri}
-Datastream ID: %{dsID}
-Datastream version: %{dsVersionID} (created on %{dsCreateDate})
-[DulHydra version #{DulHydra::VERSION}]
-EOS
+#   # String template for fixity check/checksum validation event detail 
+#   CHECKSUM_VALIDATION_EVENT_DETAIL = <<EOS
+# Internal validation of datastream checksums.
+# Results: 
+# [DulHydra version #{DulHydra::VERSION}]
+# EOS
   
   has_metadata :name => DulHydra::Datastreams::EVENT_METADATA, :type => DulHydra::Datastreams::PremisEventDatastream, 
                :versionable => true, :label => "Preservation event metadata", :control_group => 'X'
 
-  # DulHydra::Models::HasPreservationEvents defines an inbound has_many relationship to PreservationEvent
   belongs_to :for_object, 
              :property => :is_preservation_event_for, 
              :class_name => 'DulHydra::Models::HasPreservationEvents'
@@ -46,9 +45,6 @@ EOS
                                :linking_object_id_type, :linking_object_id_value
                               ], :unique => true
 
-  #
-  # Convenience methods: fixity_check? success? failure?
-  #
   def fixity_check?
     event_type == FIXITY_CHECK
   end
@@ -61,9 +57,13 @@ EOS
     event_outcome == FAILURE
   end
 
-  # Return a preservation event for a datastream checksum validation
-  def self.validate_checksum(obj, dsID)
-    ds = obj.datastreams[dsID]
+  def self.validate_checksums(obj)
+    results = {}
+    outcome = SUCCESS
+    obj.datastreams.each do |dsid, ds|
+      outcome = FAILURE unless ds.dsChecksumValid
+      results[dsid] = ds.profile(:validateChecksum => true)
+    end
     new(:label => "Checksum validation", 
         :event_type => FIXITY_CHECK,
         :event_date_time => to_event_date_time,
@@ -74,15 +74,14 @@ EOS
                            :dsVersionID => ds.dsVersionID,
                            :dsCreateDate => DulHydra::Utils.ds_as_of_date_time(ds)
                            },  
-        :linking_object_id_type => DATASTREAM,
-        :linking_object_id_value => obj.ds_internal_uri(dsID),
+        :linking_object_id_type => OBJECT,
+        :linking_object_id_value => obj.internal_uri
         :for_object => obj
         )
   end
 
-  # persist and return a preservation event for a datastream checksum validation
-  def self.validate_checksum!(obj, dsID)
-    pe = validate_checksum(obj, dsID)
+  def self.validate_checksum!(obj)
+    pe = validate_checksums(obj)
     pe.save!
     # index last fixity check on for_object
     # XXX should this be in an after_save callback?
