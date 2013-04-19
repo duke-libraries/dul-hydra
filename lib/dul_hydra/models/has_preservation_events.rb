@@ -10,12 +10,12 @@ module DulHydra::Models
       before_destroy :delete_preservation_events
     end
 
-    def validate_checksum(dsID)
-      PreservationEvent.validate_checksum(self, dsID)
+    def validate_checksums
+      PreservationEvent.validate_checksums(self)
     end
 
-    def validate_checksum!(dsID)
-      PreservationEvent.validate_checksum!(self, dsID)
+    def validate_checksums!
+      PreservationEvent.validate_checksums!(self)
     end
 
     # Used to record precise datastream version information.

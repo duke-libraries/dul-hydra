@@ -60,10 +60,12 @@ namespace :dul_hydra do
             opts = {
                 :dryrun => ENV['dryrun'] == 'true' ? true : false,
                 :limit => ENV.fetch('limit', 10).to_i,
-                :period => ENV.fetch('period', '6MONTHS')
+                :period => ENV.fetch('period', '60DAYS'),
+				:mailto => ENV['mailto']
             }
             puts "Running fixity check routine with options #{opts} ..."
-            DulHydra::Scripts::FixityCheck.execute(opts)
+            fixity_check = DulHydra::Scripts::FixityCheck.new(opts)
+			fixity_check.execute
         end
     end
 end

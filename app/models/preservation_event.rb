@@ -3,6 +3,7 @@ require 'json'
 class PreservationEvent < ActiveFedora::Base
 
   before_create :assign_admin_policy
+  after_save :update_for_object_index
     
   include DulHydra::Models::Governable
   include DulHydra::Models::AccessControllable
@@ -25,13 +26,6 @@ class PreservationEvent < ActiveFedora::Base
   # Linking object identifier types
   DATASTREAM = "datastream"
   OBJECT = "object"
-  
-#   # String template for fixity check/checksum validation event detail 
-#   CHECKSUM_VALIDATION_EVENT_DETAIL = <<EOS
-# Internal validation of datastream checksums.
-# Results: 
-# [DulHydra version #{DulHydra::VERSION}]
-# EOS
   
   has_metadata :name => DulHydra::Datastreams::EVENT_METADATA, :type => DulHydra::Datastreams::PremisEventDatastream, 
                :versionable => true, :label => "Preservation event metadata", :control_group => 'X'
@@ -57,37 +51,48 @@ class PreservationEvent < ActiveFedora::Base
     event_outcome == FAILURE
   end
 
-  def self.validate_checksums(obj)
-    results = {}
-    outcome = SUCCESS
-    obj.datastreams.each do |dsid, ds|
-      outcome = FAILURE unless ds.dsChecksumValid
-      results[dsid] = ds.profile(:validateChecksum => true)
-    end
-    new(:label => "Checksum validation", 
-        :event_type => FIXITY_CHECK,
-        :event_date_time => to_event_date_time,
-        :event_outcome => ds.dsChecksumValid ? SUCCESS : FAILURE,
-        :event_detail => CHECKSUM_VALIDATION_EVENT_DETAIL % {
-                           :uri => obj.internal_uri,
-                           :dsID => dsID,
-                           :dsVersionID => ds.dsVersionID,
-                           :dsCreateDate => DulHydra::Utils.ds_as_of_date_time(ds)
-                           },  
-        :linking_object_id_type => OBJECT,
-        :linking_object_id_value => obj.internal_uri
-        :for_object => obj
-        )
-  end
+  # # Options are :only and :except.
+  # # Both take a String or Array with one or more datastream IDs
+  # # :only takes precedence over except.
+  # # Array operations should prevent invalid datastream ID issues.
+  # def self.validate_checksums(obj, opts={})
+  #   outcome = SUCCESS
+  #   detail = {
+  #     datastreams: {}, 
+  #     options: opts, 
+  #     version: DulHydra::VERSION
+  #   }
+  #   datastream_ids = obj.datastreams.keys
+  #   if opts.has_key? :only
+  #     include = opts[:only]
+  #     include = [include] if include.is_a?(String)
+  #     datastream_ids &= include
+  #   elsif opts.has_key? :except
+  #     exclude = opts[:except]
+  #     exclude = [except] if except.is_a?(String)
+  #     datastream_ids -= exclude
+  #   end
+  #   datastream_ids.each do |dsid|
+  #     ds = obj.datastreams[dsid]
+  #     outcome = FAILURE unless ds.dsChecksumValid
+  #     detail[:datastreams][dsid] = ds.profile
+  #   end
+  #   new(:label => "Internal repository validation of datastream checksums",
+  #       :event_type => FIXITY_CHECK,
+  #       :event_date_time => to_event_date_time,
+  #       :event_outcome => outcome,
+  #       :event_detail => detail.to_json,
+  #       :linking_object_id_type => OBJECT,
+  #       :linking_object_id_value => obj.internal_uri,
+  #       :for_object => obj
+  #       )
+  # end
 
-  def self.validate_checksum!(obj)
-    pe = validate_checksums(obj)
-    pe.save!
-    # index last fixity check on for_object
-    # XXX should this be in an after_save callback?
-    obj.update_index 
-    return pe
-  end
+  # def self.validate_checksums!(obj, opts={})
+  #   pe = validate_checksums(obj, opts)
+  #   pe.save!
+  #   pe
+  # end
 
   # Overriding to_solr here seems cleaner than using :index_as on eventMetadata OM terminology.
   def to_solr(solr_doc=Hash.new, opts={})
@@ -115,6 +120,10 @@ class PreservationEvent < ActiveFedora::Base
 
   def assign_admin_policy
     self.admin_policy = PreservationEvent.default_admin_policy unless self.admin_policy
+  end
+
+  def update_for_object_index
+    self.for_object.update_index if self.fixity_check?
   end
 
 end
