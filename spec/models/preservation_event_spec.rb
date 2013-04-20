@@ -77,32 +77,32 @@ describe PreservationEvent do
     end
   end
 
-  context ".validate_checksums" do
-    subject { PreservationEvent.validate_checksum(obj) }
-    after { obj.destroy }
-    context "success" do
-      let(:obj) { FactoryGirl.create(:component_with_content) }
-      it_should_behave_like "a fixity check success preservation event"
-    end
-    context "failure" do
-      before { ds_checksum_valid_false(obj.datastreams["content"]) }
-      let(:obj) { FactoryGirl.create(:component_with_content) }
-      it_should_behave_like "a fixity check failure preservation event"
-    end
-  end
+  # context ".validate_checksums" do
+  #   subject { PreservationEvent.validate_checksum(obj) }
+  #   after { obj.destroy }
+  #   context "success" do
+  #     let(:obj) { FactoryGirl.create(:component_with_content) }
+  #     it_should_behave_like "a fixity check success preservation event"
+  #   end
+  #   context "failure" do
+  #     before { ds_checksum_valid_false(obj.datastreams["content"]) }
+  #     let(:obj) { FactoryGirl.create(:component_with_content) }
+  #     it_should_behave_like "a fixity check failure preservation event"
+  #   end
+  # end
 
-  context ".validate_checksums!" do
-    subject { PreservationEvent.validate_checksums!(obj) }
-    after { obj.destroy }
-    context "success" do
-      let(:obj) { FactoryGirl.create(:component_with_content) }
-      it_should_behave_like "a fixity check success preservation event"
-    end
-    context "failure" do
-      before { ds_checksum_valid_false(obj.datastreams["content"]) }
-      let(:obj) { FactoryGirl.create(:component_with_content) }
-      it_should_behave_like "a fixity check failure preservation event"
-    end
-  end
+  # context ".validate_checksums!" do
+  #   subject { PreservationEvent.validate_checksums!(obj) }
+  #   after { obj.destroy }
+  #   context "success" do
+  #     let(:obj) { FactoryGirl.create(:component_with_content) }
+  #     it_should_behave_like "a fixity check success preservation event"
+  #   end
+  #   context "failure" do
+  #     before { ds_checksum_valid_false(obj.datastreams["content"]) }
+  #     let(:obj) { FactoryGirl.create(:component_with_content) }
+  #     it_should_behave_like "a fixity check failure preservation event"
+  #   end
+  # end
 
 end

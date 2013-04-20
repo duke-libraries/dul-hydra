@@ -3,7 +3,7 @@ require 'json'
 class PreservationEvent < ActiveFedora::Base
 
   before_create :assign_admin_policy
-  after_save :update_for_object_index
+  after_save :update_index_for_object
     
   include DulHydra::Models::Governable
   include DulHydra::Models::AccessControllable
@@ -51,48 +51,11 @@ class PreservationEvent < ActiveFedora::Base
     event_outcome == FAILURE
   end
 
-  # # Options are :only and :except.
-  # # Both take a String or Array with one or more datastream IDs
-  # # :only takes precedence over except.
-  # # Array operations should prevent invalid datastream ID issues.
-  # def self.validate_checksums(obj, opts={})
-  #   outcome = SUCCESS
-  #   detail = {
-  #     datastreams: {}, 
-  #     options: opts, 
-  #     version: DulHydra::VERSION
-  #   }
-  #   datastream_ids = obj.datastreams.keys
-  #   if opts.has_key? :only
-  #     include = opts[:only]
-  #     include = [include] if include.is_a?(String)
-  #     datastream_ids &= include
-  #   elsif opts.has_key? :except
-  #     exclude = opts[:except]
-  #     exclude = [except] if except.is_a?(String)
-  #     datastream_ids -= exclude
-  #   end
-  #   datastream_ids.each do |dsid|
-  #     ds = obj.datastreams[dsid]
-  #     outcome = FAILURE unless ds.dsChecksumValid
-  #     detail[:datastreams][dsid] = ds.profile
-  #   end
-  #   new(:label => "Internal repository validation of datastream checksums",
-  #       :event_type => FIXITY_CHECK,
-  #       :event_date_time => to_event_date_time,
-  #       :event_outcome => outcome,
-  #       :event_detail => detail.to_json,
-  #       :linking_object_id_type => OBJECT,
-  #       :linking_object_id_value => obj.internal_uri,
-  #       :for_object => obj
-  #       )
-  # end
-
-  # def self.validate_checksums!(obj, opts={})
-  #   pe = validate_checksums(obj, opts)
-  #   pe.save!
-  #   pe
-  # end
+  def self.events_for(object, type)
+    PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => object.internal_uri,
+                            ActiveFedora::SolrService.solr_name(:event_type, :symbol) => type
+                            ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
+  end
 
   # Overriding to_solr here seems cleaner than using :index_as on eventMetadata OM terminology.
   def to_solr(solr_doc=Hash.new, opts={})
@@ -122,7 +85,7 @@ class PreservationEvent < ActiveFedora::Base
     self.admin_policy = PreservationEvent.default_admin_policy unless self.admin_policy
   end
 
-  def update_for_object_index
+  def update_index_for_object
     self.for_object.update_index if self.fixity_check?
   end
 

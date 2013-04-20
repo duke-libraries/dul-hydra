@@ -12,23 +12,53 @@ module DulHydra::Scripts
     QUERY = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)}:[* TO NOW-%s]"
     SORT = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)} asc"
 
-    attr_reader :limit, :period, :dryrun, :log, :report, :query, :options, :mailto
+    attr_reader :limit, :dryrun, :log, :report, :query, :fixity_check_options, :mailto
 
     def initialize(opts={})
       @limit = opts.fetch(:limit, DEFAULT_LIMIT).to_i
       @query = QUERY % opts.fetch(:period, DEFAULT_PERIOD)
       @dryrun = opts.fetch(:dryrun, false)
       @mailto = opts[:mailto]
-      @options = opts.fetch(:options, {}) # options to pass through to FixityCheck
+      @fixity_check_options = opts.fetch(:options, {}) # options to pass through to FixityCheck
     end
 
     def execute
-      init_log
-      init_report
-      log.info "Starting fixity check routine ..."      
-      log.info "DRY RUN -- No changes will be made to the repository." if dryrun
+      start
       check_objects
+      finish
+    end
+
+    private
+
+    def start
+      start_log
+      start_report
+    end
+
+    def finish
+      finish_log
+      finish_report
+    end
+
+    def start_log
+      logconfig = Log4r::YamlConfigurator
+      logconfig['HOME'] = Rails.root.to_s
+      logconfig.load_yaml_file File.join(Rails.root, 'config', 'log4r_fixity_check.yml')
+      @log = Log4r::Logger['fixity_check']
+      log.info "Starting fixity check routine ..."
+      log.info "DRY RUN -- No changes will be made to the repository." if dryrun
+    end
+
+    def finish_log
       log.info "Fixity check routine complete."
+    end
+
+    def start_report
+      @report = CSV.open(File.join(Rails.root, "log", "fixity_check_report_#{Time.now.strftime('%F')}.csv"), 'wb')
+      write_report_header
+    end
+
+    def finish_report
       report.close
       mail_report if mailto
     end
@@ -38,21 +68,12 @@ module DulHydra::Scripts
     end
 
     def check_objects
-      get_objects.each { |obj| report_outcome(check_object(obj)) }
-    end
-
-    private
-
-    def init_log
-      logconfig = Log4r::YamlConfigurator
-      logconfig['HOME'] = Rails.root.to_s
-      logconfig.load_yaml_file File.join(Rails.root, 'config', 'log4r_fixity_check.yml')
-      @log = Log4r::Logger['fixity_check']
-    end
-
-    def init_report
-      @report = CSV.open(File.join(Rails.root, "log", "fixity_check_report_#{Time.now.strftime('%F')}.csv"), 'wb')
-      write_report_header
+      objects_to_check.each do |obj| 
+        # next unless obj.is_a?(DulHydra::Models::HasPreservationEvents)
+        event = check_object(obj)
+        log_outcome(event)
+        report_outcome(event)
+      end
     end
 
     def write_report_header
@@ -64,23 +85,22 @@ module DulHydra::Scripts
       report << [event.for_object.pid, ds["dsID"], outcome, event.event_date_time, ds["dsVersionID"], ds["asOfDateTime"], ds["dsChecksumType"], ds["dsChecksum"]]
     end
 
-    def write_report_rows(event)
+    def check_object(obj)
+      method = dryrun ? :validate_checksums : :validate_checksums!
+      obj.send(method, fixity_check_options)
+    end
+
+    def log_outcome(event)
+      msg = "Fixity check outcome for #{event.for_object.pid}: #{event.event_outcome}."
+      event.success? ? log.info(msg) : log.error(msg)
+    end
+
+    def report_outcome(event)
       detail = JSON.parse(event.event_detail)
       detail[:datastreams].each { |ds| write_report_row(ds, event) }
     end
 
-    def check_object(obj)
-      fixity_check = DulHydra::FixityCheck.new(obj, options)
-      dryrun ? fixity_check.execute : fixity_check.execute!
-    end
-
-    def report_outcome(event)
-      msg = "Fixity check outcome for #{event.for_object.pid}: #{event.event_outcome}."
-      event.success? ? log.info msg : log.error msg
-      write_report_rows(event)
-    end
-
-    def get_objects
+    def objects_to_check
       log.info "Querying index: #{query} (limit: #{limit}) ..."
       results = ActiveFedora::SolrService.query(query, :rows => limit, :sort => SORT)
       log.info "#{results.size} matching objects found."
