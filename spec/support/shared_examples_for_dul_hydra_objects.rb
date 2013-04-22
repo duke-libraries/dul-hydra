@@ -25,5 +25,20 @@ shared_examples "a DulHydra object" do
       it { should eq("[duke:test]") }
     end
   end
+  
+  context "#validate_checksums" do
+    let(:object) { described_class.create(:title => 'Title') }
+    after { object.destroy }
+    it "should return a boolean success/failure flag and hash of datastream profiles" do
+      outcome, detail = object.validate_checksums
+      outcome.should be_true
+      detail.should be_kind_of(Hash)
+      object.datastreams.each do |dsid, ds|
+        unless ds.profile.empty?
+          detail[dsid].should eq(ds.profile)
+        end
+      end
+    end
+  end
 
 end

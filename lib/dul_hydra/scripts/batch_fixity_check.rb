@@ -12,14 +12,13 @@ module DulHydra::Scripts
     QUERY = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)}:[* TO NOW-%s]"
     SORT = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)} asc"
 
-    attr_reader :limit, :dryrun, :log, :report, :query, :fixity_check_options, :mailto
+    attr_reader :limit, :dryrun, :log, :query, :report, :summary
 
     def initialize(opts={})
       @limit = opts.fetch(:limit, DEFAULT_LIMIT).to_i
       @query = QUERY % opts.fetch(:period, DEFAULT_PERIOD)
       @dryrun = opts.fetch(:dryrun, false)
-      @mailto = opts[:mailto]
-      @fixity_check_options = opts.fetch(:options, {}) # options to pass through to FixityCheck
+      @summary = {total: 0, success: 0, failure: 0}
     end
 
     def execute
@@ -54,40 +53,25 @@ module DulHydra::Scripts
     end
 
     def start_report
-      @report = CSV.open(File.join(Rails.root, "log", "fixity_check_report_#{Time.now.strftime('%F')}.csv"), 'wb')
+      @report = CSV.open(File.join(Rails.root, 'log', 'batch_fixity_check_#{Time.now.stftime("%F"}.csv'), 'wb')
       write_report_header
     end
 
     def finish_report
       report.close
-      mail_report if mailto
-    end
-
-    def mail_report
-      # mail report.path
     end
 
     def check_objects
       objects_to_check.each do |obj| 
-        # next unless obj.is_a?(DulHydra::Models::HasPreservationEvents)
         event = check_object(obj)
         log_outcome(event)
         report_outcome(event)
+        update_summary(event)
       end
     end
 
-    def write_report_header
-      report << ['PID', 'Datastream', 'Outcome', 'OutcomeDate', 'dsVersionID', 'asOfDateTime', 'ChecksumType', 'Checksum']
-    end
-
-    def write_report_row(ds, event)
-      outcome = ds["dsChecksumValid"] ? PreservationEvent::SUCCESS : PreservationEvent::FAILURE
-      report << [event.for_object.pid, ds["dsID"], outcome, event.event_date_time, ds["dsVersionID"], ds["asOfDateTime"], ds["dsChecksumType"], ds["dsChecksum"]]
-    end
-
     def check_object(obj)
-      method = dryrun ? :validate_checksums : :validate_checksums!
-      obj.send(method, fixity_check_options)
+      dryrun ? obj.fixity_check : obj.fixity_check!
     end
 
     def log_outcome(event)
@@ -95,9 +79,30 @@ module DulHydra::Scripts
       event.success? ? log.info(msg) : log.error(msg)
     end
 
+    def write_report_header
+      report << ['PID', 'Datastream', 'dsVersionID', 'dsCreateDate', 'dsChecksumType', 'dsChecksum', 'dsChecksumValid']
+    end
+
     def report_outcome(event)
-      detail = JSON.parse(event.event_detail)
-      detail[:datastreams].each { |ds| write_report_row(ds, event) }
+      event.fixity_check_detail.each do |dsid, dsProfile|
+        report << [event.for_object.pid,
+                   dsid,
+                   dsProfile["dsVersionID"],
+                   dsProfile["dsCreateDate"],
+                   dsProfile["dsChecksumType"],
+                   dsProfile["dsChecksum"],
+                   dsProfile["dsChecksumValid"]
+                   ]
+      end
+    end
+
+    def update_summary(event)
+      summary[:total] += 1
+      if event.success?
+        summary[:success] += 1
+      else
+        summary[:failure] += 1
+      end
     end
 
     def objects_to_check
