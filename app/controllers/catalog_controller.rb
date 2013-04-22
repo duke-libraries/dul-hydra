@@ -22,13 +22,13 @@ class CatalogController < ApplicationController
 
     # solr field configuration for search results/index views
     #config.index.show_link = 'id'
-    config.index.show_link = solr_name(:title, :stored_sortable)
-    config.index.record_display_type = solr_name(:active_fedora_model, :symbol)
+    config.index.show_link = DulHydra::IndexFields::TITLE
+    config.index.record_display_type = DulHydra::IndexFields::ACTIVE_FEDORA_MODEL
 
     # solr field configuration for document/show views
-    config.show.html_title = solr_name(:title, :stored_sortable)
-    config.show.heading = solr_name(:title, :stored_sortable)
-    config.show.display_type = solr_name(:active_fedora_model, :symbol)
+    config.show.html_title = DulHydra::IndexFields::TITLE
+    config.show.heading = DulHydra::IndexFields::TITLE
+    config.show.display_type = DulHydra::IndexFields::ACTIVE_FEDORA_MODEL
 
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
@@ -49,7 +49,7 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field solr_name(:active_fedora_model, :symbol), :label => 'Type'
+    config.add_facet_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -61,22 +61,22 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    #config.add_index_field solr_name(:title, :stored_sortable), :label => 'Title:' 
-    config.add_index_field solr_name(:active_fedora_model, :symbol), :label => 'Type:'
+    #config.add_index_field DulHydra::IndexFields::TITLE, :label => 'Title:' 
+    config.add_index_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type:'
     config.add_index_field 'id', :label => 'PID:'
     #config.add_index_field 'title_t', :label => 'Title:'
-    config.add_index_field solr_name(:identifier, :stored_searchable, type: :text), :label => 'Identifier:'
+    config.add_index_field DulHydra::IndexFields::IDENTIFIER, :label => 'Identifier:'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
-    config.add_show_field solr_name(:active_fedora_model, :symbol), :label => 'Type:'
+    config.add_show_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type:'
     config.add_show_field 'id', :label => 'PID:'
     #config.add_show_field 'title_t', :label => 'Title:' 
-    config.add_show_field solr_name(:identifier, :stored_searchable, type: :text), :label => 'Identifier:'
-    config.add_show_field solr_name(:is_part_of, :symbol), :label => 'Part of:', :helper_method => :internal_uri_to_link
-    config.add_show_field solr_name(:is_member_of_collection, :symbol), :label => 'Member of Collection:', :helper_method => :internal_uri_to_link
-    config.add_show_field solr_name(:is_external_target_for, :symbol), :label => 'Target for:', :helper_method => :internal_uri_to_link
-    config.add_show_field solr_name(:is_governed_by, :symbol), :label => 'Admin Policy:', :helper_method => :internal_uri_to_link
+    config.add_show_field DulHydra::IndexFields::IDENTIFIER, :label => 'Identifier:'
+    config.add_show_field DulHydra::IndexFields::IS_PART_OF, :label => 'Part of:', :helper_method => :internal_uri_to_link
+    config.add_show_field DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION, :label => 'Member of Collection:', :helper_method => :internal_uri_to_link
+    config.add_show_field DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR, :label => 'Target for:', :helper_method => :internal_uri_to_link
+    config.add_show_field DulHydra::IndexFields::IS_GOVERNED_BY, :label => 'Admin Policy:', :helper_method => :internal_uri_to_link
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -121,7 +121,7 @@ class CatalogController < ApplicationController
     config.add_search_field('identifier') do |field|
       #field.qt = 'standard'
       field.solr_local_parameters = {
-        :qf => solr_name(:identifier, :stored_searchable)
+        :qf => DulHydra::IndexFields::IDENTIFIER
       }
     end
 
