@@ -39,6 +39,25 @@ class PreservationEvent < ActiveFedora::Base
                                :linking_object_id_type, :linking_object_id_value
                               ], :unique => true
 
+
+  def self.fixity_check(object)
+    outcome, detail = object.validate_checksums
+    new(:for_object => object,
+        :label => "Validation of datastream checksums",
+        :event_date_time => to_event_date_time,
+        :event_type => FIXITY_CHECK,
+        :event_outcome => outcome ? SUCCESS : FAILURE,
+        :event_outcome_detail_note => detail.to_json,
+        :linking_object_id_type => OBJECT,
+        :linking_object_id_value => object.internal_uri)
+  end
+
+  def self.fixity_check!(object)
+    pe = PreservationEvent.fixity_check(object)
+    pe.save
+    pe
+  end
+
   def fixity_check?
     event_type == FIXITY_CHECK
   end
@@ -86,7 +105,7 @@ class PreservationEvent < ActiveFedora::Base
   end
 
   def update_index_for_object
-    self.for_object.update_index if self.fixity_check?
+    for_object.update_index if fixity_check?
   end
 
 end

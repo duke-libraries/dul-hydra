@@ -4,7 +4,7 @@ require 'log4r/outputter/datefileoutputter'
 require 'json'
 
 module DulHydra::Scripts
-  class FixityCheck
+  class BatchFixityCheck
     
     # TODO migrate defaults to config
     DEFAULT_LIMIT = 1000

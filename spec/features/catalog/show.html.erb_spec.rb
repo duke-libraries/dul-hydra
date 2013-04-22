@@ -78,7 +78,7 @@ describe "catalog/show.html.erb" do
   end
   context "Object has preservation events" do
     let(:object) { FactoryGirl.create(:component_with_content_public_read) }
-    let(:preservation_event) { object.validate_content_checksum! }
+    let(:preservation_event) { object.fixity_check! }
     before do
       preservation_event.permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS]
       preservation_event.save!

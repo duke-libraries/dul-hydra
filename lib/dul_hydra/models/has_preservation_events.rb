@@ -10,24 +10,6 @@ module DulHydra::Models
       before_destroy :delete_preservation_events
     end
 
-    def validate_checksums(opts={})
-      fc = DulHydra::FixityCheck.new(self, opts)
-      fc.execute.to_preservation_event
-    end
-
-    def validate_checksums!(opts={})
-      pe = validate_checksums(opts)
-      pe.save!
-      pe
-    end
-
-    # # Used to record precise datastream version information.
-    # # Fedora's public API retrieves datastream versions by create date (asOfDateTime),
-    # # not by datastream version ID.
-    # def ds_internal_uri(dsID)
-    #   "#{internal_uri}/datastreams/#{dsID}?asOfDateTime=#{DulHydra::Utils.ds_as_of_date_time(datastreams[dsID])}" 
-    # end
-
     def fixity_checks
       PreservationEvent.events_for(self, PreservationEvent::FIXITY_CHECK)
     end
@@ -46,6 +28,14 @@ module DulHydra::Models
         ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date) => e.event_date_time,
         ActiveFedora::SolrService.solr_name(:last_fixity_check_outcome, :symbol) => e.event_outcome
       } : {}
+    end
+
+    def fixity_check
+      PreservationEvent.fixity_check(self)
+    end
+
+    def fixity_check!
+      PreservationEvent.fixity_check!(self)
     end
 
     module ClassMethods
