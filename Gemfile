@@ -33,6 +33,7 @@ group :development, :test do
   gem 'jettywrapper'
   gem 'factory_girl_rails', '~> 4.0'
   gem 'orderly'
+  gem 'launchy'
 end
 
 group :production do

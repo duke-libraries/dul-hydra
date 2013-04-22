@@ -21,8 +21,7 @@ module DulHydra::SolrHelper
     solr_params[:fq] ||= []
     object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{user_params[:object_id]}")
     solr_params[:fq] << "+(#{ActiveFedora::SolrService.solr_name(:is_member_of, :symbol)}:#{object_uri} OR #{ActiveFedora::SolrService.solr_name(:is_member_of_collection, :symbol)}:#{object_uri} OR #{ActiveFedora::SolrService.solr_name(:is_part_of, :symbol)}:#{object_uri})"
-    # FIXME re-enable sort
-    #solr_params[:sort] = ["title_display_sort asc"]
+    solr_params[:sort] = ["#{ActiveFedora::SolrService.solr_name(:title, :stored_sortable)} asc"]
   end
 
 end
