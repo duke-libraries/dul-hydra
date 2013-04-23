@@ -10,45 +10,32 @@ module DulHydra::Models
       before_destroy :delete_preservation_events
     end
 
-    def validate_checksum(dsID)
-      PreservationEvent.validate_checksum(self, dsID)
-    end
-
-    def validate_checksum!(dsID)
-      PreservationEvent.validate_checksum!(self, dsID)
-    end
-
-    # Used to record precise datastream version information.
-    # Fedora's public API retrieves datastream versions by create date (asOfDateTime),
-    # not by datastream version ID.
-    def ds_internal_uri(dsID)
-      "#{internal_uri}/datastreams/#{dsID}?asOfDateTime=#{DulHydra::Utils.ds_as_of_date_time(datastreams[dsID])}" 
-    end
-
     def fixity_checks
-      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri,
-                              ActiveFedora::SolrService.solr_name(:event_type, :symbol) => PreservationEvent::FIXITY_CHECK
-                              ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
+      PreservationEvent.events_for(self, PreservationEvent::FIXITY_CHECK)
     end
 
     def ingestions
-      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri,
-                              ActiveFedora::SolrService.solr_name(:event_type, :symbol) => PreservationEvent::INGESTION
-                              ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
+      PreservationEvent.events_for(self, PreservationEvent::INGESTION)
     end
 
     def validations
-      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri,
-                              ActiveFedora::SolrService.solr_name(:event_type, :symbol) => PreservationEvent::VALIDATION
-                              ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
+      PreservationEvent.events_for(self, PreservationEvent::VALIDATION)
     end
 
     def last_fixity_check_to_solr
-      e = fixity_checks.to_a.last
+      e = self.fixity_checks.to_a.last
       e ? {
         ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date) => e.event_date_time,
         ActiveFedora::SolrService.solr_name(:last_fixity_check_outcome, :symbol) => e.event_outcome
       } : {}
+    end
+
+    def fixity_check
+      PreservationEvent.fixity_check(self)
+    end
+
+    def fixity_check!
+      PreservationEvent.fixity_check!(self)
     end
 
     module ClassMethods

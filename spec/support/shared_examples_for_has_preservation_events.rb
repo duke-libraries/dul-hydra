@@ -9,21 +9,17 @@ shared_examples "an object that has preservation events" do
     its(:fixity_checks) { should be_kind_of(ActiveFedora::Relation) }
   end
 
-  context "#validate_checksum" do
-    subject { obj.validate_checksum("DC") }
+  context "#fixity_check" do
+    subject { obj.fixity_check }
     after { obj.delete }
-    let(:obj) { described_class.create.reload }
+    let(:obj) { described_class.create }
     it_should_behave_like "a fixity check success preservation event"
   end
 
-  context "#validate_checksum!" do
-    subject { obj.validate_checksum!("DC") }
-    after do
-      preservation_events = obj.preservation_events
-      obj.delete
-      preservation_events.each { |e| e.delete }
-    end
-    let(:obj) { described_class.create.reload }
+  context "#fixity_check!" do
+    subject { obj.fixity_check! }
+    after { obj.destroy }
+    let(:obj) { described_class.create }
     it_should_behave_like "a fixity check success preservation event"
   end  
 
