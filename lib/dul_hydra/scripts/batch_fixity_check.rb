@@ -12,16 +12,18 @@ module DulHydra::Scripts
     QUERY = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)}:[* TO NOW-%s]"
     SORT = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)} asc"
 
-    attr_reader :limit, :dryrun, :log, :query, :report, :summary
+    attr_reader :limit, :dryrun, :log, :query, :report, :summary, :executed
 
     def initialize(opts={})
       @limit = opts.fetch(:limit, DEFAULT_LIMIT).to_i
       @query = QUERY % opts.fetch(:period, DEFAULT_PERIOD)
       @dryrun = opts.fetch(:dryrun, false)
       @summary = {total: 0, success: 0, failure: 0}
+      @executed = false
     end
 
     def execute
+      raise "Batch fixity check has been executed -- call #report or #summary to get results." if executed
       start
       check_objects
       finish
@@ -37,6 +39,7 @@ module DulHydra::Scripts
     def finish
       finish_log
       finish_report
+      executed = true
     end
 
     def start_log
@@ -53,7 +56,7 @@ module DulHydra::Scripts
     end
 
     def start_report
-      @report = CSV.open(File.join(Rails.root, 'log', 'batch_fixity_check_#{Time.now.stftime("%F"}.csv'), 'wb')
+      @report = CSV.open(File.join(Rails.root, "log", "batch_fixity_check_#{Time.now.strftime('%F')}.csv"), "wb")
       write_report_header
     end
 

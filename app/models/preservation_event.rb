@@ -3,7 +3,6 @@ require 'json'
 class PreservationEvent < ActiveFedora::Base
 
   before_create :assign_admin_policy
-  after_save :update_index_for_object
     
   include DulHydra::Models::Governable
   include DulHydra::Models::AccessControllable
@@ -64,19 +63,25 @@ class PreservationEvent < ActiveFedora::Base
   def self.fixity_check!(object)
     pe = PreservationEvent.fixity_check(object)
     pe.save
+    # pe.for_object.update_index
     pe
   end
 
+  def save(*)
+    super
+    self.for_object.update_index if self.fixity_check?
+  end
+
   def fixity_check?
-    event_type == FIXITY_CHECK
+    self.event_type == FIXITY_CHECK
   end
 
   def success?
-    event_outcome == SUCCESS
+    self.event_outcome == SUCCESS
   end
 
   def failure?
-    event_outcome == FAILURE
+    self.event_outcome == FAILURE
   end
 
   def self.events_for(object, type)
@@ -91,6 +96,7 @@ class PreservationEvent < ActiveFedora::Base
     solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :date) => event_date_time,
                     ActiveFedora::SolrService.solr_name(:event_type, :symbol) => event_type,
                     ActiveFedora::SolrService.solr_name(:event_outcome, :symbol) => event_outcome,
+                    ActiveFedora::SolrService.solr_name(:event_outcome_detail_note, :display) => event_outcome_detail_note,
                     ActiveFedora::SolrService.solr_name(:event_id_type, :symbol) => event_id_type,
                     ActiveFedora::SolrService.solr_name(:event_id_value, :symbol) => event_id_value,                    
                     ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol) => linking_object_id_type,
@@ -111,10 +117,6 @@ class PreservationEvent < ActiveFedora::Base
 
   def assign_admin_policy
     self.admin_policy = PreservationEvent.default_admin_policy unless self.admin_policy
-  end
-
-  def update_index_for_object
-    for_object.update_index if fixity_check?
   end
 
 end
