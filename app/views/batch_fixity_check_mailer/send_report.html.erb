@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+	<h1>Summary</h1>
+	<table>
+	  <caption>Run at <%= @bfc.summary[:at] %></caption>
+	  <tr>
+		<th scope="row">Total objects</th>
+		<td><%= @bfc.summary[:total] %></td>
+	  </tr>
+	  <tr>
+		<th scope="row">Success</th>
+		<td><%= @bfc.summary[:success] %></td>
+	  </tr>
+	  <tr>
+		<th scope="row">Failure</th>
+		<td><%= @bfc.summary[:failure] %></td>
+	  </tr>
+	</table>
+	<p>See attached file for full report.</p>
+  </body>
+</html>

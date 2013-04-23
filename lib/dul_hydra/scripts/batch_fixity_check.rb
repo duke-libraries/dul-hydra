@@ -18,12 +18,12 @@ module DulHydra::Scripts
       @limit = opts.fetch(:limit, DEFAULT_LIMIT).to_i
       @query = QUERY % opts.fetch(:period, DEFAULT_PERIOD)
       @dryrun = opts.fetch(:dryrun, false)
-      @summary = {total: 0, success: 0, failure: 0}
-      @executed = false
+      @summary = {total: 0, success: 0, failure: 0, at: nil}
+      @report_file = opts[:report]
     end
 
     def execute
-      raise "Batch fixity check has been executed -- call #report or #summary to get results." if executed
+      raise "Batch fixity check has been executed -- call #report or #summary to get results." if summary[:at]
       start
       check_objects
       finish
@@ -32,6 +32,7 @@ module DulHydra::Scripts
     private
 
     def start
+      summary[:at] = Time.now
       start_log
       start_report
     end
@@ -39,7 +40,6 @@ module DulHydra::Scripts
     def finish
       finish_log
       finish_report
-      executed = true
     end
 
     def start_log
@@ -56,7 +56,7 @@ module DulHydra::Scripts
     end
 
     def start_report
-      @report = CSV.open(File.join(Rails.root, "log", "batch_fixity_check_#{Time.now.strftime('%F')}.csv"), "wb")
+      report = CSV.open(@report_file, "wb")
       write_report_header
     end
 
