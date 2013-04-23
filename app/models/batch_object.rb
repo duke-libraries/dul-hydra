@@ -8,8 +8,8 @@ class BatchObject < ActiveRecord::Base
   
   OPERATIONS = [ INGEST, UPDATE ]
   SUPPORTED_OPERATIONS = [ INGEST ]
-  
-  def validate()
+   
+  def validate
     validation = DulHydra::Models::Validation.new
     validation.errors += validate_operation
     validation.errors += validate_required_attributes if SUPPORTED_OPERATIONS.include?(operation)
@@ -86,9 +86,9 @@ class BatchObject < ActiveRecord::Base
       unless BatchObjectDatastream::PAYLOAD_TYPES.include?(d[:payload_type])
         errs << "Invalid payload_type for #{d[:name]} datastream: #{d[:payload_type]}"
       end
-      if d[:payload_type].eql?("filename")
+      if d[:payload_type].eql?(BatchObjectDatastream::FILENAME)
         unless File.readable?(d[:payload])
-          errs << "Missing or unreadable file for #{d[:datastream_name]} datastream: #{d[:payload]}"
+          errs << "Missing or unreadable file for #{d[:name]} datastream: #{d[:payload]}"
         end
       end
     end
