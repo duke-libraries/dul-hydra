@@ -22,19 +22,29 @@ module DulHydra::Scripts
     private
     
     def process_batch(batch, log)
-      batch_run = BatchRun.create(:batch => batch, :status => BatchRun.NEW)
+      batch_run = BatchRun.create(:batch => batch, :status => BatchRun::NEW)
       objects = batch.batch_objects
       log.info "Batch size: #{objects.size}"
-      batch_run.update_attributes(:status => BatchRun.RUNNING)
+      batch_run.update_attributes(:status => BatchRun::RUNNING)
       objects.each { |object| process_object(object, log) }
-      batch_run.update_attributes(:status => BatchRun.FINISHED)
+      batch_run.update_attributes(:status => BatchRun::FINISHED)
     end
     
     def process_object(object, log)
       log.debug "Processing object: #{object.identifier}"
       log.debug "Operation: #{object.operation}"
-      
-      
+      case object.operation
+      when BatchObject::INGEST
+        
+      when BatchObject::UPDATE
+        log.error "#{object.identifier} UPDATE operation not supported"
+      else
+        log.error "#{object.identifier} Unknown operation: #{object.operation}"
+      end
+    end
+    
+    def ingest(object, log)
+      validation = object.validate
     end
     
     def config_logger(log_file)
