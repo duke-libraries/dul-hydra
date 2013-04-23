@@ -43,7 +43,7 @@ namespace :dul_hydra do
             puts "Running fixity check routine with options #{opts} ..."
             bfc = DulHydra::Scripts::BatchFixityCheck.new(opts)
 			bfc.execute
-			BatchFixityCheckMailer.send_report(bfc, mailto)
+			BatchFixityCheckMailer.send_report(bfc, mailto).deliver
         end
     end
     namespace :solr do

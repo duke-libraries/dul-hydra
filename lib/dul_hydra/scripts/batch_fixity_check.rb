@@ -39,7 +39,7 @@ module DulHydra::Scripts
 
     def finish
       finish_log
-      finish_report
+      finish_report unless report.nil?
     end
 
     def start_log
@@ -56,8 +56,8 @@ module DulHydra::Scripts
     end
 
     def start_report
-      report = CSV.open(@report_file, "wb")
-      write_report_header
+      report = CSV.open(@report_file, "wb") rescue nil
+      write_report_header unless report.nil?
     end
 
     def finish_report
@@ -68,7 +68,7 @@ module DulHydra::Scripts
       objects_to_check.each do |obj| 
         event = check_object(obj)
         log_outcome(event)
-        report_outcome(event)
+        report_outcome(event) unless report.nil?
         update_summary(event)
       end
     end
