@@ -54,11 +54,11 @@ class PreservationEvent < ActiveFedora::Base
   end
 
   def fixity_check_detail
-    JSON.parse(event_outcome_detail_note)
+    JSON.parse(self.event_outcome_detail_note)
   end
 
   def fixity_check_detail=(detail)
-    event_outcome_detail_note = detail.to_json
+    self.event_outcome_detail_note = detail.to_json
   end
 
   def self.fixity_check!(object)
