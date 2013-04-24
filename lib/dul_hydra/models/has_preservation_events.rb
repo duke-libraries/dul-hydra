@@ -10,45 +10,32 @@ module DulHydra::Models
       before_destroy :delete_preservation_events
     end
 
-    def validate_checksum(dsID)
-      PreservationEvent.validate_checksum(self, dsID)
-    end
-
-    def validate_checksum!(dsID)
-      PreservationEvent.validate_checksum!(self, dsID)
-    end
-
-    # Used to record precise datastream version information.
-    # Fedora's public API retrieves datastream versions by create date (asOfDateTime),
-    # not by datastream version ID.
-    def ds_internal_uri(dsID)
-      "#{internal_uri}/datastreams/#{dsID}?asOfDateTime=#{DulHydra::Utils.ds_as_of_date_time(datastreams[dsID])}" 
-    end
-
     def fixity_checks
-      PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => internal_uri,
-                              DulHydra::IndexFields::EVENT_TYPE => PreservationEvent::FIXITY_CHECK
-                              ).order("#{solr_sortable_date(:event_date_time)} asc")
+      PreservationEvent.events_for(self, PreservationEvent::FIXITY_CHECK)
     end
 
     def ingestions
-      PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => internal_uri,
-                              DulHydra::IndexFields::EVENT_TYPE => PreservationEvent::INGESTION
-                              ).order("#{solr_sortable_date(:event_date_time)} asc")
+      PreservationEvent.events_for(self, PreservationEvent::INGESTION)
     end
 
     def validations
-      PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => internal_uri,
-                              DulHydra::IndexFields::EVENT_TYPE => PreservationEvent::VALIDATION
-                              ).order("#{solr_sortable_date(:event_date_time)} asc")
+      PreservationEvent.events_for(self, PreservationEvent::VALIDATION)
     end
 
     def last_fixity_check_to_solr
-      e = fixity_checks.to_a.last
+      e = self.fixity_checks.to_a.last
       e ? {
         solr_sortable_date(:last_fixity_check_on) => e.event_date_time,
         DulHydra::IndexFields::LAST_FIXITY_CHECK_OUTCOME => e.event_outcome
       } : {}
+    end
+
+    def fixity_check
+      PreservationEvent.fixity_check(self)
+    end
+
+    def fixity_check!
+      PreservationEvent.fixity_check!(self)
     end
 
     module ClassMethods

@@ -24,7 +24,8 @@ shared_examples "a fixity check preservation event" do
     subject.event_type.should eq(PreservationEvent::FIXITY_CHECK)
     subject.event_id_type.should eq(PreservationEvent::UUID)
     subject.event_id_value.should_not be_nil
-    subject.linking_object_id_type.should eq(PreservationEvent::DATASTREAM)
+    subject.linking_object_id_type.should eq(PreservationEvent::OBJECT)
+    subject.linking_object_id_value.should eq(subject.for_object.internal_uri)
   end
 end
 

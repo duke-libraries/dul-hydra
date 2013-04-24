@@ -31,6 +31,20 @@ namespace :dul_hydra do
             raise "Must specify a manifest file. Ex: MANIFEST='/srv/fedora-working/ingest/VIC/manifests/item.yaml'" unless ENV['MANIFEST']
             DulHydra::Scripts::BatchIngest.validate_ingest(ENV['MANIFEST'])
         end
+        desc "Runs the fixity check routine"
+        task :fixity_check => :environment do
+            opts = {
+                :dryrun => ENV['dryrun'] == 'true' ? true : false,
+                :limit => ENV.fetch('limit', 1000).to_i,
+                :period => ENV.fetch('period', '60DAYS'),
+				:report => ENV['report']
+            }
+	    	mailto = ENV['mailto']
+            puts "Running batch fixity check with options #{opts} ..."
+            bfc = DulHydra::Scripts::BatchFixityCheck.new(opts)
+	    	bfc.execute
+	    	BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
+        end
     end
     namespace :solr do
         desc "Deletes everything from the solr index"
@@ -53,17 +67,5 @@ namespace :dul_hydra do
             end
           end
         end        
-    end
-    namespace :fixity do
-        desc "Runs the fixity check routine"
-        task :check => :environment do
-            opts = {
-                :dryrun => ENV['dryrun'] == 'true' ? true : false,
-                :limit => ENV.fetch('limit', 10).to_i,
-                :period => ENV.fetch('period', '6MONTHS')
-            }
-            puts "Running fixity check routine with options #{opts} ..."
-            DulHydra::Scripts::FixityCheck.execute(opts)
-        end
     end
 end

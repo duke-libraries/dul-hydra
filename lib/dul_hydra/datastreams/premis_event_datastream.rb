@@ -48,6 +48,7 @@ module DulHydra::Datastreams
                    "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
                    "xsi:schemaLocation" => "#{PREMIS_XMLNS} #{PREMIS_SCHEMA}",
                   :version => PREMIS_VERSION) {
+          xml.eventDetail("DulHydra version #{DulHydra::VERSION}")
           xml.eventIdentifier {
             xml.eventIdentifierType(PreservationEvent::UUID)
             xml.eventIdentifierValue(SecureRandom.uuid)

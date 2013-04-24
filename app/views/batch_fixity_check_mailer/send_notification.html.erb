@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <style type="text/css">
+th { text-align: left; }
+td { text-align: right; }
+    </style>
+  </head>
+  <body>
+    <h1><%= @title %></h1>
+	<p>
+	  Host: <%= @host %><br />
+	  Run at: <%= @bfc.summary[:at] %>
+	</p>
+	<table>
+	  <caption>Summary</caption>
+	  <tr>
+		<th scope="row">Total objects</th>
+		<td><%= @bfc.total %></td>
+	  </tr>
+	  <% @bfc.outcome_counts.each do |outcome, count| %>
+	  <tr>
+		<th scope="row"><%= outcome %></th>
+		<td><%= count %></td>
+	  </tr>
+	  <% end %>
+	</table>
+	<% if @attachment_note %>
+		<p><%= @attachment_note %></p>
+	<% end %>
+  </body>
+</html>

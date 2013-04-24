@@ -1,3 +1,5 @@
+require 'json'
+
 class PreservationEvent < ActiveFedora::Base
 
   before_create :assign_admin_policy
@@ -24,19 +26,9 @@ class PreservationEvent < ActiveFedora::Base
   DATASTREAM = "datastream"
   OBJECT = "object"
   
-  # String template for fixity check/checksum validation event detail 
-  CHECKSUM_VALIDATION_EVENT_DETAIL = <<EOS
-Internal datastream checksum validation.
-Object URI: %{uri}
-Datastream ID: %{dsID}
-Datastream version: %{dsVersionID} (created on %{dsCreateDate})
-[DulHydra version #{DulHydra::VERSION}]
-EOS
-  
   has_metadata :name => DulHydra::Datastreams::EVENT_METADATA, :type => DulHydra::Datastreams::PremisEventDatastream, 
                :versionable => true, :label => "Preservation event metadata", :control_group => 'X'
 
-  # DulHydra::Models::HasPreservationEvents defines an inbound has_many relationship to PreservationEvent
   belongs_to :for_object, 
              :property => :is_preservation_event_for, 
              :class_name => 'DulHydra::Models::HasPreservationEvents'
@@ -46,48 +38,56 @@ EOS
                                :linking_object_id_type, :linking_object_id_value
                               ], :unique => true
 
-  #
-  # Convenience methods: fixity_check? success? failure?
-  #
+
+  def self.fixity_check(object)
+    outcome, detail = object.validate_checksums
+    pe = new(:for_object => object,
+             :label => "Validation of datastream checksums",
+             :event_date_time => to_event_date_time,
+             :event_type => FIXITY_CHECK,
+             :event_outcome => outcome ? SUCCESS : FAILURE,
+             :linking_object_id_type => OBJECT,
+             :linking_object_id_value => object.internal_uri)
+    pe.fixity_check_detail = detail
+    pe
+  end
+
+  def fixity_check_detail
+    JSON.parse(self.event_outcome_detail_note)
+  end
+
+  def fixity_check_detail=(detail)
+    self.event_outcome_detail_note = detail.to_json
+  end
+
+  def self.fixity_check!(object)
+    pe = PreservationEvent.fixity_check(object)
+    pe.save
+    # pe.for_object.update_index
+    pe
+  end
+
+  def save(*)
+    super
+    self.for_object.update_index if self.fixity_check?
+  end
+
   def fixity_check?
-    event_type == FIXITY_CHECK
+    self.event_type == FIXITY_CHECK
   end
 
   def success?
-    event_outcome == SUCCESS
+    self.event_outcome == SUCCESS
   end
 
   def failure?
-    event_outcome == FAILURE
+    self.event_outcome == FAILURE
   end
 
-  # Return a preservation event for a datastream checksum validation
-  def self.validate_checksum(obj, dsID)
-    ds = obj.datastreams[dsID]
-    new(:label => "Checksum validation", 
-        :event_type => FIXITY_CHECK,
-        :event_date_time => to_event_date_time,
-        :event_outcome => ds.dsChecksumValid ? SUCCESS : FAILURE,
-        :event_detail => CHECKSUM_VALIDATION_EVENT_DETAIL % {
-                           :uri => obj.internal_uri,
-                           :dsID => dsID,
-                           :dsVersionID => ds.dsVersionID,
-                           :dsCreateDate => DulHydra::Utils.ds_as_of_date_time(ds)
-                           },  
-        :linking_object_id_type => DATASTREAM,
-        :linking_object_id_value => obj.ds_internal_uri(dsID),
-        :for_object => obj
-        )
-  end
-
-  # persist and return a preservation event for a datastream checksum validation
-  def self.validate_checksum!(obj, dsID)
-    pe = validate_checksum(obj, dsID)
-    pe.save!
-    # index last fixity check on for_object
-    # XXX should this be in an after_save callback?
-    obj.update_index 
-    return pe
+  def self.events_for(object, type)
+    PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => object.internal_uri,
+                            ActiveFedora::SolrService.solr_name(:event_type, :symbol) => type
+                            ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
   end
 
   # Overriding to_solr here seems cleaner than using :index_as on eventMetadata OM terminology.
@@ -96,6 +96,7 @@ EOS
     solr_doc.merge!(DulHydra::IndexFields::EVENT_DATE_TIME => event_date_time,
                     DulHydra::IndexFields::EVENT_TYPE => event_type,
                     DulHydra::IndexFields::EVENT_OUTCOME => event_outcome,
+                    DulHydra::IndexFields::EVENT_OUTCOME_DETAIL_NOTE => event_outcome_detail_note,
                     DulHydra::IndexFields::EVENT_ID_TYPE => event_id_type,
                     DulHydra::IndexFields::EVENT_ID_VALUE => event_id_value,                    
                     DulHydra::IndexFields::LINKING_OBJECT_ID_TYPE => linking_object_id_type,
