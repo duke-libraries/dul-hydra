@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/projecthydra/active_fedora.git
-  revision: ae697c71ff5cee5e5ad8fbf737c527b3ccbd9760
+  revision: 76d020b345a50b692903b3ca1f1892f01a3b0b7d
   specs:
     active-fedora (6.0.0)
       activeresource (>= 3.0.0)
@@ -68,7 +68,7 @@ GEM
     activesupport (3.2.13)
       i18n (= 0.6.1)
       multi_json (~> 1.0)
-    addressable (2.3.3)
+    addressable (2.3.4)
     arel (3.0.2)
     backports (3.3.0)
     bcrypt-ruby (3.0.1)
@@ -147,7 +147,7 @@ GEM
       treetop (~> 1.4.8)
     marc (0.5.0)
     mediashelf-loggable (0.4.9)
-    mime-types (1.22)
+    mime-types (1.23)
     mini_magick (3.5.0)
       subexec (~> 0.2.1)
     multi_json (1.7.2)
@@ -196,9 +196,9 @@ GEM
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
     rake (10.0.4)
-    rdf (1.0.4)
+    rdf (1.0.5)
       addressable (>= 2.2)
-    rdf-rdfxml (1.0.0)
+    rdf-rdfxml (1.0.1)
       rdf (>= 1.0)
       rdf-xsd (>= 1.0)
     rdf-xsd (1.0.0)
