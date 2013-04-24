@@ -26,20 +26,20 @@ module DulHydra::Models
     end
 
     def fixity_checks
-      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri,
-                              ActiveFedora::SolrService.solr_name(:event_type, :symbol) => PreservationEvent::FIXITY_CHECK
+      PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => internal_uri,
+                              DulHydra::IndexFields::EVENT_TYPE => PreservationEvent::FIXITY_CHECK
                               ).order("#{solr_sortable_date(:event_date_time)} asc")
     end
 
     def ingestions
-      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri,
-                              ActiveFedora::SolrService.solr_name(:event_type, :symbol) => PreservationEvent::INGESTION
+      PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => internal_uri,
+                              DulHydra::IndexFields::EVENT_TYPE => PreservationEvent::INGESTION
                               ).order("#{solr_sortable_date(:event_date_time)} asc")
     end
 
     def validations
-      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri,
-                              ActiveFedora::SolrService.solr_name(:event_type, :symbol) => PreservationEvent::VALIDATION
+      PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => internal_uri,
+                              DulHydra::IndexFields::EVENT_TYPE => PreservationEvent::VALIDATION
                               ).order("#{solr_sortable_date(:event_date_time)} asc")
     end
 
@@ -47,7 +47,7 @@ module DulHydra::Models
       e = fixity_checks.to_a.last
       e ? {
         solr_sortable_date(:last_fixity_check_on) => e.event_date_time,
-        ActiveFedora::SolrService.solr_name(:last_fixity_check_outcome, :symbol) => e.event_outcome
+        DulHydra::IndexFields::LAST_FIXITY_CHECK_OUTCOME => e.event_outcome
       } : {}
     end
 
@@ -64,7 +64,7 @@ module DulHydra::Models
     protected
 
     def delete_preservation_events
-      PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => internal_uri).delete_all
+      PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => internal_uri).delete_all
     end
 
     def solr_sortable_date(field)

@@ -93,13 +93,13 @@ EOS
   # Overriding to_solr here seems cleaner than using :index_as on eventMetadata OM terminology.
   def to_solr(solr_doc=Hash.new, opts={})
     solr_doc = super(solr_doc, opts)
-    solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :sortable, type: :date) => event_date_time,
-                    ActiveFedora::SolrService.solr_name(:event_type, :symbol) => event_type,
-                    ActiveFedora::SolrService.solr_name(:event_outcome, :symbol) => event_outcome,
-                    ActiveFedora::SolrService.solr_name(:event_id_type, :symbol) => event_id_type,
-                    ActiveFedora::SolrService.solr_name(:event_id_value, :symbol) => event_id_value,                    
-                    ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol) => linking_object_id_type,
-                    ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol) => linking_object_id_value)
+    solr_doc.merge!(DulHydra::IndexFields::EVENT_DATE_TIME => event_date_time,
+                    DulHydra::IndexFields::EVENT_TYPE => event_type,
+                    DulHydra::IndexFields::EVENT_OUTCOME => event_outcome,
+                    DulHydra::IndexFields::EVENT_ID_TYPE => event_id_type,
+                    DulHydra::IndexFields::EVENT_ID_VALUE => event_id_value,                    
+                    DulHydra::IndexFields::LINKING_OBJECT_ID_TYPE => linking_object_id_type,
+                    DulHydra::IndexFields::LINKING_OBJECT_ID_VALUE => linking_object_id_value)
     return solr_doc
   end
 
