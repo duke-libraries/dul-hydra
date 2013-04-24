@@ -85,9 +85,9 @@ class PreservationEvent < ActiveFedora::Base
   end
 
   def self.events_for(object, type)
-    PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => object.internal_uri,
-                            ActiveFedora::SolrService.solr_name(:event_type, :symbol) => type
-                            ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
+    PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => object.internal_uri,
+                            DulHydra::IndexFields::EVENT_TYPE => type
+                            ).order("#{DulHydra::IndexFields::EVENT_DATE_TIME} asc")
   end
 
   # Overriding to_solr here seems cleaner than using :index_as on eventMetadata OM terminology.
