@@ -8,7 +8,7 @@ td { text-align: right; }
     </style>
   </head>
   <body>
-        <h1>Batch Fixity Check Report</h1>
+    <h1><%= @title %></h1>
 	<p>
 	  Host: <%= @host %><br />
 	  Run at: <%= @bfc.summary[:at] %>
@@ -17,17 +17,17 @@ td { text-align: right; }
 	  <caption>Summary</caption>
 	  <tr>
 		<th scope="row">Total objects</th>
-		<td><%= @bfc.summary[:total] %></td>
+		<td><%= @bfc.total %></td>
 	  </tr>
+	  <% @bfc.outcome_counts.each do |outcome, count| %>
 	  <tr>
-		<th scope="row">Success</th>
-		<td><%= @bfc.summary[:success] %></td>
+		<th scope="row"><%= outcome %></th>
+		<td><%= count %></td>
 	  </tr>
-	  <tr>
-		<th scope="row">Failure</th>
-		<td><%= @bfc.summary[:failure] %></td>
-	  </tr>
+	  <% end %>
 	</table>
-	<p>See attached file for detailed outcome information.</p>
+	<% if @attachment_note %>
+		<p><%= @attachment_note %></p>
+	<% end %>
   </body>
 </html>

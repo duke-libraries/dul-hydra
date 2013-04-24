@@ -7,7 +7,6 @@ describe "FixityCheck" do
     fc = obj3.fixity_check # last fixity check one year ago
     fc.event_date_time = PreservationEvent.to_event_date_time(Time.now.ago(1.year).utc)
     fc.save
-    # fc.for_object.update_index
     bfc.execute
   end
   after do
@@ -22,8 +21,8 @@ describe "FixityCheck" do
     obj1.fixity_checks.to_a.size.should == 1
     obj2.fixity_checks.to_a.size.should == 1
     obj3.fixity_checks.to_a.size.should == 2
-    bfc.summary[:total].should == 1
-    bfc.summary[:success].should == 1
-    bfc.summary[:failure].should == 0
+    bfc.total.should == 1
+    bfc.pids.first.should == obj3.pid
+    bfc.outcome_counts[PreservationEvent::SUCCESS].should == 1
   end
 end
