@@ -1,14 +1,14 @@
 class BatchFixityCheckMailer < ActionMailer::Base
-  
-  default from: "noreply@lib.duke.edu"
+
+  default :from => "noreply@duke.edu"
   
   def send_report(bfc, mailto)
     @bfc = bfc
-    t = @bfc.summary[:at].strftime('%F')
-    node = `uname -a`
-    @subject = "[#{node}] Batch fixity check report for #{t}"
-    attachments['batch_fixity_check_#{t}.csv'] = File.read(@bfc.report.path)
-    mail(from: "hydra@#{node}", to: mailto, subject: @subject)
+    @host = `uname -n`.strip
+    @subject = "[#{@host}] Batch fixity check report"
+    from = "#{`echo $USER`.strip}@#{@host}"
+    attachments[File.basename(@bfc.report.path)] = File.read(@bfc.report.path)
+    mail(from: from, to: mailto, subject: @subject)
   end
 
 end

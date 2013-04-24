@@ -37,13 +37,13 @@ namespace :dul_hydra do
                 :dryrun => ENV['dryrun'] == 'true' ? true : false,
                 :limit => ENV.fetch('limit', 1000).to_i,
                 :period => ENV.fetch('period', '60DAYS'),
-				:mailto => ENV['mailto'],
-				:report => ENV['report']
+		:report => ENV['report']
             }
-            puts "Running fixity check routine with options #{opts} ..."
+	    mailto = ENV['mailto']
+            puts "Running batch fixity check with options #{opts} ..."
             bfc = DulHydra::Scripts::BatchFixityCheck.new(opts)
-			bfc.execute
-			BatchFixityCheckMailer.send_report(bfc, mailto).deliver
+	    bfc.execute
+	    BatchFixityCheckMailer.send_report(bfc, mailto).deliver!
         end
     end
     namespace :solr do

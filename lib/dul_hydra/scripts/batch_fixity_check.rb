@@ -1,7 +1,6 @@
 require 'log4r'
 require 'log4r/yamlconfigurator'
 require 'log4r/outputter/datefileoutputter'
-require 'json'
 
 module DulHydra::Scripts
   class BatchFixityCheck
@@ -12,7 +11,7 @@ module DulHydra::Scripts
     QUERY = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)}:[* TO NOW-%s]"
     SORT = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)} asc"
 
-    attr_reader :limit, :dryrun, :log, :query, :report, :summary, :executed
+    attr_reader :limit, :dryrun, :log, :query, :report, :report_file, :summary, :executed
 
     def initialize(opts={})
       @limit = opts.fetch(:limit, DEFAULT_LIMIT).to_i
@@ -39,7 +38,7 @@ module DulHydra::Scripts
 
     def finish
       finish_log
-      finish_report unless report.nil?
+      finish_report
     end
 
     def start_log
@@ -56,8 +55,8 @@ module DulHydra::Scripts
     end
 
     def start_report
-      report = CSV.open(@report_file, "wb") rescue nil
-      write_report_header unless report.nil?
+      @report = CSV.open(report_file, "wb")
+      write_report_header
     end
 
     def finish_report
@@ -68,7 +67,7 @@ module DulHydra::Scripts
       objects_to_check.each do |obj| 
         event = check_object(obj)
         log_outcome(event)
-        report_outcome(event) unless report.nil?
+        report_outcome(event)
         update_summary(event)
       end
     end
@@ -78,7 +77,7 @@ module DulHydra::Scripts
     end
 
     def log_outcome(event)
-      msg = "Fixity check outcome for #{event.for_object.pid}: #{event.event_outcome}."
+      msg = "Fixity check outcome for #{event.for_object.pid} -- #{event.event_outcome.upcase}."
       event.success? ? log.info(msg) : log.error(msg)
     end
 

@@ -1,0 +1,15 @@
+Batch Fixity Check Report
+=========================
+
+Host:   <%= @host %>
+Run at: <%= @bfc.summary[:at] %>
+
+---------------------
+       Summary
+---------------------
+Total objects: <%= @bfc.summary[:total] %>
+Success:       <%= @bfc.summary[:success] %>
+Failure:       <%= @bfc.summary[:failure] %>
+---------------------
+
+See attached file for full report.
