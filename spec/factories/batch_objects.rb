@@ -3,7 +3,7 @@ FactoryGirl.define do
     sequence(:identifier) { |n| "test%05d" % n }
     
     factory :ingest_batch_object do
-      operation BatchObject::INGEST
+      operation BatchObject::OPERATION_INGEST
       model "TestModelOmnibus"
       label "Test Model Label"
       

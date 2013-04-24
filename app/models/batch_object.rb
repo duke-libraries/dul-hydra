@@ -3,11 +3,11 @@ class BatchObject < ActiveRecord::Base
   belongs_to :batch, :inverse_of => :batch_objects
   has_many :batch_object_datastreams, :inverse_of => :batch_object
   
-  INGEST = "INGEST"
-  UPDATE = "UPDATE"
+  OPERATION_INGEST = "INGEST"
+  OPERATION_UPDATE = "UPDATE"
   
-  OPERATIONS = [ INGEST, UPDATE ]
-  SUPPORTED_OPERATIONS = [ INGEST ]
+  OPERATIONS = [ OPERATION_INGEST, OPERATION_UPDATE ]
+  SUPPORTED_OPERATIONS = [ OPERATION_INGEST ]
    
   def validate
     validation = DulHydra::Models::Validation.new
@@ -40,7 +40,7 @@ class BatchObject < ActiveRecord::Base
   def validate_required_attributes
     errs = []
     case operation
-    when INGEST
+    when OPERATION_INGEST
       errs << "Model required for INGEST operation" unless model
     end
     return errs
@@ -86,7 +86,7 @@ class BatchObject < ActiveRecord::Base
       unless BatchObjectDatastream::PAYLOAD_TYPES.include?(d[:payload_type])
         errs << "Invalid payload_type for #{d[:name]} datastream: #{d[:payload_type]}"
       end
-      if d[:payload_type].eql?(BatchObjectDatastream::FILENAME)
+      if d[:payload_type].eql?(BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
         unless File.readable?(d[:payload])
           errs << "Missing or unreadable file for #{d[:name]} datastream: #{d[:payload]}"
         end
