@@ -1,6 +1,6 @@
 module DulHydra::IndexFields
   
-  ACTIVE_FEDORA_MODEL = ActiveFedora::SolrService.solr_name(:active_fedora_model, :symbol)
+  ACTIVE_FEDORA_MODEL = ActiveFedora::SolrService.solr_name(:active_fedora_model, :stored_sortable)
   CONTENT_METADATA_PARSED = ActiveFedora::SolrService.solr_name(:content_metadata_parsed, :symbol)
   EVENT_DATE_TIME = ActiveFedora::SolrService.solr_name(:event_date_time, :sortable, type: :date)
   EVENT_OUTCOME = ActiveFedora::SolrService.solr_name(:event_outcome, :symbol)
