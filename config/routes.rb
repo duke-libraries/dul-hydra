@@ -6,8 +6,6 @@ DulHydra::Application.routes.draw do
 
   devise_for :users
 
-  mount FcrepoAdmin::Engine => '/admin', :as=> 'fcrepo_admin'
-
   scope "catalog/:object_id" do
     get 'thumbnail' => 'thumbnail#show'
     resources :datastreams, :only => :show do
