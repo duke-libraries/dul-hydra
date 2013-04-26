@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
 
+  has_many :batches, :inverse_of => :user
   has_many :export_sets, :dependent => :destroy
 
   # Connects this user object to Hydra behaviors. 

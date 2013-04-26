@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130425182150) do
+ActiveRecord::Schema.define(:version => 20130426122351) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(:version => 20130425182150) do
     t.string   "description"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.integer  "user_id"
   end
 
   create_table "bookmarks", :force => true do |t|

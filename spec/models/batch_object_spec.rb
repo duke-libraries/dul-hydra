@@ -15,20 +15,16 @@ require 'spec_helper'
 describe BatchObject do
   
   context "ingest object" do
-    let(:object) { FactoryGirl.create(:ingest_batch_object_with_datastreams) }
     
     context "valid object" do
-      let(:apo) { FactoryGirl.create(:public_read_policy) }
-      let(:parent) { FactoryGirl.create(:test_parent) }
+      let(:object) { FactoryGirl.create(:ingest_batch_object) }
       let(:collection) { FactoryGirl.create(:collection) }
       before do
-        object.admin_policy = apo.pid
-        object.parent = parent.pid
         object.target_for = collection.pid
       end
       after do
-        apo.destroy
-        parent.destroy
+        ActiveFedora::Base.find(object.parent, :cast => true).destroy if object.parent
+        AdminPolicy.find(object.admin_policy).destroy if object.admin_policy
         collection.destroy
       end
       it_behaves_like "a valid object"
@@ -36,16 +32,18 @@ describe BatchObject do
 
     context "invalid object" do
       context "missing model" do
+        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object) }
         let(:error_message) { "Model required for INGEST operation" }
-        before { object.model = nil }
         it_behaves_like "an invalid object"
       end
       context "invalid model" do
+        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object) }
         let(:error_message) { "Invalid model name: #{object.model}" }
         before { object.model = "BadModel" }
         it_behaves_like "an invalid object"
       end
       context "invalid admin policy" do
+        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object) }
         context "admin policy pid object does not exist" do
           let(:error_message) { "Specified AdminPolicy does not exist: #{object.admin_policy}" }
           before { object.admin_policy = "bogus:AdminPolicy" }
@@ -62,6 +60,7 @@ describe BatchObject do
         end
       end
       context "invalid datastreams" do
+        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object, :with_add_datastreams) }
         context "invalid payload type" do
           let(:error_message) { "Invalid payload_type for #{object.batch_object_datastreams.first[:name]} datastream: #{object.batch_object_datastreams.first[:payload_type]}" }
           before do
@@ -82,7 +81,7 @@ describe BatchObject do
         end
       end
       context "invalid parent" do
-        before { object.model = "TestChild" }
+        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object, :has_model) }
         context "parent pid object does not exist" do
           let(:error_message) { "Specified TestParent does not exist: #{object.parent}" }
           before { object.parent = "bogus:TestParent" }
@@ -99,6 +98,7 @@ describe BatchObject do
         end
       end
       context "invalid target_for" do
+        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object, :has_model) }
         context "target_for pid object does not exist" do
           let(:error_message) { "Specified Collection does not exist: #{object.target_for}" }
           before { object.target_for = "bogus:Collection" }
