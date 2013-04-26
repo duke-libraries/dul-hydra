@@ -87,24 +87,39 @@ module DulHydra::Scripts
     end
     
     def ingest(object)
+      begin
+        repo_object = object.model.constantize.new
+        repo_object.label = object.label if object.label
+        repo_object.admin_policy = AdminPolicy.find(object.admin_policy, :cast => true) if object.admin_policy
+        object.batch_object_datastreams.each {|d| repo_object = add_datastream(repo_object, d)} if object.batch_object_datastreams
+        repo_object.parent = ActiveFedora::Base.find(object.parent, :cast => true) if object.parent
+        repo_object.collection = Collection.find(object.target_for, :cast => true) if object.target_for
+        repo_object.save
+      rescue => e
+        @log.error "Attempt to ingest #{object.model} #{object.identifier} FAILED: #{e.message}"
+        @failures += 1
+      else
+        @log.info "Ingested #{object.model} #{object.identifier} into #{repo_object.pid}"
+        @details << "Ingested #{object.model} #{object.identifier} into #{repo_object.pid}"
+        @successes += 1
+        object.update_attributes(:pid => repo_object.pid)
+        create_preservation_event(PreservationEvent::INGESTION, PreservationEvent::SUCCESS, repo_object, object)
+      end
+    end
+    
+    def validate(object)
+      if object.pid
         begin
-          repo_object = object.model.constantize.new
-          repo_object.label = object.label if object.label
-          repo_object.admin_policy = AdminPolicy.find(object.admin_policy, :cast => true) if object.admin_policy
-          object.batch_object_datastreams.each {|d| repo_object = add_datastream(repo_object, d)} if object.batch_object_datastreams
-          repo_object.parent = ActiveFedora::Base.find(object.parent, :cast => true) if object.parent
-          repo_object.collection = Collection.find(object.target_for, :cast => true) if object.target_for
-          repo_object.save
-        rescue => e
-          @log.error "Attempt to ingest #{object.model} #{object.identifier} FAILED: #{e.message}"
-          @failures += 1
-        else
-          @log.info "Ingested #{object.model} #{object.identifier} into #{repo_object.pid}"
-          @details << "Ingested #{object.model} #{object.identifier} into #{repo_object.pid}"
-          @successes += 1
-          object.update_attributes(:pid => repo_object.pid)
-          create_preservation_event(PreservationEvent::INGESTION, PreservationEvent::SUCCESS, repo_object, object)
+          repo_object = ActiveFedora::Base.find(object.pid, :cast => true)
+          if object.operation.eql? BatchObject::OPERATION_INGEST
+            repo_object.class.eql?(object.model.constantize) # must be true to be valid
+          end
+          
+        rescue
         end
+      else
+        @log.error "Cannot validate repository object: batch object #{object.id} does contain pid"
+      end
     end
     
     def add_datastream(repo_object, datastream)
