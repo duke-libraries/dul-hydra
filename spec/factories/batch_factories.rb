@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :batch do
     name "Batch"
     description "This is a batch of stuff to do."
-    user { FactoryGirl.create(:reader) }
+#    user { FactoryGirl.create(:reader) }
     
     factory :batch_with_ingest_batch_objects do
       ignore do

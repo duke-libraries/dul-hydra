@@ -4,18 +4,17 @@ module DulHydra::Scripts
     LOG_CONFIG_FILEPATH = File.join(Rails.root, 'config', 'log4r_batch_processor.yml')
     DEFAULT_LOG_DIR = File.join(Rails.root, 'log')
     DEFAULT_LOG_FILE = "batch_processor.log"
+    PASS = "PASS"
+    FAIL = "FAIL"
     
-    INGEST_PRESERVATION_EVENT_DETAIL = <<-EOS
-      Batch ingest
+    PRESERVATION_EVENT_DETAIL = <<-EOS
       DulHydra version #{DulHydra::VERSION}
-      Identifier: %{identifier}
+      %{operation}
+      Batch object database id: %{batch_id}
+      Batch object identifier: %{identifier}
       Model: %{model}
-      %{adminpolicy}
-      %{datastreams}
-      %{parent}
-      %{targetfor}
     EOS
-
+    
     def initialize(opts={})
       begin
         @batch_id = opts.fetch(:batch_id)
@@ -24,6 +23,7 @@ module DulHydra::Scripts
       end
       @log_dir = opts.fetch(:log_dir, DEFAULT_LOG_DIR)
       @log_file = opts.fetch(:log_file, DEFAULT_LOG_FILE)
+      @dryrun = opts.fetch(:dryrun, false)
     end
     
     def execute
@@ -57,7 +57,8 @@ module DulHydra::Scripts
     end
     
     def close_batch_run
-      @batch_run.update_attributes(:details => @details.join("\n"),
+      details = @ingest_details + @validation_details
+      @batch_run.update_attributes(:details => details.join("\n"),
                                    :failure => @failures,
                                    :outcome => @successes.eql?(@batch_run.total) ? BatchRun::OUTCOME_SUCCESS : BatchRun::OUTCOME_FAILURE,
                                    :status => BatchRun::STATUS_FINISHED,
@@ -74,7 +75,7 @@ module DulHydra::Scripts
         @log.debug "Operation: #{object.operation}"
         case object.operation
         when BatchObject::OPERATION_INGEST
-          ingest(object)
+          repo_object, verifications = object.ingest(:dryrun => @dryrun)
         when BatchObject::OPERATION_UPDATE
           @log.debug "Update not yet implemented"
           @failures += 1
@@ -87,6 +88,7 @@ module DulHydra::Scripts
     end
     
     def ingest(object)
+      outcome_details = []
       begin
         repo_object = object.model.constantize.new
         repo_object.label = object.label if object.label
@@ -96,30 +98,93 @@ module DulHydra::Scripts
         repo_object.collection = Collection.find(object.target_for, :cast => true) if object.target_for
         repo_object.save
       rescue => e
-        @log.error "Attempt to ingest #{object.model} #{object.identifier} FAILED: #{e.message}"
-        @failures += 1
+        detail = "Attempt to ingest #{object.model} #{object.identifier} FAILED: #{e.message}"
+        @log.error detail
+        outcome_details << detail
       else
-        @log.info "Ingested #{object.model} #{object.identifier} into #{repo_object.pid}"
-        @details << "Ingested #{object.model} #{object.identifier} into #{repo_object.pid}"
-        @successes += 1
+        detail = "Ingested #{object.model} #{object.identifier} into #{repo_object.pid}"
+        @log.info detail
+        outcome_details << detail
         object.update_attributes(:pid => repo_object.pid)
-        create_preservation_event(PreservationEvent::INGESTION, PreservationEvent::SUCCESS, repo_object, object)
+        create_preservation_event(PreservationEvent::INGESTION, PreservationEvent::SUCCESS, outcome_details, repo_object, object)
       end
+      @details += outcome_details
     end
     
     def validate(object)
+      outcome_details = []
+      valid = true
+      validations = {}
       if object.pid
-        begin
-          repo_object = ActiveFedora::Base.find(object.pid, :cast => true)
-          if object.operation.eql? BatchObject::OPERATION_INGEST
-            repo_object.class.eql?(object.model.constantize) # must be true to be valid
-          end
-          
-        rescue
+        repo_object = ActiveFedora::Base.find(object.pid, :cast => true)
+        if object.operation.eql? BatchObject::OPERATION_INGEST
+          valid = validate_model(object, repo_object)
+          valid = validate_label(object, repo_object) if object.label
+          outcome = valid ? PreservationEvent::SUCCESS : PreservationEvent::FAILURE
+          create_preservation_event(PreservationEvent::VALIDATION, outcome, outcome_details, repo_object, object)
         end
       else
-        @log.error "Cannot validate repository object: batch object #{object.id} does contain pid"
+        valid = false
+        detail = "Cannot validate repository object: batch object #{object.id} does not contain pid"
+        log.error detail
+        outcome_details << detail
+        @failures += 1
       end
+      valid ? @successes += 1 : @failures += 1
+      @details += outcome_details
+    end
+    
+    def validate_label(object, repo_object)
+      verifying = "Verifying object label..."
+      if repo_object.label.eql?(object.label)
+        @validation_details << "#{verifying}#{PASS}"
+        return true
+      else
+        @validation_details << "#{verifying}#{FAIL}"
+        return false
+      end
+    end
+    
+    def validate_model(object, repo_object)
+      verifying = "Verifying object model..."
+      begin
+        if repo_object.class.eql?(object.model.constantize)
+          @validation_details << "#{verifying}#{PASS}"
+          return true
+        else
+          @validation_details << "#{verifying}#{PASS}"
+          return false
+        end
+      rescue
+      end
+    end
+    
+    def create_preservation_event(event_type, event_outcome, event_outcome_detail, outcome_details, repository_object, batch_object)
+      event_label = case event_type
+      when PreservationEvent::INGESTION
+        "Object ingestion"
+      when PreservationEvent::VALIDATION
+        "Object ingest validation"
+      end
+      event = PreservationEvent.new(:label => event_label,
+                                    :event_type => event_type,
+                                    :event_date_time => Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT),
+                                    :event_detail => event_detail(batch_object),
+                                    :event_outcome => event_outcome,
+                                    :event_outcome_detail_note => outcome_details.join("\n"),
+                                    :linking_object_id_type => PreservationEvent::OBJECT,
+                                    :linking_object_id_value => repository_object.internal_uri,
+                                    :for_object => repository_object)
+      event.save
+    end
+    
+    def event_detail(operation, batch_object)
+      PRESERVATION_EVENT_DETAIL % {
+        :operation => batch_object.operation,
+        :batch_id => batch_object.id,
+        :identifier => batch_object.identifier,
+        :model => batch_object.model
+      }
     end
     
     def add_datastream(repo_object, datastream)
@@ -134,46 +199,6 @@ module DulHydra::Scripts
       end
       repo_object.generate_thumbnail! if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
       return repo_object
-    end
-    
-    def create_preservation_event(event_type, event_outcome, repository_object, ingest_object)
-      event_label = case event_type
-      when PreservationEvent::INGESTION
-        "Object ingestion"
-      when PreservationEvent::VALIDATION
-        "Object ingest validation"
-      end
-      event = PreservationEvent.new(:label => event_label,
-                                    :event_type => event_type,
-                                    :event_date_time => Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT),
-                                    :event_outcome => event_outcome,
-                                    :linking_object_id_type => PreservationEvent::OBJECT,
-                                    :linking_object_id_value => repository_object.internal_uri,
-                                    :event_detail => format_event_details(event_type, ingest_object),
-                                    :for_object => repository_object)
-      event.save
-    end
-    
-    def format_event_details(event_type, object)
-      event_details = case event_type
-      when PreservationEvent::INGESTION
-        adminpolicy = "Admin policy: #{object.admin_policy}" if object.admin_policy
-        if object.batch_object_datastreams
-          datastream_list = []
-          object.batch_object_datastreams.each { |d| datastream_list << d[:name] }
-          datastream_names = "Datastreams: #{datastream_list.join(',')}"
-        end
-        parent = "Parent: #{object.parent}" if object.parent
-        targetfor = "Target for: #{object.target_for}" if object.target_for
-        INGEST_PRESERVATION_EVENT_DETAIL % {
-          :identifier => object.identifier,
-          :model => object.model,
-          :adminpolicy => adminpolicy,
-          :datastreams => datastream_names,
-          :parent => parent,
-          :targetfor => targetfor
-        }
-      end
     end
     
     def config_logger

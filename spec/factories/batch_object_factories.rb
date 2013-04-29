@@ -37,7 +37,13 @@ FactoryGirl.define do
       end      
     end
     
-    factory :ingest_batch_object, :traits => [:is_ingest_object, :has_identifier, :has_admin_policy, :has_label, :has_model, :has_parent]
+    factory :ingest_batch_object, :traits => [:is_ingest_object,
+                                              :has_identifier,
+                                              :has_admin_policy,
+                                              :has_label,
+                                              :has_model,
+                                              :has_parent,
+                                              :with_add_datastreams]
     
   end
 end
