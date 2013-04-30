@@ -1,5 +1,3 @@
-# Read about factories at https://github.com/thoughtbot/factory_girl
-
 FactoryGirl.define do
   factory :batch_object_datastream do
     
@@ -23,6 +21,8 @@ FactoryGirl.define do
         payload File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'id001.tif')
         payload_type BatchObjectDatastream::PAYLOAD_TYPE_FILENAME        
       end
-    end    
+      
+    end
+  
   end
 end

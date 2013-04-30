@@ -57,7 +57,8 @@ module DulHydra::Scripts
     end
     
     def close_batch_run
-      details = @ingest_details + @validation_details
+#      details = @ingest_details + @validation_details
+      details = []
       @batch_run.update_attributes(:details => details.join("\n"),
                                    :failure => @failures,
                                    :outcome => @successes.eql?(@batch_run.total) ? BatchRun::OUTCOME_SUCCESS : BatchRun::OUTCOME_FAILURE,
@@ -75,7 +76,7 @@ module DulHydra::Scripts
         @log.debug "Operation: #{object.operation}"
         case object.operation
         when BatchObject::OPERATION_INGEST
-          repo_object, verifications = object.ingest(:dryrun => @dryrun)
+          repo_object, verifications = object.process(:dryrun => @dryrun)
         when BatchObject::OPERATION_UPDATE
           @log.debug "Update not yet implemented"
           @failures += 1

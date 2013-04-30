@@ -32,6 +32,7 @@ class TestContentMetadata < TestParent
 end
 
 class TestModelOmnibus < TestModel
+  include DulHydra::Models::Governable
   include DulHydra::Models::HasContentdm
   include DulHydra::Models::HasDigitizationGuide
   include DulHydra::Models::HasDPCMetadata

@@ -14,7 +14,9 @@ FactoryGirl.define do
     end
     
     trait :has_admin_policy do
-      admin_policy { create(:public_read_policy).pid }
+      after(:create) do |batch_object|
+        FactoryGirl.create(:batch_object_add_admin_policy, :batch_object => batch_object)
+      end
     end
 
     trait :has_label do
@@ -26,7 +28,15 @@ FactoryGirl.define do
     end
     
     trait :has_parent do
-      parent { create(:test_parent).pid }
+      after(:create) do |batch_object|
+        FactoryGirl.create(:batch_object_add_parent, :batch_object => batch_object)
+      end
+    end
+    
+    trait :is_target_for_collection do
+      after(:create) do |batch_object|
+        FactoryGirl.create(:batch_object_add_target_for_collection, :batch_object => batch_object)
+      end
     end
     
     trait :with_add_datastreams do

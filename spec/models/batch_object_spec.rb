@@ -18,14 +18,18 @@ describe BatchObject do
     
     context "valid object" do
       let(:object) { FactoryGirl.create(:ingest_batch_object) }
-      let(:collection) { FactoryGirl.create(:collection) }
-      before do
-        object.target_for = collection.pid
-      end
+#      let(:collection) { FactoryGirl.create(:collection) }
+#      before do
+#        relationship = FactoryGirl.create(:batch_object_add_relationship, :name => "collection", :object => collection.pid, :object_type => BatchObjectRelationship::OBJECT_TYPE_PID)
+#        object.batch_object_relationships << relationship
+#        object.save
+#      end
       after do
-        ActiveFedora::Base.find(object.parent, :cast => true).destroy if object.parent
-        AdminPolicy.find(object.admin_policy).destroy if object.admin_policy
-        collection.destroy
+        object.batch_object_relationships.each do |r|
+          ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
+          AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
+        end
+#        collection.destroy
       end
       it_behaves_like "a valid object"
     end
@@ -43,17 +47,24 @@ describe BatchObject do
         it_behaves_like "an invalid object"
       end
       context "invalid admin policy" do
-        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object) }
+        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object, :has_admin_policy, :has_model) }
         context "admin policy pid object does not exist" do
-          let(:error_message) { "Specified AdminPolicy does not exist: #{object.admin_policy}" }
-          before { object.admin_policy = "bogus:AdminPolicy" }
+          let(:admin_policy_pid) { "bogus:AdminPolicy" }
+          let(:error_message) { "admin_policy relationship object does not exist: #{admin_policy_pid}" }
+          before do
+            relationship = FactoryGirl.create(:batch_object_add_relationship, :name => "admin_policy", :object => admin_policy_pid, :object_type => BatchObjectRelationship::OBJECT_TYPE_PID)
+            object.batch_object_relationships << relationship
+            object.save
+          end
           it_behaves_like "an invalid object"
         end
         context "admin policy pid object exists but is not admin policy" do
-          let(:error_message) { "#{object.admin_policy} exists but is not a(n) AdminPolicy" }
+          let(:error_message) { "admin_policy relationship object #{@not_admin_policy.pid} exists but is not a(n) AdminPolicy" }
           before do
             @not_admin_policy = FactoryGirl.create(:test_model)
-            object.admin_policy = @not_admin_policy.pid
+            relationship = FactoryGirl.create(:batch_object_add_relationship, :name => "admin_policy", :object => @not_admin_policy.pid, :object_type => BatchObjectRelationship::OBJECT_TYPE_PID)
+            object.batch_object_relationships << relationship
+            object.save
           end
           after { @not_admin_policy.destroy }
           it_behaves_like "an invalid object"
@@ -83,37 +94,44 @@ describe BatchObject do
       context "invalid parent" do
         let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object, :has_model) }
         context "parent pid object does not exist" do
-          let(:error_message) { "Specified TestParent does not exist: #{object.parent}" }
-          before { object.parent = "bogus:TestParent" }
+          let(:parent_pid) { "bogus:TestParent" }
+          let(:error_message) { "parent relationship object does not exist: #{parent_pid}" }
+          before do
+            relationship = FactoryGirl.create(:batch_object_add_relationship, :name => "parent", :object => parent_pid, :object_type => BatchObjectRelationship::OBJECT_TYPE_PID)
+            object.batch_object_relationships << relationship
+            object.save
+          end
           it_behaves_like "an invalid object"
         end
         context "parent pid object exists but is not correct parent object type" do
-          let(:error_message) { "#{object.parent} exists but is not a(n) TestParent" }
+          let(:error_message) { "parent relationship object #{@not_parent.pid} exists but is not a(n) TestParent" }
           before do
             @not_parent = FactoryGirl.create(:test_model)
-            object.parent = @not_parent.pid
+            relationship = FactoryGirl.create(:batch_object_add_relationship, :name => "parent", :object => @not_parent.pid, :object_type => BatchObjectRelationship::OBJECT_TYPE_PID)
+            object.batch_object_relationships << relationship
+            object.save
           end
           after { @not_parent.destroy }
           it_behaves_like "an invalid object"
         end
       end
-      context "invalid target_for" do
-        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object, :has_model) }
-        context "target_for pid object does not exist" do
-          let(:error_message) { "Specified Collection does not exist: #{object.target_for}" }
-          before { object.target_for = "bogus:Collection" }
-          it_behaves_like "an invalid object"
-        end
-        context "target_for pid object exists but is not collection" do
-          let(:error_message) { "#{object.target_for} exists but is not a(n) Collection" }
-          before do
-            @not_collection = FactoryGirl.create(:test_model)
-            object.target_for = @not_collection.pid
-          end
-          after { @not_collection.destroy }
-          it_behaves_like "an invalid object"
-        end
-      end
+      #context "invalid target_for" do
+      #  let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object, :has_model) }
+      #  context "target_for pid object does not exist" do
+      #    let(:error_message) { "Specified Collection does not exist: #{object.target_for}" }
+      #    before { object.target_for = "bogus:Collection" }
+      #    it_behaves_like "an invalid object"
+      #  end
+      #  context "target_for pid object exists but is not collection" do
+      #    let(:error_message) { "#{object.target_for} exists but is not a(n) Collection" }
+      #    before do
+      #      @not_collection = FactoryGirl.create(:test_model)
+      #      object.target_for = @not_collection.pid
+      #    end
+      #    after { @not_collection.destroy }
+      #    it_behaves_like "an invalid object"
+      #  end
+      #end
     end
   end
 
