@@ -90,6 +90,13 @@ GEM
       factory_girl (~> 4.2.0)
       railties (>= 3.0.0)
     fastercsv (1.5.5)
+    fcrepo_admin (0.3.5)
+      active-fedora (~> 6.1)
+      blacklight
+      devise
+      hydra-head (~> 6.0)
+      mime-types (~> 1.19)
+      rails (~> 3.2)
     ffi (1.6.0)
     hike (1.2.2)
     hooks (0.2.2)
@@ -272,6 +279,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   devise
   factory_girl_rails (~> 4.0)
+  fcrepo_admin
   hydra-head (~> 6.1.0)
   jettywrapper
   jquery-rails
