@@ -18,11 +18,8 @@ class BatchObject < ActiveRecord::Base
     validation.errors += validate_operation
     validation.errors += validate_required_attributes if SUPPORTED_OPERATIONS.include?(operation)
     validation.errors += validate_model if model
-#    validation.errors += validate_pid(admin_policy, AdminPolicy) if admin_policy
     validation.errors += validate_datastreams if batch_object_datastreams
     validation.errors += validate_relationships if batch_object_relationships
-#    validation.errors += validate_parent(parent) if parent
-#    validation.errors += validate_pid(target_for, Collection) if target_for
     return validation
   end
   
@@ -46,10 +43,7 @@ class BatchObject < ActiveRecord::Base
   def create_repository_object(dryrun)
     repo_object = model.constantize.new
     repo_object.label = label if label
-#    repo_object.admin_policy = AdminPolicy.find(admin_policy, :cast => true) if admin_policy
     batch_object_datastreams.each {|d| repo_object = add_datastream(repo_object, d, dryrun)} if batch_object_datastreams
-#    repo_object.parent = ActiveFedora::Base.find(parent, :cast => true) if parent
-#    repo_object.collection = Collection.find(target_for, :cast => true) if target_for
     batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
     repo_object.save unless dryrun
     repo_object
@@ -74,10 +68,16 @@ class BatchObject < ActiveRecord::Base
       verifications["pid"] = VERIFICATION_PASS
       verifications["model"] = verify_model(repo_object) if model
       verifications["label"] = repo_object.label.eql?(label) if label
-#      batch_object_datastreams.each { |d| verifications[d.name] = verify_datastream(repo_object, d) } if batch_object_datastreams
+      batch_object_datastreams.each { |d| verifications[d.name] = verify_datastream(repo_object, d) } if batch_object_datastreams
 #      batch_object_relationships.each { |r| verifications[r.name] = verify_relationship(repo_object, r) } if batch_object_relationships
     end
     verifications
+  end
+  
+  def verify_datastream(repo_object, datastream)
+    return repo_object.datastreams.keys.include?(datastream.name) &&
+            !repo_object.datastreams[datastream.name].profile.empty? &&
+            !repo_object.datastreams[datastream.name].size.eql?(0)
   end
   
   def verify_model(repo_object)
@@ -163,18 +163,6 @@ class BatchObject < ActiveRecord::Base
     return errs
   end
   
-  #def validate_pid(pid, klass)
-  #  errs = []
-  #  begin
-  #    obj = ActiveFedora::Base.find(pid, :cast => true)
-  #  rescue ActiveFedora::ObjectNotFoundError
-  #    errs << "Specified #{klass} does not exist: #{pid}"
-  #  else
-  #    errs << "#{pid} exists but is not a(n) #{klass}" unless obj.is_a?(klass)
-  #  end
-  #  return errs
-  #end
-  
   def validate_relationships
     errs = []
     batch_object_relationships.each do |r|
@@ -202,21 +190,12 @@ class BatchObject < ActiveRecord::Base
     return errs
   end
 
-  #def validate_parent(pid)
-  #  errs = []
-  #  klass = parent_class
-  #  if klass
-  #    errs << validate_pid(pid, klass)
-  #    errs.flatten!
-  #  else
-  #    errs << "Unable to determine parent class"
-  #  end
-  #  return errs
-  #end
-  #
   def validate_datastreams
     errs = []
     batch_object_datastreams.each do |d|
+      unless model.constantize.new.datastreams.keys.include?(d[:name])
+        errs << "Invalid datastream name for #{model}: #{d[:name]}"
+      end
       unless BatchObjectDatastream::PAYLOAD_TYPES.include?(d[:payload_type])
         errs << "Invalid payload_type for #{d[:name]} datastream: #{d[:payload_type]}"
       end

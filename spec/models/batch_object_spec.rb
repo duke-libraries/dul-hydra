@@ -71,7 +71,16 @@ describe BatchObject do
         end
       end
       context "invalid datastreams" do
-        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object, :with_add_datastreams) }
+        let(:object) { FactoryGirl.create(:batch_object, :is_ingest_object, :has_model, :with_add_datastreams) }
+        context "invalid datastream name" do
+          let(:error_message) { "Invalid datastream name for #{object.model}: #{object.batch_object_datastreams.first[:name]}" }
+          before do
+            datastream = object.batch_object_datastreams.first
+            datastream.name = "invalid_name"
+            datastream.save!
+          end
+          it_behaves_like "an invalid object"
+        end
         context "invalid payload type" do
           let(:error_message) { "Invalid payload_type for #{object.batch_object_datastreams.first[:name]} datastream: #{object.batch_object_datastreams.first[:payload_type]}" }
           before do
