@@ -3,7 +3,9 @@ source 'https://rubygems.org'
 gem 'rails', '~> 3.2.11'
 
 gem 'sqlite3'
-gem 'hydra-head', '~> 5.4.0'
+gem 'active-fedora', github: 'projecthydra/active_fedora'
+gem 'hydra-head', github: 'projecthydra/hydra-head'
+#gem 'hydra-head', '~> 6.0.0'
 gem 'blacklight', '~> 4.0.1'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
@@ -26,11 +28,12 @@ gem 'paperclip', '~> 3.0'
 gem 'mini_magick'
 
 group :development, :test do
-  gem 'rspec-rails'
+  gem 'rspec-rails' #, '~> 2.12.0'
   gem 'capybara', '~> 2.0'
   gem 'jettywrapper'
   gem 'factory_girl_rails', '~> 4.0'
   gem 'orderly'
+  gem 'launchy'
 end
 
 group :production do

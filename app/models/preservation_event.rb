@@ -85,22 +85,22 @@ class PreservationEvent < ActiveFedora::Base
   end
 
   def self.events_for(object, type)
-    PreservationEvent.where(ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol) => object.internal_uri,
-                            ActiveFedora::SolrService.solr_name(:event_type, :symbol) => type
-                            ).order("#{ActiveFedora::SolrService.solr_name(:event_date_time, :date)} asc")
+    PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => object.internal_uri,
+                            DulHydra::IndexFields::EVENT_TYPE => type
+                            ).order("#{DulHydra::IndexFields::EVENT_DATE_TIME} asc")
   end
 
   # Overriding to_solr here seems cleaner than using :index_as on eventMetadata OM terminology.
   def to_solr(solr_doc=Hash.new, opts={})
     solr_doc = super(solr_doc, opts)
-    solr_doc.merge!(ActiveFedora::SolrService.solr_name(:event_date_time, :date) => event_date_time,
-                    ActiveFedora::SolrService.solr_name(:event_type, :symbol) => event_type,
-                    ActiveFedora::SolrService.solr_name(:event_outcome, :symbol) => event_outcome,
-                    ActiveFedora::SolrService.solr_name(:event_outcome_detail_note, :display) => event_outcome_detail_note,
-                    ActiveFedora::SolrService.solr_name(:event_id_type, :symbol) => event_id_type,
-                    ActiveFedora::SolrService.solr_name(:event_id_value, :symbol) => event_id_value,                    
-                    ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol) => linking_object_id_type,
-                    ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol) => linking_object_id_value)
+    solr_doc.merge!(DulHydra::IndexFields::EVENT_DATE_TIME => event_date_time,
+                    DulHydra::IndexFields::EVENT_TYPE => event_type,
+                    DulHydra::IndexFields::EVENT_OUTCOME => event_outcome,
+                    DulHydra::IndexFields::EVENT_OUTCOME_DETAIL_NOTE => event_outcome_detail_note,
+                    DulHydra::IndexFields::EVENT_ID_TYPE => event_id_type,
+                    DulHydra::IndexFields::EVENT_ID_VALUE => event_id_value,                    
+                    DulHydra::IndexFields::LINKING_OBJECT_ID_TYPE => linking_object_id_type,
+                    DulHydra::IndexFields::LINKING_OBJECT_ID_VALUE => linking_object_id_value)
     return solr_doc
   end
 

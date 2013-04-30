@@ -19,9 +19,9 @@
   		<% @document_list.each do |doc| %>
   		<tr>
   			<td><%= link_to doc.id, catalog_path(doc.id) %></td>
-    	 	<td><%= doc.get(:event_type_s) %></td>
-    	 	<td><%= doc.get(:event_outcome_s) %></td>
-    	 	<td><%= doc.get(:event_date_time_dt) %></td>
+    	 	<td><%= pe_solr_field_value(doc, :event_type) %></td>
+    	 	<td><%= pe_solr_field_value(doc, :event_outcome) %></td>
+    	 	<td><%= pe_solr_field_value(doc, :event_date_time) %></td>
   		</tr>
   		<% end %>
 		

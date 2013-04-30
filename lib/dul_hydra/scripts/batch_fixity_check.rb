@@ -8,8 +8,8 @@ module DulHydra::Scripts
     # TODO migrate defaults to config
     DEFAULT_LIMIT = 1000
     DEFAULT_PERIOD = "60DAYS"
-    QUERY = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)}:[* TO NOW-%s]"
-    SORT = "#{ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :date)} asc"
+    QUERY = "#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO NOW-%s]"
+    SORT = "#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON} asc"
 
     attr_reader :limit, :dryrun, :log, :query, :report, :report_file, :summary, :executed
 

@@ -2,7 +2,7 @@ require 'securerandom'
 
 module DulHydra::Datastreams
 
-  class PremisEventDatastream < ActiveFedora::NokogiriDatastream
+  class PremisEventDatastream < ActiveFedora::OmDatastream
 
     PREMIS_VERSION = "2.2"
     PREMIS_XMLNS = "info:lc/xmlns/premis-v2"

@@ -9,7 +9,7 @@
   <ul>
     <% document.children.each do |child| %>
       <% child_doc = SolrDocument.new(child) %>
-      <li><%= child_doc[:title_display] %></li>
+      <li><%= title_display_solr_value(child_doc) %></li>
     <% end %>
   </ul>
 <% end %>

@@ -10,7 +10,7 @@ module DulHydra::Models
 
     module ClassMethods
       def find_by_identifier(identifier)
-        find(:identifier_t => identifier)
+        find(DulHydra::IndexFields::IDENTIFIER => identifier)
       end
     end
 
