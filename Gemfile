@@ -3,9 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '~> 3.2.11'
 
 gem 'sqlite3'
-gem 'active-fedora', github: 'projecthydra/active_fedora'
-gem 'hydra-head', github: 'projecthydra/hydra-head'
-#gem 'hydra-head', '~> 6.0.0'
+gem 'hydra-head', '~> 6.1.0'
 gem 'blacklight', '~> 4.0.1'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0

@@ -1,43 +1,3 @@
-GIT
-  remote: git://github.com/projecthydra/active_fedora.git
-  revision: 76d020b345a50b692903b3ca1f1892f01a3b0b7d
-  specs:
-    active-fedora (6.0.0)
-      activeresource (>= 3.0.0)
-      activesupport (>= 3.0.0)
-      builder (~> 3.0.0)
-      deprecation
-      mediashelf-loggable
-      nom-xml (>= 0.5.1)
-      om (~> 2.0.0)
-      rdf
-      rdf-rdfxml (~> 1.0.0)
-      rsolr
-      rubydora (~> 1.6)
-
-GIT
-  remote: git://github.com/projecthydra/hydra-head.git
-  revision: 0a1aea1c20bcbd81f94c7d75efc2f44282573c19
-  specs:
-    hydra-access-controls (6.0.0)
-      active-fedora (>= 6.0.0)
-      activesupport
-      blacklight
-      cancan
-      deprecation
-    hydra-core (6.0.0)
-      active-fedora
-      blacklight (~> 4.0)
-      block_helpers
-      deprecation (>= 0.0.5)
-      hydra-access-controls (= 6.0.0)
-      jettywrapper (>= 1.4.1)
-      rails (~> 3.2.3)
-    hydra-head (6.0.0)
-      hydra-access-controls (= 6.0.0)
-      hydra-core (= 6.0.0)
-      rails (>= 3.2.6)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -54,6 +14,18 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
+    active-fedora (6.1.0)
+      activeresource (>= 3.0.0)
+      activesupport (>= 3.0.0)
+      builder (~> 3.0.0)
+      deprecation
+      mediashelf-loggable
+      nom-xml (>= 0.5.1)
+      om (~> 2.1.0)
+      rdf
+      rdf-rdfxml (~> 1.0.0)
+      rsolr
+      rubydora (~> 1.6)
     activemodel (3.2.13)
       activesupport (= 3.2.13)
       builder (~> 3.0.0)
@@ -121,6 +93,24 @@ GEM
     ffi (1.6.0)
     hike (1.2.2)
     hooks (0.2.2)
+    hydra-access-controls (6.1.0)
+      active-fedora (~> 6.1)
+      activesupport
+      blacklight
+      cancan
+      deprecation
+    hydra-core (6.1.0)
+      active-fedora
+      blacklight (~> 4.0)
+      block_helpers
+      deprecation (>= 0.0.5)
+      hydra-access-controls (= 6.1.0)
+      jettywrapper (>= 1.4.1)
+      rails (~> 3.2.3)
+    hydra-head (6.1.0)
+      hydra-access-controls (= 6.1.0)
+      hydra-core (= 6.1.0)
+      rails (>= 3.2.6)
     i18n (0.6.1)
     jettywrapper (1.4.1)
       activesupport (>= 3.0.0)
@@ -157,7 +147,7 @@ GEM
       activesupport
       i18n
       nokogiri
-    om (2.0.0)
+    om (2.1.0)
       activemodel
       activesupport
       deprecation
@@ -223,7 +213,7 @@ GEM
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
-    rubydora (1.6.1)
+    rubydora (1.6.2)
       activemodel
       activesupport
       deprecation
@@ -277,13 +267,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active-fedora!
   blacklight (~> 4.0.1)
   bootstrap-sass
   capybara (~> 2.0)
   devise
   factory_girl_rails (~> 4.0)
-  hydra-head!
+  hydra-head (~> 6.1.0)
   jettywrapper
   jquery-rails
   launchy
