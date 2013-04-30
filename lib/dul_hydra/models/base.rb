@@ -5,12 +5,13 @@ module DulHydra::Models
     include Governable
     include AccessControllable
     include HasPreservationEvents
-    include Auditable
+    include ActiveFedora::Auditable
 
     def to_solr(solr_doc=Hash.new, opts={})
       solr_doc = super(solr_doc, opts)
       solr_doc.merge!(self.last_fixity_check_to_solr)
-      solr_doc.merge!(:title_display => title_display)
+      solr_doc.merge!(DulHydra::IndexFields::TITLE => title_display,
+                      DulHydra::IndexFields::INTERNAL_URI => internal_uri)
       solr_doc
     end
 

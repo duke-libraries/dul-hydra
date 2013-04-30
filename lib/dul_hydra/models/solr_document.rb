@@ -4,7 +4,7 @@ module DulHydra::Models
   module SolrDocument
 
     def object_profile
-      @object_profile ||= JSON.parse(self[:object_profile_display].first)
+      @object_profile ||= JSON.parse(self[DulHydra::IndexFields::OBJECT_PROFILE].first)
     end
 
     def datastreams
@@ -12,7 +12,7 @@ module DulHydra::Models
     end
     
     def has_datastream?(dsID)
-      !(datastreams[dsID].nil? || datastreams[dsID].empty?)
+      !datastreams[dsID].blank?
     end
 
     def has_admin_policy?
@@ -20,7 +20,7 @@ module DulHydra::Models
     end
 
     def admin_policy_uri
-      get(:is_governed_by_s)
+      get(DulHydra::IndexFields::IS_GOVERNED_BY)
     end
 
     def admin_policy_pid
@@ -29,11 +29,11 @@ module DulHydra::Models
     end
 
     def has_parent?
-      !parent_uri
+      !parent_uri.blank?
     end
 
     def parent_uri
-      get(:is_part_of_s) || get(:is_member_of_s) || get(:is_member_of_collection_s)
+      get(DulHydra::IndexFields::IS_PART_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION)
     end
 
     def parent_pid
@@ -42,7 +42,7 @@ module DulHydra::Models
     end
 
     def active_fedora_model
-      get(:active_fedora_model_s)
+      get(DulHydra::IndexFields::ACTIVE_FEDORA_MODEL)
     end
     
     def has_thumbnail?
@@ -55,7 +55,7 @@ module DulHydra::Models
     
     def targets
       object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
-      query = "is_external_target_for_s:#{object_uri}"
+      query = "#{DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR}:#{object_uri}"
       @targets ||= ActiveFedora::SolrService.query(query)
     end
     
@@ -65,7 +65,7 @@ module DulHydra::Models
     
     def children
       object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
-      query = "is_member_of_s:#{object_uri} OR is_member_of_collection_s:#{object_uri} OR is_part_of_s:#{object_uri}"
+      query = "#{DulHydra::IndexFields::IS_MEMBER_OF}:#{object_uri} OR #{DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION}:#{object_uri} OR #{DulHydra::IndexFields::IS_PART_OF}:#{object_uri}"
       @children ||= ActiveFedora::SolrService.query(query)
     end
     
@@ -74,7 +74,7 @@ module DulHydra::Models
     end
     
     def parsed_content_metadata
-      JSON.parse(self[:content_metadata_parsed_s].first)
+      JSON.parse(self[DulHydra::IndexFields::CONTENT_METADATA_PARSED].first)
     end
 
   end

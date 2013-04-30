@@ -68,7 +68,7 @@ shared_examples "an object that has content metadata" do
     context "#to_solr" do
       let(:solr_result) { ActiveFedora::SolrService.query("id:#{object.pid.gsub(':', '\\:')}").first }
       it "should add the parsed contentMetadata to the index" do
-        JSON.parse(solr_result["content_metadata_parsed_s"].first).should eq(expected_result)
+        JSON.parse(solr_result[ActiveFedora::SolrService.solr_name(:content_metadata_parsed, :symbol)].first).should eq(expected_result)
       end
     end
   end

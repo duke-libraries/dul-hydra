@@ -1,0 +1,17 @@
+=========================
+<%= @title %>
+=========================
+
+Host:   <%= @host %>
+Run at: <%= @bfc.summary[:at] %>
+
+---------------------
+       Summary
+---------------------
+Total objects: <%= @bfc.total %>
+<% @bfc.outcome_counts.each do |outcome, count| -%>
+<%= outcome %>: <%= count %>
+<% end -%>
+---------------------
+
+<% if @attachment_note %><%= @attachment_note %><% end %>

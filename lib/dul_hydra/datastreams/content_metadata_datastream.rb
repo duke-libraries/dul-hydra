@@ -23,7 +23,7 @@ module DulHydra::Datastreams
     def to_solr(solr_doc=Hash.new)
       solr_doc = super(solr_doc)
       if self.content
-        solr_doc.merge!({ActiveFedora::SolrService.solr_name(:content_metadata_parsed, :symbol) => parse.to_json})
+        solr_doc.merge!({DulHydra::IndexFields::CONTENT_METADATA_PARSED => parse.to_json})
       end
       solr_doc
     end    
