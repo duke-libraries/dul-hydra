@@ -11,7 +11,7 @@ module DulHydra::Models
       solr_doc = super(solr_doc, opts)
       solr_doc.merge!(self.last_fixity_check_to_solr)
       solr_doc.merge!(DulHydra::IndexFields::TITLE => title_display,
-                      ActiveFedora::SolrService.solr_name(:internal_uri, :symbol) => internal_uri)
+                      DulHydra::IndexFields::INTERNAL_URI => internal_uri)
       solr_doc
     end
 
