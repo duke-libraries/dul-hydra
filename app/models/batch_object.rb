@@ -13,6 +13,14 @@ class BatchObject < ActiveRecord::Base
   OPERATIONS = [ OPERATION_INGEST, OPERATION_UPDATE ]
   SUPPORTED_OPERATIONS = [ OPERATION_INGEST ]
    
+  PRESERVATION_EVENT_DETAIL = <<-EOS
+    DulHydra version #{DulHydra::VERSION}
+    %{operation}
+    Batch object database id: %{batch_id}
+    Batch object identifier: %{identifier}
+    Model: %{model}
+  EOS
+
   def validate
     validation = DulHydra::Models::Validation.new
     validation.errors += validate_operation
@@ -26,109 +34,12 @@ class BatchObject < ActiveRecord::Base
   def process(opts = {})
     case operation
     when OPERATION_INGEST
-      ingest(opts)
+      repository_object, verified, verifications = ingest(opts)
     end
+    return [ repository_object, verified, verifications ]
   end
   
   private
-  
-  def ingest(opts = {})
-    dryrun = opts.fetch(:dryrun, false)
-    repo_object = create_repository_object(dryrun)
-    update_attributes(:pid => repo_object.pid) unless dryrun
-    verifications = dryrun ? nil : verify_repository_object
-    [ repo_object, verifications ]
-  end
-  
-  def create_repository_object(dryrun)
-    repo_object = model.constantize.new
-    repo_object.label = label if label
-    batch_object_datastreams.each {|d| repo_object = add_datastream(repo_object, d, dryrun)} if batch_object_datastreams
-    batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
-    repo_object.save unless dryrun
-    repo_object
-  end
-  
-  def add_relationship(repo_object, relationship)
-    relationship_object = case relationship[:object_type]
-    when BatchObjectRelationship::OBJECT_TYPE_PID
-      ActiveFedora::Base.find(relationship[:object], :cast => true)
-    end
-    repo_object.send("#{relationship[:name]}=", relationship_object)
-    return repo_object
-  end
-  
-  def verify_repository_object
-    verifications = {}
-    begin
-      repo_object = ActiveFedora::Base.find(pid, :cast => true)
-    rescue ActiveFedora::ObjectNotFound
-      verifications["pid"] = VERIFICATION_FAIL
-    else
-      verifications["pid"] = VERIFICATION_PASS
-      verifications["model"] = verify_model(repo_object) if model
-      verifications["label"] = repo_object.label.eql?(label) if label
-      batch_object_datastreams.each { |d| verifications[d.name] = verify_datastream(repo_object, d) } if batch_object_datastreams
-#      batch_object_relationships.each { |r| verifications[r.name] = verify_relationship(repo_object, r) } if batch_object_relationships
-    end
-    verifications
-  end
-  
-  def verify_datastream(repo_object, datastream)
-    return repo_object.datastreams.keys.include?(datastream.name) &&
-            !repo_object.datastreams[datastream.name].profile.empty? &&
-            !repo_object.datastreams[datastream.name].size.eql?(0)
-  end
-  
-  def verify_model(repo_object)
-    begin
-      if repo_object.class.eql?(model.constantize)
-        return true
-      else
-        return false
-      end
-    rescue NameError
-      return false
-    end
-  end
-
-  def verify_admin_policy(repo_object)
-    return repo_object.admin_policy &&
-            repo_object.admin_policy.pid.eql?(admin_policy) &&
-            repo_object.admin_policy.class.eql?(AdminPolicy) 
-  end
-  
-  def verify_parent(repo_object)
-    return repo_object.parent &&
-            repo_object.parent.pid.eql?(parent) &&
-            repo_object.parent.class.eql?(parent_class) 
-  end
-  
-  def verify_target_for(repo_object)
-    return repo_object.collection &&
-            repo_object.collection.pid.eql?(target_for) &&
-            repo_object.collection.class.eql?(Collection) 
-  end
-
-  def add_datastream(repo_object, datastream, dryrun)
-    case datastream[:payload_type]
-    when BatchObjectDatastream::PAYLOAD_TYPE_BYTES
-      repo_object.datastreams[datastream[:name]].content = datastream[:payload]
-    when BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-      datastream_file = File.open(datastream[:payload])
-      repo_object.datastreams[datastream[:name]].content_file = datastream_file
-      repo_object.save unless dryrun # save the object to the repository before we close the file 
-      datastream_file.close
-    end
-    if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
-      if dryrun
-        repo_object.generate_thumbnail
-      else
-        repo_object.generate_thumbnail!
-      end
-    end
-    return repo_object
-  end
   
   def validate_operation
     errs = []
@@ -163,6 +74,24 @@ class BatchObject < ActiveRecord::Base
     return errs
   end
   
+  def validate_datastreams
+    errs = []
+    batch_object_datastreams.each do |d|
+      unless model.constantize.new.datastreams.keys.include?(d[:name])
+        errs << "Invalid datastream name for #{model}: #{d[:name]}"
+      end
+      unless BatchObjectDatastream::PAYLOAD_TYPES.include?(d[:payload_type])
+        errs << "Invalid payload_type for #{d[:name]} datastream: #{d[:payload_type]}"
+      end
+      if d[:payload_type].eql?(BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
+        unless File.readable?(d[:payload])
+          errs << "Missing or unreadable file for #{d[:name]} datastream: #{d[:payload]}"
+        end
+      end
+    end
+    return errs
+  end
+  
   def validate_relationships
     errs = []
     batch_object_relationships.each do |r|
@@ -190,22 +119,134 @@ class BatchObject < ActiveRecord::Base
     return errs
   end
 
-  def validate_datastreams
-    errs = []
-    batch_object_datastreams.each do |d|
-      unless model.constantize.new.datastreams.keys.include?(d[:name])
-        errs << "Invalid datastream name for #{model}: #{d[:name]}"
+  def ingest(opts = {})
+    dryrun = opts.fetch(:dryrun, false)
+    repo_object = create_repository_object(dryrun)
+    if !repo_object.nil? && !dryrun
+      ingest_outcome_detail = []
+      ingest_outcome_detail << "Ingested #{model} #{identifier} into #{repo_object.pid}"
+      create_preservation_event(PreservationEvent::INGESTION,
+                                PreservationEvent::SUCCESS,
+                                ingest_outcome_detail,
+                                repo_object)
+      update_attributes(:pid => repo_object.pid)
+      verifications = verify_repository_object
+      verification_outcome_detail = []
+      verified = true
+      verifications.each do |key, value|
+        verification_outcome_detail << "#{key}...#{value}"
+        verified = false if value.eql?(VERIFICATION_FAIL)
       end
-      unless BatchObjectDatastream::PAYLOAD_TYPES.include?(d[:payload_type])
-        errs << "Invalid payload_type for #{d[:name]} datastream: #{d[:payload_type]}"
-      end
-      if d[:payload_type].eql?(BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
-        unless File.readable?(d[:payload])
-          errs << "Missing or unreadable file for #{d[:name]} datastream: #{d[:payload]}"
-        end
+      create_preservation_event(PreservationEvent::VALIDATION,
+                                verified ? PreservationEvent::SUCCESS : PreservationEvent::FAILURE,
+                                verification_outcome_detail,
+                                repo_object)
+    else
+      verifications = nil
+    end    
+    [ repo_object, verified, verifications ]
+  end
+  
+  def create_repository_object(dryrun)
+    repo_object = model.constantize.new
+    repo_object.label = label if label
+    batch_object_datastreams.each {|d| repo_object = add_datastream(repo_object, d, dryrun)} if batch_object_datastreams
+    batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
+    repo_object.save unless dryrun
+    repo_object
+  end
+  
+  def add_datastream(repo_object, datastream, dryrun)
+    case datastream[:payload_type]
+    when BatchObjectDatastream::PAYLOAD_TYPE_BYTES
+      repo_object.datastreams[datastream[:name]].content = datastream[:payload]
+    when BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
+      datastream_file = File.open(datastream[:payload])
+      repo_object.datastreams[datastream[:name]].content_file = datastream_file
+      repo_object.save unless dryrun # save the object to the repository before we close the file 
+      datastream_file.close
+    end
+    if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
+      if dryrun
+        repo_object.generate_thumbnail
+      else
+        repo_object.generate_thumbnail!
       end
     end
-    return errs
+    return repo_object
+  end
+  
+  def add_relationship(repo_object, relationship)
+    relationship_object = case relationship[:object_type]
+    when BatchObjectRelationship::OBJECT_TYPE_PID
+      ActiveFedora::Base.find(relationship[:object], :cast => true)
+    end
+    repo_object.send("#{relationship[:name]}=", relationship_object)
+    return repo_object
+  end
+  
+  def verify_repository_object
+    verifications = {}
+    begin
+      repo_object = ActiveFedora::Base.find(pid, :cast => true)
+    rescue ActiveFedora::ObjectNotFound
+      verifications["Object exists in repository"] = VERIFICATION_FAIL
+    else
+      verifications["Object exists in repository"] = VERIFICATION_PASS
+      verifications["Object is correct model"] = verify_model(repo_object) if model
+      verifications["Object has correct label"] = verify_label(repo_object) if label
+      if batch_object_datastreams
+        batch_object_datastreams.each do |d|
+          verifications["#{d.name} datastream present and not empty"] = verify_datastream(repo_object, d)
+        end
+      end
+      if batch_object_relationships
+        batch_object_relationships.each do |r|
+          verifications["#{r.name} relationship is correct"] = verify_relationship(repo_object, r)
+        end
+      end
+      
+    end
+    verifications
+  end
+  
+  def verify_model(repo_object)
+    begin
+      if repo_object.class.eql?(model.constantize)
+        return VERIFICATION_PASS
+      else
+        return VERIFICATION_FAIL
+      end
+    rescue NameError
+      return VERIFICATION_FAIL
+    end
+  end
+
+  def verify_label(repo_object)
+    repo_object.label.eql?(label) ? VERIFICATION_PASS : VERIFICATION_FAIL
+  end
+  
+  def verify_datastream(repo_object, datastream)
+    if repo_object.datastreams.keys.include?(datastream.name) &&
+        !repo_object.datastreams[datastream.name].profile.empty? &&
+        !repo_object.datastreams[datastream.name].size.eql?(0)
+      VERIFICATION_PASS
+    else
+      VERIFICATION_FAIL
+    end
+  end
+  
+  def verify_relationship(repo_object, relationship)
+    relationship_reflection = relationship_object_reflection(model, relationship.name)
+    relationship_object_class = reflection_object_class(relationship_reflection)
+    relationship_object = repo_object.send(relationship.name)
+    if !relationship_object.nil? &&
+        relationship_object.pid.eql?(relationship.object) &&
+        relationship_object.is_a?(relationship_object_class)
+      VERIFICATION_PASS
+    else
+      VERIFICATION_FAIL
+    end
   end
   
   def relationship_object_reflection(model, relationship_name)
@@ -244,28 +285,32 @@ class BatchObject < ActiveRecord::Base
     return klass
   end
   
-  #def parent_class
-  #  parent_model = nil
-  #  if model
-  #    begin
-  #      reflections = model.constantize.reflections
-  #    rescue NameError
-  #      # nothing to do here except that we can't determine the parent class
-  #    else
-  #      reflections.each do |reflection|
-  #        if (reflection[0] == :collection) || (reflection[0] == :container) || (reflection[0] == :parent)
-  #          parent_model = reflection[1].options[:class_name]
-  #        end
-  #      end
-  #      begin
-  #        parent_klass = parent_model.constantize
-  #      rescue NameError
-  #        # nothing to do here except that we can't return a parent class
-  #      end
-  #    end
-  #    return parent_klass
-  #  end
-  #end
+  def create_preservation_event(event_type, event_outcome, outcome_details, repository_object)
+    event_label = case event_type
+    when PreservationEvent::INGESTION
+      "Object ingestion"
+    when PreservationEvent::VALIDATION
+      "Object ingest validation"
+    end
+    event = PreservationEvent.new(:label => event_label,
+                                  :event_type => event_type,
+                                  :event_date_time => Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT),
+                                  :event_detail => event_detail,
+                                  :event_outcome => event_outcome,
+                                  :event_outcome_detail_note => outcome_details.join("\n"),
+                                  :linking_object_id_type => PreservationEvent::OBJECT,
+                                  :linking_object_id_value => repository_object.internal_uri,
+                                  :for_object => repository_object)
+    event.save
+  end
   
+  def event_detail
+    PRESERVATION_EVENT_DETAIL % {
+      :operation => operation,
+      :batch_id => id,
+      :identifier => identifier,
+      :model => model
+    }
+  end
 
 end

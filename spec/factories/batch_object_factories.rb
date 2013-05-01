@@ -34,6 +34,7 @@ FactoryGirl.define do
     end
     
     trait :is_target_for_collection do
+      model "Target"
       after(:create) do |batch_object|
         FactoryGirl.create(:batch_object_add_target_for_collection, :batch_object => batch_object)
       end
@@ -54,6 +55,10 @@ FactoryGirl.define do
                                               :has_model,
                                               :has_parent,
                                               :with_add_datastreams]
+    
+    factory :ingest_target_object, :traits => [:is_ingest_object,
+                                               :is_target_for_collection,
+                                               :has_identifier]
     
   end
 end
