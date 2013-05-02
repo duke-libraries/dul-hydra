@@ -1,21 +1,14 @@
 class BatchObject < ActiveRecord::Base
-  attr_accessible :identifier, :label, :model, :operation, :pid
+  attr_accessible :identifier, :label, :model, :pid
   belongs_to :batch, :inverse_of => :batch_objects
   has_many :batch_object_datastreams, :inverse_of => :batch_object
   has_many :batch_object_relationships, :inverse_of => :batch_object
   
-  OPERATION_INGEST = "INGEST"
-  OPERATION_UPDATE = "UPDATE"
-  
   VERIFICATION_PASS = "PASS"
   VERIFICATION_FAIL = "FAIL"
   
-  OPERATIONS = [ OPERATION_INGEST, OPERATION_UPDATE ]
-  SUPPORTED_OPERATIONS = [ OPERATION_INGEST ]
-   
   PRESERVATION_EVENT_DETAIL = <<-EOS
     DulHydra version #{DulHydra::VERSION}
-    %{operation}
     Batch object database id: %{batch_id}
     Batch object identifier: %{identifier}
     Model: %{model}
@@ -23,46 +16,14 @@ class BatchObject < ActiveRecord::Base
 
   def validate
     validation = DulHydra::Models::Validation.new
-    validation.errors += validate_operation
-    validation.errors += validate_required_attributes if SUPPORTED_OPERATIONS.include?(operation)
+    validation.errors += validate_required_attributes
     validation.errors += validate_model if model
     validation.errors += validate_datastreams if batch_object_datastreams
     validation.errors += validate_relationships if batch_object_relationships
     return validation
   end
   
-  def process(opts = {})
-    case operation
-    when OPERATION_INGEST
-      repository_object, verified, verifications = ingest(opts)
-    end
-    return [ repository_object, verified, verifications ]
-  end
-  
   private
-  
-  def validate_operation
-    errs = []
-    if operation
-      if OPERATIONS.include?(operation)
-        errs << "Unsupported operation: #{operation}" unless SUPPORTED_OPERATIONS.include?(operation)
-      else
-        errs << "Invalid operation: #{operation}"
-      end
-    else
-      errs << "Missing operation"
-    end    
-    return errs
-  end
-  
-  def validate_required_attributes
-    errs = []
-    case operation
-    when OPERATION_INGEST
-      errs << "Model required for INGEST operation" unless model
-    end
-    return errs
-  end
   
   def validate_model
     errs = []
@@ -119,43 +80,6 @@ class BatchObject < ActiveRecord::Base
     return errs
   end
 
-  def ingest(opts = {})
-    dryrun = opts.fetch(:dryrun, false)
-    repo_object = create_repository_object(dryrun)
-    if !repo_object.nil? && !dryrun
-      ingest_outcome_detail = []
-      ingest_outcome_detail << "Ingested #{model} #{identifier} into #{repo_object.pid}"
-      create_preservation_event(PreservationEvent::INGESTION,
-                                PreservationEvent::SUCCESS,
-                                ingest_outcome_detail,
-                                repo_object)
-      update_attributes(:pid => repo_object.pid)
-      verifications = verify_repository_object
-      verification_outcome_detail = []
-      verified = true
-      verifications.each do |key, value|
-        verification_outcome_detail << "#{key}...#{value}"
-        verified = false if value.eql?(VERIFICATION_FAIL)
-      end
-      create_preservation_event(PreservationEvent::VALIDATION,
-                                verified ? PreservationEvent::SUCCESS : PreservationEvent::FAILURE,
-                                verification_outcome_detail,
-                                repo_object)
-    else
-      verifications = nil
-    end    
-    [ repo_object, verified, verifications ]
-  end
-  
-  def create_repository_object(dryrun)
-    repo_object = model.constantize.new
-    repo_object.label = label if label
-    batch_object_datastreams.each {|d| repo_object = add_datastream(repo_object, d, dryrun)} if batch_object_datastreams
-    batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
-    repo_object.save unless dryrun
-    repo_object
-  end
-  
   def add_datastream(repo_object, datastream, dryrun)
     case datastream[:payload_type]
     when BatchObjectDatastream::PAYLOAD_TYPE_BYTES
@@ -306,7 +230,6 @@ class BatchObject < ActiveRecord::Base
   
   def event_detail
     PRESERVATION_EVENT_DETAIL % {
-      :operation => operation,
       :batch_id => id,
       :identifier => identifier,
       :model => model
