@@ -13,13 +13,15 @@ FactoryGirl.define do
       factory :batch_object_add_digitization_guide_datastream do
         name DulHydra::Datastreams::DIGITIZATION_GUIDE
         payload File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'metadata.xls')
-        payload_type BatchObjectDatastream::PAYLOAD_TYPE_FILENAME        
+        payload_type BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
       end
 
       factory :batch_object_add_content_datastream do
         name DulHydra::Datastreams::CONTENT
         payload File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'id001.tif')
-        payload_type BatchObjectDatastream::PAYLOAD_TYPE_FILENAME        
+        payload_type BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
+        checksum "120ad0814f207c45d968b05f7435034ecfee8ac1a0958cd984a070dad31f66f3"
+        checksum_type BatchObjectDatastream::CHECKSUM_TYPE_SHA256
       end
       
     end

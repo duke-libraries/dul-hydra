@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130502152444) do
+ActiveRecord::Schema.define(:version => 20130502210228) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -21,6 +21,8 @@ ActiveRecord::Schema.define(:version => 20130502152444) do
     t.string   "payload_type"
     t.datetime "created_at",      :null => false
     t.datetime "updated_at",      :null => false
+    t.string   "checksum"
+    t.string   "checksum_type"
   end
 
   create_table "batch_object_relationships", :force => true do |t|

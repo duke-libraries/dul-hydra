@@ -1,5 +1,5 @@
 class BatchObjectDatastream < ActiveRecord::Base
-  attr_accessible :name, :operation, :payload, :payload_type
+  attr_accessible :name, :operation, :payload, :payload_type, :checksum, :checksum_type
   belongs_to :batch_object, :inverse_of => :batch_object_datastreams
   
   OPERATION_ADD = "ADD" # add this datastream to the object -- considered an error if datastream already exists
@@ -11,5 +11,13 @@ class BatchObjectDatastream < ActiveRecord::Base
   PAYLOAD_TYPE_FILENAME = "FILENAME"
   
   PAYLOAD_TYPES = [ PAYLOAD_TYPE_BYTES, PAYLOAD_TYPE_FILENAME ]
+  
+  CHECKSUM_TYPE_MD5 = "MD5"
+  CHECKSUM_TYPE_SHA1 = "SHA-1"
+  CHECKSUM_TYPE_SHA256 = "SHA-256"
+  CHECKSUM_TYPE_SHA384 = "SHA-384"
+  CHECKSUM_TYPE_SHA512 = "SHA-512"
+  
+  CHECKSUM_TYPES = [ CHECKSUM_TYPE_MD5, CHECKSUM_TYPE_SHA1, CHECKSUM_TYPE_SHA256, CHECKSUM_TYPE_SHA384, CHECKSUM_TYPE_SHA512 ]
   
 end

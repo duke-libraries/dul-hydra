@@ -38,17 +38,25 @@ class BatchObject < ActiveRecord::Base
   def validate_datastreams
     errs = []
     batch_object_datastreams.each do |d|
-      unless model.constantize.new.datastreams.keys.include?(d[:name])
-        errs << "Invalid datastream name for #{model}: #{d[:name]}"
+      unless model.constantize.new.datastreams.keys.include?(d.name)
+        errs << "Invalid datastream name for #{model}: #{d.name}"
       end
-      unless BatchObjectDatastream::PAYLOAD_TYPES.include?(d[:payload_type])
-        errs << "Invalid payload_type for #{d[:name]} datastream: #{d[:payload_type]}"
+      unless BatchObjectDatastream::PAYLOAD_TYPES.include?(d.payload_type)
+        errs << "Invalid payload type for #{d.name} datastream: #{d.payload_type}"
       end
-      if d[:payload_type].eql?(BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
-        unless File.readable?(d[:payload])
+      if d.payload_type.eql?(BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
+        unless File.readable?(d.payload)
           errs << "Missing or unreadable file for #{d[:name]} datastream: #{d[:payload]}"
         end
       end
+      if d.checksum && !d.checksum_type
+        errs << "Must specify checksum type if providing checksum for #{d.name} datastream"
+      end
+      if d.checksum_type
+        unless BatchObjectDatastream::CHECKSUM_TYPES.include?(d.checksum_type)      
+          errs << "Invalid checksum type for #{d.name} datastream: #{d.checksum_type}"
+        end
+      end      
     end
     return errs
   end

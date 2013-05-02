@@ -91,7 +91,7 @@ describe IngestBatchObject do
           it_behaves_like "an invalid object"
         end
         context "invalid payload type" do
-          let(:error_message) { "Invalid payload_type for #{object.batch_object_datastreams.first[:name]} datastream: #{object.batch_object_datastreams.first[:payload_type]}" }
+          let(:error_message) { "Invalid payload type for #{object.batch_object_datastreams.first[:name]} datastream: #{object.batch_object_datastreams.first[:payload_type]}" }
           before do
             datastream = object.batch_object_datastreams.first
             datastream.payload_type = "invalid_type"
@@ -104,6 +104,25 @@ describe IngestBatchObject do
           before do
             datastream = object.batch_object_datastreams.last
             datastream.payload = "non_existent_file.xml"
+            datastream.save!
+          end
+          it_behaves_like "an invalid object"
+        end
+        context "checksum without checksum type" do
+          let(:error_message) { "Must specify checksum type if providing checksum for #{object.batch_object_datastreams.first.name} datastream" }
+          before do
+            datastream = object.batch_object_datastreams.first
+            datastream.checksum = "123456"
+            datastream.checksum_type = nil
+            datastream.save!
+          end
+          it_behaves_like "an invalid object"
+        end
+        context "invalid checksum type" do
+          let(:error_message) { "Invalid checksum type for #{object.batch_object_datastreams.first.name} datastream: #{object.batch_object_datastreams.first.checksum_type}" }
+          before do
+            datastream = object.batch_object_datastreams.first
+            datastream.checksum_type = "SHA-INVALID"
             datastream.save!
           end
           it_behaves_like "an invalid object"
