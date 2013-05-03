@@ -7,6 +7,13 @@ module DulHydra::Scripts
     PASS = "PASS"
     FAIL = "FAIL"
     
+    # Options
+    #   :batch_id - required - database id of batch to process
+    #   :log_dir - optional - directory for log file - default is given in DEFAULT_LOG_DIR
+    #   :log_file - optional - filename of log file - default is given in DEFAULT_LOG_FILE
+    #   :dryrun - optional - whether this is a processing dry run or the real deal - default is false
+    #   :skip_validation - optional - whether to skip batch object validation step when processing - default is false
+    #   :ignore_validation_errors - optional - whether to continue processing even if batch object validation errors occur - default is false
     def initialize(opts={})
       begin
         @batch_id = opts.fetch(:batch_id)
@@ -16,6 +23,8 @@ module DulHydra::Scripts
       @log_dir = opts.fetch(:log_dir, DEFAULT_LOG_DIR)
       @log_file = opts.fetch(:log_file, DEFAULT_LOG_FILE)
       @dryrun = opts.fetch(:dryrun, false)
+      @skip_validation = opts.fetch(:skip_validation, false)
+      @ignore_validation_errors = opts.fetch(:ignore_validation_errors, false)
     end
     
     def execute
@@ -25,23 +34,39 @@ module DulHydra::Scripts
       rescue ActiveRecord::RecordNotFound
         @log.error "Unable to find batch with batch_id: #{@batch_id}"
       end
-      process_batch if @batch
+      if @batch
+        initiate_batch_run
+        valid_batch = validate_batch unless @skip_validation
+        if @skip_validation ||
+            @ignore_validation_errors ||
+            valid_batch
+          process_batch
+        end
+        close_batch_run
+      end
     end
     
     private
     
-    def process_batch
-      initiate_batch_run(@batch)
-      @batch.batch_objects.each { |object| process_object(object) }
-      close_batch_run
+    def validate_batch
+      valid = true
+      @batch.batch_objects.each do |object|
+        validation = object.validate
+        valid = false if !validation.valid?
+      end
+      return valid
     end
     
-    def initiate_batch_run(batch)
+    def process_batch
+      @batch.batch_objects.each { |object| process_object(object) }
+    end
+    
+    def initiate_batch_run
       @log.info "Batch size: #{@batch.batch_objects.size}"
       @batch_run = BatchRun.create(:batch => @batch,
                                    :start => DateTime.now,
                                    :status => BatchRun::STATUS_RUNNING,
-                                   :total => batch.batch_objects.size,
+                                   :total => @batch.batch_objects.size,
                                    :version => DulHydra::VERSION)
       @failures = 0
       @successes = 0
@@ -61,24 +86,25 @@ module DulHydra::Scripts
     end
     
     def process_object(object)
-      @log.debug "Pre-validating batch object #{object.identifier} [database id: #{object.id}]"
-      validation = object.validate
-      if validation.valid?
-        @log.debug "Processing object: #{object.identifier}"
-        @log.debug "Operation: #{object.operation}"
-        case object.operation
-        when BatchObject::OPERATION_INGEST
-          repo_object, verified, verifications = object.process(:dryrun => @dryrun)
-          verified ? @successes += 1 : @failures += 1
-        when BatchObject::OPERATION_UPDATE
-          @log.debug "Update not yet implemented"
-          @failures += 1
-        end
-      else
-        @log.error "Batch object VALIDATION ERROR: #{object.identifier} NOT PROCESSED [database id: #{object.id}]"
-        validation.errors.each { |error| log.error error }
-        @failures += 1
-      end      
+      # NEED TO FIX THIS
+      #@log.debug "Pre-validating batch object #{object.identifier} [database id: #{object.id}]"
+      #validation = object.validate
+      #if validation.valid?
+      #  @log.debug "Processing object: #{object.identifier}"
+      #  @log.debug "Operation: #{object.operation}"
+      #  case object.operation
+      #  when BatchObject::OPERATION_INGEST
+      #    repo_object, verified, verifications = object.process(:dryrun => @dryrun)
+      #    verified ? @successes += 1 : @failures += 1
+      #  when BatchObject::OPERATION_UPDATE
+      #    @log.debug "Update not yet implemented"
+      #    @failures += 1
+      #  end
+      #else
+      #  @log.error "Batch object VALIDATION ERROR: #{object.identifier} NOT PROCESSED [database id: #{object.id}]"
+      #  validation.errors.each { |error| log.error error }
+      #  @failures += 1
+      #end      
     end
     
     def config_logger
