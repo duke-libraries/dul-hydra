@@ -38,30 +38,14 @@ FactoryGirl.define do
       FactoryGirl.create(:batch_object_add_content_datastream, :batch_object => batch_object)          
     end      
   end
-    
-  factory :batch_object do
-    
-    #factory :ingest_batch_object, :traits => [:is_ingest_object,
-    #                                          :has_identifier,
-    #                                          :has_admin_policy,
-    #                                          :has_label,
-    #                                          :has_model,
-    #                                          :has_parent,
-    #                                          :with_add_datastreams]
-    #
-    #factory :ingest_target_object, :traits => [:is_ingest_object,
-    #                                           :is_target_for_collection,
-    #                                           :has_identifier]
-    
-  end
-  
+      
   factory :ingest_batch_object do
     has_identifier
-    has_admin_policy
     has_label
     
     factory :generic_ingest_batch_object do
       has_model
+      has_admin_policy
       has_parent
       with_add_datastreams
     end

@@ -130,6 +130,7 @@ class BatchObject < ActiveRecord::Base
       if batch_object_datastreams
         batch_object_datastreams.each do |d|
           verifications["#{d.name} datastream present and not empty"] = verify_datastream(repo_object, d)
+          verifications["#{d.name} external checksum match"] = verify_datastream_external_checksum(repo_object, d) if d.checksum
         end
       end
       if batch_object_relationships
@@ -137,7 +138,8 @@ class BatchObject < ActiveRecord::Base
           verifications["#{r.name} relationship is correct"] = verify_relationship(repo_object, r)
         end
       end
-      
+      preservation_event = repo_object.fixity_check!
+      verifications["Fixity check"] = preservation_event.event_outcome.eql?(PreservationEvent::SUCCESS) ? VERIFICATION_PASS : VERIFICATION_FAIL
     end
     verifications
   end
@@ -166,6 +168,11 @@ class BatchObject < ActiveRecord::Base
     else
       VERIFICATION_FAIL
     end
+  end
+  
+  def verify_datastream_external_checksum(repo_object, datastream)
+    datastreamProfile = repo_object.datastreams[datastream.name].profile
+    datastreamProfile["dsChecksum"].eql?(datastream.checksum) ? VERIFICATION_PASS : VERIFICATION_FAIL
   end
   
   def verify_relationship(repo_object, relationship)
