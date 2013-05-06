@@ -1,5 +1,5 @@
 class BatchObjectDatastream < ActiveRecord::Base
-  attr_accessible :name, :operation, :payload, :payload_type, :checksum, :checksum_type
+  attr_accessible :name, :operation, :payload, :payload_type, :checksum, :checksum_type, :batch_object
   belongs_to :batch_object, :inverse_of => :batch_object_datastreams
   
   OPERATION_ADD = "ADD" # add this datastream to the object -- considered an error if datastream already exists

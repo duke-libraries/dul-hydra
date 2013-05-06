@@ -1,7 +1,13 @@
 class BatchObjectRelationship < ActiveRecord::Base
-  attr_accessible :name, :object, :object_type, :operation
+  attr_accessible :name, :object, :object_type, :operation, :batch_object
   belongs_to :batch_object, :inverse_of => :batch_object_relationships
 
+  RELATIONSHIP_ADMIN_POLICY = "admin_policy"
+  RELATIONSHIP_COLLECTION = "collection"
+  RELATIONSHIP_PARENT = "parent"
+  
+  RELATIONSHIPS = [ RELATIONSHIP_ADMIN_POLICY, RELATIONSHIP_COLLECTION, RELATIONSHIP_PARENT ]
+  
   OPERATION_ADD = "ADD"
   OPERATION_UPDATE = "UPDATE"
   OPERATION_DELETE = "DELETE"

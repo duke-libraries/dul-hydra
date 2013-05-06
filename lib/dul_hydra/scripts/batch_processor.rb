@@ -18,7 +18,7 @@ module DulHydra::Scripts
       begin
         @batch_id = opts.fetch(:batch_id)
       rescue KeyError
-        @log.error "Must specify :batch_id in options; e.g., :batch_id => 2"
+        puts "Must specify :batch_id in options; e.g., :batch_id => 2"
       end
       @log_dir = opts.fetch(:log_dir, DEFAULT_LOG_DIR)
       @log_file = opts.fetch(:log_file, DEFAULT_LOG_FILE)

@@ -1,7 +1,7 @@
 --- !map:HashWithIndifferentAccess
 basepath: placeholder
 model: Target
-adminpolicy: duke-apo:adminPolicy
+admin_policy: duke-apo:adminPolicy
 label: Manifest Label
 collection:
     master: placeholder

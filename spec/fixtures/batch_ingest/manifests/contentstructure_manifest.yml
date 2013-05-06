@@ -1,7 +1,7 @@
 --- !map:HashWithIndifferentAccess
 basepath: placeholder
 model: TestModel
-adminpolicy: duke-apo:adminPolicy
+admin_policy: duke-apo:adminPolicy
 label: Manifest Label
 contentstructure:
     type: generate
