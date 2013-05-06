@@ -2,13 +2,13 @@ require 'spec_helper'
 
   shared_examples "a valid object" do
     it "should be valid" do
-      expect(object.validate.errors).to be_empty
+      expect(object.validate).to be_empty
     end
   end
   
   shared_examples "an invalid object" do
     it "should not be valid" do
-      expect(object.validate.errors).to include(error_message)
+      expect(object.validate).to include(error_message)
     end
   end
   
@@ -18,6 +18,8 @@ require 'spec_helper'
       expect(results.repository_object).to_not be_nil
       expect(results.verified).to be_true
       results.verifications.each { |condition, result| expect(result).to eq(BatchObject::VERIFICATION_PASS) }
+      expect(object.pid).to eq(results.repository_object.pid)
+      expect(object.verified).to be_true
     end
   end
   

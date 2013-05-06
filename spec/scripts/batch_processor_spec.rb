@@ -14,24 +14,26 @@ module DulHydra::Scripts
         batch_obj = batch.batch_objects[index]
         expect(obj).to be_an_instance_of(batch_obj.model.constantize)
         expect(obj.label).to eq(batch_obj.label) if batch_obj.label
-#        expect(obj.admin_policy).to eq(AdminPolicy.find(batch_obj.admin_policy)) if batch_obj.admin_policy
-#        expect(obj.parent).to eq(ActiveFedora::Base.find(batch_obj.parent, :cast => true)) if batch_obj.parent
-#        expect(obj.collection).to eq(Collection.find(batch_obj.target_for)) if batch_obj.target_for
         batch_obj_ds = batch_obj.batch_object_datastreams
-        batch_obj_ds.each { |ds| expect(obj.datastreams[ds.name].content).to_not be_nil }
-        expect(obj.preservation_events.size).to eq(2)
+        batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
+        batch_obj_rs = batch_obj.batch_object_relationships
+        batch_obj_rs.each { |r| expect(obj.send(r.name).pid).to eq(r.object) }
+        expect(obj.preservation_events.size).to eq(3)
         obj.preservation_events.each do |pe|
-          expect([PreservationEvent::INGESTION, PreservationEvent::VALIDATION]).to include(pe.event_type)
+          expect([PreservationEvent::FIXITY_CHECK, PreservationEvent::INGESTION, PreservationEvent::VALIDATION]).to include(pe.event_type)
           expect(pe.event_outcome).to eq(PreservationEvent::SUCCESS)
           expect(pe.linking_object_id_type).to eq(PreservationEvent::OBJECT)
           expect(pe.linking_object_id_value).to eq(obj.internal_uri)
           expect(DateTime.strptime(pe.event_date_time, PreservationEvent::DATE_TIME_FORMAT)).to be_within(3.minutes).of(DateTime.now)
           case pe.event_type
+          when PreservationEvent::FIXITY_CHECK
+            expect(pe.event_outcome_detail_note).to include("\"dsChecksumValid\":true")
+            expect(pe.event_outcome_detail_note).to_not include("\"dsChecksumValid\":false")
           when PreservationEvent::INGESTION
-            expect(pe.event_detail).to include("Identifier: #{batch_obj.identifier}")
+            expect(pe.event_detail).to include("Batch object identifier: #{batch_obj.identifier}")
           when PreservationEvent::VALIDATION
-            expect(pe.event_detail).to include(DulHydra::Scripts::BatchProcessor::PASS)
-            expect(pe.event_detail).to_not include(DulHydra::Scripts::BatchProcessor::FAIL)
+            expect(pe.event_outcome_detail_note).to include(DulHydra::Scripts::BatchProcessor::PASS)
+            expect(pe.event_outcome_detail_note).to_not include(DulHydra::Scripts::BatchProcessor::FAIL)
           end
         end
       end
@@ -52,7 +54,7 @@ module DulHydra::Scripts
     let(:log_dir) { test_dir }
     after { FileUtils.remove_dir test_dir }
     context "ingest" do
-      let(:batch) { FactoryGirl.create(:batch_with_ingest_batch_objects) }
+      let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
       let(:bp) { DulHydra::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
       before { bp.execute }
       after do
@@ -63,11 +65,8 @@ module DulHydra::Scripts
           repo_obj.destroy
         end
       end
-      context "valid batch" do
+      context "successful ingest" do
         it_behaves_like "a successful ingest batch"
-      end
-      context "valid ingest" do
-        
       end
     end
   end  

@@ -37,9 +37,7 @@ module DulHydra::Scripts
       if @batch
         initiate_batch_run
         valid_batch = validate_batch unless @skip_validation
-        if @skip_validation ||
-            @ignore_validation_errors ||
-            valid_batch
+        if @skip_validation || @ignore_validation_errors || valid_batch
           process_batch
         end
         close_batch_run
@@ -51,8 +49,15 @@ module DulHydra::Scripts
     def validate_batch
       valid = true
       @batch.batch_objects.each do |object|
-        validation = object.validate
-        valid = false if !validation.valid?
+        errors = object.validate
+        unless errors.empty?
+          valid = false
+          errors.each do |error|
+            message = "#{object.identifier} [Database ID: #{object.id}] Batch Object Validation Error: #{error}"
+            @details << message
+            @log.error(message)
+          end
+        end
       end
       return valid
     end
@@ -74,9 +79,7 @@ module DulHydra::Scripts
     end
     
     def close_batch_run
-#      details = @ingest_details + @validation_details
-      details = []
-      @batch_run.update_attributes(:details => details.join("\n"),
+      @batch_run.update_attributes(:details => @details.join("\n"),
                                    :failure => @failures,
                                    :outcome => @successes.eql?(@batch_run.total) ? BatchRun::OUTCOME_SUCCESS : BatchRun::OUTCOME_FAILURE,
                                    :status => BatchRun::STATUS_FINISHED,
@@ -86,25 +89,22 @@ module DulHydra::Scripts
     end
     
     def process_object(object)
-      # NEED TO FIX THIS
-      #@log.debug "Pre-validating batch object #{object.identifier} [database id: #{object.id}]"
-      #validation = object.validate
-      #if validation.valid?
-      #  @log.debug "Processing object: #{object.identifier}"
-      #  @log.debug "Operation: #{object.operation}"
-      #  case object.operation
-      #  when BatchObject::OPERATION_INGEST
-      #    repo_object, verified, verifications = object.process(:dryrun => @dryrun)
-      #    verified ? @successes += 1 : @failures += 1
-      #  when BatchObject::OPERATION_UPDATE
-      #    @log.debug "Update not yet implemented"
-      #    @failures += 1
-      #  end
-      #else
-      #  @log.error "Batch object VALIDATION ERROR: #{object.identifier} NOT PROCESSED [database id: #{object.id}]"
-      #  validation.errors.each { |error| log.error error }
-      #  @failures += 1
-      #end      
+      @log.debug "Processing object: #{object.identifier}"
+      results = object.process(:dryrun => @dryrun)
+      if @dryrun
+        @successes += 1 # need to think more about what a dry run failure would be and how to handle it
+        message = "Dry run ingest attempt for #{object.model} #{object.identifier}"
+      else
+        object.verified ? @successes += 1 : @failures += 1
+        if object.pid
+          verification_result = (object.verified ? "Verified" : "VERIFICATION FAILURE")
+          message = "Ingested #{object.model} #{object.identifier} into #{object.pid}...#{verification_result}"
+        else
+          message = "Attempt to ingest #{object.model} #{object.identifier} FAILED"
+        end
+      end
+      @details << message
+      @log.info(message)
     end
     
     def config_logger

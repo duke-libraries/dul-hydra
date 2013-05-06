@@ -32,6 +32,7 @@ class IngestBatchObject < BatchObject
         verification_outcome_detail << "#{key}...#{value}"
         verified = false if value.eql?(VERIFICATION_FAIL)
       end
+      update_attributes(:verified => verified)
       create_preservation_event(PreservationEvent::VALIDATION,
                                 verified ? PreservationEvent::SUCCESS : PreservationEvent::FAILURE,
                                 verification_outcome_detail,

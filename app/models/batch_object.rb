@@ -1,5 +1,5 @@
 class BatchObject < ActiveRecord::Base
-  attr_accessible :identifier, :label, :model, :pid
+  attr_accessible :identifier, :label, :model, :pid, :verified
   belongs_to :batch, :inverse_of => :batch_objects
   has_many :batch_object_datastreams, :inverse_of => :batch_object
   has_many :batch_object_relationships, :inverse_of => :batch_object
@@ -15,12 +15,12 @@ class BatchObject < ActiveRecord::Base
   EOS
 
   def validate
-    validation = DulHydra::Models::Validation.new
-    validation.errors += validate_required_attributes
-    validation.errors += validate_model if model
-    validation.errors += validate_datastreams if batch_object_datastreams
-    validation.errors += validate_relationships if batch_object_relationships
-    return validation
+    errors = []
+    errors += validate_required_attributes
+    errors += validate_model if model
+    errors += validate_datastreams if batch_object_datastreams
+    errors += validate_relationships if batch_object_relationships
+    return errors
   end
   
   private

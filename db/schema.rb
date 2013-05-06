@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130502210228) do
+ActiveRecord::Schema.define(:version => 20130506134449) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -41,9 +41,10 @@ ActiveRecord::Schema.define(:version => 20130502210228) do
     t.string   "model"
     t.string   "label"
     t.string   "pid"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.string   "type"
+    t.boolean  "verified",   :default => false
   end
 
   create_table "batch_runs", :force => true do |t|
