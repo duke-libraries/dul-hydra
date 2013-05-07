@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "preservation_events/index.html.erb" do
+describe "objects/preservation_events.html.erb" do
   subject { page }
   let(:object) { FactoryGirl.create(:test_content_with_fixity_check) }
   before { visit preservation_events_path(object) }

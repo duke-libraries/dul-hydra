@@ -1,5 +1,3 @@
-<h1><%= @title %></h1>
-
 <h3>Preservation Events</h3>
 
 <div class="pagination">
@@ -18,13 +16,12 @@
 	<tbody>
   		<% @document_list.each do |doc| %>
   		<tr>
-  			<td><%= link_to doc.id, catalog_path(doc.id) %></td>
+  			<td><%= link_to doc.id, fcrepo_admin.object_path(doc.id) %></td>
     	 	<td><%= pe_solr_field_value(doc, :event_type) %></td>
     	 	<td><%= pe_solr_field_value(doc, :event_outcome) %></td>
     	 	<td><%= pe_solr_field_value(doc, :event_date_time) %></td>
   		</tr>
-  		<% end %>
-		
+  		<% end %>		
 	</tbody>
 </table>
 

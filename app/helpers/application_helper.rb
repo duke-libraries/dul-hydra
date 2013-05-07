@@ -4,4 +4,8 @@ module ApplicationHelper
     solr_doc[DulHydra::IndexFields::TITLE]
   end
 
+  def has_preservation_events?(object)
+    !object.is_a?(PreservationEvent) && object.is_a?(DulHydra::Models::HasPreservationEvents)
+  end
+
 end

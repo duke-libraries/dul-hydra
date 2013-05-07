@@ -8,17 +8,12 @@ DulHydra::Application.routes.draw do
 
   mount FcrepoAdmin::Engine => '/', :as=> 'fcrepo_admin'
 
-  scope "catalog/:object_id" do
+  scope "objects/:object_id" do
     get 'thumbnail' => 'thumbnail#show'
-    # resources :datastreams, :only => :show do
-    #   member do
-    #     get 'download'
-    #   end
-    # end
-    resources :preservation_events, :only => :index
-    # resources :audit_trail, :only => :index
-    resources :targets, :only => :index
-    resources :children, :only => :index
+  end
+
+  scope 'objects/:id', :module => 'fcrepo_admin/objects' do
+    get 'preservation_events'
   end
   
   resources :export_sets do

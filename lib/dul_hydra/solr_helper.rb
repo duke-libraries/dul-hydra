@@ -7,13 +7,7 @@ module DulHydra::SolrHelper
 
   def preservation_events_filter(solr_params, user_params)
     solr_params[:fq] ||= []
-    solr_params[:fq] << "+#{DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR}:\"info:fedora/#{user_params[:object_id]}\""
-  end
-
-  def targets_filter(solr_params, user_params)
-    solr_params[:fq] ||= []
-    solr_params[:fq] << "+#{DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR}:\"info:fedora/#{user_params[:object_id]}\""
-    solr_params[:sort] = ["#{DulHydra::IndexFields::TITLE} asc"]
+    solr_params[:fq] << "+#{DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR}:\"info:fedora/#{user_params[:id]}\""
   end
 
   def children_filter(solr_params, user_params)
