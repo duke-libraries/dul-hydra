@@ -6,7 +6,8 @@ module DulHydra::Scripts
     DEFAULT_LOG_FILE = "manifest_processor.log"
     
     MANIFEST_KEYS = [ :basepath, :batch, :description, :label, :model, :name, :objects, BatchObjectRelationship::RELATIONSHIPS ].flatten
-    OBJECT_KEYS = [ :identifier, :label, :model, BatchObjectRelationships::RELATIONSHIPS].flatten
+    BATCH_KEYS = [ :description, :id, :name ]
+    OBJECT_KEYS = [ :identifier, :label, :model, BatchObjectDatastreams::DATASTREAMS, BatchObjectRelationships::RELATIONSHIPS].flatten
 
     # Options
     #   :manifest - required - manifest file path and filename
@@ -59,7 +60,33 @@ module DulHydra::Scripts
     end
     
     def create_batch_object_datastreams(manifest_object, batch_object)
-      
+      datastreams = manifest_object[:datastreams] || @manifest[:datastreams]
+      datastreams.each do |datastream|
+        name = datastream
+        operation = BatchObjectDatastream::OPERATION_ADD
+        payload = "" #
+        payload = case
+          # canonical location is @manifest[:basepath] + datastream (name)
+          # canonical filename is batch_object.identifier
+          # canonical extension is ".xml"
+        when manifest_object[datastream].nil?
+          # (manifest datastream location || canonical location) + canonical filename + (manifest datastream extension || canonical extension)
+          location = @manifest[datastream][:location] || @manifest[:basepath] + datastream
+          extension = @manifest[datastream][:extension] || ".xml"
+          location + batch_object.identifier + extension
+        when manifest_object[datastream].start_with?(File::PATH_SEPARATOR)
+          # manifest_object[datastream] contains full path, file name, and extension
+          manifest_object[datastream]
+        else
+          # (manifest datastream location || canonical location) + manifest_object[datastream]
+          location = @manifest[datastream][:location] || @manifest[:basepath] + datastream
+          location + manifest_object[datastream]
+        end
+        payload_type = BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
+        checksum =
+        checksum_type = BatchObjectDatastream::CHECKSUM_TYPE_SHA256
+        batch_object = batch_object
+      end
     end
     
     def create_batch_object_relationships(manifest_object, batch_object)
