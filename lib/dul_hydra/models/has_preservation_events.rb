@@ -25,7 +25,7 @@ module DulHydra::Models
     def last_fixity_check_to_solr
       e = self.fixity_checks.to_a.last
       e ? {
-        solr_sortable_date(:last_fixity_check_on) => e.event_date_time,
+        DulHydra::IndexFields::LAST_FIXITY_CHECK_ON => e.event_date_time,
         DulHydra::IndexFields::LAST_FIXITY_CHECK_OUTCOME => e.event_outcome
       } : {}
     end
@@ -40,7 +40,7 @@ module DulHydra::Models
 
     module ClassMethods
       def find_by_last_fixity_check(before_date=Time.now.utc, limit=100)
-        field = solr_sortable_date(:last_fixity_check_on)
+        field = DulHydra::IndexFields::LAST_FIXITY_CHECK_ON
         solr_date = before_date.respond_to?(:strftime) ? PreservationEvent.to_event_date_time(before_date) : before_date
         all({:sort => "#{field} asc",
               :rows => limit.to_s,
@@ -52,10 +52,6 @@ module DulHydra::Models
 
     def delete_preservation_events
       PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => internal_uri).delete_all
-    end
-
-    def solr_sortable_date(field)
-      Solrizer.default_field_mapper.solr_name(field, :sortable, type: :date)
     end
 
   end
