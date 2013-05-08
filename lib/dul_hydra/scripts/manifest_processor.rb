@@ -5,9 +5,12 @@ module DulHydra::Scripts
     DEFAULT_LOG_DIR = File.join(Rails.root, 'log')
     DEFAULT_LOG_FILE = "manifest_processor.log"
     
-    MANIFEST_KEYS = [ :basepath, :batch, :description, :label, :model, :name, :objects, BatchObjectRelationship::RELATIONSHIPS ].flatten
+    MANIFEST_KEYS = [ :basepath, :batch, :checksum, :description, :label, :model, :name, :objects, BatchObjectRelationship::RELATIONSHIPS ].flatten
     BATCH_KEYS = [ :description, :id, :name ]
+    MANIFEST_CHECKSUM_KEYS = [ :location, :source, :type, :node_xpath, :identifier_element, :type_xpath, :value_xpath ] # if :location, must include :checksum_xpath and :identifier_element
+    MANIFEST_DATASTREAM_KEYS = [ :extension, :location ]
     OBJECT_KEYS = [ :identifier, :label, :model, BatchObjectDatastreams::DATASTREAMS, BatchObjectRelationships::RELATIONSHIPS].flatten
+    OBJECT_CHECKSUM_KEYS = [ :type, :value ]
 
     # Options
     #   :manifest - required - manifest file path and filename
@@ -60,11 +63,13 @@ module DulHydra::Scripts
     end
     
     def create_batch_object_datastreams(manifest_object, batch_object)
+      if @manifest[:checksum]
+        checksums = File.open(@manifest[:checksum][:location]) { |f| Nokogiri::XML(f) }
+      end
       datastreams = manifest_object[:datastreams] || @manifest[:datastreams]
       datastreams.each do |datastream|
         name = datastream
         operation = BatchObjectDatastream::OPERATION_ADD
-        payload = "" #
         payload = case
           # canonical location is @manifest[:basepath] + datastream (name)
           # canonical filename is batch_object.identifier
@@ -83,9 +88,45 @@ module DulHydra::Scripts
           location + manifest_object[datastream]
         end
         payload_type = BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-        checksum =
-        checksum_type = BatchObjectDatastream::CHECKSUM_TYPE_SHA256
+        checksum = case
+        when manifest_object[:checksum][:value]
+          # manifest_object[:checksum][:value]
+          manifest_object[:checksum][:value]
+        when manifest_object[:checksum]
+          # manifest_object[:checksum]
+          manifest_object[:checksum]
+        when checksums
+          # read checksum from XML document
+          node = node_from_document(checksums,
+                                    @manifest[:checksum][:node_xpath],
+                                    @manifest[:checksum][:identifier_element],
+                                    manifest_object[:identifier])
+          text_from_node(node, @manifest[:checksum][:value_xpath])
+        end
+        checksum_type = case
+        when manifest_object[:checksum][:type]
+          # manifest_object[:checksum][:type]
+          manifest_object[:checksum][:type]
+        when checksums
+          # read checksum type from XML document
+          node = node_from_document(checksums,
+                                    @manifest[:checksum][:node_xpath],
+                                    @manifest[:checksum][:identifier_element],
+                                    manifest_object[:identifier])
+          text_from_node(node, @manifest[:checksum][:type_xpath])
+        when @manifest[:checksum][:type]
+          # @manifest[:checksum][:type]
+          @manifest[:checksum][:type]
+        end
         batch_object = batch_object
+        ds = BatchObjectDatastream.create(:name => name,
+                                          :operation => operation,
+                                          :payload => payload,
+                                          :payload_type => payload_type,
+                                          :batch_object => batch_object)
+        ds.checksum = checksum if checksum
+        ds.checksum_type = checksum_type if checksum_type
+        ds.save
       end
     end
     
@@ -115,6 +156,14 @@ module DulHydra::Scripts
       File.open(manifest_file) { |f| YAML::load(f) }
     end
     
+    def text_from_node(node, element_xpath)
+      node.xpath(element_xpath).text()
+    end
+    
+    def node_from_document(document, node_xpath, test_element, test_value)
+      document.xpath("#{xpath}[#{test_element}[text() = '#{test_value}']]")
+    end
+
     def config_logger
       logconfig = Log4r::YamlConfigurator
       logconfig['LOG_DIR'] = @log_dir
