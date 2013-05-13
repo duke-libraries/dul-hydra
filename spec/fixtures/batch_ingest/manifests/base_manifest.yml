@@ -3,8 +3,8 @@ basepath: placeholder
 model: TestModel
 admin_policy: duke-apo:adminPolicy
 label: Manifest Label
-metadata:
-    - descmetadata
+datastreams:
+    - descMetadata
 objects:
     - identifier: id001
     - identifier:
