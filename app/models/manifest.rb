@@ -4,6 +4,7 @@ class Manifest
   BATCH_KEYS = [ :description, :id, :name ]
   MANIFEST_CHECKSUM_KEYS = [ :location, :source, :type, :node_xpath, :identifier_element, :type_xpath, :value_xpath ] # if :location, must include :value_xpath and :identifier_element
   MANIFEST_DATASTREAM_KEYS = [ :extension, :location ]
+  MANIFEST_RELATIONSHIP_KEYS = [ :autoidlength, :id, :pid ]
 
   def initialize(manifest_filepath=nil)
     if manifest_filepath
@@ -122,6 +123,18 @@ class Manifest
     manifest_objects = manifest_hash[:objects]
     manifest_objects.each { |object_hash| objects << ManifestObject.new(object_hash, self) }
     return objects
+  end
+  
+  def relationship_autoidlength(relationship_name)
+    manifest_hash[relationship_name][:autoidlength] if manifest_hash[relationship_name]
+  end
+
+  def relationship_id(relationship_name)  
+    manifest_hash[relationship_name][:id] if manifest_hash[relationship_name]
+  end
+  
+  def relationship_pid(relationship_name)  
+    manifest_hash[relationship_name][:pid] if manifest_hash[relationship_name]
   end
   
 end

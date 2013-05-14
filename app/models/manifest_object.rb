@@ -2,6 +2,7 @@ class ManifestObject
   
   OBJECT_KEYS = [ :identifier, :label, :model, BatchObjectDatastream::DATASTREAMS, BatchObjectRelationship::RELATIONSHIPS].flatten
   OBJECT_CHECKSUM_KEYS = [ :type, :value ]
+  OBJECT_RELATIONSHIP_KEYS = [ :autoidlength, :id, :pid ]
 
   def initialize(object_hash, manifest)
     @object_hash = object_hash
