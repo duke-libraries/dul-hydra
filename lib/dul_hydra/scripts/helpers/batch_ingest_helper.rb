@@ -307,7 +307,7 @@ module DulHydra::Scripts::Helpers
       end
       
       # ingest
-      def write_preservation_event(ingest_object, event_type, event_outcome, details)
+      def write_preservation_event(ingest_object, event_type, event_outcome, details, outcome_details)
         event_label = case event_type
         when PreservationEvent::INGESTION
           "Object ingestion"
@@ -321,6 +321,7 @@ module DulHydra::Scripts::Helpers
                                       :linking_object_id_type => PreservationEvent::OBJECT,
                                       :linking_object_id_value => ingest_object.internal_uri,
                                       :event_detail => details,
+                                      :event_outcome_detail_note => outcome_details,
                                       :for_object => ingest_object)
         event.save
       end

@@ -149,7 +149,8 @@ module DulHydra::Scripts
         end
         ingest_object.save
         master = add_pid_to_master(master, key_identifier(object), ingest_object.pid)
-        write_preservation_event(ingest_object, PreservationEvent::INGESTION, PreservationEvent::SUCCESS, event_details)
+        outcome_details = "Ingested #{model} #{key_identifier(object)} into #{ingest_object.pid}"
+        write_preservation_event(ingest_object, PreservationEvent::INGESTION, PreservationEvent::SUCCESS, event_details, outcome_details)
         log.info "Ingested #{model} #{key_identifier(object)} into #{ingest_object.pid}"
         object_count += 1
       end
@@ -207,6 +208,7 @@ module DulHydra::Scripts
       fail_count = 0;
       objects.each do |object|
         event_details = String.new(event_details_header)
+        outcome_details = String.new
         object_count += 1
         model = object[:model] || manifest[:model]
         repository_object = nil
@@ -217,16 +219,16 @@ module DulHydra::Scripts
         checksum_matches = true
         parent_child_correct = true
         target_collection_correct = true
-        event_details << "Identifier(s): "
+        outcome_details << "Identifier(s): "
         case
         when object[:identifier].is_a?(String)
-          event_details << "#{object[:identifier]}"
+          outcome_details << "#{object[:identifier]}"
         when object[:identifier].is_a?(Array)
-          event_details << "#{object[:identifier].join(",")}"
+          outcome_details << "#{object[:identifier].join(",")}"
         end
-        event_details << "\n"
+        outcome_details << "\n"
         begin
-          event_details << "#{VERIFYING}PID found in master file"
+          outcome_details << "#{VERIFYING}PID found in master file"
           pid = get_pid_from_master(master, key_identifier(object))
           if pid.blank?
             pid_in_master = false
@@ -234,12 +236,12 @@ module DulHydra::Scripts
         rescue
           pid_in_master = false
         end
-        event_details << (pid_in_master ? PASS : FAIL) << "\n"
+        outcome_details << (pid_in_master ? PASS : FAIL) << "\n"
         if !pid.blank?
           if model.blank?
             raise "Missing model for #{key_identifier(object)}"
           end
-          event_details << "#{VERIFYING}#{model} object found in repository"
+          outcome_details << "#{VERIFYING}#{model} object found in repository"
           begin
             repository_object = ActiveFedora::Base.find(pid, :cast => true)
             if repository_object.nil? || !repository_object.conforms_to?(model.constantize)
@@ -248,7 +250,7 @@ module DulHydra::Scripts
           rescue
             object_exists = false
           end
-          event_details << (object_exists ? PASS : FAIL) << "\n"
+          outcome_details << (object_exists ? PASS : FAIL) << "\n"
           if object_exists
             metadata = object_metadata(object, manifest[:metadata])
             expected_datastreams = [ "DC", "RELS-EXT" ]
@@ -262,9 +264,9 @@ module DulHydra::Scripts
               expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME("contentstructure")
             end
             expected_datastreams.flatten.each do |datastream|
-              event_details << "#{VERIFYING}#{datastream} datastream present and not empty"
+              outcome_details << "#{VERIFYING}#{datastream} datastream present and not empty"
               datastream_populated = validate_datastream_populated(datastream, repository_object)
-              event_details << (datastream_populated ? PASS : FAIL) << "\n"
+              outcome_details << (datastream_populated ? PASS : FAIL) << "\n"
               if !datastream_populated
                 datastreams_populated = false
               end
@@ -272,14 +274,14 @@ module DulHydra::Scripts
             preservation_event = repository_object.fixity_check!
             checksum_details = preservation_event.fixity_check_detail
             checksum_details.each do |key, value|
-              event_details << "#{VERIFYING}#{key} datastream internal checksum"
-              event_details << (value["dsChecksumValid"] ? PASS : FAIL) << "\n"
+              outcome_details << "#{VERIFYING}#{key} datastream internal checksum"
+              outcome_details << (value["dsChecksumValid"] ? PASS : FAIL) << "\n"
               datastream_checksums_valid = false unless value["dsChecksumValid"]
             end
             if !checksum_doc.nil?
-              event_details << "#{VERIFYING}content datastream external checksum"
+              outcome_details << "#{VERIFYING}content datastream external checksum"
               checksum_matches = verify_checksum(repository_object, key_identifier(object), checksum_doc)
-              event_details << (checksum_matches ? PASS : FAIL) << "\n"
+              outcome_details << (checksum_matches ? PASS : FAIL) << "\n"
             end
             parentid = object[:parent][:id] if object[:parent]
             parentid = manifest[:parent][:id] if parentid.blank? && manifest[:parent]
@@ -291,7 +293,7 @@ module DulHydra::Scripts
               end
             end
             if !parentid.blank?
-              event_details << "#{VERIFYING}child relationship to identifier #{parentid}"
+              outcome_details << "#{VERIFYING}child relationship to identifier #{parentid}"
               parent_master_path = object[:parent][:master] if object[:parent]
               parent_master_path = manifest[:parent][:master] if parent_master_path.blank? && manifest[:parent]
               parent_master = File.open(parent_master_path) { |f| Nokogiri.XML(f) }
@@ -300,30 +302,30 @@ module DulHydra::Scripts
               if parent.nil? || !parent.pid.eql?(parentpid)
                 parent_child_correct = false
               end
-              event_details << (parent_child_correct ? PASS : FAIL) << "\n"
+              outcome_details << (parent_child_correct ? PASS : FAIL) << "\n"
             end
             if (model == "Target")
               collectionid = object[:collectionid] || manifest[:collectionid]
               if !collectionid.blank?
-                event_details << "#{VERIFYING}target relationship to collection #{collectionid}"
+                outcome_details << "#{VERIFYING}target relationship to collection #{collectionid}"
                 collection = repository_object.collection
                 if collection.nil? || !collection.identifier.include?(collectionid)
                   target_collection_correct = false
                 end
-                event_details << (target_collection_correct ? PASS : FAIL) << "\n"
+                outcome_details << (target_collection_correct ? PASS : FAIL) << "\n"
               end
             end
           end
         end
         object_valid = pid_in_master && object_exists && datastream_checksums_valid && datastreams_populated \
           && checksum_matches && parent_child_correct && target_collection_correct
-        event_details << "Object ingest..." << (object_valid ? "VALIDATES" : "DOES NOT VALIDATE")
+        outcome_details << "Object ingest..." << (object_valid ? "VALIDATES" : "DOES NOT VALIDATE")
         if !object_valid
           ingest_valid = false
         end
         if !repository_object.nil?
           outcome = object_valid ? PreservationEvent::SUCCESS : PreservationEvent::FAILURE
-          write_preservation_event(repository_object, PreservationEvent::VALIDATION, outcome, event_details)
+          write_preservation_event(repository_object, PreservationEvent::VALIDATION, outcome, event_details, outcome_details)
         end
         log.info "Validated #{model} #{key_identifier(object)} in #{pid_in_master ? pid : nil}#{object_valid ? PASS : FAIL}"
         object_valid ? pass_count += 1 : fail_count += 1

@@ -51,6 +51,7 @@ module DulHydra::Scripts
         ingestion_event.linking_object_id_type.should eq(PreservationEvent::OBJECT)
         ingestion_event.linking_object_id_value.should eq(object.internal_uri)
         ingestion_event.event_detail.should include("Identifier(s): #{object.identifier.flatten.join(',')}")
+        ingestion_event.event_outcome_detail_note.should include(object.pid)
       end
     end
     it "should have a ingestion log file" do
@@ -166,17 +167,17 @@ module DulHydra::Scripts
         validation_event.event_outcome.should == outcomes[results[object.identifier.first]]
         validation_event.linking_object_id_type.should eq(PreservationEvent::OBJECT)
         validation_event.linking_object_id_value.should eq(object.internal_uri)
-        validation_event.event_detail.should include("Identifier(s): #{object.identifier.flatten.join(',')}")
+        validation_event.event_outcome_detail_note.should include("Identifier(s): #{object.identifier.flatten.join(',')}")
         case outcomes[results[object.identifier.first]]
         when PreservationEvent::SUCCESS
-          validation_event.event_detail.should include("PASS")
-          validation_event.event_detail.should_not include("FAIL")
-          validation_event.event_detail.should include("VALIDATES")
+          validation_event.event_outcome_detail_note.should include("PASS")
+          validation_event.event_outcome_detail_note.should_not include("FAIL")
+          validation_event.event_outcome_detail_note.should include("VALIDATES")
         when PreservationEvent::FAILURE
-          validation_event.event_detail.should include("FAIL")
-          validation_event.event_detail.should include("DOES NOT VALIDATE")
+          validation_event.event_outcome_detail_note.should include("FAIL")
+          validation_event.event_outcome_detail_note.should include("DOES NOT VALIDATE")
           if !details.blank?
-            validation_event.event_detail.should include(details[object.identifier.first])
+            validation_event.event_outcome_detail_note.should include(details[object.identifier.first])
           end
         end
       end
