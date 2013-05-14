@@ -12,7 +12,8 @@
 <li>
   <%= link_to_unless_current t("fcrepo_admin.object.nav.items.associations"), fcrepo_admin.object_associations_path(object) %>
 </li>
-<% if has_preservation_events? object %>
+<%= object_children_nav_item %>
+<% if object_has_preservation_events? %>
   <li>
     <%= link_to_unless_current t("fcrepo_admin.object.nav.items.preservation_events"), preservation_events_path(object) %>
   </li>

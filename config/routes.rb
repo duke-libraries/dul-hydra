@@ -9,13 +9,11 @@ DulHydra::Application.routes.draw do
   mount FcrepoAdmin::Engine => '/', :as=> 'fcrepo_admin'
 
   scope "objects/:object_id" do
+    get 'children' => 'children#index'
+    get 'preservation_events' => 'preservation_events#index'
     get 'thumbnail' => 'thumbnail#show'
   end
 
-  scope 'objects/:id', :module => 'fcrepo_admin/objects' do
-    get 'preservation_events'
-  end
-  
   resources :export_sets do
     member do
       post 'archive'

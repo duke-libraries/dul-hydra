@@ -1,10 +1,10 @@
 <h3>Preservation Events</h3>
 
+<% unless @document_list.empty? %>
 <div class="pagination">
   <%= render_pagination_info @response %>
 </div>
-
-<table class="table">
+<table class="table table-bordered table-striped table-condensed">
 	<thead>
 		<tr>
 			<th scope="col">PID</th>
@@ -21,10 +21,14 @@
     	 	<td><%= pe_solr_field_value(doc, :event_outcome) %></td>
     	 	<td><%= pe_solr_field_value(doc, :event_date_time) %></td>
   		</tr>
-  		<% end %>		
+  		<% end %>
 	</tbody>
 </table>
-
 <div class="pagination">
   <%= paginate_rsolr_response @response, :theme => 'blacklight' %>
 </div>
+<% else %>
+  <p class="alert alert-info">
+	No preservation events for <%= @object.pid %>.
+  </p>
+<% end %>

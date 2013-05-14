@@ -2,15 +2,15 @@ class ChildrenController < ApplicationController
 
   include Blacklight::SolrHelper
   include DulHydra::SolrHelper
+  include FcrepoAdmin::Controller::ControllerBehavior
+
+  before_filter :load_and_authorize_object
+
+  layout 'fcrepo_admin/objects'
     
   def index
-    response, document = get_solr_response_for_doc_id(params[:object_id])
-    @title = document.get(DulHydra::IndexFields::TITLE)
-    if document[DulHydra::IndexFields::CONTENT_METADATA_PARSED]
-      @content_metadata = document.parsed_content_metadata
-    else
-      self.solr_search_params_logic += [:children_filter]
-      @response, @document_list = get_search_results
+    unless @object.is_a?(DulHydra::Models::HasContentMetadata) && @object.datastreams[DulHydra::Datastreams::CONTENT_METADATA].has_content?
+      redirect_to :controller => 'fcrepo_admin/associations', :action => 'show', :object_id => @object, :id => 'children', :use_route => 'fcrepo_admin'
     end
   end
     
