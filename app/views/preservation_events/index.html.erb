@@ -1,12 +1,10 @@
-<h1><%= @title %></h1>
-
 <h3>Preservation Events</h3>
 
+<% unless @document_list.empty? %>
 <div class="pagination">
   <%= render_pagination_info @response %>
 </div>
-
-<table class="table">
+<table class="table table-bordered table-striped table-condensed">
 	<thead>
 		<tr>
 			<th scope="col">PID</th>
@@ -18,16 +16,19 @@
 	<tbody>
   		<% @document_list.each do |doc| %>
   		<tr>
-  			<td><%= link_to doc.id, catalog_path(doc.id) %></td>
+  			<td><%= link_to doc.id, fcrepo_admin.object_path(doc.id) %></td>
     	 	<td><%= pe_solr_field_value(doc, :event_type) %></td>
     	 	<td><%= pe_solr_field_value(doc, :event_outcome) %></td>
     	 	<td><%= pe_solr_field_value(doc, :event_date_time) %></td>
   		</tr>
   		<% end %>
-		
 	</tbody>
 </table>
-
 <div class="pagination">
   <%= paginate_rsolr_response @response, :theme => 'blacklight' %>
 </div>
+<% else %>
+  <p class="alert alert-info">
+	No preservation events for <%= @object.pid %>.
+  </p>
+<% end %>

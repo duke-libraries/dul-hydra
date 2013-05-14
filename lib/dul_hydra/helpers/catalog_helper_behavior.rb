@@ -44,7 +44,7 @@ module DulHydra::Helpers
         when "pids"
           pid["pid"]
         when "display"
-          "<li>" << link_to(structure_contents_info[pid["pid"]][DulHydra::IndexFields::TITLE], catalog_path(pid["pid"])) << " [" << pid["use"] << "]</li>"
+          "<li>" << link_to(structure_contents_info[pid["pid"]][DulHydra::IndexFields::TITLE], fcrepo_admin.object_path(pid["pid"])) << " [" << pid["use"] << "]</li>"
         end
       end
       collector << "</ul>" if mode.eql?("display")

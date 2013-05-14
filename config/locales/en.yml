@@ -4,3 +4,8 @@ en:
     header_links:
       saved_searches: 'Searches'
       export_sets: 'Exports'
+  fcrepo_admin:
+    object:
+      nav:
+        items:
+          preservation_events: 'Preservation Events'
