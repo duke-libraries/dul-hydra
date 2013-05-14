@@ -1,23 +1,26 @@
 --- !map:HashWithIndifferentAccess
+batch:
+    name: Test Batch
+    description: Description of test batch
 basepath: placeholder
 model: TestFileDatastreams
 admin_policy: duke-apo:adminPolicy
 label: Manifest Label
-metadata:
+datastreams:
     - contentdm
-    - descmetadata
-    - digitizationguide
-    - dpcmetadata
-    - fmpexport
+    - descMetadata
+    - digitizationGuide
+    - dpcMetadata
+    - fmpExport
     - jhove
-    - marcxml
-    - tripodmets
+    - marcXML
+    - tripodMets
 content:
     extension: .tif
     location: spec/fixtures/batch_ingest/miscellaneous/
 objects:
     - identifier: id001
       contentdm: metadata.xml
-      digitizationguide: metadata.xls
-      marcxml: metadata.xml
+      digitizationGuide: metadata.xls
+      marcXML: metadata.xml
     

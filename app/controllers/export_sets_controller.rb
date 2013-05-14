@@ -1,6 +1,6 @@
 class ExportSetsController < ApplicationController
   
-  include Blacklight::SolrHelper
+  include Blacklight::Catalog
   
   def index
     # XXX authz

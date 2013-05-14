@@ -1,0 +1,25 @@
+<li>
+  <%= link_to_unless_current t("fcrepo_admin.object.nav.items.summary"), fcrepo_admin.object_path(object) %>
+</li>
+<li>
+  <%= link_to_unless_current t("fcrepo_admin.object.nav.items.datastreams"), fcrepo_admin.object_datastreams_path(object) %>
+</li>
+<% if object_has_permissions? && can?(:permissions, object) %>
+  <li>
+    <%= link_to_unless_current t("fcrepo_admin.object.nav.items.permissions"), fcrepo_admin.permissions_object_path(object) %>
+  </li>
+<% end %>
+<li>
+  <%= link_to_unless_current t("fcrepo_admin.object.nav.items.associations"), fcrepo_admin.object_associations_path(object) %>
+</li>
+<%= object_children_nav_item %>
+<% if object_has_preservation_events? %>
+  <li>
+    <%= link_to_unless_current t("fcrepo_admin.object.nav.items.preservation_events"), preservation_events_path(object) %>
+  </li>
+<% end %>
+<% if object_is_auditable? && can?(:audit_trail, object) %>
+  <li>
+	<%= link_to_unless_current t("fcrepo_admin.object.nav.items.audit_trail"), fcrepo_admin.audit_trail_object_path(object) %>
+  </li>
+<% end %>

@@ -28,7 +28,7 @@ module DulHydra::Scripts
         manifest.objects.each { |object| process_object(object) }
       rescue Exception => e
         @log.error(e.message)
-        @log.debug(e.backtrace.inspect)
+        @log.debug(e.backtrace)
       end
     end
     
@@ -63,14 +63,14 @@ module DulHydra::Scripts
     
     def create_batch_object_relationships(manifest_object, batch_object)
       BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
-        relationship_object = manifest_object[relationship] || @manifest[relationship]
-        if relationship_object
-          BatchObjectRelationship.create(:name => relationship,
-                                         :object => relationship_object,
-                                         :object_type => BatchObjectRelationship::OBJECT_TYPE_PID,
-                                         :operation => BatchObjectRelationship::OPERATION_ADD,
-                                         :batch_object => batch_object)
-        end
+        #relationship_object = manifest_object.relationship[relationship] || @manifest[relationship]
+        #if relationship_object
+        #  BatchObjectRelationship.create(:name => relationship,
+        #                                 :object => relationship_object,
+        #                                 :object_type => BatchObjectRelationship::OBJECT_TYPE_PID,
+        #                                 :operation => BatchObjectRelationship::OPERATION_ADD,
+        #                                 :batch_object => batch_object)
+        #end
       end
     end
     

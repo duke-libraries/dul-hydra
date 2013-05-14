@@ -30,7 +30,7 @@ class ManifestObject
   end
   
   def checksum?
-    @object_hash[:checksum] || @manifest[:checksum]
+    @object_hash[:checksum] || @manifest.checksums?
   end
 
   def checksum_type
@@ -62,12 +62,12 @@ class ManifestObject
       extension = @manifest.datastream_extension(datastream_name) || ".xml"
       File.join(location, key_identifier + extension)
     when datastream.start_with?(File::PATH_SEPARATOR)
-      # manifest_object[datastream] contains full path, file name, and extension
+      # datastream contains full path, file name, and extension
       datastream
     else
-      # (manifest datastream location || canonical location) + manifest_object[datastream]
+      # (manifest datastream location || canonical location) + datastream
       location = @manifest.datastream_location(datastream) || File.join(@manifest.basepath, datastream_name)
-      File.join(location, manifest_object[datastream])
+      File.join(location, datastream)
     end
   end
   

@@ -4,10 +4,11 @@ gem 'rails', '~> 3.2.11'
 
 gem 'sqlite3'
 gem 'hydra-head', '~> 6.1.0'
-gem 'blacklight', '~> 4.0.1'
+gem 'blacklight', '~> 4.2.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise'
+gem 'fcrepo_admin', '0.4.1'
 
 gem 'log4r'
 
@@ -22,7 +23,6 @@ gem 'rubyzip'
 gem 'paperclip', '~> 3.0'
 
 # Image manipulation
-#gem 'rmagick'
 gem 'mini_magick'
 
 group :development, :test do
