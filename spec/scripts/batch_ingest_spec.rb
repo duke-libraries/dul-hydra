@@ -67,7 +67,7 @@ module DulHydra::Scripts
     let(:expected_content_label) { "Content file for this object" }
     let(:expected_contentdm_label) { "CONTENTdm Data for this object" }
     let(:expected_digitization_guide_label) { "Digitization Guide Data for this object" }
-    let(:expected_dpc_metadata_label) { "DPC Metadata Data for this object" }
+    let(:expected_dpc_metadata_label) { "DPC Metadata for this object" }
     let(:expected_fmp_export_label) { "FileMakerPro Export Data for this object" }
     let(:expected_jhove_label) { "JHOVE Data for this object" }
     let(:expected_marc_xml_label) { "Aleph MarcXML Data for this object" }

@@ -4,6 +4,8 @@
 #
 class AdminPolicy < Hydra::AdminPolicy
 
+  include ActiveFedora::Auditable
+
   delegate :default_license_title, :to => 'defaultRights', :at => [:license, :title], :unique => true
   delegate :default_license_description, :to => 'defaultRights', :at => [:license, :description], :unique => true
   delegate :default_license_url, :to => 'defaultRights', :at => [:license, :url], :unique => true
