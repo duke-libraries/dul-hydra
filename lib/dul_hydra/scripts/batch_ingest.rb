@@ -120,6 +120,7 @@ module DulHydra::Scripts
           ingest_object.generate_thumbnail!
           event_details << "Content file: #{filename}\n"
         end
+        parentid = nil # reset to nil for current object
         parentid = object[:parent][:id] if object[:parent]
         parentid = manifest[:parent][:id] if parentid.blank? && manifest[:parent]
         if parentid.blank?
@@ -137,6 +138,7 @@ module DulHydra::Scripts
           ingest_object = set_parent(ingest_object, :pid, parentpid)
           event_details << "Parent id: #{parentid}\n"
         end
+        collectionid = nil # reset to nil for current object
         collectionid = object[:collection][:id] if object[:collection]
         collectionid = manifest[:collection][:id] if collectionid.blank? && manifest[:collection]
         if !collectionid.blank?
@@ -283,6 +285,7 @@ module DulHydra::Scripts
               checksum_matches = verify_checksum(repository_object, key_identifier(object), checksum_doc)
               outcome_details << (checksum_matches ? PASS : FAIL) << "\n"
             end
+            parentid = nil # reset to nil for current object
             parentid = object[:parent][:id] if object[:parent]
             parentid = manifest[:parent][:id] if parentid.blank? && manifest[:parent]
             if parentid.blank?
@@ -304,16 +307,20 @@ module DulHydra::Scripts
               end
               outcome_details << (parent_child_correct ? PASS : FAIL) << "\n"
             end
-            if (model == "Target")
-              collectionid = object[:collectionid] || manifest[:collectionid]
-              if !collectionid.blank?
-                outcome_details << "#{VERIFYING}target relationship to collection #{collectionid}"
-                collection = repository_object.collection
-                if collection.nil? || !collection.identifier.include?(collectionid)
-                  target_collection_correct = false
-                end
-                outcome_details << (target_collection_correct ? PASS : FAIL) << "\n"
+            collectionid = nil # reset to nil for current object
+            collectionid = object[:collection][:id] if object[:collection]
+            collectionid = manifest[:collection][:id] if collectionid.blank? && manifest[:collection]
+            if !collectionid.blank?
+              outcome_details << "#{VERIFYING}target relationship to collection #{collectionid}"
+              collection_master_path = object[:collection][:master] if object[:collection]
+              collection_master_path = manifest[:collection][:master] if collection_master_path.blank? && manifest[:collection]
+              collection_master = File.open(collection_master_path) { |f| Nokogiri::XML(f) }
+              collectionpid = get_pid_from_master(collection_master, collectionid)
+              collection = repository_object.collection
+              if collection.nil? || !collection.pid.eql?(collectionpid)
+                target_collection_correct = false
               end
+              outcome_details << (target_collection_correct ? PASS : FAIL) << "\n"
             end
           end
         end
