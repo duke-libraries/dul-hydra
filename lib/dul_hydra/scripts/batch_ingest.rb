@@ -258,10 +258,10 @@ module DulHydra::Scripts
               expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME[m.downcase]
             end
             if !object[:content].blank? || !manifest[:content].blank?
-              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME("content")
+              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME["content"]
             end
             if !object[:contentstructure].blank? || !manifest[:contentstructure].blank?
-              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME("contentstructure")
+              expected_datastreams << DATA_TYPE_TO_DATASTREAM_NAME["contentstructure"]
             end
             expected_datastreams.flatten.each do |datastream|
               outcome_details << "#{VERIFYING}#{datastream} datastream present and not empty"
