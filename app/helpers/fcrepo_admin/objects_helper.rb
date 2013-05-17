@@ -12,10 +12,12 @@ module FcrepoAdmin
       solr_doc.get(DulHydra::IndexFields.const_get(field.to_s.upcase))
     end
 
-    def custom_object_context_nav_item(item)
+    def custom_object_nav_item(item)
       case
       when item == :preservation_events
-        link_to_unless_current t("fcrepo_admin.object.nav.items.preservation_events"), preservation_events_path(@object)
+        if @object.has_preservation_events?
+          link_to_unless_current t("fcrepo_admin.object.nav.items.preservation_events"), preservation_events_path(@object)
+        end
       end
     end
 
