@@ -1,8 +1,8 @@
 module DulHydra
   class Application < Rails::Application
     config.before_initialize do
-      logger.debug "Initializing DulHydra ..."
-      FcrepoAdmin.object_context_nav_items = [:summary, :datastreams, :permissions, :associations, :preservation_events, :audit_trail]
+      #FcrepoAdmin.read_only = true
+      FcrepoAdmin.object_nav_items = [:pid, :summary, :datastreams, :permissions, :associations, :preservation_events, :audit_trail]
     end
   end
 end
