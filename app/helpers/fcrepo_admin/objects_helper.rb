@@ -25,5 +25,13 @@ module FcrepoAdmin
       end
     end
 
+    def object_title
+      if @object.respond_to?(:title_display)
+        @object.title_display
+      else
+        @object.title
+      end
+    end
+    
   end
 end
