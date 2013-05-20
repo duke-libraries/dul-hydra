@@ -18,6 +18,12 @@ module FcrepoAdmin
 
     def custom_object_nav_item(item)
       case
+      when item == :children
+        if @object.has_content_metadata?
+          link_to_unless_current "Children", children_path(@object)
+        elsif @object.has_children?
+          link_to_unless_current "Children", fcrepo_admin.object_association_path(@object, 'children')
+        end
       when item == :preservation_events
         if @object.has_preservation_events?
           link_to_unless_current t("fcrepo_admin.object.nav.items.preservation_events"), preservation_events_path(@object)
