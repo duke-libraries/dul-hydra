@@ -14,6 +14,10 @@ module FcrepoAdmin
 
     def custom_object_nav_item(item)
       case
+      when item == :bookmark
+        if current_user
+          render :partial => 'fcrepo_admin/catalog/bookmark_control', :locals => {:object => @object}
+        end
       when item == :preservation_events
         if @object.has_preservation_events?
           link_to_unless_current t("fcrepo_admin.object.nav.items.preservation_events"), preservation_events_path(@object)
