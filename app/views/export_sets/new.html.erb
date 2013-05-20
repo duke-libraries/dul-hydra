@@ -1,24 +1,26 @@
 <h1>New Export Set</h1>
 
-<%= form_for @export_set do |f| %>
-  <%= f.label :title %>
-  <%= f.text_field :title %>
-  <p>Select content-bearing objects from your bookmarks to export:</p>
-  <table class="table">
-    <thead>
-      <tr>
-		<th scope="col">#</th>
-		<%= render :partial => 'object_metadata_labels' %>
-      </tr>
-    </thead>
-    <tbody>
-      <% @document_list.each do |doc| %>
-      <tr>
-		<td><%= check_box_tag 'export_set[pids][]', doc.id, true %></td>
-		<%= render :partial => 'object_metadata_values', :locals => {:doc => doc} %>
-      </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <%= f.submit :id => 'export_set_submit_button' %>
+<% unless @document_list.empty? %>
+  <%= form_for @export_set do |f| %>
+    <%= f.label :title %>
+    <%= f.text_field :title %>
+    <p>Select content-bearing objects from your bookmarks to export:</p>
+	<table class="table">
+      <thead>
+		<tr>
+		  <th scope="col">#</th>
+		  <%= render :partial => 'object_metadata_labels' %>
+		</tr>
+      </thead>
+      <tbody>
+		<% @document_list.each do |doc| %>
+		<tr>
+		  <td><%= check_box_tag 'export_set[pids][]', doc.id, true %></td>
+		  <%= render :partial => 'object_metadata_values', :locals => {:doc => doc} %>
+		</tr>
+		<% end %>
+      </tbody>
+	</table>
+	<%= f.submit :id => 'export_set_submit_button' %>
+  <% end %>
 <% end %>
