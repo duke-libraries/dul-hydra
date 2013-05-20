@@ -16,9 +16,6 @@ module DulHydra::Scripts::Helpers
     ACTIVE_FEDORA_MODEL_PREFIX = "afmodel:"
     GENERATE = "generate"
     PROVIDED = "provided"
-    JHOVE_DATE_XPATH = "/xmlns:jhove/xmlns:date"
-    JHOVE_SPLIT_XPATH = "/xmlns:jhove/xmlns:repInfo"
-    JHOVE_URI_ATTRIBUTE = "uri"
     CONTENT_FILE_TYPES = Set[:pdf, :tif]
     DESC_METADATA_GENERATION_SOURCES = Set[:contentdm, :digitizationguide, :marcxml, :tripodmets]
     CONTENTDM_TO_DESC_METADATA_XSLT_FILEPATH = File.join(Rails.root, 'lib', 'assets', 'xslt', 'CONTENTdm2QDC.xsl')
@@ -37,7 +34,6 @@ module DulHydra::Scripts::Helpers
       "digitizationguide" => DulHydra::Datastreams::DIGITIZATION_GUIDE,
       "dpcmetadata" => DulHydra::Datastreams::DPC_METADATA,
       "fmpexport" => DulHydra::Datastreams::FMP_EXPORT,
-      "jhove" => DulHydra::Datastreams::JHOVE,
       "marcxml" => DulHydra::Datastreams::MARCXML,
       "tripodmets" => DulHydra::Datastreams::TRIPOD_METS
     }

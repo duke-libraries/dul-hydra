@@ -69,7 +69,6 @@ module DulHydra::Scripts
     let(:expected_digitization_guide_label) { "Digitization Guide Data for this object" }
     let(:expected_dpc_metadata_label) { "DPC Metadata for this object" }
     let(:expected_fmp_export_label) { "FileMakerPro Export Data for this object" }
-    let(:expected_jhove_label) { "JHOVE Data for this object" }
     let(:expected_marc_xml_label) { "Aleph MarcXML Data for this object" }
     let(:expected_tripod_mets_label) { "Tripod METS Data for this object" }
     it "should have the appropriate datastreams" do
@@ -84,8 +83,6 @@ module DulHydra::Scripts
         FileUtils.compare_stream(StringIO.new(object.dpcMetadata.content), StringIO.new(xml_file)).should be_true
         object.fmpExport.label.should eq(expected_fmp_export_label)
         FileUtils.compare_stream(StringIO.new(object.fmpExport.content), StringIO.new(xml_file)).should be_true
-        object.jhove.label.should eq(expected_jhove_label)
-        FileUtils.compare_stream(StringIO.new(object.jhove.content), StringIO.new(xml_file)).should be_true
         object.marcXML.label.should eq(expected_marc_xml_label)
         FileUtils.compare_stream(StringIO.new(object.marcXML.content), StringIO.new(xml_file)).should be_true
         object.tripodMets.label.should eq(expected_tripod_mets_label)
@@ -316,14 +313,12 @@ module DulHydra::Scripts
           FileUtils.mkdir "#{@ingestable_dir}/digitizationguide"
           FileUtils.mkdir "#{@ingestable_dir}/dpcmetadata"
           FileUtils.mkdir "#{@ingestable_dir}/fmpexport"
-          FileUtils.mkdir "#{@ingestable_dir}/jhove"
           FileUtils.mkdir "#{@ingestable_dir}/marcxml"
           FileUtils.mkdir "#{@ingestable_dir}/tripodmets"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/contentdm/"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xls", "#{@ingestable_dir}/digitizationguide/"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/dpcmetadata/id001.xml"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/fmpexport/id001.xml"
-          FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/jhove/id001.xml"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/marcxml/"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/miscellaneous/metadata.xml", "#{@ingestable_dir}/tripodmets/id001.xml"
           FileUtils.cp "#{FIXTURES_BATCH_INGEST}/manifests/manifest_with_files.yml", "#{@manifest_dir}/manifest.yml"

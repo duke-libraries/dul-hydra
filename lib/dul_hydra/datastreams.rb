@@ -9,7 +9,6 @@ module DulHydra::Datastreams
   DPC_METADATA = "dpcMetadata"
   EVENT_METADATA = "eventMetadata"
   FMP_EXPORT = "fmpExport"
-  JHOVE = "jhove"
   MARCXML = "marcXML"
   RELS_EXT = "RELS-EXT"
   RIGHTS_METADATA = "rightsMetadata"
