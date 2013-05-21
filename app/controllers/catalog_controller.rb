@@ -73,10 +73,10 @@ class CatalogController < ApplicationController
     config.add_show_field 'id', :label => 'PID:'
     #config.add_show_field 'title_t', :label => 'Title:' 
     config.add_show_field DulHydra::IndexFields::IDENTIFIER, :label => 'Identifier:'
-    config.add_show_field DulHydra::IndexFields::IS_PART_OF, :label => 'Part of:', :helper_method => :internal_uri_to_link
-    config.add_show_field DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION, :label => 'Member of Collection:', :helper_method => :internal_uri_to_link
-    config.add_show_field DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR, :label => 'Target for:', :helper_method => :internal_uri_to_link
-    config.add_show_field DulHydra::IndexFields::IS_GOVERNED_BY, :label => 'Admin Policy:', :helper_method => :internal_uri_to_link
+    #config.add_show_field DulHydra::IndexFields::IS_PART_OF, :label => 'Part of:', :helper_method => :internal_uri_to_link
+    #config.add_show_field DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION, :label => 'Member of Collection:', :helper_method => :internal_uri_to_link
+    #config.add_show_field DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR, :label => 'Target for:', :helper_method => :internal_uri_to_link
+    #config.add_show_field DulHydra::IndexFields::IS_GOVERNED_BY, :label => 'Admin Policy:', :helper_method => :internal_uri_to_link
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
