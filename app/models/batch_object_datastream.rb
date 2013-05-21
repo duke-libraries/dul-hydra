@@ -9,7 +9,6 @@ class BatchObjectDatastream < ActiveRecord::Base
                   DulHydra::Datastreams::DIGITIZATION_GUIDE,
                   DulHydra::Datastreams::DPC_METADATA,
                   DulHydra::Datastreams::FMP_EXPORT,
-                  DulHydra::Datastreams::JHOVE,
                   DulHydra::Datastreams::MARCXML,
                   DulHydra::Datastreams::RIGHTS_METADATA,
                   DulHydra::Datastreams::TRIPOD_METS ]

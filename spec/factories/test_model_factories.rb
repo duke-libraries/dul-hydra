@@ -22,7 +22,6 @@ class TestFileDatastreams < TestContentThumbnail
   include DulHydra::Models::HasDigitizationGuide
   include DulHydra::Models::HasDPCMetadata
   include DulHydra::Models::HasFMPExport
-  include DulHydra::Models::HasJhove
   include DulHydra::Models::HasMarcXML
   include DulHydra::Models::HasTripodMets
 end
@@ -37,7 +36,6 @@ class TestModelOmnibus < TestModel
   include DulHydra::Models::HasDigitizationGuide
   include DulHydra::Models::HasDPCMetadata
   include DulHydra::Models::HasFMPExport
-  include DulHydra::Models::HasJhove
   include DulHydra::Models::HasMarcXML
   include DulHydra::Models::HasTripodMets
   include DulHydra::Models::HasContent

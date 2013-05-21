@@ -1,8 +1,8 @@
 class Manifest
   
-  MANIFEST_KEYS = [ :basepath, :batch, :checksum, :description, :label, :model, :name, :objects, BatchObjectRelationship::RELATIONSHIPS ].flatten
+  MANIFEST_KEYS = [ :basepath, :batch, :checksum, :description, :label, :model, :name, :objects, BatchObjectDatastream::DATASTREAMS, BatchObjectRelationship::RELATIONSHIPS ].flatten
   BATCH_KEYS = [ :description, :id, :name ]
-  MANIFEST_CHECKSUM_KEYS = [ :location, :source, :type, :node_xpath, :identifier_element, :type_xpath, :value_xpath ] # if :location, must include :value_xpath and :identifier_element
+  MANIFEST_CHECKSUM_KEYS = [ :location, :source, :type, :node_xpath, :identifier_element, :type_xpath, :value_xpath ]
   MANIFEST_DATASTREAM_KEYS = [ :extension, :location ]
   MANIFEST_RELATIONSHIP_KEYS = [ :autoidlength, :id, :pid ]
 
@@ -125,16 +125,28 @@ class Manifest
     return objects
   end
   
+  def has_relationship?(relationship_name)
+    manifest_hash[relationship_name] ? true : false
+  end
+  
   def relationship_autoidlength(relationship_name)
-    manifest_hash[relationship_name][:autoidlength] if manifest_hash[relationship_name]
+    manifest_hash[relationship_name][:autoidlength] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
   end
 
   def relationship_id(relationship_name)  
-    manifest_hash[relationship_name][:id] if manifest_hash[relationship_name]
+    manifest_hash[relationship_name][:id] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
   end
   
-  def relationship_pid(relationship_name)  
-    manifest_hash[relationship_name][:pid] if manifest_hash[relationship_name]
+  def relationship_pid(relationship_name)
+    if manifest_hash[relationship_name]
+      if manifest_hash[relationship_name].is_a?(String)
+        manifest_hash[relationship_name]
+      else
+        if manifest_hash[relationship_name][:pid]
+          manifest_hash[relationship_name][:pid]        
+        end
+      end
+    end
   end
   
 end

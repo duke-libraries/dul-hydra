@@ -4,3 +4,6 @@
 	min-width: 200px;
 	padding-bottom: 0;
 }
+form.bookmark_toggle {
+	display: inline;
+}

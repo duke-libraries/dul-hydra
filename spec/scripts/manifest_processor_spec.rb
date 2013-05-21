@@ -22,16 +22,42 @@ module DulHydra::Scripts
         expect(datastream.payload_type).to eq(BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
         expect(datastream.batch_object).to eq(batch_object)
         case datastream.name
+        when DulHydra::Datastreams::CONTENT
+          expect(datastream.payload).to eq("spec/fixtures/batch_ingest/miscellaneous/id001.tif")
+          expect(datastream.checksum).to eq("120ad0814f207c45d968b05f7435034ecfee8ac1a0958cd984a070dad31f66f3")
+          expect(datastream.checksum_type).to eq("SHA-256")
         when DulHydra::Datastreams::CONTENTDM
           expect(datastream.payload).to eq("placeholder/contentdm/metadata.xml")
           expect(datastream.checksum).to be_nil
         when DulHydra::Datastreams::DESC_METADATA
+          expect(datastream.payload).to eq("placeholder/descMetadata/id001.xml")
+          expect(datastream.checksum).to be_nil          
         when DulHydra::Datastreams::DIGITIZATION_GUIDE
+          expect(datastream.payload).to eq("placeholder/digitizationGuide/metadata.xls")
+          expect(datastream.checksum).to be_nil          
         when DulHydra::Datastreams::DPC_METADATA
+          expect(datastream.payload).to eq("placeholder/dpcMetadata/id001.xml")
+          expect(datastream.checksum).to be_nil          
         when DulHydra::Datastreams::FMP_EXPORT
-        when DulHydra::Datastreams::JHOVE
+          expect(datastream.payload).to eq("placeholder/fmpExport/id001.xml")
+          expect(datastream.checksum).to be_nil          
         when DulHydra::Datastreams::MARCXML
+          expect(datastream.payload).to eq("placeholder/marcXML/metadata.xml")
+          expect(datastream.checksum).to be_nil
         when DulHydra::Datastreams::TRIPOD_METS
+          expect(datastream.payload).to eq("placeholder/tripodMets/id001.xml")
+          expect(datastream.checksum).to be_nil          
+        end
+      end
+      expect(batch_object_relationships.size).to eq(2)
+      batch_object_relationships.each do |relationship|
+        expect(relationship.operation).to eq(BatchObjectRelationship::OPERATION_ADD)
+        expect(relationship.object_type).to eq(BatchObjectRelationship::OBJECT_TYPE_PID)
+        case relationship.name
+        when BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY
+          expect(relationship.object).to eq("duke-apo:adminPolicy")
+        when BatchObjectRelationship::RELATIONSHIP_PARENT
+          expect(relationship.object).to eq(parent_batch_object.pid)
         end
       end
     end
@@ -43,6 +69,7 @@ module DulHydra::Scripts
     after { FileUtils.remove_dir test_dir }
     context "process" do
       let(:manifest_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml') }
+      let!(:parent_batch_object) { BatchObject.create(:identifier => "id0", :pid=> "test:1234") }
       let(:mp) { DulHydra::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir) }
       before { mp.execute }
       context "successful processing run" do
