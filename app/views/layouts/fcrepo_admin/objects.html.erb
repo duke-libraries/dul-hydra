@@ -1,0 +1,9 @@
+<% content_for :main do %>
+  <%= render_bookmark_control %>
+  <h1><%= object_title %></h1>
+  <%= yield %>
+<% end %>
+<% content_for :sidebar do %>
+  <%= object_nav %>
+<% end %>
+<%= render :template => 'layouts/fcrepo_admin/default' %>

@@ -55,25 +55,33 @@ module DulHydra::Scripts
                                           :payload => payload,
                                           :payload_type => payload_type,
                                           :batch_object => batch_object)
-        ds.checksum = manifest_object.checksum if manifest_object.checksum?
-        ds.checksum_type = manifest_object.checksum_type if manifest_object.checksum_type?
+        # For now, we assume that the only datastream for which we might have a checksum
+        # in the DulHydra::Datastreams::CONTENT datastream
+        if datastream.eql?(DulHydra::Datastreams::CONTENT)
+          ds.checksum = manifest_object.checksum if manifest_object.checksum?
+          ds.checksum_type = manifest_object.checksum_type if manifest_object.checksum_type?
+        end
         ds.save
       end
     end
     
     def create_batch_object_relationships(manifest_object, batch_object)
       BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
-        #relationship_object = manifest_object.relationship[relationship] || @manifest[relationship]
-        #if relationship_object
-        #  BatchObjectRelationship.create(:name => relationship,
-        #                                 :object => relationship_object,
-        #                                 :object_type => BatchObjectRelationship::OBJECT_TYPE_PID,
-        #                                 :operation => BatchObjectRelationship::OPERATION_ADD,
-        #                                 :batch_object => batch_object)
-        #end
+        if manifest_object.has_relationship?(relationship)
+          relationship_object_pid = manifest_object.relationship_pid(relationship)
+          if relationship_object_pid
+            BatchObjectRelationship.create(:name => relationship,
+                                           :object => manifest_object.relationship_pid(relationship),
+                                           :object_type => BatchObjectRelationship::OBJECT_TYPE_PID,
+                                           :operation => BatchObjectRelationship::OPERATION_ADD,
+                                           :batch_object => batch_object)
+          else
+            @log.error("Could not create #{relationship} for #{manifest_object.key_identifier}")
+            @log.error("Could not find pid for relationship object")
+          end
+        end
       end
     end
-    
 
     def config_logger
       logconfig = Log4r::YamlConfigurator

@@ -1,0 +1,20 @@
+<% if current_user %>
+<div class="pull-right">
+<!-- <i class="icon-bookmark"></i> -->
+<%- existing_bookmark = current_user.existing_bookmark_for(object.pid) -%>
+<%- 
+  # Note these two forms are pretty similar but for different :methods, classes, and labels. 
+  # but it was simpler to leave them seperate instead of DRYing them, got confusing trying that.
+  # the data-doc-id attribute is used by our JS that converts to a checkbox/label.
+-%>  
+<%- unless existing_bookmark -%>
+  <%= form_tag( bookmark_path( object ), :method => :put, :class => "bookmark_toggle", "data-doc-id" => object.pid ) do -%>   
+    <%= submit_tag(t('blacklight.bookmarks.add.button'), :id => "bookmark_toggle_#{object.pid.parameterize}", :class => "bookmark_add") -%>
+  <% end %>
+<%- else -%>
+  <%= form_tag( bookmark_path( object ), :method => :delete, :class => "bookmark_toggle", "data-doc-id" => object.pid ) do -%>  
+    <%= submit_tag(t('blacklight.bookmarks.remove.button'), :id => "bookmark_toggle_#{object.pid.parameterize}", :class => "bookmark_remove") -%>
+  <% end -%>
+<%- end -%>
+</div>
+<% end %>

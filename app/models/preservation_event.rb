@@ -6,6 +6,7 @@ class PreservationEvent < ActiveFedora::Base
     
   include DulHydra::Models::Governable
   include DulHydra::Models::AccessControllable
+  include ActiveFedora::Auditable
 
   # Event date time
   DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
