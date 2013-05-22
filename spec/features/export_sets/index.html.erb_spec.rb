@@ -35,10 +35,4 @@ describe "export_sets/index.html.erb" do
       page.should have_link(export_set.id, :href => export_set_path(export_set))
     end        
   end
-  context "user has no export sets" do
-    it "should display a 'no export sets' flash notice" do
-      visit export_sets_path
-      page.should have_content("no export sets")
-    end
-  end
 end

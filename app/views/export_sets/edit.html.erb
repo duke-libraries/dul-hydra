@@ -1,8 +1,8 @@
 <h1>Editing Export Set</h1>
 
 <%= form_for @export_set do |f| %>
-  <%= f.label :title %>
-  <%= f.text_field :title %>
-  <br />
-  <%= f.submit "Save" %>
+  <%= render :partial => 'title_field', :locals => {:f => f} %>
+  <div>
+	<%= f.submit :id => "update_export_set_button", :class => "btn btn-primary" %>
+  </div>
 <% end %>

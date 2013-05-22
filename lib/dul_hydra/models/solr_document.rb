@@ -44,6 +44,14 @@ module DulHydra::Models
     def active_fedora_model
       get(DulHydra::IndexFields::ACTIVE_FEDORA_MODEL)
     end
+
+    def title
+      get(DulHydra::IndexFields::TITLE)
+    end
+
+    def identifier
+      get(DulHydra::IndexFields::IDENTIFIER)
+    end
     
     def has_thumbnail?
       has_datastream?(DulHydra::Datastreams::THUMBNAIL)
