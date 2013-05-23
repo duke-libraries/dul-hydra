@@ -1,4 +1,3 @@
---- !map:HashWithIndifferentAccess
 batch:
     name: Test Batch
     description: Description of test batch

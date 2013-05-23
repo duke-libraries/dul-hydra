@@ -1,8 +1,19 @@
 class ManifestObject
   
-  OBJECT_KEYS = [ :checksum, :identifier, :label, :model, BatchObjectDatastream::DATASTREAMS, BatchObjectRelationship::RELATIONSHIPS].flatten
-  OBJECT_CHECKSUM_KEYS = [ :type, :value ]
-  OBJECT_RELATIONSHIP_KEYS = [ :autoidlength, :id, :pid ]
+  AUTOIDLENGTH = "autoidlength"
+  CHECKSUM = "checksum"
+  DATASTREAMS = "datastreams"
+  ID = "id"
+  IDENTIFIER = "identifier"
+  LABEL = "label"
+  MODEL = "model"
+  PID = "pid"
+  TYPE = "type"
+  VALUE = "value"
+
+  OBJECT_KEYS = [ CHECKSUM, DATASTREAMS, IDENTIFIER, LABEL, MODEL, BatchObjectDatastream::DATASTREAMS, BatchObjectRelationship::RELATIONSHIPS].flatten
+  OBJECT_CHECKSUM_KEYS = [ TYPE, VALUE ]
+  OBJECT_RELATIONSHIP_KEYS = [ AUTOIDLENGTH, ID, PID ]
 
   def initialize(object_hash, manifest)
     @object_hash = object_hash
@@ -14,11 +25,11 @@ class ManifestObject
   end
   
   def checksum
-    if object_hash[:checksum]
-      if object_hash[:checksum][:value]
-        object_hash[:checksum][:value]
+    if object_hash[CHECKSUM]
+      if object_hash[CHECKSUM][VALUE]
+        object_hash[CHECKSUM][VALUE]
       else
-        object_hash[:checksum]
+        object_hash[CHECKSUM]
       end
     else
       if manifest.checksums?
@@ -30,13 +41,13 @@ class ManifestObject
   end
   
   def checksum?
-    object_hash[:checksum] || manifest.checksums?
+    object_hash[CHECKSUM] || manifest.checksums? ? true : false
   end
 
   def checksum_type
     case
-    when object_hash[:checksum] && object_hash[:checksum][:type]
-      object_hash[:checksum][:type]
+    when object_hash[CHECKSUM] && object_hash[CHECKSUM][TYPE]
+      object_hash[CHECKSUM][TYPE]
     when manifest.checksums?
       checksums = manifest.checksums
       checksum_node = checksums.xpath("#{manifest.checksum_node_xpath}[#{manifest.checksum_identifier_element}[text() = '#{key_identifier}']]")
@@ -47,13 +58,13 @@ class ManifestObject
   end
 
   def checksum_type?
-    (object_hash[:checksum] && object_hash[:checksum][:type]) || manifest.checksums? || manifest.checksum_type?
+    (object_hash[CHECKSUM] && object_hash[CHECKSUM][TYPE]) || manifest.checksums? || manifest.checksum_type?
   end
 
   def datastream_filepath(datastream_name)
     datastream = object_hash[datastream_name]
     filepath = case
-      # canonical location is @manifest[:basepath] + datastream (name)
+      # canonical location is @manifest["basepath"] + datastream (name)
       # canonical filename is batch_object.identifier
       # canonical extension is ".xml"
     when datastream.nil?
@@ -61,35 +72,35 @@ class ManifestObject
       location = manifest.datastream_location(datastream_name) || File.join(manifest.basepath, datastream_name)
       extension = manifest.datastream_extension(datastream_name) || ".xml"
       File.join(location, key_identifier + extension)
-    when datastream.start_with?(File::PATH_SEPARATOR)
+    when datastream.start_with?(File::SEPARATOR)
       # datastream contains full path, file name, and extension
       datastream
     else
       # (manifest datastream location || canonical location) + datastream
-      location = manifest.datastream_location(datastream) || File.join(manifest.basepath, datastream_name)
+      location = manifest.datastream_location(datastream_name) || File.join(manifest.basepath, datastream_name)
       File.join(location, datastream)
     end
   end
   
   def datastreams
-    object_hash[:datastreams] || manifest.datastreams
+    object_hash[DATASTREAMS] || manifest.datastreams
   end
   
   def key_identifier
-    case object_hash[:identifier]
+    case object_hash[IDENTIFIER]
     when String
-      object_hash[:identifier]
+      object_hash[IDENTIFIER]
     when Array
-      object_hash[:identifier].first
+      object_hash[IDENTIFIER].first
     end
   end
   
   def label
-    object_hash[:label] || manifest.label
+    object_hash[LABEL] || manifest.label
   end
   
   def model
-    object_hash[:model] || manifest.model
+    object_hash[MODEL] || manifest.model
   end
   
   def manifest
@@ -116,7 +127,7 @@ class ManifestObject
     autoidlength = nil
     if object_hash[relationship_name]
       if object_hash[relationship_name].is_a?(Hash)
-        autoidlength = object_hash[relationship_name][:autoidlength]
+        autoidlength = object_hash[relationship_name][AUTOIDLENGTH]
       end
     end
     autoidlength = manifest.relationship_autoidlength(relationship_name) unless autoidlength
@@ -127,7 +138,7 @@ class ManifestObject
     id = nil
     if object_hash[relationship_name]
       if object_hash[relationship_name].is_a?(Hash)
-        id = object_hash[relationship_name][:id]
+        id = object_hash[relationship_name][ID]
       end
     end
     id = manifest.relationship_id(relationship_name) unless id
@@ -159,7 +170,7 @@ class ManifestObject
       if object_hash[relationship_name].is_a?(String)
         pid = object_hash[relationship_name]
       else
-        pid = object_hash[relationship_name][:pid]
+        pid = object_hash[relationship_name][PID]
       end
     end
     pid = manifest.relationship_pid(relationship_name) unless pid
