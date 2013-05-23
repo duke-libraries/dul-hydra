@@ -1,3 +1,3 @@
 module DulHydra
-  VERSION = "1.0.0.rc2"
+  VERSION = "1.0.0.rc3"
 end
