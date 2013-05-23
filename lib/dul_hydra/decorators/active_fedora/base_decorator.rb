@@ -16,4 +16,8 @@ ActiveFedora::Base.class_eval do
     self.reflections.has_key?(:children) && self.children.count > 0
   end
 
+  def has_thumbnail?
+    self.is_a?(DulHydra::Models::HasThumbnail) && self.datastreams[DulHydra::Datastreams::THUMBNAIL].has_content?
+  end
+
 end

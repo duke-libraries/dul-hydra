@@ -14,10 +14,6 @@ module DulHydra::Models
                           :versionable => true, :label => "Thumbnail for this object", :control_group => 'M'
     end
 
-    def has_thumbnail?
-      !datastreams[DulHydra::Datastreams::THUMBNAIL].profile.empty?
-    end
-
     def generate_thumbnail( opts={} )
       cols = opts.fetch(:cols, DEFAULT_THUMBNAIL_SIZE)
       rows = opts.fetch(:rows, cols)
