@@ -5,14 +5,14 @@
   <%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :confirm => "Are you sure you want to delete the export set?", :class => "btn btn-danger" %>
 </p>
 
-<table class="table">
+<table class="table table-condensed table-bordered" style="width: auto">
   <tr>
     <th scope="row">Title:</th>
     <td><%= @export_set.title %></td>
   </tr>
   <tr>
     <th scope="row">Created:</th>
-    <td><%= @export_set.created_at %></td>
+    <td><%= @export_set.created_at.localtime %></td>
   </tr>
   <tr>
     <th scope="row">Archive:</th>
@@ -29,17 +29,4 @@
 
 <h3>Exported Objects: Metadata</h3>
 
-<table class="table">
-  <thead>
-    <tr>
-	  <%= render :partial => 'object_metadata_labels' %>
-    </tr>
-  </thead>
-  <tbody>
-    <% @document_list.each do |doc| %>
-    <tr>
-	  <%= render :partial => 'object_metadata_values', :locals => {:doc => doc} %>
-    </tr>
-    <% end %>		
-  </tbody>
-</table>
+<%= render :partial => 'object_metadata', :locals => {:documents => @documents} %>

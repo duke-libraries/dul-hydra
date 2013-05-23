@@ -9,7 +9,7 @@ describe 'export_sets/edit.html.erb' do
     login export_set.user
     visit edit_export_set_path(export_set)
     fill_in "Title", :with => "New Title"
-    click_button "Save"
+    click_button "update_export_set_button"
     page.should have_content("Export Set updated")
     ExportSet.find(export_set.id).title.should == "New Title"
   end
