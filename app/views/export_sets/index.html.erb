@@ -1,15 +1,16 @@
 <h1>Export Sets</h1>
-
-<p>
-	<% if current_user.bookmarks.empty? %>
-	  Export sets are created from bookmarks.  Please add one or more content-bearing objects to your bookmarks.
-	<% else %>
-	  <%= link_to "New Export Set", new_export_set_path %>
-	<% end %>
-</p>
+<% if current_user.bookmarks.empty? %>
+  <div class="alert">
+	Export sets are created from bookmarks.  Please add one or more content-bearing objects to your bookmarks.
+  </div>
+<% else %>
+  <p>
+	<%= link_to "New Export Set", new_export_set_path %>
+  </p>
+<% end %>
 
 <% if !@export_sets.empty? %>
-<table class="table">
+<table class="table table-bordered table-striped table-condensed">
 	<thead>
 		<tr>
 			<th scope="col">ID</th>
