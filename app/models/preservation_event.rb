@@ -101,7 +101,8 @@ class PreservationEvent < ActiveFedora::Base
                     DulHydra::IndexFields::EVENT_ID_TYPE => event_id_type,
                     DulHydra::IndexFields::EVENT_ID_VALUE => event_id_value,                    
                     DulHydra::IndexFields::LINKING_OBJECT_ID_TYPE => linking_object_id_type,
-                    DulHydra::IndexFields::LINKING_OBJECT_ID_VALUE => linking_object_id_value)
+                    DulHydra::IndexFields::LINKING_OBJECT_ID_VALUE => linking_object_id_value,
+                    DulHydra::IndexFields::TITLE => title)
     return solr_doc
   end
 
@@ -112,6 +113,10 @@ class PreservationEvent < ActiveFedora::Base
 
   def self.default_admin_policy
     AdminPolicy.find(DulHydra::AdminPolicies::PRESERVATION_EVENTS) rescue nil
+  end
+  
+  def title
+    label || pid
   end
 
   private
