@@ -1,13 +1,12 @@
 <% # container for a single doc -%>
 <div class="document <%= render_document_class document %>">      
-  <%= render :partial => 'document_header', :locals => { :document => document, :document_counter => document_counter } %>
+  <%= render :partial => 'catalog/document_header', :locals => {:document => document, :document_counter => document_counter} %>
   <div class="row">
     <div class="span1">
-      <%= render :partial => 'thumbnail', :locals => {:document => document, :thumbnail_link => fcrepo_admin.object_path(document)} %>
+      <%= render :partial => 'catalog/thumbnail', :locals => {:document => document, :thumbnail_link => fcrepo_admin.object_path(document)} %>
     </div>
     <div class="span8">
-      <% # main container for doc partial view -%>
-      <%= render_document_partial document, :index %>
+	  <%= render :partial => 'catalog/index_default', :locals => {:document => document} %>
     </div>
   </div>
 </div>
