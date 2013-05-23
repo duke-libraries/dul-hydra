@@ -12,7 +12,7 @@ module DulHydra::Helpers
       response, doc = get_solr_response_for_doc_id(pid)
       # XXX This is not consistent with DulHydra::Models::Base#title_display
       title = doc.nil? ? pid : doc.fetch(DulHydra::IndexFields::TITLE, pid)
-      link_to(title, catalog_path(pid), :class => "parent-link").html_safe
+      link_to(title, fcrepo_admin.object_path(pid), :class => "parent-link").html_safe
     end
 
     def display_structure(structure)
