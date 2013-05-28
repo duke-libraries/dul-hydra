@@ -1,11 +1,6 @@
-== Duke University Libraries Hydra Pilot Project
+== Duke University Libraries Preservation Repository Hydra Head
 
-This code is being developed as part of a Fedora pilot project at Duke University Libraries.
-
-Our intention in the Fedora pilot is demonstrate that Fedora meets the institutional requirements for a preservation repository.  
-We have decided to develop the web application layer of the repository with the Hydra framework.
-
-=== License
+This project is designed to meet repository needs of Duke University Libraries.
 
 See the LICENSE file in the root directory of the project for copyright and license information.
 
