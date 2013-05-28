@@ -1,5 +1,5 @@
 class BatchObject < ActiveRecord::Base
-  attr_accessible :batch, :identifier, :label, :model, :pid, :verified
+  attr_accessible :batch, :batch_id, :identifier, :label, :model, :pid, :verified
   belongs_to :batch, :inverse_of => :batch_objects
   has_many :batch_object_datastreams, :inverse_of => :batch_object
   has_many :batch_object_relationships, :inverse_of => :batch_object
@@ -53,7 +53,7 @@ class BatchObject < ActiveRecord::Base
         errs << "Must specify checksum type if providing checksum for #{d.name} datastream"
       end
       if d.checksum_type
-        unless BatchObjectDatastream::CHECKSUM_TYPES.include?(d.checksum_type)      
+        unless DulHydra::Datastreams::CHECKSUM_TYPES.include?(d.checksum_type)      
           errs << "Invalid checksum type for #{d.name} datastream: #{d.checksum_type}"
         end
       end      
@@ -73,9 +73,9 @@ class BatchObject < ActiveRecord::Base
         rescue ActiveFedora::ObjectNotFoundError
           errs << "#{r[:name]} relationship object does not exist: #{r[:object]}"
         else
-          relationship_reflection = relationship_object_reflection(model, r[:name])
+          relationship_reflection = DulHydra::Utils.relationship_object_reflection(model, r[:name])
           if relationship_reflection
-            klass = reflection_object_class(relationship_reflection)
+            klass = DulHydra::Utils.reflection_object_class(relationship_reflection)
             if klass
               errs << "#{r[:name]} relationship object #{r[:object]} exists but is not a(n) #{klass}" unless obj.is_a?(klass)
             end
@@ -176,8 +176,8 @@ class BatchObject < ActiveRecord::Base
   end
   
   def verify_relationship(repo_object, relationship)
-    relationship_reflection = relationship_object_reflection(model, relationship.name)
-    relationship_object_class = reflection_object_class(relationship_reflection)
+    relationship_reflection = DulHydra::Utils.relationship_object_reflection(model, relationship.name)
+    relationship_object_class = DulHydra::Utils.reflection_object_class(relationship_reflection)
     relationship_object = repo_object.send(relationship.name)
     if !relationship_object.nil? &&
         relationship_object.pid.eql?(relationship.object) &&
@@ -186,42 +186,6 @@ class BatchObject < ActiveRecord::Base
     else
       VERIFICATION_FAIL
     end
-  end
-  
-  def relationship_object_reflection(model, relationship_name)
-    reflection = nil
-    if model
-      begin
-        reflections = model.constantize.reflections
-      rescue NameError
-        # nothing to do here except that we can't return the appropriate reflection
-      else
-        reflections.each do |reflect|
-          if reflect[0].eql?(relationship_name.to_sym)
-            reflection = reflect
-          end
-        end
-      end
-    end
-    return reflection
-  end
-
-  def reflection_object_class(reflection)
-    reflection_object_model = nil
-    klass = nil
-    if reflection[1].options[:class_name]
-      reflection_object_model = reflection[1].options[:class_name]
-    else
-      reflection_object_model = ActiveSupport::Inflector.camelize(reflection[0])
-    end
-    if reflection_object_model
-      begin
-        klass = reflection_object_model.constantize
-      rescue NameError
-        # nothing to do here except that we can't return the reflection object class
-      end
-    end
-    return klass
   end
   
   def create_preservation_event(event_type, event_outcome, outcome_details, repository_object)

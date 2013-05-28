@@ -3,6 +3,7 @@ class Manifest
   AUTOIDLENGTH = "autoidlength"
   BASEPATH = "basepath"
   BATCH = "batch"
+  BATCHID = "batchid"
   CHECKSUM = "checksum"
   DATASTREAMS = "datastreams"
   DESCRIPTION = "description"
@@ -26,7 +27,7 @@ class Manifest
   BATCH_KEYS = [ DESCRIPTION, ID, NAME ]
   MANIFEST_CHECKSUM_KEYS = [ LOCATION, SOURCE, TYPE, NODE_XPATH, IDENTIFIER_ELEMENT, TYPE_XPATH, VALUE_XPATH ]
   MANIFEST_DATASTREAM_KEYS = [ EXTENSION, LOCATION ]
-  MANIFEST_RELATIONSHIP_KEYS = [ AUTOIDLENGTH, ID, PID ]
+  MANIFEST_RELATIONSHIP_KEYS = [ AUTOIDLENGTH, BATCHID, ID, PID ]
   
   def initialize(manifest_filepath=nil)
     if manifest_filepath
@@ -38,6 +39,93 @@ class Manifest
     else
       @manifest_hash = {}
     end
+  end
+  
+  def validate
+    errors = []
+    errors += validate_model if model
+    errors += validate_keys
+#    errors += validate_datastreams if datastreams
+#    errors += validate_checksum_type if checksum_type?
+#    BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
+#      if has_relationship?(relationship)
+#        errors += validate_relationship(relationship)
+#      end
+#    end
+    return errors
+  end
+
+  def validate_keys
+    errs = []
+    manifest_hash.keys.each do |key|
+      errs << "Invalid key at manifest level: #{key}" unless MANIFEST_KEYS.include?(key)
+      case 
+      when key.eql?(BATCH)
+        manifest_hash[BATCH].keys.each do |subkey|
+          errs << "Invalid subkey at manifest level: #{BATCH} - #{subkey}" unless BATCH_KEYS.include?(subkey)
+        end
+      when key.eql?(CHECKSUM)
+        manifest_hash[CHECKSUM].keys.each do |subkey|
+          errs << "Invalid subkey at manifest level: #{CHECKSUM} - #{subkey}" unless MANIFEST_CHECKSUM_KEYS.include?(subkey)
+        end
+      when BatchObjectDatastream::DATASTREAMS.include?(key)
+        manifest_hash[key].keys.each do |subkey|
+          errs << "Invalid subkey at manifest level: #{key} - #{subkey}" unless MANIFEST_DATASTREAM_KEYS.include?(subkey)
+        end
+      when BatchObjectRelationship::RELATIONSHIPS.include?(key)
+        if manifest_hash[key].is_a?(Hash)
+          manifest_hash[key].keys.each do |subkey|
+            errs << "Invalid subkey at manifest level: #{key} - #{subkey}" unless MANIFEST_RELATIONSHIP_KEYS.include?(subkey)
+          end
+        end
+      end
+    end
+    return errs
+  end
+  
+  def validate_relationship(relationship)
+    errs = []
+    pid = relationship_pid(relationship)
+    obj = ActiveFedora::Base.find(pid, :cast => true) rescue errs << "Cannot find manifest object #{key_identifier} #{relationship} object in repository: #{pid}"
+    object_class = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, relationship))
+    errs << "Manifest object #{key_identifier} #{relationship} object should be a(n) #{object_class} but is a(n) #{obj.class}" unless obj.is_a?(object_class)
+    return errs
+  end
+  
+  def validate_datastream_filepath(datastream)
+    errs = []
+    filepath = datastream_filepath(datastream)
+    errs << "Datastream filepath for manifest object #{key_identifier} is not readable: #{datastream} - #{filepath}" unless File.readable?(filepath)
+    return errs
+  end
+  
+  def validate_datastreams
+    errs = []
+    datastreams.each do |ds|
+      errs << "Invalid datastream name for manifest object #{key_identifier}: #{ds}" unless BatchObjectDatastream::DATASTREAMS.include?(ds)
+      errs << validate_datastream_filepath(ds)
+    end
+    return errs.flatten
+  end
+  
+  def validate_checksum_type
+    errs = []
+    unless DulHydra::Datastreams::CHECKSUM_TYPES.include?(checksum_type)
+      errs << "Invalid checksum type for manifest object #{key_identifier}: #{checksum_type}"
+    end
+    return errs
+  end
+  
+  def validate_model
+    errs = []
+    model.constantize.new rescue errs << "Invalid model at manifest level: #{model}"
+    return errs
+  end
+  
+  def validate_identifier
+    errs = []
+    errs << "Manifest object does not contain an identifier" unless key_identifier
+    return errs
   end
   
   def basepath
@@ -157,6 +245,10 @@ class Manifest
 
   def relationship_id(relationship_name)  
     manifest_hash[relationship_name][ID] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
+  end
+  
+  def relationship_batchid(relationship_name)  
+    manifest_hash[relationship_name][BATCHID] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
   end
   
   def relationship_pid(relationship_name)

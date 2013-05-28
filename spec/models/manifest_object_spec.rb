@@ -177,30 +177,186 @@ describe "ManifestObject" do
     end
   end
   
-  context "label" do
+  context "label / model" do
     let(:manifest) { Manifest.new }
     let(:manifest_object) { ManifestObject.new({}, manifest) }
-    context "label in object" do
+    context "label / model in object" do
       before do
         manifest.manifest_hash["label"] = "Manifest Label"
+        manifest.manifest_hash["model"] = "ManifestModel"
         manifest_object.object_hash["label"] = "Object Label"
+        manifest_object.object_hash["model"] = "ObjectModel"
       end
-      it "should return the batch specified in the object" do
+      it "should return the label / model specified in the object" do
         expect(manifest_object.label).to eq("Object Label")
+        expect(manifest_object.model).to eq("ObjectModel")
       end
     end
-    context "label not in object but in manifest" do
-      before { manifest.manifest_hash["label"] = "Manifest Label" }
-      it "should return the batch specified in the manifest" do
-        expect(manifest_object.label).to eq("Manifest Label")
+    context "label / model not in object but in manifest" do
+      before do
+        manifest.manifest_hash["label"] = "Manifest Label"
+        manifest.manifest_hash["model"] = "ManifestModel"
+      end
+      it "should return the label / model specified in the manifest" do
+        expect(manifest_object.model).to eq("ManifestModel")
       end
     end
-    context "no label" do
-      it "should return the batch specified in the manifest" do
+    context "no label / model" do
+      it "should return nil" do
         expect(manifest_object.label).to be_nil
+        expect(manifest_object.model).to be_nil
       end
     end
   end
   
+  context "relationship" do
+    let(:relationship) { "test_relationship" }
+    let(:manifest) { Manifest.new }
+    let(:manifest_object) { ManifestObject.new({}, manifest) }
+    context "relationship in object" do
+      context "explicit pid" do
+        let(:manifest_relationship_pid) { "test:1234" }
+        let(:object_relationship_pid) { "test:5678" }
+        before { manifest.manifest_hash[relationship] = manifest_relationship_pid }
+        context "bare pid" do
+          before { manifest_object.object_hash[relationship] = object_relationship_pid }
+          it "should return the object pid" do
+            expect(manifest_object.has_relationship?(relationship)).to be_true
+            expect(manifest_object.relationship_pid(relationship)).to eq(object_relationship_pid)
+          end
+        end
+        context "pid in 'pid'" do
+          before { manifest_object.object_hash[relationship] = { "pid" => object_relationship_pid } }
+          it "should return the object pid" do
+            expect(manifest_object.has_relationship?(relationship)).to be_true
+            expect(manifest_object.relationship_pid(relationship)).to eq(object_relationship_pid)
+          end          
+        end
+      end
+      context "id" do
+        let(:relationship_id) { "id001" }
+        let(:relationship_id_length) { 5 }
+        let(:distractor_id) { "id002" }
+        let(:distractor_id_length) { 4 }
+        let(:pid_1) { "test:1234" }
+        let(:pid_2) { "test:5678" }
+        let(:manifest) { Manifest.new }
+        let(:manifest_object) { ManifestObject.new({ "identifier" => "id00100020" }, manifest) }
+        let(:batch1) { Batch.create! }
+        let(:batch2) { Batch.create! }
+        before do
+          @batch_object_a = BatchObject.create!(:batch_id => batch1.id, :identifier => relationship_id, :pid => pid_1)
+          @batch_object_b = BatchObject.create!(:batch_id => batch2.id, :identifier => relationship_id, :pid => pid_2)
+        end
+        context "batchid" do
+          context "explicit id" do
+            before do
+              manifest.manifest_hash[relationship] = { "id" => relationship_id, "batchid" => batch2.id }
+              manifest_object.object_hash[relationship] = { "id" => relationship_id, "batchid" => batch1.id }
+            end
+            it "should return the correct pid" do
+              expect(manifest_object.relationship_pid(relationship)).to eq(pid_1)
+            end
+          end
+          context "autoidlength" do
+            before do
+              manifest.manifest_hash[relationship] = { "autoidlength" => relationship_id_length, "batchid" => batch2.id }
+              manifest_object.object_hash[relationship] = { "autoidlength" => relationship_id_length, "batchid" => batch1.id }
+            end
+            it "should return the correct pid" do
+              expect(manifest_object.relationship_pid(relationship)).to eq(pid_1)
+            end            
+          end
+        end
+        context "no batchid" do
+          context "explicit id" do
+            before do
+              manifest.manifest_hash[relationship] = { "id" => distractor_id }
+              manifest_object.object_hash[relationship] = { "id" => relationship_id }
+            end
+            it "should return the correct pid" do
+              expect(manifest_object.relationship_pid(relationship)).to eq(pid_2)
+            end
+          end
+          context "autoidlength" do
+            before do
+              manifest.manifest_hash[relationship] = { "autoidlength" => distractor_id_length }
+              manifest_object.object_hash[relationship] = { "autoidlength" => relationship_id_length }
+            end
+            it "should return the correct pid" do
+              expect(manifest_object.relationship_pid(relationship)).to eq(pid_2)
+            end            
+          end
+        end
+      end
+    end
+    context "relationship in manifest" do
+      context "explicit pid" do
+        let(:relationship_pid) { "test:1234" }
+        context "bare pid" do
+          before { manifest.manifest_hash[relationship] = relationship_pid }
+          it "should return the manifest pid" do
+            expect(manifest_object.has_relationship?(relationship)).to be_true
+            expect(manifest_object.relationship_pid(relationship)).to eq(relationship_pid)
+          end
+        end
+        context "pid in 'pid'" do
+          before { manifest.manifest_hash[relationship] = { "pid" => relationship_pid } }
+          it "should return the manifest pid" do
+            expect(manifest_object.has_relationship?(relationship)).to be_true
+            expect(manifest_object.relationship_pid(relationship)).to eq(relationship_pid)
+          end          
+        end
+      end
+      context "id" do
+        let(:relationship_id) { "id001" }
+        let(:relationship_id_length) { 5 }
+        let(:pid_1) { "test:1234" }
+        let(:pid_2) { "test:5678" }
+        let(:manifest) { Manifest.new }
+        let(:manifest_object) { ManifestObject.new({ "identifier" => "id00100020" }, manifest) }
+        let(:batch1) { Batch.create! }
+        let(:batch2) { Batch.create! }
+        before do
+          @batch_object_a = BatchObject.create!(:batch_id => batch1.id, :identifier => relationship_id, :pid => pid_1)
+          @batch_object_b = BatchObject.create!(:batch_id => batch2.id, :identifier => relationship_id, :pid => pid_2)
+        end
+        context "batchid" do
+          context "explicit id" do
+            before { manifest.manifest_hash[relationship] = { "id" => relationship_id, "batchid" => batch1.id } }
+            it "should return the correct pid" do
+              expect(manifest_object.relationship_pid(relationship)).to eq(pid_1)
+            end
+          end
+          context "autoidlength" do
+            before { manifest.manifest_hash[relationship] = { "autoidlength" => relationship_id_length, "batchid" => batch1.id } }
+            it "should return the correct pid" do
+              expect(manifest_object.relationship_pid(relationship)).to eq(pid_1)
+            end            
+          end
+        end
+        context "no batchid" do
+          context "explicit id" do
+            before { manifest.manifest_hash[relationship] = { "id" => relationship_id } }
+            it "should return the correct pid" do
+              expect(manifest_object.relationship_pid(relationship)).to eq(pid_2)
+            end
+          end
+          context "autoidlength" do
+            before { manifest.manifest_hash[relationship] = { "autoidlength" => relationship_id_length } }
+            it "should return the correct pid" do
+              expect(manifest_object.relationship_pid(relationship)).to eq(pid_2)
+            end            
+          end
+        end
+      end
+    end
+    context "no relationship" do
+      it "should return false / nil" do
+        expect(manifest_object.has_relationship?(relationship)).to be_false
+        expect(manifest_object.relationship_pid(relationship)).to be_nil
+      end
+    end
+  end
   
 end

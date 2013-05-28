@@ -21,7 +21,7 @@ FactoryGirl.define do
         payload File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'id001.tif')
         payload_type BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
         checksum "120ad0814f207c45d968b05f7435034ecfee8ac1a0958cd984a070dad31f66f3"
-        checksum_type BatchObjectDatastream::CHECKSUM_TYPE_SHA256
+        checksum_type DulHydra::Datastreams::CHECKSUM_TYPE_SHA256
       end
       
     end
