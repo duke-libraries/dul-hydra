@@ -1,7 +1,0 @@
-<% if document.has_thumbnail? -%>
-  <%= 
-     link_to_if thumbnail_link, image_tag(thumbnail_path(document), :alt => "Thumbnail", :class => "img-polaroid thumbnail"), thumbnail_link do |name|
-       name
-     end 
-  %>
-<% end -%>

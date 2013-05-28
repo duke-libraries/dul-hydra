@@ -60,6 +60,12 @@ module DulHydra::Helpers
       end
       return structure_contents_info
     end
+
+    def render_thumbnail(doc)
+      if doc.has_thumbnail?
+        link_to image_tag(thumbnail_path(doc), :alt => "Thumbnail", :class => "img-polaroid thumbnail"), fcrepo_admin.object_path(doc.id)
+      end
+    end
     
   end
 end
