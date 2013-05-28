@@ -8,7 +8,7 @@ gem 'blacklight', '~> 4.2.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise'
-gem 'fcrepo_admin', '~> 0.5.3'
+gem 'fcrepo_admin', '~> 0.5.4'
 
 gem 'log4r'
 
