@@ -20,11 +20,11 @@ class Manifest
   SOURCE = "source"
   TYPE = "type"
   TYPE_XPATH = "type_xpath"
-  USER = "user"
+  USER_EMAIL = "user_email"
   VALUE_XPATH = "value_xpath"  
 
   MANIFEST_KEYS = [ BASEPATH, BATCH, CHECKSUM, DATASTREAMS, DESCRIPTION, LABEL, MODEL, NAME, OBJECTS, BatchObjectDatastream::DATASTREAMS, BatchObjectRelationship::RELATIONSHIPS ].flatten
-  BATCH_KEYS = [ DESCRIPTION, ID, NAME ]
+  BATCH_KEYS = [ DESCRIPTION, ID, NAME, USER_EMAIL ]
   MANIFEST_CHECKSUM_KEYS = [ LOCATION, SOURCE, TYPE, NODE_XPATH, IDENTIFIER_ELEMENT, TYPE_XPATH, VALUE_XPATH ]
   MANIFEST_DATASTREAM_KEYS = [ EXTENSION, LOCATION ]
   MANIFEST_RELATIONSHIP_KEYS = [ AUTOIDLENGTH, BATCHID, ID, PID ]
@@ -47,11 +47,11 @@ class Manifest
     errors += validate_keys
 #    errors += validate_datastreams if datastreams
 #    errors += validate_checksum_type if checksum_type?
-#    BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
-#      if has_relationship?(relationship)
-#        errors += validate_relationship(relationship)
-#      end
-#    end
+    BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
+      if has_relationship?(relationship)
+        errors += validate_relationship(relationship)
+      end
+    end
     return errors
   end
 
@@ -86,9 +86,19 @@ class Manifest
   def validate_relationship(relationship)
     errs = []
     pid = relationship_pid(relationship)
-    obj = ActiveFedora::Base.find(pid, :cast => true) rescue errs << "Cannot find manifest object #{key_identifier} #{relationship} object in repository: #{pid}"
-    object_class = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, relationship))
-    errs << "Manifest object #{key_identifier} #{relationship} object should be a(n) #{object_class} but is a(n) #{obj.class}" unless obj.is_a?(object_class)
+    if pid
+      begin
+        obj = ActiveFedora::Base.find(pid, :cast => true)
+      rescue
+        errs << "Cannot find manifest level #{relationship} object in repository: #{pid}"
+      end
+      if obj && model
+        object_class = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, relationship))
+        errs << "Manifest level #{relationship} object should be a(n) #{object_class} but is a(n) #{obj.class}" unless obj.is_a?(object_class)
+      end
+    else
+      errs << "Pid for manifest level #{relationship} object could not be determined"
+    end
     return errs
   end
   
@@ -133,19 +143,27 @@ class Manifest
   end
   
   def batch
-    return @batch if @batch
-    begin
-      if manifest_hash[BATCH] && manifest_hash[BATCH][ID]
-        @batch = Batch.find(manifest_hash[BATCH][ID].to_i)
-      else
-        name = manifest_hash[BATCH][NAME] if manifest_hash[BATCH]
-        description = manifest_hash[BATCH][DESCRIPTION] if manifest_hash[BATCH]
-        @batch = Batch.create(NAME => name, DESCRIPTION => description)
-      end
-    rescue ActiveRecord::RecordNotFound
-      log.error("Cannot find Batch with id #{manifest_hash[BATCH][ID]}")
-    end
-    return @batch
+    @batch
+  end
+  
+  def batch=(batch)
+    @batch = batch
+  end
+  
+  def batch_description
+    manifest_hash[BATCH][DESCRIPTION] if manifest_hash[BATCH]
+  end
+  
+  def batch_id
+    manifest_hash[BATCH][ID] if manifest_hash[BATCH]
+  end
+
+  def batch_name
+    manifest_hash[BATCH][NAME] if manifest_hash[BATCH]
+  end
+  
+  def batch_user_email
+    manifest_hash[BATCH][USER_EMAIL] if manifest_hash[BATCH]
   end
   
   def checksum_identifier_element
@@ -252,13 +270,15 @@ class Manifest
   end
   
   def relationship_pid(relationship_name)
-    if manifest_hash[relationship_name]
-      if manifest_hash[relationship_name].is_a?(String)
+    if manifest_hash[relationship_name]    
+      case
+      when manifest_hash[relationship_name].is_a?(String)
         manifest_hash[relationship_name]
-      else
-        if manifest_hash[relationship_name][PID]
-          manifest_hash[relationship_name][PID]        
-        end
+      when manifest_hash[relationship_name][PID]
+        manifest_hash[relationship_name][PID]
+      when manifest_hash[relationship_name][ID]
+        pids = BatchObject.pid_from_identifier(manifest_hash[relationship_name][ID], manifest_hash[relationship_name][BATCHID])
+        pids.last if pids
       end
     end
   end

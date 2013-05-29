@@ -2,6 +2,109 @@ require 'spec_helper'
 
 describe Manifest do
   
+  shared_examples "a valid manifest" do
+    it "should be valid" do
+      puts manifest.validate
+      expect(manifest.validate).to be_empty
+    end
+  end
+  
+  shared_examples "an invalid manifest" do
+    it "should not be valid" do
+      expect(manifest.validate).to include(error_message)
+    end
+  end
+
+  context "validate" do
+    let(:admin_policy_pid) { "duke-apo:adminPolicy" }
+    context "valid" do
+      let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
+      let!(:admin_policy) { AdminPolicy.create(:pid => admin_policy_pid) }
+      after { admin_policy.destroy }
+      it_behaves_like "a valid manifest"
+    end
+    context "invalid" do
+      let(:manifest) { Manifest.new }
+      context "invalid model" do
+        let(:key) { Manifest::MODEL }
+        let(:model) { "BadModel" }
+        let(:error_message) { "Invalid model at manifest level: #{manifest.model}" }
+        before { manifest.manifest_hash[key] = model }
+        it_behaves_like "an invalid manifest"
+      end
+      context "keys" do
+        let(:badkey) { "badkey" }
+        let(:value) { "some_value" }
+        context "invalid manifest level key" do
+          let(:error_message) { "Invalid key at manifest level: #{badkey}" }
+          before { manifest.manifest_hash[badkey] = value }        
+          it_behaves_like "an invalid manifest"
+        end
+        context "invalid manifest sublevel key" do
+          let(:key) { "descMetadata" }
+          let(:error_message) { "Invalid subkey at manifest level: #{key} - #{badkey}" }
+          before { manifest.manifest_hash[key] = { badkey => value } }
+          it_behaves_like "an invalid manifest"
+        end
+      end
+      context "relationships" do
+        context "pid" do
+          context "object not in repository" do
+            let(:key) { BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY }
+            let(:pid) { "duke-apo:adminPolicy" }
+            let(:error_message) { "Cannot find manifest level #{key} object in repository: #{pid}" }
+            before { manifest.manifest_hash[key] = pid }            
+            it_behaves_like "an invalid manifest"
+          end
+          context "repository object not correct model" do
+            let(:model) { "Item" }
+            let(:key) { BatchObjectRelationship::RELATIONSHIP_PARENT }
+            let(:relationship_class) { "Collection" }
+            let(:error_message) { "Manifest level #{key} object should be a(n) #{relationship_class} but is a(n) #{object.class}" }
+            let(:object) { FactoryGirl.create(:component) }
+            before do
+              manifest.manifest_hash[Manifest::MODEL] = model
+              manifest.manifest_hash[key] = object.pid
+            end
+            after { object.destroy }
+            it_behaves_like "an invalid manifest"            
+          end
+        end
+        context "id" do
+          let(:key) { BatchObjectRelationship::RELATIONSHIP_PARENT }
+          let(:subkey) { Manifest::ID }
+          let(:id) { "test001" }
+          before { manifest.manifest_hash[key] = { subkey => id } }
+          context "cannot determine pid" do
+            let(:error_message) { "Pid for manifest level #{key} object could not be determined" }
+            it_behaves_like "an invalid manifest"
+          end
+          context "object not in repository" do
+            let(:pid) { "test:not_there" }
+            let(:error_message) { "Cannot find manifest level #{key} object in repository: #{pid}" }
+            let!(:batch_object) { BatchObject.create(:identifier => id, :pid => pid) }
+            before { manifest.manifest_hash[key] = { subkey => id } }
+            after { batch_object.destroy }
+            it_behaves_like "an invalid manifest"
+          end
+          context "repository object not correct model" do
+            let(:model) { "Item" }
+            let(:relationship_class) { "Collection" }
+            let(:error_message) { "Manifest level #{key} object should be a(n) #{relationship_class} but is a(n) #{object.class}" }
+            let(:object) { FactoryGirl.create(:component) }
+            let!(:batch_object) { BatchObject.create(:identifier => object.identifier, :pid => object.pid) }
+            before do
+              manifest.manifest_hash[Manifest::MODEL] = model
+              manifest.manifest_hash[key] = { subkey => object.identifier }
+            end
+            after { object.destroy }
+            it_behaves_like "an invalid manifest"            
+          end
+        end
+      end
+    end
+  end
+
   context "load yaml manifest file" do
     let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'yaml.yml')) }
     let(:yaml_hash) { eval File.open(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'yaml_hash.txt')) { |f| f.read } }
@@ -25,26 +128,31 @@ describe Manifest do
       end
     end
     context "batch" do
-      after { manifest.batch.destroy }
       context "new batch" do
+        let(:user) { User.create(:email => "username@domain") }
         let(:batch_name) { "New Batch Name #{Time.now.to_s}" }
         let(:batch_description) { "New Batch Description #{Time.now.to_s}" }
-        before { manifest.manifest_hash = HashWithIndifferentAccess.new("batch" => { "name" => batch_name, "description" => batch_description } ) }
-        it "should create a new batch object" do
-          expect(manifest.batch.name).to eq(batch_name)
-          expect(manifest.batch.description).to eq(batch_description)
+        before do
+          manifest.manifest_hash = { "batch" =>
+              { "name" => batch_name,
+                "description" => batch_description,
+                "user_email" => user.email
+              }
+            }
+        end
+        after { user.destroy }
+        it "should return the correct values" do
+          expect(manifest.batch_name).to eq(batch_name)
+          expect(manifest.batch_description).to eq(batch_description)
+          expect(manifest.batch_user_email).to eq(user.email)
         end
       end
       context "existing batch" do
-        let(:batch_name) { "Existing Batch Name #{Time.now.to_s}" }
-        let(:batch_description) { "Existing Batch Description #{Time.now.to_s}" }
-        before do
-          @batch = Batch.create(:name => batch_name, :description => batch_description)
-          manifest.manifest_hash = HashWithIndifferentAccess.new("batch" => { "id" => @batch.id })
-        end
-        it "should use the existing batch object" do
-          expect(manifest.batch.name).to eq(batch_name)
-          expect(manifest.batch.description).to eq(batch_description)
+        let(:batch) { Batch.create }
+        before { manifest.manifest_hash = { "batch" => { "id" => batch.id } } }
+        after { batch.destroy }
+        it "should return the correct value" do
+          expect(manifest.batch_id).to eq(batch.id)
         end
       end
     end

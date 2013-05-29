@@ -25,6 +25,7 @@ module DulHydra::Scripts
       config_logger
       begin
         manifest = Manifest.new(@manifest_file)
+        set_batch(manifest)
         manifest.objects.each { |object| process_object(object) }
       rescue Exception => e
         @log.error(e.message)
@@ -33,7 +34,33 @@ module DulHydra::Scripts
     end
     
     private
+    
+    def set_batch(manifest)
+      begin
+        if manifest.batch_id
+          batch = Batch.find(manifest.batch_id)
+        else
+          name = manifest.batch_name
+          description = manifest.batch_description
+          user = find_user(manifest.batch_user_email) if manifest.batch_user_email
+          batch = Batch.create(:name => name, :description => description, :user => user)
+        end
+      rescue ActiveRecord::RecordNotFound
+        @log.error("Cannot find Batch with id #{manifest_hash[BATCH][ID]}")
+      end
+      manifest.batch = batch
+    end
 
+    def find_user(user_email)
+      users = User.where("email = ?", user_email)
+      if users.size.eql?(1)
+        user = users.first
+      else
+        @log.error("Cannot find User with email #{user_email}")
+      end
+      return user
+    end
+    
     def process_object(manifest_object)
       batch_object = IngestBatchObject.create(:batch => manifest_object.batch)
       batch_object.identifier = manifest_object.key_identifier

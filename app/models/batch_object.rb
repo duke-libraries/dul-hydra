@@ -14,6 +14,18 @@ class BatchObject < ActiveRecord::Base
     Model: %{model}
   EOS
 
+  def self.pid_from_identifier(identifier, batch_id)
+    query = "identifier = :identifier"
+    query << " and batch_id = :batch_id" if batch_id
+    params = { :identifier => identifier }
+    params[:batch_id] = batch_id if batch_id
+    sort = "updated_at asc"
+    found_objects = BatchObject.where(query, params).order(sort)
+    pids = []
+    found_objects.each { |obj| pids << obj.pid }
+    return pids
+  end
+
   def validate
     errors = []
     errors += validate_required_attributes

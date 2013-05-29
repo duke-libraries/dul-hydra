@@ -223,17 +223,19 @@ class ManifestObject
       end
       if id
         batchid = relationship_batchid(relationship_name)
-        if batchid
-          found_objects = BatchObject.where("identifier = ? and batch_id = ?", id, batchid)
-          if found_objects.size.eql?(1)
-            found_object = found_objects.first
-          else
-            raise "Found multiple matching batch objects with identifier #{id}"            
-          end
-        else
-          found_object = BatchObject.where("identifier = ?", id).order("updated_at asc").last
-        end
-        pid = found_object.pid if found_object
+        pids = BatchObject.pid_from_identifier(id, batchid)
+        pid = pids.last if pids
+        #if batchid
+        #  found_objects = BatchObject.where("identifier = ? and batch_id = ?", id, batchid)
+        #  if found_objects.size.eql?(1)
+        #    found_object = found_objects.first
+        #  else
+        #    raise "Found multiple matching batch objects with identifier #{id}"            
+        #  end
+        #else
+        #  found_object = BatchObject.where("identifier = ?", id).order("updated_at asc").last
+        #end
+        #pid = found_object.pid if found_object
       end
     end
     return pid
