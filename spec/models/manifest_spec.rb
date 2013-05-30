@@ -92,10 +92,10 @@ describe Manifest do
             let(:relationship_class) { "Collection" }
             let(:error_message) { "Manifest level #{key} object should be a(n) #{relationship_class} but is a(n) #{object.class}" }
             let(:object) { FactoryGirl.create(:component) }
-            let!(:batch_object) { BatchObject.create(:identifier => object.identifier, :pid => object.pid) }
+            let!(:batch_object) { BatchObject.create(:identifier => object.identifier.first, :pid => object.pid) }
             before do
               manifest.manifest_hash[Manifest::MODEL] = model
-              manifest.manifest_hash[key] = { subkey => object.identifier }
+              manifest.manifest_hash[key] = { subkey => object.identifier.first }
             end
             after { object.destroy }
             it_behaves_like "an invalid manifest"            
