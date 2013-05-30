@@ -9,3 +9,5 @@ en:
       nav:
         items:
           preservation_events: 'Preservation Events'
+    datastream:
+      not_persisted: 'Not currently used'
