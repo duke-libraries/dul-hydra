@@ -225,19 +225,9 @@ class ManifestObject
         batchid = relationship_batchid(relationship_name)
         pids = BatchObject.pid_from_identifier(id, batchid)
         pid = pids.last if pids
-        #if batchid
-        #  found_objects = BatchObject.where("identifier = ? and batch_id = ?", id, batchid)
-        #  if found_objects.size.eql?(1)
-        #    found_object = found_objects.first
-        #  else
-        #    raise "Found multiple matching batch objects with identifier #{id}"            
-        #  end
-        #else
-        #  found_object = BatchObject.where("identifier = ?", id).order("updated_at asc").last
-        #end
-        #pid = found_object.pid if found_object
       end
     end
+    pid = manifest.relationship_pid(relationship_name) unless pid
     return pid
   end
   
@@ -251,7 +241,6 @@ class ManifestObject
         pid = object_hash[relationship_name][PID]
       end
     end
-    pid = manifest.relationship_pid(relationship_name) unless pid
     return pid
   end
   

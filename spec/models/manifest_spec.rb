@@ -47,6 +47,39 @@ describe Manifest do
           it_behaves_like "an invalid manifest"
         end
       end
+      context "datastreams" do
+        context "datastream list" do
+          let(:key) { Manifest::DATASTREAMS }
+          let(:bad_datastream_name) { "badDatastreamName" }
+          let(:error_message) { "Invalid datastream name at manifest level: #{bad_datastream_name}" }
+          before { manifest.manifest_hash[key] = [ bad_datastream_name ] }
+          it_behaves_like "an invalid manifest"
+        end
+        context "datastream filepath" do
+          let(:key) { DulHydra::Datastreams::DESC_METADATA }
+          let(:bad_location) { "/tmp/unreadable/filepath/ " }
+          let(:error_message) { "Datastream filepath for at manifest level is not readable: #{key} - #{bad_location}" }
+          before { manifest.manifest_hash[key] = { Manifest::LOCATION => bad_location } }
+          it_behaves_like "an invalid manifest"
+        end
+      end
+      context "checksums" do
+        let(:key) { Manifest::CHECKSUM }
+        context "checksum type" do
+          let(:bad_checksum_type) { "BAD-9999" }
+          let(:error_message) { "Invalid checksum type at manifest level: #{bad_checksum_type}" }
+          before { manifest.manifest_hash[key] = { Manifest::TYPE => bad_checksum_type } }
+          it_behaves_like "an invalid manifest"
+        end
+        context "checksum file" do
+          context "invalid location" do
+            let(:bad_location) { "/tmp/nonexistent/file/checksums.xml" }
+            let(:error_message) { "Checksum file at manifest level is not readable: #{bad_location}" }
+            before { manifest.manifest_hash[key] = { Manifest::LOCATION => bad_location } }
+            it_behaves_like "an invalid manifest"            
+          end
+        end
+      end
       context "relationships" do
         context "pid" do
           context "object not in repository" do

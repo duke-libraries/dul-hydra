@@ -45,8 +45,14 @@ class Manifest
     errors = []
     errors += validate_model if model
     errors += validate_keys
-#    errors += validate_datastreams if datastreams
-#    errors += validate_checksum_type if checksum_type?
+    errors += validate_datastream_list if datastreams
+    BatchObjectDatastream::DATASTREAMS.each do |datastream|
+      if manifest_hash[datastream] && manifest_hash[datastream][LOCATION]
+        errors += validate_datastream_filepath(datastream)
+      end
+    end
+    errors += validate_checksum_file if checksums?
+    errors += validate_checksum_type if checksum_type?
     BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
       if has_relationship?(relationship)
         errors += validate_relationship(relationship)
@@ -104,16 +110,15 @@ class Manifest
   
   def validate_datastream_filepath(datastream)
     errs = []
-    filepath = datastream_filepath(datastream)
-    errs << "Datastream filepath for manifest object #{key_identifier} is not readable: #{datastream} - #{filepath}" unless File.readable?(filepath)
+    filepath = datastream_location(datastream)
+    errs << "Datastream filepath for at manifest level is not readable: #{datastream} - #{filepath}" unless File.readable?(filepath)
     return errs
   end
   
-  def validate_datastreams
+  def validate_datastream_list
     errs = []
     datastreams.each do |ds|
-      errs << "Invalid datastream name for manifest object #{key_identifier}: #{ds}" unless BatchObjectDatastream::DATASTREAMS.include?(ds)
-      errs << validate_datastream_filepath(ds)
+      errs << "Invalid datastream name at manifest level: #{ds}" unless BatchObjectDatastream::DATASTREAMS.include?(ds)
     end
     return errs.flatten
   end
@@ -121,20 +126,20 @@ class Manifest
   def validate_checksum_type
     errs = []
     unless DulHydra::Datastreams::CHECKSUM_TYPES.include?(checksum_type)
-      errs << "Invalid checksum type for manifest object #{key_identifier}: #{checksum_type}"
+      errs << "Invalid checksum type at manifest level: #{checksum_type}"
     end
+    return errs
+  end
+  
+  def validate_checksum_file
+    errs = []
+    errs << "Checksum file at manifest level is not readable: #{checksum_location}" unless File.readable?(checksum_location)
     return errs
   end
   
   def validate_model
     errs = []
     model.constantize.new rescue errs << "Invalid model at manifest level: #{model}"
-    return errs
-  end
-  
-  def validate_identifier
-    errs = []
-    errs << "Manifest object does not contain an identifier" unless key_identifier
     return errs
   end
   
@@ -172,6 +177,10 @@ class Manifest
     else
       "id"
     end
+  end
+  
+  def checksum_location
+    manifest_hash[CHECKSUM][LOCATION] if manifest_hash[CHECKSUM]
   end
   
   def checksum_node_xpath
