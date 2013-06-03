@@ -73,10 +73,46 @@ describe Manifest do
         end
         context "checksum file" do
           context "invalid location" do
-            let(:bad_location) { "/tmp/nonexistent/file/checksums.xml" }
-            let(:error_message) { "Checksum file at manifest level is not readable: #{bad_location}" }
-            before { manifest.manifest_hash[key] = { Manifest::LOCATION => bad_location } }
+            let(:location) { "/tmp/nonexistent/file/checksums.xml" }
+            let(:error_message) { "Checksum file at manifest level is not readable: #{location}" }
+            before { manifest.manifest_hash[key] = { Manifest::LOCATION => location } }
             it_behaves_like "an invalid manifest"            
+          end
+          context "not XML document" do
+            let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'yaml_hash.txt') }
+            let(:error_message) { "Checksum file at manifest level is not an XML document: #{file}" }
+            before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
+            it_behaves_like "an invalid manifest"            
+          end
+          context "node_xpath" do
+            context "not specified and default xpath absent" do
+              let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'metadata.xml') }
+              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_node_xpath} nodes: #{file}" }
+              before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
+              it_behaves_like "an invalid manifest"                          
+            end
+            context "specified but absent" do
+              let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.xml') }
+              let(:node_xpath) { "/foo/bar" }
+              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_node_xpath} nodes: #{file}" }
+              before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::NODE_XPATH => node_xpath } }
+              it_behaves_like "an invalid manifest"                          
+            end
+          end
+          context "identifier_element" do
+            context "not specified and default xpath absent" do
+              let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'incorrect_checksums.xml') }
+              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_identifier_element} nodes: #{file}" }
+              before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
+              it_behaves_like "an invalid manifest"
+            end
+            context "specified but absent" do
+              let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.xml') }
+              let(:identifier_element) { "bogus" }
+              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_identifier_element} nodes: #{file}" }
+              before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::IDENTIFIER_ELEMENT => identifier_element } }
+              it_behaves_like "an invalid manifest"                          
+            end
           end
         end
       end

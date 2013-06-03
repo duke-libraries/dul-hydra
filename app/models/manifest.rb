@@ -134,6 +134,20 @@ class Manifest
   def validate_checksum_file
     errs = []
     errs << "Checksum file at manifest level is not readable: #{checksum_location}" unless File.readable?(checksum_location)
+    if errs.empty?
+      checksums = File.open(checksum_location) { |f| Nokogiri::XML(f) }
+      errs << "Checksum file at manifest level is not an XML document: #{checksum_location}" if checksums.root.nil?
+    end
+    if errs.empty?
+      errs << "Checksum file at manifest level contains no #{checksum_node_xpath} nodes: #{checksum_location}" \
+                  if checksums.xpath(checksum_node_xpath).empty?
+    end
+    if errs.empty?
+      base_node_xpath = checksum_node_xpath.end_with?("/") ? checksum_node_xpath : "#{checksum_node_xpath}/"
+      identifier_xpath = "#{base_node_xpath}#{checksum_identifier_element}"
+      errs << "Checksum file at manifest level contains no #{checksum_identifier_element} nodes: #{checksum_location}" \
+                  if checksums.xpath(identifier_xpath).empty?
+    end    
     return errs
   end
   
