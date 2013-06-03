@@ -2,7 +2,7 @@ namespace :dul_hydra do
     namespace :admin_policies do
         desc "Load admin policy objects from FILE_PATH"
 	task :load => :environment do
-	    raise "Must specify a config file. Ex: file_path=config/admin_policies.yml" unless ENV['FILE_PATH']
+	    raise "Must specify a config file. Ex: FILE_PATH=config/admin_policies.yml" unless ENV['FILE_PATH']
 	    AdminPolicy.load_policies(ENV['FILE_PATH'])
 	end
     end
