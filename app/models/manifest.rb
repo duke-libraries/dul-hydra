@@ -1,27 +1,27 @@
 class Manifest
   
-  AUTOIDLENGTH = "autoidlength"
-  BASEPATH = "basepath"
-  BATCH = "batch"
-  BATCHID = "batchid"
-  CHECKSUM = "checksum"
-  DATASTREAMS = "datastreams"
-  DESCRIPTION = "description"
-  EXTENSION = "extension"
-  ID = "id"
-  IDENTIFIER_ELEMENT = "identifier_element"
-  LABEL = "label"
-  LOCATION = "location"
-  MODEL = "model"
-  NAME = "name"
-  NODE_XPATH = "node_xpath"
-  OBJECTS = "objects"
-  PID = "pid"
-  SOURCE = "source"
-  TYPE = "type"
-  TYPE_XPATH = "type_xpath"
-  USER_EMAIL = "user_email"
-  VALUE_XPATH = "value_xpath"  
+  AUTOIDLENGTH = 'autoidlength'
+  BASEPATH = 'basepath'
+  BATCH = 'batch'
+  BATCHID = 'batchid'
+  CHECKSUM = 'checksum'
+  DATASTREAMS = 'datastreams'
+  DESCRIPTION = 'description'
+  EXTENSION = 'extension'
+  ID = 'id'
+  IDENTIFIER_ELEMENT = 'identifier_element'
+  LABEL = 'label'
+  LOCATION = 'location'
+  MODEL = 'model'
+  NAME = 'name'
+  NODE_XPATH = 'node_xpath'
+  OBJECTS = 'objects'
+  PID = 'pid'
+  SOURCE = 'source'
+  TYPE = 'type'
+  TYPE_XPATH = 'type_xpath'
+  USER_EMAIL = 'user_email'
+  VALUE_XPATH = 'value_xpath'  
 
   MANIFEST_KEYS = [ BASEPATH, BATCH, CHECKSUM, DATASTREAMS, DESCRIPTION, LABEL, MODEL, NAME, OBJECTS, BatchObjectDatastream::DATASTREAMS, BatchObjectRelationship::RELATIONSHIPS ].flatten
   BATCH_KEYS = [ DESCRIPTION, ID, NAME, USER_EMAIL ]
@@ -34,7 +34,7 @@ class Manifest
       begin
         @manifest_hash = File.open(manifest_filepath) { |f| YAML::load(f) }
       rescue
-        raise ArgumentError, "Unable to load manifest file: #{manifest_filepath}"
+        raise ArgumentError, I18n.t('batch.manifest.errors.file_error', :file => manifest_filepath)
       end
     else
       @manifest_hash = {}
@@ -64,24 +64,24 @@ class Manifest
   def validate_keys
     errs = []
     manifest_hash.keys.each do |key|
-      errs << "Invalid key at manifest level: #{key}" unless MANIFEST_KEYS.include?(key)
+      errs << I18n.t('batch.manifest.errors.invalid_key', :key => key) unless MANIFEST_KEYS.include?(key)
       case 
       when key.eql?(BATCH)
         manifest_hash[BATCH].keys.each do |subkey|
-          errs << "Invalid subkey at manifest level: #{BATCH} - #{subkey}" unless BATCH_KEYS.include?(subkey)
+          errs << I18n.t('batch.manifest.errors.invalid_subkey', :key => BATCH, :subkey => subkey) unless BATCH_KEYS.include?(subkey)
         end
       when key.eql?(CHECKSUM)
         manifest_hash[CHECKSUM].keys.each do |subkey|
-          errs << "Invalid subkey at manifest level: #{CHECKSUM} - #{subkey}" unless MANIFEST_CHECKSUM_KEYS.include?(subkey)
+          errs << I18n.t('batch.manifest.errors.invalid_subkey', :key => CHECKSUM, :subkey => subkey) unless MANIFEST_CHECKSUM_KEYS.include?(subkey)
         end
       when BatchObjectDatastream::DATASTREAMS.include?(key)
         manifest_hash[key].keys.each do |subkey|
-          errs << "Invalid subkey at manifest level: #{key} - #{subkey}" unless MANIFEST_DATASTREAM_KEYS.include?(subkey)
+          errs << I18n.t('batch.manifest.errors.invalid_subkey', :key => key, :subkey => subkey) unless MANIFEST_DATASTREAM_KEYS.include?(subkey)
         end
       when BatchObjectRelationship::RELATIONSHIPS.include?(key)
         if manifest_hash[key].is_a?(Hash)
           manifest_hash[key].keys.each do |subkey|
-            errs << "Invalid subkey at manifest level: #{key} - #{subkey}" unless MANIFEST_RELATIONSHIP_KEYS.include?(subkey)
+            errs << I18n.t('batch.manifest.errors.invalid_subkey', :key => key, :subkey => subkey) unless MANIFEST_RELATIONSHIP_KEYS.include?(subkey)
           end
         end
       end
@@ -96,14 +96,14 @@ class Manifest
       begin
         obj = ActiveFedora::Base.find(pid, :cast => true)
       rescue
-        errs << "Cannot find manifest level #{relationship} object in repository: #{pid}"
+        errs << I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => relationship, :pid => pid)
       end
       if obj && model
         object_class = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, relationship))
-        errs << "Manifest level #{relationship} object should be a(n) #{object_class} but is a(n) #{obj.class}" unless obj.is_a?(object_class)
+        errs << I18n.t('batch.manifest.errors.relationship_object_class_mismatch', :relationship => relationship, :exp_class => object_class, :actual_class => obj.class) unless obj.is_a?(object_class)
       end
     else
-      errs << "Pid for manifest level #{relationship} object could not be determined"
+      errs << I18n.t('relationship_object_pid_not_determined', :relationship => relationship)
     end
     return errs
   end
@@ -111,14 +111,14 @@ class Manifest
   def validate_datastream_filepath(datastream)
     errs = []
     filepath = datastream_location(datastream)
-    errs << "Datastream filepath for at manifest level is not readable: #{datastream} - #{filepath}" unless File.readable?(filepath)
+    errs << I18n.t('batch.manifest.errors.datastream_filepath_error', :datastream => datastream, :filepath => filepath) unless File.readable?(filepath)
     return errs
   end
   
   def validate_datastream_list
     errs = []
     datastreams.each do |ds|
-      errs << "Invalid datastream name at manifest level: #{ds}" unless BatchObjectDatastream::DATASTREAMS.include?(ds)
+      errs << I18n.t('batch.manifest.errors.datastream_name_invalid', :name => ds) unless BatchObjectDatastream::DATASTREAMS.include?(ds)
     end
     return errs.flatten
   end
@@ -126,32 +126,32 @@ class Manifest
   def validate_checksum_type
     errs = []
     unless DulHydra::Datastreams::CHECKSUM_TYPES.include?(checksum_type)
-      errs << "Invalid checksum type at manifest level: #{checksum_type}"
+      errs << I18n.t('batch.manifest.errors.checksum_type_invalid', :type => checksum_type)
     end
     return errs
   end
   
   def validate_checksum_file
     errs = []
-    errs << "Checksum file at manifest level is not readable: #{checksum_location}" unless File.readable?(checksum_location)
+    errs << I18n.t('batch.manifest.errors.checksum_file_error', :file => checksum_location) unless File.readable?(checksum_location)
     if errs.empty?
       checksums = File.open(checksum_location) { |f| Nokogiri::XML(f) }
-      errs << "Checksum file at manifest level is not an XML document: #{checksum_location}" if checksums.root.nil?
+      errs << I18n.t('batch.manifest.errors.checksum_file_not_xml', :file => checksum_location) if checksums.root.nil?
     end
     if errs.empty?
-      errs << "Checksum file at manifest level contains no #{checksum_node_xpath} nodes: #{checksum_location}" \
+      errs << I18n.t('batch.manifest.errors.checksum_file_node_error', :node => checksum_node_xpath, :file => checksum_location) \
                   if checksums.xpath(checksum_node_xpath).empty?
     end
     if errs.empty?
-      base_node_xpath = checksum_node_xpath.end_with?("/") ? checksum_node_xpath : "#{checksum_node_xpath}/"
+      base_node_xpath = checksum_node_xpath.end_with?('/') ? checksum_node_xpath : "#{checksum_node_xpath}/"
       identifier_xpath = "#{base_node_xpath}#{checksum_identifier_element}"
       type_xpath = "#{base_node_xpath}#{checksum_type_xpath}"
       value_xpath = "#{base_node_xpath}#{checksum_value_xpath}"
-      errs << "Checksum file at manifest level contains no #{checksum_identifier_element} nodes: #{checksum_location}" \
+      errs << I18n.t('batch.manifest.errors.checksum_file_node_error', :node => checksum_identifier_element, :file => checksum_location) \
                   if checksums.xpath(identifier_xpath).empty?
-      errs << "Checksum file at manifest level contains no #{checksum_type_xpath} nodes: #{checksum_location}" \
+      errs << I18n.t('batch.manifest.errors.checksum_file_node_error', :node => checksum_type_xpath, :file => checksum_location) \
                   if checksums.xpath(type_xpath).empty?
-      errs << "Checksum file at manifest level contains no #{checksum_value_xpath} nodes: #{checksum_location}" \
+      errs << I18n.t('batch.manifest.errors.checksum_file_node_error', :node => checksum_value_xpath, :file => checksum_location) \
                   if checksums.xpath(value_xpath).empty?
     end
     return errs
@@ -159,7 +159,7 @@ class Manifest
   
   def validate_model
     errs = []
-    model.constantize.new rescue errs << "Invalid model at manifest level: #{model}"
+    model.constantize.new rescue errs << I18n.t('batch.manifest.errors.model_invalid', :model => model)
     return errs
   end
   
@@ -195,7 +195,7 @@ class Manifest
     if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][IDENTIFIER_ELEMENT]
       manifest_hash[CHECKSUM][IDENTIFIER_ELEMENT]
     else
-      "id"
+      'id'
     end
   end
   
@@ -207,7 +207,7 @@ class Manifest
     if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][NODE_XPATH]
       manifest_hash[CHECKSUM][NODE_XPATH]
     else
-      "/checksums/checksum"
+      '/checksums/checksum'
     end
   end
   
@@ -223,7 +223,7 @@ class Manifest
     if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][TYPE_XPATH]
       manifest_hash[CHECKSUM][TYPE_XPATH]
     else
-      "type"
+      'type'
     end
   end
 
@@ -231,7 +231,7 @@ class Manifest
     if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][VALUE_XPATH]
       manifest_hash[CHECKSUM][VALUE_XPATH]
     else
-      "value"
+      'value'
     end
   end
   

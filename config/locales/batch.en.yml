@@ -1,0 +1,21 @@
+en:
+    batch:
+        manifest:
+            errors:
+                file_error: "Unable to load manifest file: %{file}"
+                invalid_key: "Invalid key at manifest level: %{key}"
+                invalid_subkey: "Invalid subkey at manifest level: %{key} - %{subkey}"
+                datastream_name_invalid: "Invalid datastream name at manifest level: %{name}"
+                relationship_object_not_found: "Cannot find manifest level %{relationship} object in repository: %{pid}"
+                relationship_object_class_mismatch: "Manifest level %{relationship} object should be a(n) %{exp_class} but is a(n) %{actual_class}"
+                relationship_object_pid_not_determined: "Pid for manifest level %{relationship} object could not be determined"
+                datastream_filepath_error: "Datastream filepath at manifest level is not readable: %{datastream} - %{filepath}"
+                checksum_type_invalid: "Invalid checksum type at manifest level: %{type}"
+                checksum_file_error: "Checksum file at manifest level is not readable: %{file}"
+                checksum_file_not_xml: "Checksum file at manifest level is not an XML document: %{file}"
+                checksum_file_node_error: "Checksum file at manifest level contains no %{node} nodes: %{file}"
+                model_invalid: "Invalid model at manifest level: #{model}"
+        manifest_object:
+            errors:
+                relationship_object_not_found: "Cannot find manifest object %{identifier} %{relationship} object in repository: %{pid}"
+                relationship_object_class_mismatch: "Manifest object %{identifier} %{relationship} object should be a(n) %{exp_class} but is a(n) %{actual_class}"

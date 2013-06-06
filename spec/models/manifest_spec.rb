@@ -28,7 +28,7 @@ describe Manifest do
       context "invalid model" do
         let(:key) { Manifest::MODEL }
         let(:model) { "BadModel" }
-        let(:error_message) { "Invalid model at manifest level: #{manifest.model}" }
+        let(:error_message) { I18n.t('batch.manifest.errors.model_invalid', :model => manifest.model) }
         before { manifest.manifest_hash[key] = model }
         it_behaves_like "an invalid manifest"
       end
@@ -36,13 +36,13 @@ describe Manifest do
         let(:badkey) { "badkey" }
         let(:value) { "some_value" }
         context "invalid manifest level key" do
-          let(:error_message) { "Invalid key at manifest level: #{badkey}" }
+          let(:error_message) { I18n.t('batch.manifest.errors.invalid_key', :key => badkey) }
           before { manifest.manifest_hash[badkey] = value }        
           it_behaves_like "an invalid manifest"
         end
         context "invalid manifest sublevel key" do
-          let(:key) { "descMetadata" }
-          let(:error_message) { "Invalid subkey at manifest level: #{key} - #{badkey}" }
+          let(:key) { DulHydra::Datastreams::DESC_METADATA }
+          let(:error_message) { I18n.t('batch.manifest.errors.invalid_subkey', :key => key, :subkey => badkey) }
           before { manifest.manifest_hash[key] = { badkey => value } }
           it_behaves_like "an invalid manifest"
         end
@@ -51,14 +51,14 @@ describe Manifest do
         context "datastream list" do
           let(:key) { Manifest::DATASTREAMS }
           let(:bad_datastream_name) { "badDatastreamName" }
-          let(:error_message) { "Invalid datastream name at manifest level: #{bad_datastream_name}" }
+          let(:error_message) { I18n.t('batch.manifest.errors.datastream_name_invalid', :name => bad_datastream_name) }
           before { manifest.manifest_hash[key] = [ bad_datastream_name ] }
           it_behaves_like "an invalid manifest"
         end
         context "datastream filepath" do
           let(:key) { DulHydra::Datastreams::DESC_METADATA }
-          let(:bad_location) { "/tmp/unreadable/filepath/ " }
-          let(:error_message) { "Datastream filepath for at manifest level is not readable: #{key} - #{bad_location}" }
+          let(:bad_location) { "/tmp/unreadable/filepath/" }
+          let(:error_message) { I18n.t('batch.manifest.errors.datastream_filepath_error', :datastream => key, :filepath => bad_location) }
           before { manifest.manifest_hash[key] = { Manifest::LOCATION => bad_location } }
           it_behaves_like "an invalid manifest"
         end
@@ -67,34 +67,34 @@ describe Manifest do
         let(:key) { Manifest::CHECKSUM }
         context "checksum type" do
           let(:bad_checksum_type) { "BAD-9999" }
-          let(:error_message) { "Invalid checksum type at manifest level: #{bad_checksum_type}" }
+          let(:error_message) { I18n.t('batch.manifest.errors.checksum_type_invalid', :type => bad_checksum_type) }
           before { manifest.manifest_hash[key] = { Manifest::TYPE => bad_checksum_type } }
           it_behaves_like "an invalid manifest"
         end
         context "checksum file" do
           context "invalid location" do
             let(:location) { "/tmp/nonexistent/file/checksums.xml" }
-            let(:error_message) { "Checksum file at manifest level is not readable: #{location}" }
+            let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_error', :file => location) }
             before { manifest.manifest_hash[key] = { Manifest::LOCATION => location } }
             it_behaves_like "an invalid manifest"            
           end
           context "not XML document" do
             let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'yaml_hash.txt') }
-            let(:error_message) { "Checksum file at manifest level is not an XML document: #{file}" }
+            let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_not_xml', :file => file) }
             before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
             it_behaves_like "an invalid manifest"            
           end
           context "node_xpath" do
             context "not specified and default xpath absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'metadata.xml') }
-              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_node_xpath} nodes: #{file}" }
+              let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_node_xpath, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
               it_behaves_like "an invalid manifest"                          
             end
             context "specified but absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.xml') }
               let(:node_xpath) { "/foo/bar" }
-              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_node_xpath} nodes: #{file}" }
+              let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_node_xpath, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::NODE_XPATH => node_xpath } }
               it_behaves_like "an invalid manifest"                          
             end
@@ -102,14 +102,14 @@ describe Manifest do
           context "identifier_element" do
             context "not specified and default xpath absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'incorrect_checksums.xml') }
-              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_identifier_element} nodes: #{file}" }
+              let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_identifier_element, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
               it_behaves_like "an invalid manifest"
             end
             context "specified but absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.xml') }
               let(:identifier_element) { "bogus" }
-              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_identifier_element} nodes: #{file}" }
+              let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_identifier_element, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::IDENTIFIER_ELEMENT => identifier_element } }
               it_behaves_like "an invalid manifest"                          
             end
@@ -117,14 +117,14 @@ describe Manifest do
           context "type xpath" do
             context "not specified and default type xpath absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums_bad_elements.xml') }
-              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_type_xpath} nodes: #{file}" }
+              let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_type_xpath, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
               it_behaves_like "an invalid manifest"
             end
             context "specified but absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.xml') }
               let(:type_xpath) { "bogus" }
-              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_type_xpath} nodes: #{file}" }
+              let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_type_xpath, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::TYPE_XPATH => type_xpath } }
               it_behaves_like "an invalid manifest"
             end
@@ -132,14 +132,14 @@ describe Manifest do
           context "value xpath" do
             context "not specified and default value xpath absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums_bad_elements.xml') }
-              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_value_xpath} nodes: #{file}" }
+              let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_value_xpath, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
               it_behaves_like "an invalid manifest"
             end
             context "specified but absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums_bad_elements.xml') }
               let(:value_xpath) { "bogus" }
-              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_value_xpath} nodes: #{file}" }
+              let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_value_xpath, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::VALUE_XPATH => value_xpath } }
               it_behaves_like "an invalid manifest"
             end
@@ -151,7 +151,7 @@ describe Manifest do
           context "object not in repository" do
             let(:key) { BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY }
             let(:pid) { "duke-apo:adminPolicy" }
-            let(:error_message) { "Cannot find manifest level #{key} object in repository: #{pid}" }
+            let(:error_message) { I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => key, :pid => pid) }
             before { manifest.manifest_hash[key] = pid }            
             it_behaves_like "an invalid manifest"
           end
@@ -159,7 +159,7 @@ describe Manifest do
             let(:model) { "Item" }
             let(:key) { BatchObjectRelationship::RELATIONSHIP_PARENT }
             let(:relationship_class) { "Collection" }
-            let(:error_message) { "Manifest level #{key} object should be a(n) #{relationship_class} but is a(n) #{object.class}" }
+            let(:error_message) { I18n.t('batch.manifest.errors.relationship_object_class_mismatch', :relationship => key, :exp_class => relationship_class, :actual_class => object.class) }
             let(:object) { FactoryGirl.create(:component) }
             before do
               manifest.manifest_hash[Manifest::MODEL] = model
@@ -175,12 +175,12 @@ describe Manifest do
           let(:id) { "test001" }
           before { manifest.manifest_hash[key] = { subkey => id } }
           context "cannot determine pid" do
-            let(:error_message) { "Pid for manifest level #{key} object could not be determined" }
+            let(:error_message) { I18n.t('relationship_object_pid_not_determined', :relationship => key) }
             it_behaves_like "an invalid manifest"
           end
           context "object not in repository" do
             let(:pid) { "test:not_there" }
-            let(:error_message) { "Cannot find manifest level #{key} object in repository: #{pid}" }
+            let(:error_message) { I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => key, :pid => pid) }
             let!(:batch_object) { BatchObject.create(:identifier => id, :pid => pid) }
             before { manifest.manifest_hash[key] = { subkey => id } }
             after { batch_object.destroy }
@@ -189,7 +189,7 @@ describe Manifest do
           context "repository object not correct model" do
             let(:model) { "Item" }
             let(:relationship_class) { "Collection" }
-            let(:error_message) { "Manifest level #{key} object should be a(n) #{relationship_class} but is a(n) #{object.class}" }
+            let(:error_message) { I18n.t('batch.manifest.errors.relationship_object_class_mismatch', :relationship => key, :exp_class => relationship_class, :actual_class => object.class) }
             let(:object) { FactoryGirl.create(:component) }
             let!(:batch_object) { BatchObject.create(:identifier => object.identifier.first, :pid => object.pid) }
             before do

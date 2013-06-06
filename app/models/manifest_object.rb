@@ -1,16 +1,16 @@
 class ManifestObject
   
-  AUTOIDLENGTH = "autoidlength"
-  BATCHID = "batchid"
-  CHECKSUM = "checksum"
-  DATASTREAMS = "datastreams"
-  ID = "id"
-  IDENTIFIER = "identifier"
-  LABEL = "label"
-  MODEL = "model"
-  PID = "pid"
-  TYPE = "type"
-  VALUE = "value"
+  AUTOIDLENGTH = 'autoidlength'
+  BATCHID = 'batchid'
+  CHECKSUM = 'checksum'
+  DATASTREAMS = 'datastreams'
+  ID = 'id'
+  IDENTIFIER = 'identifier'
+  LABEL = 'label'
+  MODEL = 'model'
+  PID = 'pid'
+  TYPE = 'type'
+  VALUE = 'value'
 
   OBJECT_KEYS = [ CHECKSUM, DATASTREAMS, IDENTIFIER, LABEL, MODEL, BatchObjectDatastream::DATASTREAMS, BatchObjectRelationship::RELATIONSHIPS].flatten
   OBJECT_CHECKSUM_KEYS = [ TYPE, VALUE ]
@@ -39,9 +39,9 @@ class ManifestObject
   def validate_relationship(relationship)
     errs = []
     pid = relationship_pid(relationship)
-    obj = ActiveFedora::Base.find(pid, :cast => true) rescue errs << "Cannot find manifest object #{key_identifier} #{relationship} object in repository: #{pid}"
+    obj = ActiveFedora::Base.find(pid, :cast => true) rescue errs << I18n.t('batch.manifest_object.errors.relationship_object_not_found', :identifier => key_identifier, :relationship => relationship, :pid => pid)
     object_class = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, relationship))
-    errs << "Manifest object #{key_identifier} #{relationship} object should be a(n) #{object_class} but is a(n) #{obj.class}" unless obj.is_a?(object_class)
+    errs << I18n.t('batch.manifest_object.errors.relationship_object_class_mismatch', :identifier => key_identifier, :relationship => relationship, :exp_class => object_class, :actual_class => obj.class) unless obj.is_a?(object_class)
     return errs
   end
   
