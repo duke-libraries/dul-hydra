@@ -114,6 +114,36 @@ describe Manifest do
               it_behaves_like "an invalid manifest"                          
             end
           end
+          context "type xpath" do
+            context "not specified and default type xpath absent" do
+              let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums_bad_elements.xml') }
+              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_type_xpath} nodes: #{file}" }
+              before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
+              it_behaves_like "an invalid manifest"
+            end
+            context "specified but absent" do
+              let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.xml') }
+              let(:type_xpath) { "bogus" }
+              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_type_xpath} nodes: #{file}" }
+              before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::TYPE_XPATH => type_xpath } }
+              it_behaves_like "an invalid manifest"
+            end
+          end
+          context "value xpath" do
+            context "not specified and default value xpath absent" do
+              let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums_bad_elements.xml') }
+              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_value_xpath} nodes: #{file}" }
+              before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
+              it_behaves_like "an invalid manifest"
+            end
+            context "specified but absent" do
+              let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums_bad_elements.xml') }
+              let(:value_xpath) { "bogus" }
+              let(:error_message) { "Checksum file at manifest level contains no #{manifest.checksum_value_xpath} nodes: #{file}" }
+              before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::VALUE_XPATH => value_xpath } }
+              it_behaves_like "an invalid manifest"
+            end
+          end
         end
       end
       context "relationships" do

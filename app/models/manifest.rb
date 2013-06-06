@@ -145,9 +145,15 @@ class Manifest
     if errs.empty?
       base_node_xpath = checksum_node_xpath.end_with?("/") ? checksum_node_xpath : "#{checksum_node_xpath}/"
       identifier_xpath = "#{base_node_xpath}#{checksum_identifier_element}"
+      type_xpath = "#{base_node_xpath}#{checksum_type_xpath}"
+      value_xpath = "#{base_node_xpath}#{checksum_value_xpath}"
       errs << "Checksum file at manifest level contains no #{checksum_identifier_element} nodes: #{checksum_location}" \
                   if checksums.xpath(identifier_xpath).empty?
-    end    
+      errs << "Checksum file at manifest level contains no #{checksum_type_xpath} nodes: #{checksum_location}" \
+                  if checksums.xpath(type_xpath).empty?
+      errs << "Checksum file at manifest level contains no #{checksum_value_xpath} nodes: #{checksum_location}" \
+                  if checksums.xpath(value_xpath).empty?
+    end
     return errs
   end
   
