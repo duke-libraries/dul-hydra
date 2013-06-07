@@ -1,5 +1,5 @@
 class Manifest
-  
+
   AUTOIDLENGTH = 'autoidlength'
   BASEPATH = 'basepath'
   BATCH = 'batch'
@@ -21,14 +21,14 @@ class Manifest
   TYPE = 'type'
   TYPE_XPATH = 'type_xpath'
   USER_EMAIL = 'user_email'
-  VALUE_XPATH = 'value_xpath'  
+  VALUE_XPATH = 'value_xpath'
 
   MANIFEST_KEYS = [ BASEPATH, BATCH, CHECKSUM, DATASTREAMS, DESCRIPTION, LABEL, MODEL, NAME, OBJECTS, BatchObjectDatastream::DATASTREAMS, BatchObjectRelationship::RELATIONSHIPS ].flatten
   BATCH_KEYS = [ DESCRIPTION, ID, NAME, USER_EMAIL ]
   MANIFEST_CHECKSUM_KEYS = [ LOCATION, SOURCE, TYPE, NODE_XPATH, IDENTIFIER_ELEMENT, TYPE_XPATH, VALUE_XPATH ]
   MANIFEST_DATASTREAM_KEYS = [ EXTENSION, LOCATION ]
   MANIFEST_RELATIONSHIP_KEYS = [ AUTOIDLENGTH, BATCHID, ID, PID ]
-  
+
   def initialize(manifest_filepath=nil)
     if manifest_filepath
       begin
@@ -40,11 +40,12 @@ class Manifest
       @manifest_hash = {}
     end
   end
-  
+
   def validate
     errors = []
     errors += validate_model if model
     errors += validate_keys
+    errors += validate_basepath
     errors += validate_datastream_list if datastreams
     BatchObjectDatastream::DATASTREAMS.each do |datastream|
       if manifest_hash[datastream] && manifest_hash[datastream][LOCATION]
@@ -61,11 +62,21 @@ class Manifest
     return errors
   end
 
+  def validate_basepath
+    errs = []
+    if basepath
+      errs << I18n.t('batch.manifest.errors.basepath_error', :path => basepath) unless File.readable?(basepath)
+    else
+      errs << I18n.t('batch.manifest.errors.basepath_missing')
+    end
+    return errs
+  end
+
   def validate_keys
     errs = []
     manifest_hash.keys.each do |key|
       errs << I18n.t('batch.manifest.errors.invalid_key', :key => key) unless MANIFEST_KEYS.include?(key)
-      case 
+      case
       when key.eql?(BATCH)
         manifest_hash[BATCH].keys.each do |subkey|
           errs << I18n.t('batch.manifest.errors.invalid_subkey', :key => BATCH, :subkey => subkey) unless BATCH_KEYS.include?(subkey)
@@ -88,7 +99,7 @@ class Manifest
     end
     return errs
   end
-  
+
   def validate_relationship(relationship)
     errs = []
     pid = relationship_pid(relationship)
@@ -103,18 +114,18 @@ class Manifest
         errs << I18n.t('batch.manifest.errors.relationship_object_class_mismatch', :relationship => relationship, :exp_class => object_class, :actual_class => obj.class) unless obj.is_a?(object_class)
       end
     else
-      errs << I18n.t('relationship_object_pid_not_determined', :relationship => relationship)
+      errs << I18n.t('batch.manifest.errors.relationship_object_pid_not_determined', :relationship => relationship)
     end
     return errs
   end
-  
+
   def validate_datastream_filepath(datastream)
     errs = []
     filepath = datastream_location(datastream)
     errs << I18n.t('batch.manifest.errors.datastream_filepath_error', :datastream => datastream, :filepath => filepath) unless File.readable?(filepath)
     return errs
   end
-  
+
   def validate_datastream_list
     errs = []
     datastreams.each do |ds|
@@ -122,7 +133,7 @@ class Manifest
     end
     return errs.flatten
   end
-  
+
   def validate_checksum_type
     errs = []
     unless DulHydra::Datastreams::CHECKSUM_TYPES.include?(checksum_type)
@@ -130,7 +141,7 @@ class Manifest
     end
     return errs
   end
-  
+
   def validate_checksum_file
     errs = []
     errs << I18n.t('batch.manifest.errors.checksum_file_error', :file => checksum_location) unless File.readable?(checksum_location)
@@ -156,29 +167,29 @@ class Manifest
     end
     return errs
   end
-  
+
   def validate_model
     errs = []
     model.constantize.new rescue errs << I18n.t('batch.manifest.errors.model_invalid', :model => model)
     return errs
   end
-  
+
   def basepath
     manifest_hash[BASEPATH]
   end
-  
+
   def batch
     @batch
   end
-  
+
   def batch=(batch)
     @batch = batch
   end
-  
+
   def batch_description
     manifest_hash[BATCH][DESCRIPTION] if manifest_hash[BATCH]
   end
-  
+
   def batch_id
     manifest_hash[BATCH][ID] if manifest_hash[BATCH]
   end
@@ -186,11 +197,11 @@ class Manifest
   def batch_name
     manifest_hash[BATCH][NAME] if manifest_hash[BATCH]
   end
-  
+
   def batch_user_email
     manifest_hash[BATCH][USER_EMAIL] if manifest_hash[BATCH]
   end
-  
+
   def checksum_identifier_element
     if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][IDENTIFIER_ELEMENT]
       manifest_hash[CHECKSUM][IDENTIFIER_ELEMENT]
@@ -198,11 +209,11 @@ class Manifest
       'id'
     end
   end
-  
+
   def checksum_location
     manifest_hash[CHECKSUM][LOCATION] if manifest_hash[CHECKSUM]
   end
-  
+
   def checksum_node_xpath
     if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][NODE_XPATH]
       manifest_hash[CHECKSUM][NODE_XPATH]
@@ -210,15 +221,15 @@ class Manifest
       '/checksums/checksum'
     end
   end
-  
+
   def checksum_type
     manifest_hash[CHECKSUM][TYPE] if manifest_hash[CHECKSUM]
   end
-  
+
   def checksum_type?
     manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][TYPE]
   end
-  
+
   def checksum_type_xpath
     if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][TYPE_XPATH]
       manifest_hash[CHECKSUM][TYPE_XPATH]
@@ -234,7 +245,7 @@ class Manifest
       'value'
     end
   end
-  
+
   def checksums
     return @checksums if @checksums
     if checksums?
@@ -242,64 +253,64 @@ class Manifest
     end
     return @checksums
   end
-  
+
   def checksums?
     manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][LOCATION]
   end
-  
+
   def datastream_extension(datastream_name)
     manifest_hash[datastream_name][EXTENSION] if manifest_hash[datastream_name]
   end
-  
+
   def datastream_location(datastream_name)
     manifest_hash[datastream_name][LOCATION] if manifest_hash[datastream_name]
   end
-  
+
   def datastreams
     manifest_hash[DATASTREAMS]
   end
-  
+
   def label
     manifest_hash[LABEL]
   end
-  
+
   def model
     manifest_hash[MODEL]
   end
-  
+
   def manifest_hash
     @manifest_hash
   end
-  
+
   def manifest_hash=(manifest_hash)
     @manifest_hash = manifest_hash
   end
-  
+
   def objects
     objects = []
     manifest_objects = manifest_hash[OBJECTS]
     manifest_objects.each { |object_hash| objects << ManifestObject.new(object_hash, self) }
     return objects
   end
-  
+
   def has_relationship?(relationship_name)
     manifest_hash[relationship_name] ? true : false
   end
-  
+
   def relationship_autoidlength(relationship_name)
     manifest_hash[relationship_name][AUTOIDLENGTH] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
   end
 
-  def relationship_id(relationship_name)  
+  def relationship_id(relationship_name)
     manifest_hash[relationship_name][ID] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
   end
-  
-  def relationship_batchid(relationship_name)  
+
+  def relationship_batchid(relationship_name)
     manifest_hash[relationship_name][BATCHID] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
   end
-  
+
   def relationship_pid(relationship_name)
-    if manifest_hash[relationship_name]    
+    if manifest_hash[relationship_name]
       case
       when manifest_hash[relationship_name].is_a?(String)
         manifest_hash[relationship_name]
@@ -311,5 +322,5 @@ class Manifest
       end
     end
   end
-  
+
 end

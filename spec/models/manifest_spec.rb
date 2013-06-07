@@ -1,14 +1,13 @@
 require 'spec_helper'
 
 describe Manifest do
-  
+
   shared_examples "a valid manifest" do
     it "should be valid" do
-      puts manifest.validate
       expect(manifest.validate).to be_empty
     end
   end
-  
+
   shared_examples "an invalid manifest" do
     it "should not be valid" do
       expect(manifest.validate).to include(error_message)
@@ -20,6 +19,7 @@ describe Manifest do
     context "valid" do
       let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
       let!(:admin_policy) { AdminPolicy.create(:pid => admin_policy_pid) }
+      before { manifest.manifest_hash['basepath'] = File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous') }
       after { admin_policy.destroy }
       it_behaves_like "a valid manifest"
     end
@@ -37,7 +37,7 @@ describe Manifest do
         let(:value) { "some_value" }
         context "invalid manifest level key" do
           let(:error_message) { I18n.t('batch.manifest.errors.invalid_key', :key => badkey) }
-          before { manifest.manifest_hash[badkey] = value }        
+          before { manifest.manifest_hash[badkey] = value }
           it_behaves_like "an invalid manifest"
         end
         context "invalid manifest sublevel key" do
@@ -57,7 +57,7 @@ describe Manifest do
         end
         context "datastream filepath" do
           let(:key) { DulHydra::Datastreams::DESC_METADATA }
-          let(:bad_location) { "/tmp/unreadable/filepath/" }
+          let(:bad_location) { File.join(File::SEPARATOR, 'tmp', 'unreadable','filepath') }
           let(:error_message) { I18n.t('batch.manifest.errors.datastream_filepath_error', :datastream => key, :filepath => bad_location) }
           before { manifest.manifest_hash[key] = { Manifest::LOCATION => bad_location } }
           it_behaves_like "an invalid manifest"
@@ -76,27 +76,27 @@ describe Manifest do
             let(:location) { "/tmp/nonexistent/file/checksums.xml" }
             let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_error', :file => location) }
             before { manifest.manifest_hash[key] = { Manifest::LOCATION => location } }
-            it_behaves_like "an invalid manifest"            
+            it_behaves_like "an invalid manifest"
           end
           context "not XML document" do
             let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'yaml_hash.txt') }
             let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_not_xml', :file => file) }
             before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
-            it_behaves_like "an invalid manifest"            
+            it_behaves_like "an invalid manifest"
           end
           context "node_xpath" do
             context "not specified and default xpath absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'metadata.xml') }
               let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_node_xpath, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file } }
-              it_behaves_like "an invalid manifest"                          
+              it_behaves_like "an invalid manifest"
             end
             context "specified but absent" do
               let(:file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.xml') }
               let(:node_xpath) { "/foo/bar" }
               let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_node_xpath, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::NODE_XPATH => node_xpath } }
-              it_behaves_like "an invalid manifest"                          
+              it_behaves_like "an invalid manifest"
             end
           end
           context "identifier_element" do
@@ -111,7 +111,7 @@ describe Manifest do
               let(:identifier_element) { "bogus" }
               let(:error_message) { I18n.t('batch.manifest.errors.checksum_file_node_error', :node => manifest.checksum_identifier_element, :file => file) }
               before { manifest.manifest_hash[key] = { Manifest::LOCATION => file, Manifest::IDENTIFIER_ELEMENT => identifier_element } }
-              it_behaves_like "an invalid manifest"                          
+              it_behaves_like "an invalid manifest"
             end
           end
           context "type xpath" do
@@ -152,7 +152,7 @@ describe Manifest do
             let(:key) { BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY }
             let(:pid) { "duke-apo:adminPolicy" }
             let(:error_message) { I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => key, :pid => pid) }
-            before { manifest.manifest_hash[key] = pid }            
+            before { manifest.manifest_hash[key] = pid }
             it_behaves_like "an invalid manifest"
           end
           context "repository object not correct model" do
@@ -166,7 +166,7 @@ describe Manifest do
               manifest.manifest_hash[key] = object.pid
             end
             after { object.destroy }
-            it_behaves_like "an invalid manifest"            
+            it_behaves_like "an invalid manifest"
           end
         end
         context "id" do
@@ -175,7 +175,7 @@ describe Manifest do
           let(:id) { "test001" }
           before { manifest.manifest_hash[key] = { subkey => id } }
           context "cannot determine pid" do
-            let(:error_message) { I18n.t('relationship_object_pid_not_determined', :relationship => key) }
+            let(:error_message) { I18n.t('batch.manifest.errors.relationship_object_pid_not_determined', :relationship => key) }
             it_behaves_like "an invalid manifest"
           end
           context "object not in repository" do
@@ -197,7 +197,7 @@ describe Manifest do
               manifest.manifest_hash[key] = { subkey => object.identifier.first }
             end
             after { object.destroy }
-            it_behaves_like "an invalid manifest"            
+            it_behaves_like "an invalid manifest"
           end
         end
       end
@@ -212,7 +212,7 @@ describe Manifest do
       expect(manifest.manifest_hash).to eq(yaml_hash)
     end
   end
-  
+
   context "methods" do
     let(:manifest) { Manifest.new }
     context "basepath, label, model" do
@@ -318,7 +318,7 @@ describe Manifest do
           before { manifest.manifest_hash = HashWithIndifferentAccess.new(datastream_name => { "extension" => extension, "location" => location }) }
           it "should use the provided values" do
             expect(manifest.datastream_extension(datastream_name)).to eq(extension)
-            expect(manifest.datastream_location(datastream_name)).to eq(location)     
+            expect(manifest.datastream_location(datastream_name)).to eq(location)
           end
         end
         context "not provided" do
@@ -364,5 +364,5 @@ describe Manifest do
       end
     end
   end
-  
+
 end

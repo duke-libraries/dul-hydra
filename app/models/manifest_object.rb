@@ -1,5 +1,5 @@
 class ManifestObject
-  
+
   AUTOIDLENGTH = 'autoidlength'
   BATCHID = 'batchid'
   CHECKSUM = 'checksum'
@@ -20,7 +20,7 @@ class ManifestObject
     @object_hash = object_hash
     @manifest = manifest
   end
-  
+
   def validate
     errors = []
     errors += validate_identifier
@@ -39,78 +39,88 @@ class ManifestObject
   def validate_relationship(relationship)
     errs = []
     pid = relationship_pid(relationship)
-    obj = ActiveFedora::Base.find(pid, :cast => true) rescue errs << I18n.t('batch.manifest_object.errors.relationship_object_not_found', :identifier => key_identifier, :relationship => relationship, :pid => pid)
-    object_class = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, relationship))
-    errs << I18n.t('batch.manifest_object.errors.relationship_object_class_mismatch', :identifier => key_identifier, :relationship => relationship, :exp_class => object_class, :actual_class => obj.class) unless obj.is_a?(object_class)
+    if pid
+      begin
+        obj = ActiveFedora::Base.find(pid, :cast => true)
+      rescue
+        errs << I18n.t('batch.manifest_object.errors.relationship_object_not_found', :identifier => key_identifier, :relationship => relationship, :pid => pid)
+      end
+      if obj && model
+        object_class = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, relationship))
+        errs << I18n.t('batch.manifest_object.errors.relationship_object_class_mismatch', :identifier => key_identifier, :relationship => relationship, :exp_class => object_class, :actual_class => obj.class) unless obj.is_a?(object_class)
+      end
+    else
+      errs << I18n.t('batch.manifest_object.errors.relationship_object_pid_not_determined', :identifier => key_identifier, :relationship => relationship)
+    end
     return errs
   end
-  
+
   def validate_datastream_filepath(datastream)
     errs = []
     filepath = datastream_filepath(datastream)
-    errs << "Datastream filepath for manifest object #{key_identifier} is not readable: #{datastream} - #{filepath}" unless File.readable?(filepath)
+    errs << I18n.t('batch.manifest_object.errors.datastream_filepath_error', :identifier => key_identifier, :datastream => datastream, :filepath => filepath) unless File.readable?(filepath)
     return errs
   end
-  
+
   def validate_datastreams
     errs = []
     datastreams.each do |ds|
-      errs << "Invalid datastream name for manifest object #{key_identifier}: #{ds}" unless BatchObjectDatastream::DATASTREAMS.include?(ds)
+      errs << I18n.t('batch.manifest_object.errors.datastream_name_invalid', :identifier => key_identifier, :name => ds) unless BatchObjectDatastream::DATASTREAMS.include?(ds)
       errs << validate_datastream_filepath(ds)
     end
     return errs.flatten
   end
-  
+
   def validate_checksum_type
     errs = []
     unless DulHydra::Datastreams::CHECKSUM_TYPES.include?(checksum_type)
-      errs << "Invalid checksum type for manifest object #{key_identifier}: #{checksum_type}"
+      errs << I18n.t('batch.manifest_object.errors.checksum_type_invalid', :identifier => key_identifier, :type => checksum_type)
     end
     return errs
   end
-  
+
   def validate_model
     errs = []
     if model
-      model.constantize.new rescue errs << "Invalid model for manifest object #{key_identifier}: #{model}"
+      model.constantize.new rescue errs << I18n.t('batch.manifest_object.errors.model_invalid', :identifier => key_identifier, :model => model)
     else
-      errs << "Missing model for manifest object #{key_identifier}"
-    end    
+      errs << I18n.t('batch.manifest_object.errors.model_missing', :identifier => key_identifier)
+    end
     return errs
   end
-  
+
   def validate_identifier
     errs = []
-    errs << "Manifest object does not contain an identifier" unless key_identifier
+    errs << I18n.t('batch.manifest_object.errors.identifier_missing') unless key_identifier
     return errs
   end
-  
+
   def validate_keys
     errs = []
     object_hash.keys.each do |key|
-      errs << "Invalid key in manifest object #{key_identifier}: #{key}" unless OBJECT_KEYS.include?(key)
-      case 
+      errs << I18n.t('batch.manifest_object.errors.invalid_key', :identifier => key_identifier, :key => key) unless OBJECT_KEYS.include?(key)
+      case
       when key.eql?(CHECKSUM)
         if object_hash[CHECKSUM].is_a?(Hash)
           object_hash[CHECKSUM].keys.each do |subkey|
-            "Invalid subkey in manifest object #{key_identifier}: #{CHECKSUM} - #{subkey}" unless OBJECT_CHECKSUM_KEYS.include?(subkey)
+            errs << I18n.t('batch.manifest_object.errors.invalid_subkey', :identifier => key_identifier, :key => CHECKSUM, :subkey => subkey) unless OBJECT_CHECKSUM_KEYS.include?(subkey)
           end
         end
       when BatchObjectRelationship::RELATIONSHIPS.include?(key)
         if object_hash[key].is_a?(Hash)
           object_hash[key].keys.each do |subkey|
-            "Invalid subkey in manifest object #{key_identifier}: #{key} - #{subkey}" unless OBJECT_RELATIONSHIP_KEYS.include?(subkey)
+            errs << I18n.t('batch.manifest_object.errors.invalid_subkey', :identifier => key_identifier, :key => key, :subkey => subkey) unless OBJECT_RELATIONSHIP_KEYS.include?(subkey)
           end
         end
       end
     end
     return errs
   end
-  
+
   def batch
     manifest.batch
   end
-  
+
   def checksum
     if object_hash[CHECKSUM]
       if object_hash[CHECKSUM][VALUE]
@@ -126,7 +136,7 @@ class ManifestObject
       end
     end
   end
-  
+
   def checksum?
     object_hash[CHECKSUM] || manifest.checksums? ? true : false
   end
@@ -141,7 +151,7 @@ class ManifestObject
       checksum_node.xpath(manifest.checksum_type_xpath).text()
     when manifest.checksum_type
       manifest.checksum_type
-    end    
+    end
   end
 
   def checksum_type?
@@ -168,11 +178,11 @@ class ManifestObject
       File.join(location, datastream)
     end
   end
-  
+
   def datastreams
     object_hash[DATASTREAMS] || manifest.datastreams
   end
-  
+
   def key_identifier
     case object_hash[IDENTIFIER]
     when String
@@ -181,27 +191,27 @@ class ManifestObject
       object_hash[IDENTIFIER].first
     end
   end
-  
+
   def label
     object_hash[LABEL] || manifest.label
   end
-  
+
   def model
     object_hash[MODEL] || manifest.model
   end
-  
+
   def manifest
     @manifest
   end
-  
+
   def manifest=(manifest)
     @manifest = manifest
   end
-  
+
   def object_hash
     @object_hash
   end
-  
+
   def object_hash=(object_hash)
     @object_hash = object_hash
   end
@@ -209,7 +219,7 @@ class ManifestObject
   def has_relationship?(relationship_name)
     object_hash[relationship_name] || manifest.has_relationship?(relationship_name) ? true : false
   end
-  
+
   def relationship_pid(relationship_name)
     pid = explicit_relationship_pid(relationship_name)
     unless pid
@@ -230,7 +240,7 @@ class ManifestObject
     pid = manifest.relationship_pid(relationship_name) unless pid
     return pid
   end
-  
+
   # should be private?
   def explicit_relationship_pid(relationship_name)
     pid = nil
@@ -243,7 +253,7 @@ class ManifestObject
     end
     return pid
   end
-  
+
   # should be private?
   def relationship_autoidlength(relationship_name)
     autoidlength = nil
@@ -255,7 +265,7 @@ class ManifestObject
     autoidlength = manifest.relationship_autoidlength(relationship_name) unless autoidlength
     return autoidlength
   end
-  
+
   # should be private?
   def relationship_id(relationship_name)
     id = nil
@@ -267,7 +277,7 @@ class ManifestObject
     id = manifest.relationship_id(relationship_name) unless id
     return id
   end
-  
+
   # should be private?
   def relationship_batchid(relationship_name)
     batchid = nil
