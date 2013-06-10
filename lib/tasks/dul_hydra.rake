@@ -2,12 +2,24 @@ namespace :dul_hydra do
     desc "CI build"
 	task :ci do
 		ENV['environment'] = "test"
+		Rake::Task["dul_hydra:config"].invoke
 		Rake::Task["jetty:clean"].invoke
 		Rake::Task["jetty:config"].invoke
 		jetty_params = Jettywrapper.load_config
   		jetty_params[:startup_wait] = 60
         Jettywrapper.wrap(jetty_params) do
     	    Rake::Task['spec'].invoke
+		end
+	end
+    desc "Copy sample DULHydra config files into appropriate places"
+	task :config => :environment do
+	    FileList['config/*.sample'].each do |f|
+		    copy_to = f.sub(/\.sample$/, "")
+		    if File.exists?(copy_to)
+			    puts "Config file \"#{copy_to}\" exists, not overwriting."
+			else
+			    cp(f, copy_to, :verbose => true)
+			end
 		end
 	end
     namespace :admin_policies do
