@@ -5,6 +5,7 @@ before_script:
   - "cp config/log4r.yml.sample config/log4r.yml"
   - "cp config/log4r_fixity_check.yml.sample config/log4r_fixity_check.yml"
   - "cp config/database.yml.sample config/database.yml"
+  - "rake db:migrate"
   - "rake db:test:prepare"
   - "rake jetty:clean"
   - "rake jetty:config"
