@@ -1,9 +1,8 @@
 language: ruby
 rvm:
   - 1.9.3
-  - 2.0.0
 before_script:
-  - "rake dul_hydra:config"
+  - "cp config/log4r.yml.sample config/log4r.yml"
   - "rake jetty:clean"
   - "rake jetty:config"
 script: "rake dul_hydra:ci"
