@@ -8,17 +8,6 @@ namespace :dul_hydra do
     	    Rake::Task['spec'].invoke
 		end
 	end
-    desc "Copy sample DULHydra config files into appropriate places"
-	task :config => :environment do
-	    FileList['config/*.sample'].each do |f|
-		    copy_to = f.sub(/\.sample$/, "")
-		    if File.exists?(copy_to)
-			    puts "Config file \"#{copy_to}\" exists, not overwriting."
-			else
-			    cp(f, copy_to, :verbose => true)
-			end
-		end
-	end
     namespace :admin_policies do
         desc "Load admin policy objects from FILE_PATH"
 	task :load => :environment do
