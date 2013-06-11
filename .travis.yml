@@ -1,0 +1,25 @@
+language: ruby
+rvm:
+  - 1.9.3
+  - 2.0.0
+before_script:
+  - "cp config/log4r.yml.sample config/log4r.yml"
+  - "cp config/log4r_fixity_check.yml.sample config/log4r_fixity_check.yml"
+  - "cp config/database.yml.sample config/database.yml"
+  - "cp config/role_map_test.yml.sample config/role_map_test.yml"
+  - "cp config/solr.yml.sample config/solr.yml"
+  - "cp config/fedora.yml.sample config/fedora.yml"
+  - "rake db:migrate"
+  - "rake db:test:prepare"
+  - "rake jetty:clean"
+  - "rake jetty:config"
+script: "rake dul_hydra:ci"
+branches:
+  except:
+    - master
+    - batch-ingest
+    - download-behavior
+    - fcrepo-admin
+notifications:
+  email:
+    - lib-drs@duke.edu

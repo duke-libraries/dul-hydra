@@ -1,4 +1,13 @@
 namespace :dul_hydra do
+    desc "CI build"
+	task :ci do
+		ENV['environment'] = "test"
+		jetty_params = Jettywrapper.load_config
+  		jetty_params[:startup_wait] = 60
+        Jettywrapper.wrap(jetty_params) do
+    	    Rake::Task['spec'].invoke
+		end
+	end
     namespace :admin_policies do
         desc "Load admin policy objects from FILE_PATH"
 	task :load => :environment do
