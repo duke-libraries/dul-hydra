@@ -15,8 +15,11 @@ before_script:
   - "rake jetty:config"
 script: "rake dul_hydra:ci"
 branches:
-  only:
-    - travis-ci
+  except:
+    - master
+    - batch-ingest
+    - download-behavior
+    - fcrepo-admin
 notifications:
   email:
     - lib-drs@duke.edu
