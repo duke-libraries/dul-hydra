@@ -17,7 +17,6 @@ script: "rake dul_hydra:ci"
 branches:
   except:
     - master
-    - batch-ingest
     - download-behavior
     - fcrepo-admin
 notifications:
