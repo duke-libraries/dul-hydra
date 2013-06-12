@@ -5,6 +5,7 @@ module DulHydra::Models
     include Governable
     include AccessControllable
     include HasPreservationEvents
+    include HasThumbnail
     include ActiveFedora::Auditable
 
     def to_solr(solr_doc=Hash.new, opts={})
