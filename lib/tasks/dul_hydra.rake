@@ -30,6 +30,21 @@ namespace :dul_hydra do
 	    	bfc.execute
 	    	BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
         end
+        desc "Create ingest batch objects from MANIFEST"
+        task :process_manifest => :environment do
+            raise "Must specify manifest.  Ex.: MANIFEST=/srv/fedora-working/ingest/COL/manifests/item.yml" unless ENV['MANIFEST']
+            opts = { :manifest => ENV['MANIFEST'] }
+            opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
+            mp = DulHydra::Scripts::ManifestProcessor.new(opts)
+            mp.execute
+        end
+        task :process_ingest => :environment do
+            raise "Must specify batch ID.  Ex.: BATCH_ID=7" unless ENV['BATCH_ID']
+            opts = { :batch_id => ENV['BATCH_ID'] }
+            opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
+            bp = DulHydra::Scripts::BatchProcessor.new(opts)
+            bp.execute
+        end
     end
     namespace :solr do
         desc "Deletes everything from the solr index"

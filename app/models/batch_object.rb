@@ -105,10 +105,16 @@ class BatchObject < ActiveRecord::Base
     when BatchObjectDatastream::PAYLOAD_TYPE_BYTES
       repo_object.datastreams[datastream[:name]].content = datastream[:payload]
     when BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-      datastream_file = File.open(datastream[:payload])
-      repo_object.datastreams[datastream[:name]].content_file = datastream_file
-      repo_object.save unless dryrun # save the object to the repository before we close the file 
-      datastream_file.close
+      repo_datastream = repo_object.datastreams[datastream[:name]]
+      if repo_datastream.is_a? DulHydra::Datastreams::FileContentDatastream
+        datastream_file = File.open(datastream[:payload])
+        repo_datastream.content_file = datastream_file
+        repo_object.save unless dryrun # save the object to the repository before we close the file 
+        datastream_file.close
+      else
+        datastream_content = File.read(datastream[:payload])
+        repo_datastream.content = datastream_content
+      end      
     end
     if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
       if dryrun
