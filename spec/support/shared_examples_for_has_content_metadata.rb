@@ -5,7 +5,7 @@ shared_examples "an object that has content metadata" do
   let!(:object) { described_class.create! }
   let(:file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'contentMetadata.xml') }
   before do
-    object.contentMetadata.content_file = File.new(file_path, "r")
+    object.contentMetadata.content = File.new(file_path, "r")
     object.save!
   end
   after { object.delete }
