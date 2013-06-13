@@ -1,6 +1,7 @@
 require 'mime/types'
 
 module DulHydra::Derivatives
+
   class Image
 
     EXTRA_IMAGE_TYPES = ["application/pdf"]
@@ -53,12 +54,6 @@ module DulHydra::Derivatives
       derivative.to_blob
     end
 
-    def self.thumbnail(source, opts={})
-      defaults = {height: 100, format: "PNG"}
-      opts.merge!(defaults) { |key, opt, default| opt }
-      new(source, opts)
-    end
-
     private
 
     def valid_content_type?(content_type)
@@ -66,5 +61,16 @@ module DulHydra::Derivatives
       content_type.start_with?("image/") || EXTRA_IMAGE_TYPES.include?(content_type)
     end
 
+  end # Image
+
+  class Thumbnail < Image
+
+    def initialize(source, opts={})
+      defaults = {height: 100, format: "PNG"}
+      opts.merge!(defaults) { |key, opt, default| opt }
+      super
+    end
+
   end
+
 end

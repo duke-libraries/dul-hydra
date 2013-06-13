@@ -90,7 +90,7 @@ FactoryGirl.define do
 
     factory :test_content_thumbnail do
       after(:build) do |c|
-        c.thumbnail.content = DulHydra::Derivatives::Image.thumbnail(c.content)
+        c.thumbnail.content = DulHydra::Derivatives::Thumbnail.new(c.content)
       end
     end
   end
