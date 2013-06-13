@@ -89,9 +89,7 @@ FactoryGirl.define do
     end
 
     factory :test_content_thumbnail do
-      after(:build) do |c|
-        c.thumbnail.content = DulHydra::Derivatives::Thumbnail.new(c.content)
-      end
+      after(:build) { |c| c.generate_content_thumbnail! }
     end
   end
   

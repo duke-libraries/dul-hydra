@@ -111,7 +111,11 @@ class BatchObject < ActiveRecord::Base
       datastream_file.close
     end
     if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
-      repo_object.datastreams[DulHydra::Datastreams::THUMBNAIL].content = DulHydra::Derivatives::Thumbnail.new(repo_object.datastreams[datastream[:name]]) unless dryrun
+      if dryrun
+        repo_object.generate_thumbnail(repo_object.datastreams[datastream[:name]])
+      else
+        repo_object.generate_thumbnail!(repo_object.datastreams[datastream[:name]])
+      end
     end
     return repo_object
   end
