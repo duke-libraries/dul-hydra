@@ -1,0 +1,11 @@
+<div class="well" id="sidebar-nav">
+  <ul class="nav nav-list">
+    <li class="nav-header"><%= t('blacklight.tools.title') %></li>
+    <li>
+      <%= render_show_doc_actions @document %>
+    </li>
+  </ul>
+</div>
+
+<%# Render custom sidebar content partial for model, e.g., 'show_collection_sidebar' for Collection %>
+<%= render_model_sidebar_menu %>
