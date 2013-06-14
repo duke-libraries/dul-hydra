@@ -12,7 +12,7 @@ module DulHydra::Helpers
       response, doc = get_solr_response_for_doc_id(pid)
       # XXX This is not consistent with DulHydra::Models::Base#title_display
       title = doc.nil? ? pid : doc.fetch(DulHydra::IndexFields::TITLE, pid)
-      link_to(title, fcrepo_admin.object_path(pid), :class => "parent-link").html_safe
+      link_to(title, catalog_path(pid), :class => "parent-link").html_safe
     end
 
     def display_structure(structure)
@@ -65,6 +65,18 @@ module DulHydra::Helpers
       if doc.has_thumbnail?
         link_to image_tag(thumbnail_path(doc), :alt => "Thumbnail", :class => "img-polaroid thumbnail"), catalog_path(doc.id)
       end
+    end
+
+    def render_document_breadcrumbs
+      render partial: 'show_breadcrumbs', locals: {breadcrumbs: document_breadcrumbs(@document)}
+    end
+
+    private
+
+    def document_breadcrumbs(doc, breadcrumbs=[])
+      breadcrumbs << doc
+      document_breadcrumbs(get_solr_response_for_doc_id(doc.parent_pid)[1], breadcrumbs) if doc.has_parent?
+      breadcrumbs
     end
     
   end
