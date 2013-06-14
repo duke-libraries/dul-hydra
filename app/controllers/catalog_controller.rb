@@ -21,7 +21,6 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
-    #config.index.show_link = 'id'
     config.index.show_link = DulHydra::IndexFields::TITLE
     config.index.record_display_type = DulHydra::IndexFields::ACTIVE_FEDORA_MODEL
 
@@ -61,22 +60,15 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    #config.add_index_field DulHydra::IndexFields::TITLE, :label => 'Title:' 
     config.add_index_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type:'
     config.add_index_field 'id', :label => 'PID:'
-    #config.add_index_field 'title_t', :label => 'Title:'
     config.add_index_field DulHydra::IndexFields::IDENTIFIER, :label => 'Identifier:'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
     config.add_show_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type:'
     config.add_show_field 'id', :label => 'PID:'
-    #config.add_show_field 'title_t', :label => 'Title:' 
     config.add_show_field DulHydra::IndexFields::IDENTIFIER, :label => 'Identifier:'
-    #config.add_show_field DulHydra::IndexFields::IS_PART_OF, :label => 'Part of:', :helper_method => :internal_uri_to_link
-    #config.add_show_field DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION, :label => 'Member of Collection:', :helper_method => :internal_uri_to_link
-    #config.add_show_field DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR, :label => 'Target for:', :helper_method => :internal_uri_to_link
-    #config.add_show_field DulHydra::IndexFields::IS_GOVERNED_BY, :label => 'Admin Policy:', :helper_method => :internal_uri_to_link
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -95,10 +87,8 @@ class CatalogController < ApplicationController
     # This one uses all the defaults set by the solr request handler. Which
     # solr request handler? The one set in config[:default_solr_parameters][:qt],
     # since we aren't specifying it otherwise. 
-    
     config.add_search_field 'all_fields', :label => 'All Fields'
     
-
     # Now we see how to over-ride Solr request handler defaults, in this
     # case for a BL "search field", which is really a dismax aggregate
     # of Solr search fields. 
@@ -117,9 +107,7 @@ class CatalogController < ApplicationController
       }
     end
 
-    # FIXME https://github.com/duke-libraries/dul-hydra/issues/42
     config.add_search_field('identifier') do |field|
-      #field.qt = 'standard'
       field.solr_local_parameters = {
         :qf => DulHydra::IndexFields::IDENTIFIER
       }
@@ -131,8 +119,6 @@ class CatalogController < ApplicationController
     # except in the relevancy case).
     # FIXME - restore title sort
     config.add_sort_field 'score desc', :label => 'relevance'
-    #config.add_sort_field 'pub_date_sort desc, title_sort asc', :label => 'year'
-    #config.add_sort_field 'author_sort asc, title_sort asc', :label => 'author'
     #config.add_sort_field 'title_sort asc, pub_date_sort desc', :label => 'title'
 
     # If there are more than this many search results, no spelling ("did you 
