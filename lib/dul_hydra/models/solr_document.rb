@@ -3,6 +3,10 @@ require 'json'
 module DulHydra::Models
   module SolrDocument
 
+    def internal_uri
+      get(DulHydra::IndexFields::INTERNAL_URI)
+    end
+    
     def object_profile
       @object_profile ||= JSON.parse(self[DulHydra::IndexFields::OBJECT_PROFILE].first)
     end
@@ -33,7 +37,7 @@ module DulHydra::Models
     end
 
     def parent_uri
-      @parent_uri ||= get(DulHydra::IndexFields::IS_PART_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION)
+      get(parent_index_field)
     end
 
     def parent_pid
@@ -61,27 +65,53 @@ module DulHydra::Models
     end
     
     def targets
-      object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
-      query = "#{DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR}:#{object_uri}"
-      @targets ||= ActiveFedora::SolrService.query(query)
+      @targets ||= ActiveFedora::SolrService.query(targets_query)
+    end
+
+    def targets_count
+      @targets_count ||= ActiveFedora::SolrService.count(targets_query)
     end
     
     def has_target?
-      targets.size > 0 ? true : false
+      targets_count > 0
     end
     
     def children
-      object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
-      query = "#{DulHydra::IndexFields::IS_MEMBER_OF}:#{object_uri} OR #{DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION}:#{object_uri} OR #{DulHydra::IndexFields::IS_PART_OF}:#{object_uri}"
-      @children ||= ActiveFedora::SolrService.query(query)
+      @children ||= ActiveFedora::SolrService.query(children_query)
+    end
+
+    def children_count
+      @children_count ||= ActiveFedora::SolrService.count(children_query)
     end
     
     def has_children?
-      children.size > 0 ? true : false
+      children_count > 0
     end
-    
+
     def parsed_content_metadata
       JSON.parse(self[DulHydra::IndexFields::CONTENT_METADATA_PARSED].first)
+    end
+
+    private
+
+    def targets_query
+      "#{DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR}:#{internal_uri_for_query}"
+    end
+
+    def children_query
+      "#{parent_index_field}:#{internal_uri_for_query}"
+    end
+
+    # Field name for parent PID on the child index document
+    def parent_index_field
+      case
+      when active_fedora_model == "Item" then DulHydra::IndexFields::IS_PART_OF
+      when active_fedora_model == "Collection" then DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
+      end
+    end
+
+    def internal_uri_for_query
+      ActiveFedora::SolrService.escape_uri_for_query(internal_uri)
     end
 
   end
