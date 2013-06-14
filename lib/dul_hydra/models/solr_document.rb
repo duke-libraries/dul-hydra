@@ -33,12 +33,11 @@ module DulHydra::Models
     end
 
     def parent_uri
-      get(DulHydra::IndexFields::IS_PART_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION)
+      @parent_uri ||= get(DulHydra::IndexFields::IS_PART_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION)
     end
 
     def parent_pid
-      uri = parent_uri
-      uri &&= ActiveFedora::Base.pids_from_uris(uri)
+      ActiveFedora::Base.pids_from_uris(parent_uri) if has_parent?
     end
 
     def active_fedora_model
