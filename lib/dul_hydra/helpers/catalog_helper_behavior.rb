@@ -70,6 +70,15 @@ module DulHydra::Helpers
       render partial: 'show_breadcrumbs', locals: {breadcrumbs: document_breadcrumbs(@document)}
     end
 
+    def render_model_sidebar_menu
+      begin
+        partial = "show_%s_sidebar" % document_partial_name(@document)
+        return render partial: partial, locals: {document: @document}
+      rescue ActionView::MissingTemplate
+        nil
+      end
+    end
+
     private
 
     def document_breadcrumbs(doc, breadcrumbs=[])
