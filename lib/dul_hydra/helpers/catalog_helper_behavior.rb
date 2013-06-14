@@ -62,11 +62,8 @@ module DulHydra::Helpers
     end
 
     def render_thumbnail(doc)
-      if doc.has_thumbnail?
-        link_to image_tag(thumbnail_path(doc), :alt => "Thumbnail", :class => "img-polaroid thumbnail"), catalog_path(doc.id)
-      else
-        render partial: 'thumbnail_default', locals: {document: doc}
-      end
+      src = doc.has_thumbnail? ? thumbnail_path(doc) : 'dul_hydra/no_thumbnail.png'
+      link_to image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail"), catalog_path(doc.id)
     end
 
     def render_document_breadcrumbs
