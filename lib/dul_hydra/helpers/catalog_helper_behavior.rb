@@ -63,7 +63,7 @@ module DulHydra::Helpers
 
     def render_thumbnail(doc)
       if doc.has_thumbnail?
-        link_to image_tag(thumbnail_path(doc), :alt => "Thumbnail", :class => "img-polaroid thumbnail"), fcrepo_admin.object_path(doc.id)
+        link_to image_tag(thumbnail_path(doc), :alt => "Thumbnail", :class => "img-polaroid thumbnail"), catalog_path(doc.id)
       end
     end
     
