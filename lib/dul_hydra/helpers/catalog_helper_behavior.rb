@@ -64,6 +64,8 @@ module DulHydra::Helpers
     def render_thumbnail(doc)
       if doc.has_thumbnail?
         link_to image_tag(thumbnail_path(doc), :alt => "Thumbnail", :class => "img-polaroid thumbnail"), catalog_path(doc.id)
+      else
+        render partial: 'thumbnail_default', locals: {document: doc}
       end
     end
 
