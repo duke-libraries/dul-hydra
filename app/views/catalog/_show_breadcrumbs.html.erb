@@ -1,0 +1,16 @@
+<% if breadcrumbs.size > 1 -%>
+<ul class="breadcrumb">
+  <% while breadcrumbs.size > 0 -%>
+    <% crumb = breadcrumbs.pop %>
+	<% if breadcrumbs.empty? -%>
+      <li class="active">
+		<%= truncate crumb.title, separator: ' ' %>
+	  </li> 
+	<% else -%>
+      <li>
+	    <%= link_to truncate(crumb.title, separator: ' '), catalog_path(crumb.id) %> <span class="divider">/</span>
+	  </li>
+	<% end -%>
+  <% end -%>
+</ul>
+<% end -%>
