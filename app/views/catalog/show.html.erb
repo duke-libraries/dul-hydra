@@ -1,0 +1,19 @@
+<%# Copied from Blacklight, 2013-06-14 %>
+<div id="content" class="span9 show-document">
+
+  <%= render 'previous_next_doc' %>
+   
+  <% @page_title = t('blacklight.search.show.title', :document_title => document_show_html_title, :application_name => application_name) %>
+  <% extra_head_content << render_link_rel_alternates %>
+
+  <%# DulHydra document breadcrumbs %>
+  <%= render_document_breadcrumbs %>
+
+  <%# document title and content, extracted from Blacklight template %>
+  <%= render partial: 'show_document', locals: {document: @document} %>
+
+</div> <!-- /content -->
+
+<div id="sidebar" class="span3">
+  <%= render_document_sidebar_partial  %>
+</div><!-- /sidebar -->
