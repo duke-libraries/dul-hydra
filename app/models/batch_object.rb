@@ -106,7 +106,7 @@ class BatchObject < ActiveRecord::Base
       repo_object.datastreams[datastream[:name]].content = datastream[:payload]
     when BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
       datastream_file = File.open(datastream[:payload])
-      repo_object.datastreams[datastream[:name]].content_file = datastream_file
+      repo_object.datastreams[datastream[:name]].content = datastream_file
       repo_object.save unless dryrun # save the object to the repository before we close the file 
       datastream_file.close
     end

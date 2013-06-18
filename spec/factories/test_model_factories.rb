@@ -77,7 +77,12 @@ FactoryGirl.define do
     title "DulHydra Test Content Object"
     sequence(:identifier) { |n| "testcontent%05d" % n }
     permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
-    after(:build) { |c| c.content.content_file = File.new(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb") }
+    after(:build) do |c|
+      file = File.new(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb")
+      c.content.content = file
+      c.save
+      file.close      
+    end
       
     factory :test_content_with_fixity_check do
       after(:create) do |c| 
