@@ -7,13 +7,8 @@ shared_examples "an object that has content" do
   context "object does have content" do
     let(:file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
     before do
-      object.content.content_file = File.new(file_path, "rb")
+      object.content.content = File.new(file_path, "rb")
       object.save!
-    end
-    context "#content_file=" do
-      it "should store the file content" do
-        object.content.content.size.should == File.size(file_path)
-      end
     end
     context "defaults" do
       it "should have a default file prefix, file extension, and file name" do

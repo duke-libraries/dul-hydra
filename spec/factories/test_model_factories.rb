@@ -5,10 +5,6 @@ class TestContent < TestModel
   include DulHydra::Models::HasContent
 end
 
-class TestContentThumbnail < TestContent
-  include DulHydra::Models::HasThumbnail
-end
-
 class TestParent < TestModel
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true 
 end
@@ -17,7 +13,7 @@ class TestChild < TestModel
   belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
 end
 
-class TestFileDatastreams < TestContentThumbnail
+class TestFileDatastreams < TestContent
   include DulHydra::Models::HasContentdm
   include DulHydra::Models::HasDigitizationGuide
   include DulHydra::Models::HasDPCMetadata
@@ -39,7 +35,6 @@ class TestModelOmnibus < TestModel
   include DulHydra::Models::HasMarcXML
   include DulHydra::Models::HasTripodMets
   include DulHydra::Models::HasContent
-  include DulHydra::Models::HasThumbnail
   include DulHydra::Models::HasContentMetadata
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true
   belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
@@ -82,7 +77,12 @@ FactoryGirl.define do
     title "DulHydra Test Content Object"
     sequence(:identifier) { |n| "testcontent%05d" % n }
     permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
-    after(:build) { |c| c.content.content_file = File.new(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb") }
+    after(:build) do |c|
+      file = File.new(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb")
+      c.content.content = file
+      c.save
+      file.close      
+    end
       
     factory :test_content_with_fixity_check do
       after(:create) do |c| 
@@ -92,18 +92,12 @@ FactoryGirl.define do
         p.save!
       end 
     end
-  end
-  
-  factory :test_content_thumbnail do
-    title "DulHydra Test Content Thumbnail Object"
-    sequence(:identifier) { |n| "testcontentthumbnail%05d" % n }
-    permissions [DulHydra::Permissions::PUBLIC_READ_ACCESS]
-    after(:build) do |c|
-      c.content.content_file = File.new(File.join(Rails.root, "spec", "fixtures", "batch_ingest", "miscellaneous", "id001.tif"), "rb")
-      c.generate_thumbnail!
+
+    factory :test_content_thumbnail do
+      after(:build) { |c| c.generate_content_thumbnail! }
     end
   end
-
+  
   factory :test_content_metadata do
     title "DulHydra Test Content Metadata Object"
     sequence(:identifier) { |n| "testcontentmetadata%05d" % n }
