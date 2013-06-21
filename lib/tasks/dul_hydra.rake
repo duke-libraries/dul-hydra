@@ -38,6 +38,7 @@ namespace :dul_hydra do
             mp = DulHydra::Scripts::ManifestProcessor.new(opts)
             mp.execute
         end
+        desc "Process ingest batch for BATCH_ID"
         task :process_ingest => :environment do
             raise "Must specify batch ID.  Ex.: BATCH_ID=7" unless ENV['BATCH_ID']
             opts = { :batch_id => ENV['BATCH_ID'] }
