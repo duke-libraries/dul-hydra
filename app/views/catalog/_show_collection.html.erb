@@ -1,5 +1,6 @@
 <%= render partial: 'show_default', locals: {document: document} %>
 
-<p>
-  This is a collection. We may not need a custom show partial per model.
-</p>
+<% if @children_response.total > 0 %>
+  <h3>Items</h3>
+  <%= render_document_index @children_documents %>
+<% end %>
