@@ -24,8 +24,11 @@ module DulHydra::Scripts
     def execute
       config_logger
       begin
+        @log.info("Processing manifest: #{@manifest_file}")
         manifest = Manifest.new(@manifest_file)
+        @log.info("Manifest name: #{manifest.name}")
         set_batch(manifest)
+        @log.debug("Batch id: #{manifest.batch.id}")
         manifest.objects.each { |object| process_object(object) }
       rescue Exception => e
         @log.error(e.message)
@@ -62,6 +65,7 @@ module DulHydra::Scripts
     end
     
     def process_object(manifest_object)
+      @log.debug("Processing manifest object #{manifest_object.key_identifier}")
       batch_object = IngestBatchObject.create(:batch => manifest_object.batch)
       batch_object.identifier = manifest_object.key_identifier
       batch_object.label = manifest_object.label
@@ -69,10 +73,12 @@ module DulHydra::Scripts
       create_batch_object_datastreams(manifest_object, batch_object)
       create_batch_object_relationships(manifest_object, batch_object)
       batch_object.save
+      @log.info("Processed manifest object #{manifest_object.key_identifier} into batch object #{batch_object.id}")
     end
     
     def create_batch_object_datastreams(manifest_object, batch_object)
       manifest_object.datastreams.each do |datastream|
+        @log.debug("... datastream #{datastream}")
         name = datastream
         operation = BatchObjectDatastream::OPERATION_ADD
         payload = manifest_object.datastream_filepath(datastream)
@@ -95,6 +101,7 @@ module DulHydra::Scripts
     def create_batch_object_relationships(manifest_object, batch_object)
       BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
         if manifest_object.has_relationship?(relationship)
+          @log.debug("... relationship #{relationship}")
           relationship_object_pid = manifest_object.relationship_pid(relationship)
           if relationship_object_pid
             BatchObjectRelationship.create(:name => relationship,

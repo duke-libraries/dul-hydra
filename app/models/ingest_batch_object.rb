@@ -46,6 +46,7 @@ class IngestBatchObject < BatchObject
   def create_repository_object(dryrun)
     repo_object = model.constantize.new
     repo_object.label = label if label
+    repo_object.save unless dryrun
     batch_object_datastreams.each {|d| repo_object = add_datastream(repo_object, d, dryrun)} if batch_object_datastreams
     batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
     repo_object.save unless dryrun

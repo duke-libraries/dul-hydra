@@ -70,7 +70,8 @@ module DulHydra::Scripts
     context "process" do
       let(:manifest_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml') }
       let!(:parent_batch_object) { BatchObject.create(:identifier => "id0", :pid=> "test:1234") }
-      let(:mp) { DulHydra::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir) }
+      let(:mp) { DulHydra::Scripts::ManifestProcessor.new(:manifest => manifest_file) }
+#      let(:mp) { DulHydra::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir) }
       before { mp.execute }
       context "successful processing run" do
         it_behaves_like "a successful processing run"

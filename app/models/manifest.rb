@@ -285,6 +285,10 @@ class Manifest
   def manifest_hash=(manifest_hash)
     @manifest_hash = manifest_hash
   end
+  
+  def name
+    manifest_hash[NAME]
+  end
 
   def objects
     objects = []
