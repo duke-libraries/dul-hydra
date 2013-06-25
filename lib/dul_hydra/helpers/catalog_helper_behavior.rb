@@ -79,6 +79,10 @@ module DulHydra::Helpers
       end
     end
 
+    def render_children(title)
+      render partial: 'show_children', locals: {title: title}
+    end
+
     private
 
     def document_breadcrumbs(doc, breadcrumbs=[])
