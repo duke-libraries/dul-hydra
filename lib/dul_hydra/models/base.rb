@@ -12,12 +12,17 @@ module DulHydra::Models
       solr_doc = super(solr_doc, opts)
       solr_doc.merge!(self.last_fixity_check_to_solr)
       solr_doc.merge!(DulHydra::IndexFields::TITLE => title_display,
-                      DulHydra::IndexFields::INTERNAL_URI => internal_uri)
+                      DulHydra::IndexFields::INTERNAL_URI => internal_uri,
+                      DulHydra::IndexFields::IDENTIFIER => identifier_sort)
       solr_doc
     end
 
     def title_display
       title.first || identifier.first || "[#{pid}]"
+    end
+
+    def identifier_sort
+      identifier.first
     end
 
     # Validates current version of each datastream
