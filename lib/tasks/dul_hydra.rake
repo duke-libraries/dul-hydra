@@ -30,6 +30,28 @@ namespace :dul_hydra do
 	    	bfc.execute
 	    	BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
         end
+        desc "Create ingest batch objects from MANIFEST"
+        task :process_manifest => :environment do
+            raise "Must specify manifest.  Ex.: MANIFEST=/srv/fedora-working/ingest/COL/manifests/item.yml" unless ENV['MANIFEST']
+            opts = { :manifest => ENV['MANIFEST'] }
+            opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
+            mp = DulHydra::Scripts::ManifestProcessor.new(opts)
+            mp.execute
+        end
+        desc "Process ingest batch for BATCH_ID"
+        task :process_ingest => :environment do
+            raise "Must specify batch ID.  Ex.: BATCH_ID=7" unless ENV['BATCH_ID']
+            opts = { :batch_id => ENV['BATCH_ID'] }
+            opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
+            bp = DulHydra::Scripts::BatchProcessor.new(opts)
+            bp.execute
+        end
+        desc "Sets missing thumbnails in collection specified by COLLECTION_PID="
+        task :thumbnails => :environment do
+            raise "Must specify collection pid.  Ex: COLLECTION_PID=duke:72" unless ENV['COLLECTION_PID']
+            thumb = DulHydra::Scripts::Thumbnails.new(ENV['COLLECTION_PID'])
+            thumb.execute if thumb.collection
+        end
     end
     namespace :solr do
         desc "Deletes everything from the solr index"

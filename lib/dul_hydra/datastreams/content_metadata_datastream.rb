@@ -28,7 +28,28 @@ module DulHydra::Datastreams
       solr_doc
     end    
     
+    def first_pid
+      find_first_pid(parse.first)
+    end
+    
     private
+    
+    def find_first_pid(structure)
+      case
+      when structure.has_key?("div")
+        find_first_pid(structure["div"].first)
+      when structure.has_key?("pids")
+        structure["pids"].first["pid"]
+      end
+    end
+    
+    def walk_structure_to_pid(structure)
+      if structure.has_key("div")
+        walk_structure_div(structure["div"])
+      else 
+      end
+      
+    end
     
     def parse_div(fileSec_nodes, div_node)
       div_hash = {}

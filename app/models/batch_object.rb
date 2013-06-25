@@ -105,10 +105,15 @@ class BatchObject < ActiveRecord::Base
     when BatchObjectDatastream::PAYLOAD_TYPE_BYTES
       repo_object.datastreams[datastream[:name]].content = datastream[:payload]
     when BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-      datastream_file = File.open(datastream[:payload])
-      repo_object.datastreams[datastream[:name]].content = datastream_file
-      repo_object.save unless dryrun # save the object to the repository before we close the file 
-      datastream_file.close
+      if repo_object.datastreams[datastream[:name]].is_a? ActiveFedora::OmDatastream
+        repo_object.datastreams[datastream[:name]].content = File.read(datastream[:payload])
+        repo_object.save
+      else
+        datastream_file = File.open(datastream[:payload])
+        repo_object.datastreams[datastream[:name]].content = datastream_file
+        repo_object.save
+        datastream_file.close
+      end
     end
     if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
       if dryrun
