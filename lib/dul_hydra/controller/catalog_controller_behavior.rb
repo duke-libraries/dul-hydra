@@ -22,9 +22,6 @@ module DulHydra::Controller
           # XXX Not sure this is necessary
           config.default_sort_field = "#{DulHydra::IndexFields::IDENTIFIER} asc"
         end
-        # Don't need facetting
-        self.solr_search_params_logic.delete(:add_facetting_to_solr)
-        self.solr_search_params_logic.delete(:add_facet_fq_to_solr)
         # Add the query logic
         self.solr_search_params_logic += [:add_children_query]
         @response, @documents = get_search_results
