@@ -22,23 +22,23 @@ module DulHydra::Controller
           # XXX Not sure this is necessary
           config.default_sort_field = "#{DulHydra::IndexFields::IDENTIFIER} asc"
         end
-        # Add the query logic
-        self.solr_search_params_logic += [:add_children_query]
-        @response, @documents = get_search_results
+        @response, @documents = get_search_results(params, children_query_params)
       end
     end
 
     protected
 
-    def add_children_query(solr_params, user_params)
+    def children_query_params
       field = case
               when @document.active_fedora_model == "Collection"
                 DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
               when @document.active_fedora_model == "Item"
                 DulHydra::IndexFields::IS_PART_OF
               end
-      solr_params[:q] = "#{field}:#{ActiveFedora::SolrService.escape_uri_for_query(@document.internal_uri)}"
-      solr_params[:qt] = "standard"
+      {
+        q: "#{field}:#{ActiveFedora::SolrService.escape_uri_for_query(@document.internal_uri)}",
+        qt: "standard"
+      }
     end
 
   end
