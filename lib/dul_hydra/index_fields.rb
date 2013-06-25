@@ -9,7 +9,7 @@ module DulHydra::IndexFields
   EVENT_ID_VALUE = ActiveFedora::SolrService.solr_name(:event_id_value, :symbol)
   EVENT_TYPE = ActiveFedora::SolrService.solr_name(:event_type, :symbol)
   HAS_MODEL = ActiveFedora::SolrService.solr_name(:has_model, :symbol)
-  IDENTIFIER = ActiveFedora::SolrService.solr_name(:identifier, :stored_searchable, type: :text)
+  IDENTIFIER = ActiveFedora::SolrService.solr_name(:identifier, :stored_sortable)
   INTERNAL_URI = ActiveFedora::SolrService.solr_name(:internal_uri, :symbol)
   IS_EXTERNAL_TARGET_FOR = ActiveFedora::SolrService.solr_name(:is_external_target_for, :symbol)
   IS_GOVERNED_BY = ActiveFedora::SolrService.solr_name(:is_governed_by, :symbol)
