@@ -2,11 +2,10 @@ module DulHydra::Controller
   module CatalogControllerBehavior
 
     def show
-      @response, @document = get_solr_response_for_doc_id
-      #setup_next_and_previous_documents
+      @document = get_solr_response_for_doc_id[1]
       if ["Collection", "Item"].include? @document.active_fedora_model
         self.solr_search_params_logic += [:add_children_query]
-        @children_response, @children_documents = get_search_results
+        @response, @documents = get_search_results
       end
     end
 
