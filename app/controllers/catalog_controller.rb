@@ -58,7 +58,6 @@ class CatalogController < ApplicationController
     #use this instead if you don't want to query facets marked :show=>false
     #config.default_solr_params[:'facet.field'] = config.facet_fields.select{ |k, v| v[:show] != false}.keys
 
-
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
     config.add_index_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type:'
@@ -118,9 +117,9 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    # FIXME - restore title sort
-    config.add_sort_field 'score desc', :label => 'relevance'
-    #config.add_sort_field 'title_sort asc, pub_date_sort desc', :label => 'title'
+    config.add_sort_field 'score desc', :label => 'Relevance'
+    config.add_sort_field "#{DulHydra::IndexFields::TITLE} asc", :label => 'Title'
+    config.add_sort_field "#{DulHydra::IndexFields::IDENTIFIER} asc", :label => 'Identifier'
 
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.
