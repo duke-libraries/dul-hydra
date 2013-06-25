@@ -46,6 +46,12 @@ namespace :dul_hydra do
             bp = DulHydra::Scripts::BatchProcessor.new(opts)
             bp.execute
         end
+        desc "Sets missing thumbnails in collection specified by COLLECTION_PID="
+        task :thumbnails => :environment do
+            raise "Must specify collection pid.  Ex: COLLECTION_PID=duke:72" unless ENV['COLLECTION_PID']
+            thumb = DulHydra::Scripts::Thumbnails.new(ENV['COLLECTION_PID'])
+            thumb.execute if thumb.collection
+        end
     end
     namespace :solr do
         desc "Deletes everything from the solr index"
