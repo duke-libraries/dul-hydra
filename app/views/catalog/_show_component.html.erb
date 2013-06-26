@@ -1,1 +1,10 @@
-
+<% contentds = @document.datastreams["content"] %>
+<dl>
+  <dt>Content Type</dt>
+  <dd><%= contentds["dsMIME"] %></dd>
+  <dt>Size</dt>
+  <dd><%= number_to_human_size contentds["dsSize"] %></dd>
+</dl>
+<p>
+  <%= link_to "Download", download_path(@document.id), :class => "btn btn-primary" %>
+</p>

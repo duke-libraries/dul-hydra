@@ -8,6 +8,8 @@ DulHydra::Application.routes.draw do
 
   mount FcrepoAdmin::Engine => '/', :as=> 'fcrepo_admin'
 
+  get 'download/:id' => 'downloads#show', :as => 'download'
+
   scope "objects/:object_id" do
     get 'children' => 'children#index'
     get 'preservation_events' => 'preservation_events#index'

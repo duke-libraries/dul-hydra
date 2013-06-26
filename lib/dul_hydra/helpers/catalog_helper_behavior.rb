@@ -107,7 +107,7 @@ module DulHydra::Helpers
     def render_last_fixity_check_outcome
       outcome = @document.last_fixity_check_outcome
       label = outcome == "success" ? "success" : "important"
-      render_label(outcome, label)
+      render_label(outcome.capitalize, label)
     end
 
     private

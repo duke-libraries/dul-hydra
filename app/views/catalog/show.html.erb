@@ -3,14 +3,8 @@
   <div id="document" class="<%= render_document_class %>">
 	<div class="row">
 	  <div class="span7">
-		<h2><%= @document.title %></h2>
-		<h4 class="muted">
-		  <%= @document.active_fedora_model %>
-		  <small>
-		  <%= @document.id %>
-		  <%= @document.identifier %>
-		  </small>
-		</h4>
+		<h3><%= @document.title %></h3>
+		<h5 class="muted"><%= @document.active_fedora_model %></h5>
 	  </div>
 	  <div class="span2">
 		<div class="pull-right">
