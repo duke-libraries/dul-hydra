@@ -10,8 +10,9 @@ module DulHydra::Scripts
     end
     
     def execute
-      items = @collection.items
-      items.each do |item|
+      items_solr = @collection.items.load_from_solr
+      items_solr.each do |item_solr|
+        item = ActiveFedora::Base.find(item_solr["id"], :cast => true)
         unless item.has_thumbnail?
           component = item.first_child
           if component.has_thumbnail?
