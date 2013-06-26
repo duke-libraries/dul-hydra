@@ -1,0 +1,23 @@
+<div class="well">
+  <ul class="nav nav-list">
+	<li class="nav-header">Metadata</li>
+	<li>
+	  <table class="table table-condensed">
+		<tr>
+		  <th scope="row">PID:</th>
+		  <td><%= @document.id %></td>
+		</tr>
+		<tr>
+		  <th scope="row">Type:</th>
+		  <td><%= @document.active_fedora_model %></td>
+		</tr>
+		<% if @document.identifier %>
+		<tr>
+		  <th scope="row">Identifier:</th>
+		  <td><%= @document.identifier %></td>
+		</tr>
+		<% end %>
+	  </table>
+	</li>
+  </ul>
+</div>

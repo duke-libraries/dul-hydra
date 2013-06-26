@@ -61,16 +61,16 @@ module DulHydra::Helpers
       return structure_contents_info
     end
 
-    def render_thumbnail(doc)
-      src = doc.has_thumbnail? ? thumbnail_path(doc) : 'dul_hydra/no_thumbnail.png'
-      link_to image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail"), catalog_path(doc.id)
+    def render_thumbnail(document = @document)
+      src = document.has_thumbnail? ? thumbnail_path(document) : 'dul_hydra/no_thumbnail.png'
+      link_to image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail"), catalog_path(document.id)
     end
 
     def render_document_breadcrumbs
-      render partial: 'show_breadcrumbs', locals: {breadcrumbs: document_breadcrumbs(@document)}
+      render partial: 'show_breadcrumbs', locals: {breadcrumbs: document_breadcrumbs}
     end
 
-    def render_model_sidebar_menu
+    def render_sidebar_for_model
       begin
         partial = "show_%s_sidebar" % document_partial_name(@document)
         return render partial: partial, locals: {document: @document}
@@ -79,13 +79,44 @@ module DulHydra::Helpers
       end
     end
 
-    def render_children(title)
+    def render_children
+      title = case
+              when @document.active_fedora_model == "Collection"
+                "Items"
+              when @document.active_fedora_model == "Item"
+                "Components"
+              end
       render partial: 'show_children', locals: {title: title}
+    end
+
+    def render_object_state
+      case
+      when @document.object_state == 'A'
+        text = "Active"
+        label = "info"
+      when @document.object_state == 'I'
+        text = "Inactive"
+        label = "warning"
+      when @document.object_state == 'D'
+        text = "Deleted"
+        label = "important"
+      end
+      render_label(text, label)
+    end
+
+    def render_last_fixity_check_outcome
+      outcome = @document.last_fixity_check_outcome
+      label = outcome == "success" ? "success" : "important"
+      render_label(outcome, label)
     end
 
     private
 
-    def document_breadcrumbs(doc, breadcrumbs=[])
+    def render_label(text, label)
+      content_tag :span, text, :class => "label label-#{label}"
+    end
+
+    def document_breadcrumbs(doc = @document, breadcrumbs = [])
       breadcrumbs << doc
       document_breadcrumbs(get_solr_response_for_doc_id(doc.parent_pid)[1], breadcrumbs) if doc.has_parent?
       breadcrumbs

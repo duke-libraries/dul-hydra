@@ -1,0 +1,19 @@
+<div class="well">
+  <ul class="nav nav-list">
+	<li class="nav-header">
+	  Fixity
+	</li>
+	<li>
+	  <table class="table table-condensed">
+		<tr>
+		  <th scope="row">Checked:</th>
+		  <td><%= @document.last_fixity_check_on.to_formatted_s(:db) %></td>
+		</tr>
+		<tr>
+		  <th scope="row">Outcome:</th>
+		  <td><%= render_last_fixity_check_outcome %></td>
+		</tr>
+	  </table>
+	</li>
+  </ul>
+</div>

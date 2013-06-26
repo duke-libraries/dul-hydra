@@ -1,15 +1,30 @@
 module DulHydra::Controller
   module CatalogControllerBehavior
+    extend ActiveSupport::Concern
+
+    included do
+      before_filter :get_document, :only => [:show, :metadata, :stats]
+      before_filter :get_object, :only => :metadata
+    end
 
     def show
-      get_document
       get_children
+    end
+
+    def metadata
+    end
+
+    def stats
     end
 
     protected
 
     def get_document
       @document = get_solr_response_for_doc_id[1]
+    end
+
+    def get_object
+      @object = ActiveFedora::SolrService.reify_solr_results [@document]
     end
 
     def get_children

@@ -22,6 +22,9 @@ module DulHydra::IndexFields
   LINKING_OBJECT_ID_TYPE = ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol)
   LINKING_OBJECT_ID_VALUE = ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol)
   OBJECT_PROFILE = ActiveFedora::SolrService.solr_name(:object_profile, :displayable)
+  OBJECT_STATE = ActiveFedora::SolrService.solr_name(:object_state, :stored_sortable)
+  OBJECT_CREATE_DATE = ActiveFedora::SolrService.solr_name(:system_create, :stored_sortable, type: :date)
+  OBJECT_MODIFIED_DATE = ActiveFedora::SolrService.solr_name(:system_modified, :stored_sortable, type: :date)
   TITLE = ActiveFedora::SolrService.solr_name(:title, :stored_sortable)
 
 end

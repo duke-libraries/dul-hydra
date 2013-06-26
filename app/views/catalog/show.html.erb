@@ -1,19 +1,28 @@
-<%# Copied from Blacklight, 2013-06-14 %>
 <div id="content" class="span9 show-document">
-
-  <%= render 'previous_next_doc' %>
-   
-  <% @page_title = t('blacklight.search.show.title', :document_title => document_show_html_title, :application_name => application_name) %>
-  <% extra_head_content << render_link_rel_alternates %>
-
-  <%# DulHydra document breadcrumbs %>
   <%= render_document_breadcrumbs %>
-
-  <%# document title and content, extracted from Blacklight template %>
-  <%= render partial: 'show_document', locals: {document: @document} %>
-
+  <div id="document" class="<%= render_document_class %>">
+	<div class="row">
+	  <div class="span7">
+		<h2><%= @document.title %></h2>
+		<h4 class="muted">
+		  <%= @document.active_fedora_model %>
+		  <small>
+		  <%= @document.id %>
+		  <%= @document.identifier %>
+		  </small>
+		</h4>
+	  </div>
+	  <div class="span2">
+		<div class="pull-right">
+		  <%= render_thumbnail %>
+		</div>
+	  </div>
+	</div>
+	<div class="document">
+	  <%= render_document_partial @document, :show %>
+	</div>
+  </div>
 </div> <!-- /content -->
-
 <div id="sidebar" class="span3">
   <%= render_document_sidebar_partial  %>
 </div><!-- /sidebar -->

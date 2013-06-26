@@ -3,12 +3,36 @@ require 'json'
 module DulHydra::Models
   module SolrDocument
 
+    def active_fedora_model
+      get(DulHydra::IndexFields::ACTIVE_FEDORA_MODEL)
+    end
+
     def internal_uri
       get(DulHydra::IndexFields::INTERNAL_URI)
     end
     
     def object_profile
       @object_profile ||= JSON.parse(self[DulHydra::IndexFields::OBJECT_PROFILE].first)
+    end
+
+    def object_state
+      get(DulHydra::IndexFields::OBJECT_STATE)
+    end
+
+    def object_create_date
+      get_date(DulHydra::IndexFields::OBJECT_CREATE_DATE)
+    end
+
+    def object_modified_date
+      get_date(DulHydra::IndexFields::OBJECT_MODIFIED_DATE)
+    end
+
+    def last_fixity_check_on
+      get_date(DulHydra::IndexFields::LAST_FIXITY_CHECK_ON)
+    end
+
+    def last_fixity_check_outcome
+      get(DulHydra::IndexFields::LAST_FIXITY_CHECK_OUTCOME)
     end
 
     def datastreams
@@ -42,10 +66,6 @@ module DulHydra::Models
 
     def parent_pid
       ActiveFedora::Base.pids_from_uris(parent_uri) if has_parent?
-    end
-
-    def active_fedora_model
-      get(DulHydra::IndexFields::ACTIVE_FEDORA_MODEL)
     end
 
     def title
@@ -105,13 +125,19 @@ module DulHydra::Models
     # Field name for parent PID on the child index document
     def parent_index_field
       case
-      when active_fedora_model == "Item" then DulHydra::IndexFields::IS_PART_OF
-      when active_fedora_model == "Collection" then DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
+      when active_fedora_model == "Component"
+        DulHydra::IndexFields::IS_PART_OF
+      when active_fedora_model == "Item"
+        DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
       end
     end
 
     def internal_uri_for_query
       ActiveFedora::SolrService.escape_uri_for_query(internal_uri)
+    end
+
+    def get_date(field)
+      Time.parse(get(field)).localtime rescue nil      
     end
 
   end

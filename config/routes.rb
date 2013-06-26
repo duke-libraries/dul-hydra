@@ -14,6 +14,10 @@ DulHydra::Application.routes.draw do
     get 'thumbnail' => 'thumbnail#show'
   end
 
+  scope "catalog/:id" do
+    get 'metadata' => 'catalog#metadata'
+  end
+
   resources :export_sets do
     member do
       post 'archive'
