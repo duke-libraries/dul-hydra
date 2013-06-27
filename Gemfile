@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 3.2.11'
+gem 'rails', '~> 3.2.13'
 
 gem 'sqlite3'
 gem 'hydra-head', '~> 6.2.2'
@@ -8,7 +8,7 @@ gem 'blacklight', '~> 4.2.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise'
-gem 'fcrepo_admin', '~> 0.5.4'
+gem 'fcrepo_admin', '~> 0.6.0'
 
 gem 'log4r'
 
