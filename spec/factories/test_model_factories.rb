@@ -6,6 +6,7 @@ class TestContent < TestModel
 end
 
 class TestParent < TestModel
+  include DulHydra::Models::HasChildren
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true 
 end
 
