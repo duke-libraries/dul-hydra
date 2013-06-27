@@ -21,7 +21,11 @@ FactoryGirl.define do
     end
 
     factory :component_with_content do
-      after(:build) { |c| c.content.content = File.new("#{Rails.root}/spec/fixtures/library-devil.tiff", "rb") }
+      after(:build) do |c|
+        c.content.content = File.new("#{Rails.root}/spec/fixtures/library-devil.tiff", "rb")
+        c.save
+        c.generate_content_thumbnail!
+      end
 
       factory :component_with_content_public_read,          :traits => [:public_read]
       factory :component_with_content_has_apo,              :traits => [:has_admin_policy]
