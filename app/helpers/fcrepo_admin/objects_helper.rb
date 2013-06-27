@@ -31,16 +31,16 @@ module FcrepoAdmin
       end
     end
 
-    def object_title
-      case
-      when @object.respond_to?(:title_display)
-        @object.title_display
-      when @object.respond_to?(:title)
-        @object.title
-      else
-        @object.pid
-      end
-    end
+    # def object_title
+    #   case
+    #   when @object.respond_to?(:title_display)
+    #     @object.title_display
+    #   when @object.respond_to?(:title)
+    #     @object.title
+    #   else
+    #     @object.pid
+    #   end
+    # end
     
   end
 end
