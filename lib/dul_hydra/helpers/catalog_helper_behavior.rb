@@ -115,10 +115,6 @@ module DulHydra::Helpers
       date.to_formatted_s(:db) if date
     end
 
-    def render_relationships
-      # TODO  
-    end
-
     private
 
     def render_label(text, label)
