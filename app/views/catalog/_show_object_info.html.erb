@@ -1,0 +1,40 @@
+<div class="well">
+  <ul class="nav nav-list">
+	<li class="nav-header">
+	  About This Object
+	</li>
+	<li>
+	  <table class="table table-condensed">
+		<tr>
+		  <th scope="row">PID:</th>
+		  <td><%= @document.id %></td>
+		</tr>
+		<tr>
+		  <th scope="row">Identifier:</th>
+		  <td><%= @document.identifier %></td>
+		</tr>
+		<tr>
+		  <th scope="row">State:</th>
+		  <td><%= render_object_state %></td>
+		</tr>
+		<tr>
+		  <th scope="row">Created:</th>
+		  <td><%= @document.object_create_date.to_formatted_s(:db) %></td>
+		</tr>
+		<tr>
+		  <th scope="row">Modified:</th>
+		  <td><%= @document.object_modified_date.to_formatted_s(:db) %></td>
+		</tr>
+	  </table>
+	</li>
+	<li class="nav-header">
+	  More Information
+	</li>
+	<li>
+	  Metadata (TODO)
+	</li>
+	<li>
+	  <%= link_to "Admin View", fcrepo_admin.object_path(@document.id) %>
+	</li>
+  </ul>
+</div>
