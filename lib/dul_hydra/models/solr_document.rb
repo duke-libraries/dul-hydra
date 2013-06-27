@@ -68,6 +68,16 @@ module DulHydra::Models
       ActiveFedora::Base.pids_from_uris(parent_uri) if has_parent?
     end
 
+    # Field name for parent PID on the child index document
+    def parent_index_field
+      case
+      when active_fedora_model == "Component"
+        DulHydra::IndexFields::IS_PART_OF
+      when active_fedora_model == "Item"
+        DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
+      end
+    end
+
     def label
       object_profile["objLabel"]
     end
@@ -120,16 +130,6 @@ module DulHydra::Models
 
     def targets_query
       "#{DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR}:#{internal_uri_for_query}"
-    end
-
-    # Field name for parent PID on the child index document
-    def parent_index_field
-      case
-      when active_fedora_model == "Component"
-        DulHydra::IndexFields::IS_PART_OF
-      when active_fedora_model == "Item"
-        DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
-      end
     end
 
     def internal_uri_for_query
