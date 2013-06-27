@@ -19,11 +19,11 @@
 		</tr>
 		<tr>
 		  <th scope="row">Created:</th>
-		  <td><%= @document.object_create_date.to_formatted_s(:db) %></td>
+		  <td><%= format_date @document.object_create_date %></td>
 		</tr>
 		<tr>
 		  <th scope="row">Modified:</th>
-		  <td><%= @document.object_modified_date.to_formatted_s(:db) %></td>
+		  <td><%= format_date @document.object_modified_date %></td>
 		</tr>
 	  </table>
 	</li>

@@ -16,15 +16,15 @@ module DulHydra::Models
     end
 
     def object_state
-      get(DulHydra::IndexFields::OBJECT_STATE)
+      object_profile["objState"]
     end
 
     def object_create_date
-      get_date(DulHydra::IndexFields::OBJECT_CREATE_DATE)
+      parse_date(object_profile["objCreateDate"])
     end
 
     def object_modified_date
-      get_date(DulHydra::IndexFields::OBJECT_MODIFIED_DATE)
+      parse_date(object_profile["objLastModDate"])
     end
 
     def last_fixity_check_on
@@ -38,7 +38,7 @@ module DulHydra::Models
     def datastreams
       object_profile["datastreams"]
     end
-    
+
     def has_datastream?(dsID)
       !datastreams[dsID].blank?
     end
@@ -68,8 +68,12 @@ module DulHydra::Models
       ActiveFedora::Base.pids_from_uris(parent_uri) if has_parent?
     end
 
+    def label
+      object_profile["objLabel"]
+    end
+
     def title
-      get(DulHydra::IndexFields::TITLE)
+      get(DulHydra::IndexFields::TITLE) || label || "#{active_fedora_model} #{id}"
     end
 
     def identifier
@@ -82,6 +86,18 @@ module DulHydra::Models
 
     def has_content?
       has_datastream?(DulHydra::Datastreams::CONTENT)
+    end
+
+    def content_ds
+      datastreams[DulHydra::Datastreams::CONTENT]
+    end
+
+    def mime_type
+      content_ds["dsMIME"]
+    end
+
+    def size
+      content_ds["dsSize"]
     end
     
     def targets
@@ -96,18 +112,6 @@ module DulHydra::Models
       targets_count > 0
     end
     
-    def children
-      @children ||= ActiveFedora::SolrService.query(children_query)
-    end
-
-    def children_count
-      @children_count ||= ActiveFedora::SolrService.count(children_query)
-    end
-    
-    def has_children?
-      children_count > 0
-    end
-
     def parsed_content_metadata
       JSON.parse(self[DulHydra::IndexFields::CONTENT_METADATA_PARSED].first)
     end
@@ -116,10 +120,6 @@ module DulHydra::Models
 
     def targets_query
       "#{DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR}:#{internal_uri_for_query}"
-    end
-
-    def children_query
-      "#{parent_index_field}:#{internal_uri_for_query}"
     end
 
     # Field name for parent PID on the child index document
@@ -137,7 +137,11 @@ module DulHydra::Models
     end
 
     def get_date(field)
-      Time.parse(get(field)).localtime rescue nil      
+      parse_date(get(field))
+    end
+
+    def parse_date(date)
+      Time.parse(date).localtime if date
     end
 
   end

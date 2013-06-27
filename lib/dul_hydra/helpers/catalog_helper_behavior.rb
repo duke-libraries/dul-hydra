@@ -106,8 +106,17 @@ module DulHydra::Helpers
 
     def render_last_fixity_check_outcome
       outcome = @document.last_fixity_check_outcome
+      return nil unless outcome
       label = outcome == "success" ? "success" : "important"
       render_label(outcome.capitalize, label)
+    end
+
+    def format_date(date)
+      date.to_formatted_s(:db) if date
+    end
+
+    def render_relationships
+      # TODO  
     end
 
     private

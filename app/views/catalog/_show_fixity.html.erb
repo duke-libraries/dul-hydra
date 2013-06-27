@@ -3,11 +3,12 @@
 	<li class="nav-header">
 	  Fixity
 	</li>
+	<% if @document.last_fixity_check_on %>
 	<li>
 	  <table class="table table-condensed">
 		<tr>
 		  <th scope="row">Checked:</th>
-		  <td><%= @document.last_fixity_check_on.to_formatted_s(:db) %></td>
+		  <td><%= format_date @document.last_fixity_check_on %></td>
 		</tr>
 		<tr>
 		  <th scope="row">Outcome:</th>
@@ -15,5 +16,10 @@
 		</tr>
 	  </table>
 	</li>
+	<% else %>
+	<li>
+	  No fixity checks
+	</li>
+	<% end %>
   </ul>
 </div>
