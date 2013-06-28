@@ -1,4 +1,4 @@
-<div id="content" class="span9 show-document">
+<% content_for :main do %>  
   <%= render_document_breadcrumbs %>
   <div id="document" class="<%= render_document_class %>">
 	<div class="row">
@@ -15,7 +15,10 @@
 	  <%= render_document_partial @document, :show %>
 	</div>
   </div>
-</div> <!-- /content -->
-<div id="sidebar" class="span3">
-  <%= render_document_sidebar_partial  %>
-</div><!-- /sidebar -->
+<% end %>
+<% content_for :sidebar do %>
+  <%= render 'show_tools' %>
+  <%= render 'show_object_info' %>
+  <%= render 'show_fixity' %>
+<% end %>
+
