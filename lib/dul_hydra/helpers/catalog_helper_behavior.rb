@@ -93,6 +93,18 @@ module DulHydra::Helpers
       render partial: 'show_children', locals: {title: title}
     end
 
+    def metadata_fields
+      [:title, :identifier, :source, :description, :date, :creator, :contributor, :publisher, :language, :subject, :rights]
+    end
+
+    def metadata_field_values(field)
+      @document.get(ActiveFedora::SolrService.solr_name(field, :stored_searchable, type: :text), sep: nil) || []
+    end
+
+    def metadata_field_label(field)
+      field.to_s.capitalize
+    end
+
     def render_object_state
       case
       when @document.object_state == 'A'

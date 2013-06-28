@@ -14,9 +14,14 @@ module DulHydra::Controller
     end
 
     def metadata
+      respond_to do |format|
+        format.html { render :show }
+        format.xml { render :xml => @object.datastreams[DulHydra::Datastreams::DESC_METADATA].content }
+      end
     end
 
     def stats
+      render :show
     end
 
     protected
@@ -26,7 +31,7 @@ module DulHydra::Controller
     end
 
     def get_object
-      @object = ActiveFedora::SolrService.reify_solr_results [@document]
+      @object = ActiveFedora::Base.find(@document.id, cast: true)
     end
 
     def get_children

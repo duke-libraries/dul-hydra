@@ -1,7 +1,7 @@
 <% content_for :main do %>  
   <%= render_breadcrumbs %>
   <div id="document" class="<%= render_document_class %>">
-	<div class="row">
+	<div class="row" style="min-height:100px">
 	  <div class="span7">
 		<h3><%= @document.title %></h3>
 	  </div>
@@ -12,7 +12,7 @@
 	  </div>
 	</div>
 	<div class="document">
-	  <%= render_document_partial @document, :show %>
+	  <%= render 'show_tabs' %>
 	</div>
   </div>
 <% end %>
