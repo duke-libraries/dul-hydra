@@ -5,6 +5,8 @@ module DulHydra::Controller
     included do
       before_filter :get_document, :only => [:show, :metadata, :stats]
       before_filter :get_object, :only => :metadata
+      layout 'application', :only => [:show, :metadata, :stats]
+      layout 'blacklight', :except => [:show, :metadata, :stats]
     end
 
     def show
