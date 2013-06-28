@@ -87,7 +87,8 @@ module DulHydra::Models
     end
 
     def identifier
-      get(DulHydra::IndexFields::IDENTIFIER)
+      # We want the multivalued version here
+      get(ActiveFedora::SolrService.solr_name(:identifier, :stored_searchable, type: :text))
     end
     
     def has_thumbnail?
@@ -102,12 +103,12 @@ module DulHydra::Models
       datastreams[DulHydra::Datastreams::CONTENT]
     end
 
-    def mime_type
-      content_ds["dsMIME"]
+    def content_mime_type
+      content_ds["dsMIME"] rescue nil
     end
 
-    def size
-      content_ds["dsSize"]
+    def content_size
+      content_ds["dsSize"] rescue nil
     end
     
     def targets

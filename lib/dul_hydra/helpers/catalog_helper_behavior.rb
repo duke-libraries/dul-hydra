@@ -63,11 +63,15 @@ module DulHydra::Helpers
 
     def render_thumbnail(document = @document)
       src = document.has_thumbnail? ? thumbnail_path(document) : 'dul_hydra/no_thumbnail.png'
-      link_to image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail"), catalog_path(document.id)
+      image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
     end
 
-    def render_document_breadcrumbs
+    def render_breadcrumbs
       render partial: 'show_breadcrumbs', locals: {breadcrumbs: document_breadcrumbs}
+    end
+
+    def render_breadcrumb(crumb)
+      truncate crumb.title, separator: ' '
     end
 
     def render_sidebar_for_model
@@ -109,6 +113,27 @@ module DulHydra::Helpers
       return nil unless outcome
       label = outcome == "success" ? "success" : "important"
       render_label(outcome.capitalize, label)
+    end
+
+    def render_content_size(document = @document)
+      number_to_human_size(document.content_size) rescue nil
+    end
+
+    def render_content_type_and_size(document = @document)
+      "#{document.content_mime_type} #{render_content_size(document)}"
+    end
+
+    def render_download_link(args = {})
+      document = args.fetch(:document, @document)
+      label = args.fetch(:label, "Download")
+      css_class = args.fetch(:css_class, "")
+      css_id = args.fetch(:css_id, "download-#{document.id.sub(/:/, "-")}")
+      link_to label, download_path(document.id), :class => css_class, :id => css_id
+    end
+    
+    def render_download_icon(args = {})
+      label = content_tag(:i, "", :class => "icon-download-alt")
+      render_download_link args.merge(:label => label)
     end
 
     def format_date(date)

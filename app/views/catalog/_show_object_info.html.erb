@@ -38,7 +38,10 @@
 	  <%= t('dul_hydra.object_nav.items.metadata') %>
 	</li>
 	<li>
-	  <%= link_to t('dul_hydra.object_nav.items.fcrepo_admin'), fcrepo_admin.object_path(@document.id) %>
+	  <%= t('dul_hydra.object_nav.items.preservation_events') %>
+	</li>
+	<li>
+	  <%= link_to t('dul_hydra.object_nav.items.fcrepo_admin'), fcrepo_admin.object_path(@document.id) %> 
 	</li>
   </ul>
 </div>

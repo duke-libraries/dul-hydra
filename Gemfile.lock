@@ -1,3 +1,16 @@
+GIT
+  remote: git://github.com/projecthydra/fcrepo-admin.git
+  revision: 5c128bbc939e5aabed3a3de0cb8c3b4f1312c9fc
+  specs:
+    fcrepo_admin (0.6.1.pre)
+      active-fedora (~> 6.1)
+      blacklight
+      devise
+      hydra-head (~> 6.0)
+      mime-types (~> 1.19)
+      rails (~> 3.2)
+      rubydora (>= 1.6.5)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -87,14 +100,6 @@ GEM
       factory_girl (~> 4.2.0)
       railties (>= 3.0.0)
     fastercsv (1.5.5)
-    fcrepo_admin (0.6.0)
-      active-fedora (~> 6.1)
-      blacklight
-      devise
-      hydra-head (~> 6.0)
-      mime-types (~> 1.19)
-      rails (~> 3.2)
-      rubydora (>= 1.6.5)
     ffi (1.9.0)
     hike (1.2.3)
     hooks (0.3.1)
@@ -277,7 +282,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   devise
   factory_girl_rails (~> 4.0)
-  fcrepo_admin (~> 0.6.0)
+  fcrepo_admin!
   hydra-head (~> 6.2.2)
   jettywrapper
   jquery-rails

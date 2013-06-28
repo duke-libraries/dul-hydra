@@ -1,5 +1,7 @@
 <h4><%= title %></h4>
-<%= render 'sort_and_per_page' %>
+<% if @response.total > 1 -%>
+  <%= render 'sort_and_per_page' %>
+<% end -%>
 <%= render_document_index @documents %>
 <%= render 'results_pagination' %>
 

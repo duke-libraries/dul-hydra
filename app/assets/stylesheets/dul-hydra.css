@@ -7,3 +7,6 @@
 form.bookmark_toggle {
 	display: inline;
 }
+#show-breadcrumbs {
+	font-size: smaller;
+}

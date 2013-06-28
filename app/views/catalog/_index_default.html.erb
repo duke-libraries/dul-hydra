@@ -1,15 +1,23 @@
 <div class="row">
   <div class="span1">
-    <%= render_thumbnail document %>
+    <%= link_to render_thumbnail(document), catalog_path(document.id) %>
   </div>
   <div class="span8">
-	<dl class="dl-horizontal dl-invert">
-	  <% index_fields(document).each do |solr_fname, field| -%>
-        <% if should_render_index_field? document, field %>
-	      <dt class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_label document, :field => solr_fname %></dt>
-	      <dd class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_value document, :field => solr_fname %></dd>
-        <% end -%>
+	<ul class="unstyled">
+	  <li>
+		<%= document.active_fedora_model %> <%= document.id %>
+	  </li>
+	  <% if document.identifier -%>
+	    <li>
+		  <small><%= document.identifier %></small>
+	    </li>
+	  <% end %>
+	  <% if document.has_content? -%>
+	    <li>
+		  <small><%= render_download_link(document: document, label: render_content_type_and_size(document)) %></small>
+		  <%= render_download_icon :document => document %>
+	    </li>
 	  <% end -%>
-	</dl>
+	</ul>
   </div>
 </div>

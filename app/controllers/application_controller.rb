@@ -11,6 +11,13 @@ class ApplicationController < ActionController::Base
   layout 'blacklight'
 
   protect_from_forgery
+
+  def exclude_unwanted_models(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    ["PreservationEvent", "Target"].each do |model|
+      solr_parameters[:fq] << "-#{ActiveFedora::SolrService.solr_name(:has_model, :symbol)}:\"info:fedora/afmodel:#{model}\""
+    end
+  end
   
   private
   

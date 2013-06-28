@@ -2,13 +2,10 @@
   <div class="row">
 	<div class="well span2 text-center">
 	  <div>
-		<%= link_to "Download", download_path(@document.id), :class => "btn btn-primary" %>
+		<%= render_download_link css_class: "btn btn-primary" %>
 	  </div>
 	  <div class="muted">
-		<small>
-		<%= @document.mime_type %>
-		<%= number_to_human_size @document.size %>
-		</small>
+		<small><%= render_content_type_and_size %></small>
 	  </div>
 	</div>
   </div>

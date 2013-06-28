@@ -13,6 +13,7 @@ en:
         object_create_date: 'Created'
         object_modified_date: 'Modified'
         metadata: 'Metadata'
+        preservation_events: 'Preservation Events'
         fcrepo_admin: 'Fcrepo View'
         last_fixity_check_on: 'Checked'
         last_fixity_check_outcome: 'Outcome'
@@ -22,5 +23,9 @@ en:
       saved_searches: 'Searches'
       export_sets: 'Exports'
   fcrepo_admin:
+    object:
+      nav:
+        items:
+          catalog: 'Back to Staff View'
     datastream:
       not_persisted: 'Not currently used'
