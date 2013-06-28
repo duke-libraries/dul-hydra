@@ -14,7 +14,6 @@
     <![endif]-->
 
     <title><%= h(@page_title || application_name) %></title>
-    <link href="<%= opensearch_catalog_path(:format => 'xml', :only_path => false) %>" title="<%= application_name%>" type="application/opensearchdescription+xml" rel="search"/>
     <%= favicon_link_tag asset_path('favicon.ico') %>
     <%= stylesheet_link_tag    "application" %>
     <%= javascript_include_tag "application" %>
@@ -29,30 +28,49 @@
   </head>
   <% onload_text = "$('input#q').focus();" if params[:q].to_s.empty? and params[:f].to_s.empty? and params[:id].nil? %>
   <body onload="<%= onload_text %>" class="<%= render_body_class %>">
-  <%= render :partial => 'shared/header_navbar' %>
 
-  <div id="ajax-modal" class="modal hide fade" tabindex="-1"></div>
+	<!-- Shared header/navbar -->
+    <%= render :partial => 'shared/header_navbar' %>
+	<!-- /Shared header/navbar -->
 
-<!-- /container -->
-  <div id="main-container" class="container">
-    <!-- Top bar -->
-    <div id="search-found" class="row hidden-phone">
-      <%= topbar_items.join('').html_safe %>
-    </div>
-    <!-- /Top bar -->
-    <div class="row">
-      <div class="span12">
-        <div id="main-flashes">
-          <%= render :partial=>'/flash_msg' %>
-        </div>
-      </div>    
-    </div>              
+	<div id="ajax-modal" class="modal hide fade" tabindex="-1"></div>
+
+    <!-- main-container -->
+	<div id="main-container" class="container">
+
+      <!-- Top bar -->
+      <div id="search-found" class="row hidden-phone">
+		<%= topbar_items.join('').html_safe %>
+      </div> 
+      <!-- /Top bar -->
+	  
+	  <!-- Flash messages -->
+      <div class="row">
+		<div class="span12">
+          <div id="main-flashes">
+			<%= render :partial=>'/flash_msg' %>
+          </div>
+		</div>    
+      </div>              
+	  <!-- /Flash messages -->
 	
-    <div class="row">
-      <%= yield %>
-    </div>   
-  </div>
+	  <!-- main content + sidebar -->
+	  <div class="row">
+		<div class="span9">
+          <%= yield :main %>
+		</div>
+		<div class="span3">
+          <%= yield :sidebar %>
+		</div>
+      </div>
+	  <!-- /main content + sidebar -->
 
-  <%= render :partial => 'shared/footer' %>
-</body>
+	</div> 
+    <!-- main-container -->
+
+	<!-- Shared footer -->
+	<%= render :partial => 'shared/footer' %>
+	<!-- /Shared footer -->
+
+  </body>
 </html>
