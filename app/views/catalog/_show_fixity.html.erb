@@ -1,17 +1,17 @@
-<div class="well">
+<div class="well well-small">
   <ul class="nav nav-list">
 	<li class="nav-header">
-	  Fixity
+	  <%= t('dul_hydra.object_nav.headings.fixity') %>
 	</li>
 	<% if @document.last_fixity_check_on %>
 	<li>
 	  <table class="table table-condensed">
 		<tr>
-		  <th scope="row">Checked:</th>
+		  <th scope="row"><%= t('dul_hydra.object_nav.items.last_fixity_check_on') %>:</th>
 		  <td><%= format_date @document.last_fixity_check_on %></td>
 		</tr>
 		<tr>
-		  <th scope="row">Outcome:</th>
+		  <th scope="row"><%= t('dul_hydra.object_nav.items.last_fixity_check_outcome') %>:</th>
 		  <td><%= render_last_fixity_check_outcome %></td>
 		</tr>
 	  </table>
