@@ -105,6 +105,14 @@ module DulHydra::Helpers
       field.to_s.capitalize
     end
 
+    def render_default_show_tab_label
+      @documents.blank? ? "Content" : @documents.first.active_fedora_model.pluralize
+    end
+
+    def render_default_show_tab_content
+      render(@documents.blank? ? 'show_content' : 'show_children')
+    end
+
     def render_object_state
       case
       when @document.object_state == 'A'

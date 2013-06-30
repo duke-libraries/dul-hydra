@@ -56,6 +56,11 @@ module DulHydra::Models
       uri &&= ActiveFedora::Base.pids_from_uris(uri)
     end
 
+    def has_children?
+      # XXX We should come up with something better
+      ["Collection", "Item"].include?(active_fedora_model)
+    end
+
     def has_parent?
       !parent_uri.blank?
     end

@@ -12,12 +12,13 @@ DulHydra::Application.routes.draw do
 
   scope "objects/:object_id" do
     get 'children' => 'children#index'
-    get 'preservation_events' => 'preservation_events#index'
+    #get 'preservation_events' => 'preservation_events#index'
     get 'thumbnail' => 'thumbnail#show'
   end
 
   scope "catalog/:id" do
-    get 'metadata' => 'catalog#metadata'
+    get 'metadata' => 'catalog#metadata', :defaults => {:format => 'xml'}
+    get 'preservation_events' => 'catalog#preservation_events'
   end
 
   resources :export_sets do

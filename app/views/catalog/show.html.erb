@@ -1,24 +1,19 @@
-<% content_for :main do %>  
-  <%= render_breadcrumbs %>
-  <div id="document" class="<%= render_document_class %>">
-	<div class="row" style="min-height:100px">
-	  <div class="span7">
-		<h3><%= @document.title %></h3>
-	  </div>
-	  <div class="span2">
-		<div class="pull-right">
-		  <%= render_thumbnail %>
-		</div>
-	  </div>
-	</div>
-	<div class="document">
-	  <%= render 'show_tabs' %>
-	</div>
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+  <ul class="nav nav-tabs">
+    <li class="active">
+	  <a href="#tab1" data-toggle="tab"><%= render_default_show_tab_label %></a>
+	</li>
+    <li>
+	  <a href="#tab2" data-toggle="tab">Metadata</a>
+	</li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="tab1">
+	  <%= render_default_show_tab_content %>
+    </div>
+    <div class="tab-pane" id="tab2">
+	  <%= render 'show_metadata' %>
+    </div>
   </div>
-<% end %>
-<% content_for :sidebar do %>
-  <%= render 'show_tools' %>
-  <%= render 'show_object_info' %>
-  <%= render 'show_fixity' %>
-<% end %>
+</div>
 

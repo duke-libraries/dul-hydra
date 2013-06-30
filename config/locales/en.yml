@@ -1,8 +1,5 @@
 en:
   dul_hydra:
-    object_tabs:
-      main: 'Content'
-      metadata: 'Metadata'
     object_nav:
       headings:
         object_info: 'About This Object'
