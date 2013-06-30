@@ -15,7 +15,11 @@ module DulHydra::Controller
     def metadata
       respond_to do |format|
         format.html { get_document }
-        format.xml { render :xml => get_object.datastreams[DulHydra::Datastreams::DESC_METADATA].content }
+        format.xml do
+          object = ActiveFedora::Base.find(params[:id], cast: true)
+          authorize! :read, object
+          render :xml => object.datastreams[DulHydra::Datastreams::DESC_METADATA].content
+        end
       end
     end
 
@@ -31,10 +35,6 @@ module DulHydra::Controller
 
     def get_document
       @document = get_solr_response_for_doc_id[1]
-    end
-
-    def get_object
-      @object = ActiveFedora::Base.find(params[:id], cast: true)
     end
     
     def get_preservation_events
