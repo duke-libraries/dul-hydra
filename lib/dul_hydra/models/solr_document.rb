@@ -3,6 +3,10 @@ require 'json'
 module DulHydra::Models
   module SolrDocument
 
+    def safe_id
+      id.sub(/:/, "-")
+    end
+
     def active_fedora_model
       get(DulHydra::IndexFields::ACTIVE_FEDORA_MODEL)
     end
@@ -12,7 +16,7 @@ module DulHydra::Models
     end
     
     def object_profile
-      @object_profile ||= JSON.parse(self[DulHydra::IndexFields::OBJECT_PROFILE].first)
+      @object_profile ||= get_json(DulHydra::IndexFields::OBJECT_PROFILE)
     end
 
     def object_state
@@ -132,6 +136,23 @@ module DulHydra::Models
       JSON.parse(self[DulHydra::IndexFields::CONTENT_METADATA_PARSED].first)
     end
 
+    def event_date_time
+      get_date(DulHydra::IndexFields::EVENT_DATE_TIME)
+    end
+
+    def event_outcome
+      get(DulHydra::IndexFields::EVENT_OUTCOME)
+    end
+
+    def event_type
+      get(DulHydra::IndexFields::EVENT_TYPE)
+    end
+
+    def parsed_event_outcome_detail_note
+      field = DulHydra::IndexFields::EVENT_OUTCOME_DETAIL_NOTE
+      event_type == PreservationEvent::FIXITY_CHECK ? get_json(field) : get(field)
+    end
+
     private
 
     def targets_query
@@ -144,6 +165,10 @@ module DulHydra::Models
 
     def get_date(field)
       parse_date(get(field))
+    end
+
+    def get_json(field)
+      JSON.parse(self[field].first)
     end
 
     def parse_date(date)

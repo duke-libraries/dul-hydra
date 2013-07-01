@@ -3,32 +3,13 @@ module DulHydra::Controller
     extend ActiveSupport::Concern
 
     included do
-      layout 'application', :only => [:show, :metadata, :preservation_events, :stats]
-      layout 'blacklight', :except => [:show, :metadata, :preservation_events, :stats]
+      layout 'application', :only => :show
+      layout 'blacklight', :except => :show
     end
 
     def show
       get_document
       get_children
-    end
-
-    def metadata
-      respond_to do |format|
-        format.html { get_document }
-        format.xml do
-          object = ActiveFedora::Base.find(params[:id], cast: true)
-          authorize! :read, object
-          render :xml => object.datastreams[DulHydra::Datastreams::DESC_METADATA].content
-        end
-      end
-    end
-
-    def preservation_events
-      get_document
-      get_preservation_events
-    end
-
-    def stats
     end
 
     protected
@@ -37,19 +18,6 @@ module DulHydra::Controller
       @document = get_solr_response_for_doc_id[1]
     end
     
-    def get_preservation_events
-      configure_blacklight_for_preservation_events
-      @response, @documents = get_search_results(params, {q: preservation_events_query})
-    end
-
-    def configure_blacklight_for_preservation_events
-      blacklight_config.configure do |config|
-        config.sort_fields.clear
-        config.add_sort_field "#{DulHydra::IndexFields::EVENT_DATE_TIME} desc"
-        config.qt = "standard"
-      end
-    end
-
     def get_children
       get_children_search_results if @document.has_children?
     end
@@ -81,10 +49,6 @@ module DulHydra::Controller
                 DulHydra::IndexFields::IS_PART_OF
               end
       "#{field}:#{ActiveFedora::SolrService.escape_uri_for_query(@document.internal_uri)}"
-    end
-
-    def preservation_events_query
-      ActiveFedora::SolrService.construct_query_for_rel(:is_preservation_event_for => @document.internal_uri)
     end
 
   end

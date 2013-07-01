@@ -1,34 +1,32 @@
-<h3>Preservation Events</h3>
-
-<% unless @document_list.empty? %>
-<div class="pagination">
-  <%= render_pagination_info @response %>
-</div>
-<table class="table table-bordered table-condensed">
+<h4>Preservation Events</h4>
+<% unless @documents.blank? %>
+<table class="table table-bordered table-condensed table-hover" id="preservation-events">
 	<thead>
 		<tr>
-			<th scope="col">PID</th>
-			<th scope="col">Event Type</th>
-			<th scope="col">Event Outcome</th>
 			<th scope="col">Event Date</th>
+			<th scope="col">Event Type</th>
+			<th scope="col">Outcome</th>
+			<th scope="col">Detail</th>
+			<th scope="col">PREMIS XML</th>
 		</tr>
 	</thead>
 	<tbody>
-  		<% @document_list.each do |doc| %>
-  		<tr class="<%= pe_solr_field_value(doc, :event_outcome) == 'success' ? 'success' : 'error' %>">
-  			<td><%= link_to doc.id, fcrepo_admin.object_path(doc.id) %></td>
-    	 	<td><%= pe_solr_field_value(doc, :event_type) %></td>
-    	 	<td><%= pe_solr_field_value(doc, :event_outcome) %></td>
-    	 	<td><%= pe_solr_field_value(doc, :event_date_time) %></td>
+  		<% @documents.each do |document| %>
+  		<tr class="summary">
+    	 	<td><%= format_date document.event_date_time %></td>
+    	 	<td><%= document.event_type %></td>
+    	 	<td><%= event_outcome_label document %></td>
+			<td>
+			  <%= link_to "Detail", "##{event_detail_id(document)}", "data-toggle" => "modal" %>
+			  <%= render partial: 'detail', locals: {document: document} %>
+			</td>
+			<td><%= link_to "PREMIS", event_metadata_path(document.id) %></td>
   		</tr>
   		<% end %>
 	</tbody>
 </table>
-<div class="pagination">
-  <%= paginate_rsolr_response @response, :theme => 'blacklight' %>
-</div>
 <% else %>
   <p class="alert alert-info">
-	No preservation events for <%= @object.pid %>.
+	No preservation events.
   </p>
 <% end %>
