@@ -1,3 +1,6 @@
 module DulHydra
-  autoload :Error, 'dul_hydra/error'  
+  autoload :Configurable, 'dul_hydra/configurable'
+  autoload :Error, 'dul_hydra/error'
+
+  include DulHydra::Configurable
 end

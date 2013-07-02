@@ -3,12 +3,13 @@ source 'https://rubygems.org'
 gem 'rails', '~> 3.2.13'
 
 gem 'sqlite3'
-gem 'hydra-head', '~> 6.2.2'
-gem 'blacklight', '~> 4.2.0'
+gem 'hydra-head', '~> 6.3.0'
+gem 'blacklight', '~> 4.2.1'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise'
 gem 'fcrepo_admin', github: 'projecthydra/fcrepo-admin'
+gem 'active-fedora', github: 'dchandekstark/active_fedora', branch: 'qdc-ds-fetch-patch'
 
 gem 'log4r'
 

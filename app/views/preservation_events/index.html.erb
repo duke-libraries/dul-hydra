@@ -24,10 +24,7 @@
 			  <%= render partial: 'detail', locals: {document: document} %>
 			</td>
 			<td>
-			  <small>
-			  <%= link_to "PREMIS XML", event_metadata_path(document.id) %> | 
-			  <%= link_to "Fcrepo View", fcrepo_admin.object_path(document.id) %>
-			  </small>
+			  <%= link_to "PREMIS Event XML", event_metadata_path(document.id) %>
 			</td>
   		</tr>
   		<% end %>

@@ -1,3 +1,5 @@
+require 'dul_hydra'
+
 module DulHydra::Helpers
   module CatalogHelperBehavior
     
@@ -94,7 +96,7 @@ module DulHydra::Helpers
     end
 
     def metadata_fields
-      [:title, :identifier, :source, :description, :date, :creator, :contributor, :publisher, :language, :subject, :rights]
+      DulHydra.metadata_fields
     end
 
     def metadata_field_values(field)
