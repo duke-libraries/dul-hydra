@@ -33,7 +33,37 @@ FactoryGirl.define do
       factory :component_part_of_item_with_content_has_apo, :traits => [:part_of_item, :has_admin_policy]
     end
     
-    factory :component_has_apo,              :traits => [:has_admin_policy]
+    factory :component_has_apo,              :traits => [:has_admin_policy] do
+      factory :component_has_apo_with_content_image1 do      
+        after(:build) do |c|
+          c.content.content = File.new(File.join(Rails.root, 'spec', 'fixtures', 'image1.tiff'))
+          c.save
+          c.generate_content_thumbnail!
+        end
+      end      
+      factory :component_has_apo_with_content_image2 do      
+        after(:build) do |c|
+          c.content.content = File.new(File.join(Rails.root, 'spec', 'fixtures', 'image2.tiff'))
+          c.save
+          c.generate_content_thumbnail!
+        end
+      end      
+      factory :component_has_apo_with_content_image3 do      
+        after(:build) do |c|
+          c.content.content = File.new(File.join(Rails.root, 'spec', 'fixtures', 'image3.tiff'))
+          c.save
+          c.generate_content_thumbnail!
+        end
+      end      
+      factory :component_has_apo_with_content_image4 do      
+        after(:build) do |c|
+          c.content.content = File.new(File.join(Rails.root, 'spec', 'fixtures', 'image4.tiff'))
+          c.save
+          c.generate_content_thumbnail!
+        end
+      end      
+    end
+    
     factory :component_public_read,          :traits => [:public_read]
     factory :component_part_of_item,         :traits => [:part_of_item]
     factory :component_part_of_item_has_apo, :traits => [:part_of_item, :has_admin_policy]

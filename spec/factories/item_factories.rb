@@ -26,7 +26,22 @@ FactoryGirl.define do
     end
 
     factory :item_in_collection,             :traits => [:member_of_collection]
-    factory :item_has_apo,                   :traits => [:has_admin_policy]
+    
+    factory :item_has_apo,                   :traits => [:has_admin_policy] do
+      factory :item_has_apo_with_components_image1_and_image2 do
+        after(:create) do |i|
+          i.parts << FactoryGirl.create(:component_has_apo_with_content_image1)
+          i.parts << FactoryGirl.create(:component_has_apo_with_content_image2)
+        end
+      end
+      factory :item_has_apo_with_components_image3_and_image4 do
+        after(:create) do |i|
+          i.parts << FactoryGirl.create(:component_has_apo_with_content_image3)
+          i.parts << FactoryGirl.create(:component_has_apo_with_content_image4)
+        end
+      end
+    end
+    
     factory :item_public_read,               :traits => [:public_read]
     factory :item_in_collection_has_apo,     :traits => [:member_of_collection, :has_admin_policy]
     factory :item_in_collection_public_read, :traits => [:member_of_collection, :public_read]
