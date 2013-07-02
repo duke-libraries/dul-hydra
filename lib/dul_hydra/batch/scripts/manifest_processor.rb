@@ -1,4 +1,4 @@
-module DulHydra::Scripts
+module DulHydra::Batch::Scripts
   class ManifestProcessor
     
     LOG_CONFIG_FILEPATH = File.join(Rails.root, 'config', 'log4r_batch_processor.yml')

@@ -39,7 +39,7 @@ FactoryGirl.define do
     end      
   end
       
-  factory :ingest_batch_object do
+  factory :ingest_batch_object, :class => DulHydra::Batch::Models::IngestBatchObject do
     has_identifier
     has_label
     
