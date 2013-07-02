@@ -12,6 +12,8 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
 
+  protected
+
   def exclude_unwanted_models(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
     ["PreservationEvent", "Target"].each do |model|
