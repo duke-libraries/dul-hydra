@@ -6,7 +6,7 @@ describe "export_sets/new.html.erb" do
   let(:user) { FactoryGirl.create(:user) }
   before do
     login user
-    visit fcrepo_admin.object_path(object)
+    visit catalog_path(object)
     click_button "bookmark_toggle_#{object.pid.sub(/:/, '-')}"
   end
   after do

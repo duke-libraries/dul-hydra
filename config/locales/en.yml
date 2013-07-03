@@ -1,4 +1,22 @@
 en:
+  dul_hydra:
+    object_nav:
+      headings:
+        object_info: 'About This Object'
+        more_info: 'More Information'
+        fixity: 'Fixity'
+      items:
+        id: 'PID'
+        active_fedora_model: 'Type'
+        identifier: 'Identifier'
+        object_state: 'State'
+        object_create_date: 'Created'
+        object_modified_date: 'Modified'
+        metadata: 'Metadata'
+        preservation_events: 'Preservation Events'
+        fcrepo_admin: 'Fcrepo View'
+        last_fixity_check_on: 'Checked'
+        last_fixity_check_outcome: 'Outcome'
   blacklight:
     application_name: 'DUL Preservation Repository'
     header_links:
@@ -8,6 +26,6 @@ en:
     object:
       nav:
         items:
-          preservation_events: 'Preservation Events'
+          catalog: 'Back to Staff View'
     datastream:
       not_persisted: 'Not currently used'

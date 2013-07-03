@@ -1,0 +1,16 @@
+<% if @document.has_content? %>
+  <div class="row">
+	<div class="well span2 text-center">
+	  <div>
+		<%= render_download_link css_class: "btn btn-primary" %>
+	  </div>
+	  <div class="muted">
+		<small><%= render_content_type_and_size %></small>
+	  </div>
+	</div>
+  </div>
+  <% else %>
+  <div class="alert">
+	This object has no content.
+  </div>
+<% end %>

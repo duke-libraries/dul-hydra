@@ -1,0 +1,20 @@
+<div id="document" class="<%= render_document_class %>">
+  <div class="row">
+	<div class="span7">
+	  <h2><%= @document.title %></h2>
+	  <h4 class="muted">
+		<%= @document.active_fedora_model %>
+		<%= @document.id %>
+		<%= @document.identifier %>
+	  </h4>
+	</div>
+	<div class="span2">
+	  <div class="pull-right">
+		<%= render_thumbnail %>
+	  </div>
+	</div>
+  </div>
+  <div class="document">
+	<%= render_document_partial @document, :show %>
+  </div>
+</div>
