@@ -1,0 +1,26 @@
+<h4>Descriptive Metadata</h4>
+<div class="navbar">
+  <div class="navbar-inner">
+	<ul class="nav">
+	  <li>
+		<%= link_to "Return to Summary", catalog_path(@object) %>
+	  </li>
+	  <li>
+		<%= link_to "Raw XML", metadata_path(@object, format: 'xml') %>
+	  </li>
+	  <li>
+		<%= link_to "Fcrepo View", fcrepo_admin.object_datastream_path(@object, "descMetadata") %>
+	  </li>
+	</ul>
+  </div>
+</div>
+<table class="table">
+  <% metadata_fields.each do |field| %>
+    <% metadata_field_values(field).each do |value| %>
+	<tr>
+	  <th scope="row"><%= metadata_field_label field %></th>
+	  <td><%= value %></td>
+	</tr>
+	<% end %>
+  <% end %>
+</table>

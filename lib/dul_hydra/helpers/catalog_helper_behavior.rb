@@ -1,3 +1,5 @@
+require 'dul_hydra'
+
 module DulHydra::Helpers
   module CatalogHelperBehavior
     
@@ -12,7 +14,7 @@ module DulHydra::Helpers
       response, doc = get_solr_response_for_doc_id(pid)
       # XXX This is not consistent with DulHydra::Models::Base#title_display
       title = doc.nil? ? pid : doc.fetch(DulHydra::IndexFields::TITLE, pid)
-      link_to(title, fcrepo_admin.object_path(pid), :class => "parent-link").html_safe
+      link_to(title, catalog_path(pid), :class => "parent-link").html_safe
     end
 
     def display_structure(structure)
@@ -61,10 +63,115 @@ module DulHydra::Helpers
       return structure_contents_info
     end
 
-    def render_thumbnail(doc)
-      if doc.has_thumbnail?
-        link_to image_tag(thumbnail_path(doc), :alt => "Thumbnail", :class => "img-polaroid thumbnail"), fcrepo_admin.object_path(doc.id)
+    def render_thumbnail(document = @document)
+      src = document.has_thumbnail? ? thumbnail_path(document) : 'dul_hydra/no_thumbnail.png'
+      image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
+    end
+
+    def render_breadcrumbs
+      render partial: 'show_breadcrumbs', locals: {breadcrumbs: document_breadcrumbs}
+    end
+
+    def render_breadcrumb(crumb)
+      truncate crumb.title, separator: ' '
+    end
+
+    def render_sidebar_for_model
+      begin
+        partial = "show_%s_sidebar" % document_partial_name(@document)
+        return render partial: partial, locals: {document: @document}
+      rescue ActionView::MissingTemplate
+        nil
       end
+    end
+
+    def render_children
+      title = case
+              when @document.active_fedora_model == "Collection"
+                "Items"
+              when @document.active_fedora_model == "Item"
+                "Components"
+              end
+      render partial: 'show_children', locals: {title: title}
+    end
+
+    def metadata_fields
+      DulHydra.metadata_fields
+    end
+
+    def metadata_field_values(field)
+      @document.get(ActiveFedora::SolrService.solr_name(field, :stored_searchable, type: :text), sep: nil) || []
+    end
+
+    def metadata_field_label(field)
+      field.to_s.capitalize
+    end
+
+    def render_default_show_tab_label
+      @documents.blank? ? "Content" : @documents.first.active_fedora_model.pluralize
+    end
+
+    def render_default_show_tab_content
+      render(@documents.blank? ? 'show_content' : 'show_children')
+    end
+
+    def render_object_state
+      case
+      when @document.object_state == 'A'
+        text = "Active"
+        label = "info"
+      when @document.object_state == 'I'
+        text = "Inactive"
+        label = "warning"
+      when @document.object_state == 'D'
+        text = "Deleted"
+        label = "important"
+      end
+      render_label(text, label)
+    end
+
+    def render_last_fixity_check_outcome
+      outcome = @document.last_fixity_check_outcome
+      return nil unless outcome
+      label = outcome == "success" ? "success" : "important"
+      render_label(outcome.capitalize, label)
+    end
+
+    def render_content_size(document = @document)
+      number_to_human_size(document.content_size) rescue nil
+    end
+
+    def render_content_type_and_size(document = @document)
+      "#{document.content_mime_type} #{render_content_size(document)}"
+    end
+
+    def render_download_link(args = {})
+      document = args.fetch(:document, @document)
+      label = args.fetch(:label, "Download")
+      css_class = args.fetch(:css_class, "")
+      css_id = args.fetch(:css_id, "download-#{document.id.sub(/:/, "-")}")
+      link_to label, download_path(document.id), :class => css_class, :id => css_id
+    end
+    
+    def render_download_icon(args = {})
+      label = content_tag(:i, "", :class => "icon-download-alt")
+      render_download_link args.merge(:label => label)
+    end
+
+    def format_date(date)
+      date.to_formatted_s(:db) if date
+    end
+
+    private
+
+    def render_label(text, label)
+      content_tag :span, text, :class => "label label-#{label}"
+    end
+
+    def document_breadcrumbs(doc = @document, breadcrumbs = [])
+      breadcrumbs << doc
+      document_breadcrumbs(get_solr_response_for_doc_id(doc.parent_pid)[1], breadcrumbs) if doc.has_parent?
+      breadcrumbs
     end
     
   end

@@ -3,14 +3,46 @@ require 'json'
 module DulHydra::Models
   module SolrDocument
 
+    def safe_id
+      id.sub(/:/, "-")
+    end
+
+    def active_fedora_model
+      get(DulHydra::IndexFields::ACTIVE_FEDORA_MODEL)
+    end
+
+    def internal_uri
+      get(DulHydra::IndexFields::INTERNAL_URI)
+    end
+    
     def object_profile
-      @object_profile ||= JSON.parse(self[DulHydra::IndexFields::OBJECT_PROFILE].first)
+      @object_profile ||= get_json(DulHydra::IndexFields::OBJECT_PROFILE)
+    end
+
+    def object_state
+      object_profile["objState"]
+    end
+
+    def object_create_date
+      parse_date(object_profile["objCreateDate"])
+    end
+
+    def object_modified_date
+      parse_date(object_profile["objLastModDate"])
+    end
+
+    def last_fixity_check_on
+      get_date(DulHydra::IndexFields::LAST_FIXITY_CHECK_ON)
+    end
+
+    def last_fixity_check_outcome
+      get(DulHydra::IndexFields::LAST_FIXITY_CHECK_OUTCOME)
     end
 
     def datastreams
       object_profile["datastreams"]
     end
-    
+
     def has_datastream?(dsID)
       !datastreams[dsID].blank?
     end
@@ -28,29 +60,44 @@ module DulHydra::Models
       uri &&= ActiveFedora::Base.pids_from_uris(uri)
     end
 
+    def has_children?
+      # XXX We should come up with something better
+      ["Collection", "Item"].include?(active_fedora_model)
+    end
+
     def has_parent?
       !parent_uri.blank?
     end
 
     def parent_uri
-      get(DulHydra::IndexFields::IS_PART_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF) || get(DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION)
+      get(parent_index_field)
     end
 
     def parent_pid
-      uri = parent_uri
-      uri &&= ActiveFedora::Base.pids_from_uris(uri)
+      ActiveFedora::Base.pids_from_uris(parent_uri) if has_parent?
     end
 
-    def active_fedora_model
-      get(DulHydra::IndexFields::ACTIVE_FEDORA_MODEL)
+    # Field name for parent PID on the child index document
+    def parent_index_field
+      case
+      when active_fedora_model == "Component"
+        DulHydra::IndexFields::IS_PART_OF
+      when active_fedora_model == "Item"
+        DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
+      end
+    end
+
+    def label
+      object_profile["objLabel"]
     end
 
     def title
-      get(DulHydra::IndexFields::TITLE)
+      get(DulHydra::IndexFields::TITLE) || label || "#{active_fedora_model} #{id}"
     end
 
     def identifier
-      get(DulHydra::IndexFields::IDENTIFIER)
+      # We want the multivalued version here
+      get(ActiveFedora::SolrService.solr_name(:identifier, :stored_searchable, type: :text))
     end
     
     def has_thumbnail?
@@ -60,29 +107,72 @@ module DulHydra::Models
     def has_content?
       has_datastream?(DulHydra::Datastreams::CONTENT)
     end
+
+    def content_ds
+      datastreams[DulHydra::Datastreams::CONTENT]
+    end
+
+    def content_mime_type
+      content_ds["dsMIME"] rescue nil
+    end
+
+    def content_size
+      content_ds["dsSize"] rescue nil
+    end
     
     def targets
-      object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
-      query = "#{DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR}:#{object_uri}"
-      @targets ||= ActiveFedora::SolrService.query(query)
+      @targets ||= ActiveFedora::SolrService.query(targets_query)
+    end
+
+    def targets_count
+      @targets_count ||= ActiveFedora::SolrService.count(targets_query)
     end
     
     def has_target?
-      targets.size > 0 ? true : false
-    end
-    
-    def children
-      object_uri = ActiveFedora::SolrService.escape_uri_for_query("info:fedora/#{id}")
-      query = "#{DulHydra::IndexFields::IS_MEMBER_OF}:#{object_uri} OR #{DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION}:#{object_uri} OR #{DulHydra::IndexFields::IS_PART_OF}:#{object_uri}"
-      @children ||= ActiveFedora::SolrService.query(query)
-    end
-    
-    def has_children?
-      children.size > 0 ? true : false
+      targets_count > 0
     end
     
     def parsed_content_metadata
       JSON.parse(self[DulHydra::IndexFields::CONTENT_METADATA_PARSED].first)
+    end
+
+    def event_date_time
+      get_date(DulHydra::IndexFields::EVENT_DATE_TIME)
+    end
+
+    def event_outcome
+      get(DulHydra::IndexFields::EVENT_OUTCOME)
+    end
+
+    def event_type
+      get(DulHydra::IndexFields::EVENT_TYPE)
+    end
+
+    def parsed_event_outcome_detail_note
+      field = DulHydra::IndexFields::EVENT_OUTCOME_DETAIL_NOTE
+      event_type == PreservationEvent::FIXITY_CHECK ? get_json(field) : get(field)
+    end
+
+    private
+
+    def targets_query
+      "#{DulHydra::IndexFields::IS_EXTERNAL_TARGET_FOR}:#{internal_uri_for_query}"
+    end
+
+    def internal_uri_for_query
+      ActiveFedora::SolrService.escape_uri_for_query(internal_uri)
+    end
+
+    def get_date(field)
+      parse_date(get(field))
+    end
+
+    def get_json(field)
+      JSON.parse(self[field].first)
+    end
+
+    def parse_date(date)
+      Time.parse(date).localtime if date
     end
 
   end
