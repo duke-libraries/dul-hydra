@@ -7,6 +7,7 @@ class PreservationEventsController < CatalogController
 
   def index
     get_document
+    load_and_authorize_object
     get_preservation_events
   end
 

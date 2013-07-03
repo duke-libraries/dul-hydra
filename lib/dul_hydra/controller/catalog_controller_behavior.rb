@@ -8,7 +8,8 @@ module DulHydra::Controller
     end
 
     def show
-      get_document
+      get_document # XXX Phase out and use object only
+      load_and_authorize_object
       get_children
     end
 
@@ -17,14 +18,32 @@ module DulHydra::Controller
     def get_document
       @document = get_solr_response_for_doc_id[1]
     end
+
+    def load_and_authorize_object
+      load_object
+      authorize_object
+    end
+
+    def load_object
+      pid = params[:object_id] || params[:id]
+      begin
+        @object = ActiveFedora::Base.find(pid, :cast => true)
+      rescue ActiveFedora::ObjectNotFoundError
+        render :text => "Object not found", :status => 404
+      end
+    end
+
+    def authorize_object
+      authorize! params[:action].to_sym, @object
+    end
     
     def get_children
-      get_children_search_results if @document.has_children?
+      get_children_search_results if @object.is_a?(DulHydra::Models::HasChildren)
     end
 
     def get_children_search_results
       configure_blacklight_for_children
-      @response, @documents = get_search_results(params, {q: children_query})
+      @response, @documents = get_search_results(params, {q: @object.children_query})
     end
 
     def configure_blacklight_for_children
@@ -38,17 +57,6 @@ module DulHydra::Controller
         config.default_sort_field = "#{DulHydra::IndexFields::IDENTIFIER} asc"
         config.qt = "standard"
       end    
-    end
-
-    def children_query
-      # XXX We may want to index the child relationship predicate
-      field = case
-              when @document.active_fedora_model == "Collection"
-                DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
-              when @document.active_fedora_model == "Item"
-                DulHydra::IndexFields::IS_PART_OF
-              end
-      "#{field}:#{ActiveFedora::SolrService.escape_uri_for_query(@document.internal_uri)}"
     end
 
   end

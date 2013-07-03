@@ -1,7 +1,7 @@
 GIT
-  remote: git://github.com/dchandekstark/active_fedora.git
-  revision: cc8edf3438414985ec986a4fb47a6dcc04365143
-  branch: qdc-ds-fetch-patch
+  remote: git://github.com/projecthydra/active_fedora.git
+  revision: c8f4777319d3a299e29124c261c43fa6a7136ece
+  ref: c8f4777319d3a299e29124c261c43fa6a7136ece
   specs:
     active-fedora (6.4.0)
       activesupport (>= 3.0.0)

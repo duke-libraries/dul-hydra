@@ -61,11 +61,11 @@
 		  <div id="document" class="<%= render_document_class %>">
 			<div class="row" style="min-height:100px">
 			  <div class="span7">
-				<h3><%= @document.title %></h3>
+				<h3><%= render_object_title %></h3>
 			  </div>
 			  <div class="span2">
 				<div class="pull-right">
-				  <%= render_thumbnail %>
+				  <%= render_thumbnail @object %>
 				</div>
 			  </div>
 			</div>

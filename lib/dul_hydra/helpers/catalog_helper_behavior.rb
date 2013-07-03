@@ -63,9 +63,8 @@ module DulHydra::Helpers
       return structure_contents_info
     end
 
-    def render_thumbnail(document = @document)
-      src = document.has_thumbnail? ? thumbnail_path(document) : 'dul_hydra/no_thumbnail.png'
-      image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
+    def render_object_title
+      @object.title_display
     end
 
     def render_breadcrumbs
@@ -74,15 +73,6 @@ module DulHydra::Helpers
 
     def render_breadcrumb(crumb)
       truncate crumb.title, separator: ' '
-    end
-
-    def render_sidebar_for_model
-      begin
-        partial = "show_%s_sidebar" % document_partial_name(@document)
-        return render partial: partial, locals: {document: @document}
-      rescue ActionView::MissingTemplate
-        nil
-      end
     end
 
     def render_children
@@ -100,7 +90,7 @@ module DulHydra::Helpers
     end
 
     def metadata_field_values(field)
-      @document.get(ActiveFedora::SolrService.solr_name(field, :stored_searchable, type: :text), sep: nil) || []
+      @object.send(field)
     end
 
     def metadata_field_label(field)
@@ -117,13 +107,13 @@ module DulHydra::Helpers
 
     def render_object_state
       case
-      when @document.object_state == 'A'
+      when @object.state == 'A'
         text = "Active"
         label = "info"
-      when @document.object_state == 'I'
+      when @object.state == 'I'
         text = "Inactive"
         label = "warning"
-      when @document.object_state == 'D'
+      when @object.state == 'D'
         text = "Deleted"
         label = "important"
       end
@@ -158,6 +148,11 @@ module DulHydra::Helpers
       render_download_link args.merge(:label => label)
     end
 
+    def render_thumbnail(document_or_object)
+      src = document_or_object.has_thumbnail? ? fcrepo_admin.download_object_datastream_path(document_or_object.id, DulHydra::Datastreams::THUMBNAIL) : default_thumbnail
+      image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
+    end
+
     def format_date(date)
       date.to_formatted_s(:db) if date
     end
@@ -172,6 +167,10 @@ module DulHydra::Helpers
       breadcrumbs << doc
       document_breadcrumbs(get_solr_response_for_doc_id(doc.parent_pid)[1], breadcrumbs) if doc.has_parent?
       breadcrumbs
+    end
+
+    def default_thumbnail
+      'dul_hydra/no_thumbnail.png'
     end
     
   end

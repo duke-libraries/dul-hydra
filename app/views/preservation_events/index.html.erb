@@ -24,7 +24,7 @@
 			  <%= render partial: 'detail', locals: {document: document} %>
 			</td>
 			<td>
-			  <%= link_to "PREMIS Event XML", event_metadata_path(document.id) %>
+			  <%= link_to "PREMIS Event XML", fcrepo_admin.download_object_datastream_path(document.id, "eventMetadata") %>
 			</td>
   		</tr>
   		<% end %>

@@ -9,7 +9,7 @@ gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise'
 gem 'fcrepo_admin', github: 'projecthydra/fcrepo-admin'
-gem 'active-fedora', github: 'dchandekstark/active_fedora', branch: 'qdc-ds-fetch-patch'
+gem 'active-fedora', github: 'projecthydra/active_fedora', ref: 'c8f4777319d3a299e29124c261c43fa6a7136ece'
 
 gem 'log4r'
 
