@@ -25,7 +25,7 @@ module DulHydra::Batch::Scripts
       config_logger
       begin
         @log.info("Processing manifest: #{@manifest_file}")
-        manifest = Manifest.new(@manifest_file)
+        manifest = DulHydra::Batch::Models::Manifest.new(@manifest_file)
         @log.info("Manifest name: #{manifest.name}")
         set_batch(manifest)
         @log.debug("Batch id: #{manifest.batch.id}")
@@ -41,12 +41,12 @@ module DulHydra::Batch::Scripts
     def set_batch(manifest)
       begin
         if manifest.batch_id
-          batch = Batch.find(manifest.batch_id)
+          batch = DulHydra::Batch::Models::Batch.find(manifest.batch_id)
         else
           name = manifest.batch_name
           description = manifest.batch_description
           user = find_user(manifest.batch_user_email) if manifest.batch_user_email
-          batch = Batch.create(:name => name, :description => description, :user => user)
+          batch = DulHydra::Batch::Models::Batch.create(:name => name, :description => description, :user => user)
         end
       rescue ActiveRecord::RecordNotFound
         @log.error("Cannot find Batch with id #{manifest_hash[BATCH][ID]}")
@@ -66,7 +66,7 @@ module DulHydra::Batch::Scripts
     
     def process_object(manifest_object)
       @log.debug("Processing manifest object #{manifest_object.key_identifier}")
-      batch_object = IngestBatchObject.create(:batch => manifest_object.batch)
+      batch_object = DulHydra::Batch::Models::IngestBatchObject.create(:batch => manifest_object.batch)
       batch_object.identifier = manifest_object.key_identifier
       batch_object.label = manifest_object.label
       batch_object.model = manifest_object.model
@@ -80,10 +80,10 @@ module DulHydra::Batch::Scripts
       manifest_object.datastreams.each do |datastream|
         @log.debug("... datastream #{datastream}")
         name = datastream
-        operation = BatchObjectDatastream::OPERATION_ADD
+        operation = DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADD
         payload = manifest_object.datastream_filepath(datastream)
-        payload_type = BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-        ds = BatchObjectDatastream.create(:name => name,
+        payload_type = DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
+        ds = DulHydra::Batch::Models::BatchObjectDatastream.create(:name => name,
                                           :operation => operation,
                                           :payload => payload,
                                           :payload_type => payload_type,
@@ -99,15 +99,15 @@ module DulHydra::Batch::Scripts
     end
     
     def create_batch_object_relationships(manifest_object, batch_object)
-      BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
+      DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
         if manifest_object.has_relationship?(relationship)
           @log.debug("... relationship #{relationship}")
           relationship_object_pid = manifest_object.relationship_pid(relationship)
           if relationship_object_pid
-            BatchObjectRelationship.create(:name => relationship,
+            DulHydra::Batch::Models::BatchObjectRelationship.create(:name => relationship,
                                            :object => manifest_object.relationship_pid(relationship),
-                                           :object_type => BatchObjectRelationship::OBJECT_TYPE_PID,
-                                           :operation => BatchObjectRelationship::OPERATION_ADD,
+                                           :object_type => DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID,
+                                           :operation => DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD,
                                            :batch_object => batch_object)
           else
             @log.error("Could not create #{relationship} for #{manifest_object.key_identifier}")
