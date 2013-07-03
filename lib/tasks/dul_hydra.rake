@@ -30,6 +30,15 @@ namespace :dul_hydra do
 	    	bfc.execute
 	    	BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
         end
+        desc "Make manifest MANIFEST based on files in directory DIRPATH"
+        task :make_manifest => :environment do
+            raise "Must specify directory path to files.  Ex.: DIRPATH=/nas/VOLUME/na_COL/" unless ENV['DIRPATH']
+            raise "Must specify manifest.  Ex.: MANIFEST=/srv/fedora-working/ingest/COL/manifests/item.yml" unless ENV['MANIFEST']
+            opts = { :dirpath => ENV['DIRPATH'], :manifest => ENV['MANIFEST'] }
+            opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
+            mm = DulHydra::Batch::Scripts::ManifestMaker.new(opts)
+            mm.execute
+        end
         desc "Create ingest batch objects from MANIFEST"
         task :process_manifest => :environment do
             raise "Must specify manifest.  Ex.: MANIFEST=/srv/fedora-working/ingest/COL/manifests/item.yml" unless ENV['MANIFEST']
