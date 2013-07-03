@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module DulHydra::Scripts
+module DulHydra::Batch::Scripts
   
   shared_examples "a successful ingest batch" do
     let(:batch_run) { batch.batch_runs.last }
@@ -32,16 +32,16 @@ module DulHydra::Scripts
           when PreservationEvent::INGESTION
             expect(pe.event_detail).to include("Batch object identifier: #{batch_obj.identifier}")
           when PreservationEvent::VALIDATION
-            expect(pe.event_outcome_detail_note).to include(DulHydra::Scripts::BatchProcessor::PASS)
-            expect(pe.event_outcome_detail_note).to_not include(DulHydra::Scripts::BatchProcessor::FAIL)
+            expect(pe.event_outcome_detail_note).to include(DulHydra::Batch::Scripts::BatchProcessor::PASS)
+            expect(pe.event_outcome_detail_note).to_not include(DulHydra::Batch::Scripts::BatchProcessor::FAIL)
           end
         end
       end
-      expect(batch_run.outcome).to eq(BatchRun::OUTCOME_SUCCESS)
+      expect(batch_run.outcome).to eq(DulHydra::Batch::Models::BatchRun::OUTCOME_SUCCESS)
       expect(batch_run.total).to eq(batch.batch_objects.size)
       expect(batch_run.success).to eq(batch_run.total)
       expect(batch_run.failure).to eq(0)
-      expect(batch_run.status).to eq(BatchRun::STATUS_FINISHED)
+      expect(batch_run.status).to eq(DulHydra::Batch::Models::BatchRun::STATUS_FINISHED)
       expect(batch_run.start).to be < batch_run.stop
       expect(batch_run.stop).to be_within(3.minutes).of(Time.now)
       expect(batch_run.version).to eq(DulHydra::VERSION)
@@ -55,7 +55,7 @@ module DulHydra::Scripts
     after { FileUtils.remove_dir test_dir }
     context "ingest" do
       let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
-      let(:bp) { DulHydra::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
+      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
       before { bp.execute }
       after do
         batch.batch_objects.each do |obj|

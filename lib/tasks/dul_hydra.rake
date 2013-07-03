@@ -35,7 +35,7 @@ namespace :dul_hydra do
             raise "Must specify manifest.  Ex.: MANIFEST=/srv/fedora-working/ingest/COL/manifests/item.yml" unless ENV['MANIFEST']
             opts = { :manifest => ENV['MANIFEST'] }
             opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
-            mp = DulHydra::Scripts::ManifestProcessor.new(opts)
+            mp = DulHydra::Batch::Scripts::ManifestProcessor.new(opts)
             mp.execute
         end
         desc "Process ingest batch for BATCH_ID"
@@ -43,7 +43,7 @@ namespace :dul_hydra do
             raise "Must specify batch ID.  Ex.: BATCH_ID=7" unless ENV['BATCH_ID']
             opts = { :batch_id => ENV['BATCH_ID'] }
             opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
-            bp = DulHydra::Scripts::BatchProcessor.new(opts)
+            bp = DulHydra::Batch::Scripts::BatchProcessor.new(opts)
             bp.execute
         end
         desc "Sets missing thumbnails in collection specified by COLLECTION_PID="

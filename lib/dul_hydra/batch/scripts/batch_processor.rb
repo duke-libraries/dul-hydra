@@ -1,4 +1,4 @@
-module DulHydra::Scripts
+module DulHydra::Batch::Scripts
   class BatchProcessor
     
     LOG_CONFIG_FILEPATH = File.join(Rails.root, 'config', 'log4r_batch_processor.yml')
@@ -30,7 +30,7 @@ module DulHydra::Scripts
     def execute
       config_logger
       begin
-        @batch = Batch.find(@batch_id)
+        @batch = DulHydra::Batch::Models::Batch.find(@batch_id)
       rescue ActiveRecord::RecordNotFound
         @log.error "Unable to find batch with batch_id: #{@batch_id}"
       end
@@ -68,9 +68,9 @@ module DulHydra::Scripts
     
     def initiate_batch_run
       @log.info "Batch size: #{@batch.batch_objects.size}"
-      @batch_run = BatchRun.create(:batch => @batch,
+      @batch_run = DulHydra::Batch::Models::BatchRun.create(:batch => @batch,
                                    :start => DateTime.now,
-                                   :status => BatchRun::STATUS_RUNNING,
+                                   :status => DulHydra::Batch::Models::BatchRun::STATUS_RUNNING,
                                    :total => @batch.batch_objects.size,
                                    :version => DulHydra::VERSION)
       @failures = 0
@@ -81,8 +81,8 @@ module DulHydra::Scripts
     def close_batch_run
       @batch_run.update_attributes(:details => @details.join("\n"),
                                    :failure => @failures,
-                                   :outcome => @successes.eql?(@batch_run.total) ? BatchRun::OUTCOME_SUCCESS : BatchRun::OUTCOME_FAILURE,
-                                   :status => BatchRun::STATUS_FINISHED,
+                                   :outcome => @successes.eql?(@batch_run.total) ? DulHydra::Batch::Models::BatchRun::OUTCOME_SUCCESS : DulHydra::Batch::Models::BatchRun::OUTCOME_FAILURE,
+                                   :status => DulHydra::Batch::Models::BatchRun::STATUS_FINISHED,
                                    :stop => DateTime.now,
                                    :success => @successes)
       @log.info "Ingested #{@batch_run.success} of #{@batch_run.total} objects"

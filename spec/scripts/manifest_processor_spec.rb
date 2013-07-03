@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module DulHydra::Scripts
+module DulHydra::Batch::Scripts
   
   shared_examples "a successful processing run" do
-    let(:batch) { Batch.all.last }
+    let(:batch) { DulHydra::Batch::Models::Batch.all.last }
     let(:batch_objects) { batch.batch_objects }
     let(:batch_object) { batch_objects.first }
     let(:batch_object_datastreams) { batch_object.batch_object_datastreams }
@@ -18,8 +18,8 @@ module DulHydra::Scripts
       expect(batch_object.identifier).to eq("id001")
       expect(batch_object_datastreams.size).to eq(8)
       batch_object_datastreams.each do |datastream|
-        expect(datastream.operation).to eq(BatchObjectDatastream::OPERATION_ADD)
-        expect(datastream.payload_type).to eq(BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
+        expect(datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADD)
+        expect(datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
         expect(datastream.batch_object).to eq(batch_object)
         case datastream.name
         when DulHydra::Datastreams::CONTENT
@@ -51,12 +51,12 @@ module DulHydra::Scripts
       end
       expect(batch_object_relationships.size).to eq(2)
       batch_object_relationships.each do |relationship|
-        expect(relationship.operation).to eq(BatchObjectRelationship::OPERATION_ADD)
-        expect(relationship.object_type).to eq(BatchObjectRelationship::OBJECT_TYPE_PID)
+        expect(relationship.operation).to eq(DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD)
+        expect(relationship.object_type).to eq(DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID)
         case relationship.name
-        when BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY
+        when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY
           expect(relationship.object).to eq("duke-apo:adminPolicy")
-        when BatchObjectRelationship::RELATIONSHIP_PARENT
+        when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT
           expect(relationship.object).to eq(parent_batch_object.pid)
         end
       end
@@ -69,9 +69,8 @@ module DulHydra::Scripts
     after { FileUtils.remove_dir test_dir }
     context "process" do
       let(:manifest_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml') }
-      let!(:parent_batch_object) { BatchObject.create(:identifier => "id0", :pid=> "test:1234") }
-      let(:mp) { DulHydra::Scripts::ManifestProcessor.new(:manifest => manifest_file) }
-#      let(:mp) { DulHydra::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir) }
+      let!(:parent_batch_object) { DulHydra::Batch::Models::BatchObject.create(:identifier => "id0", :pid=> "test:1234") }
+      let(:mp) { DulHydra::Batch::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir) }
       before { mp.execute }
       context "successful processing run" do
         it_behaves_like "a successful processing run"
