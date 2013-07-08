@@ -1,13 +1,12 @@
 class ThumbnailController < ApplicationController
+  include Hydra::Controller::DownloadBehavior
 
-  def show
-    @object = ActiveFedora::Base.find(params[:object_id], :cast => true)
-    # skip authz
-    if @object.has_thumbnail?
-      send_data @object.thumbnail.content, :type => @object.thumbnail.mimeType
-    else
-      render :text => 'Not Found', :status => 404
-    end
+  def datastream_name
+    "#{asset.pid.sub(/:/, "-")}-thumbnail"
   end
+
+  def datastream_to_show
+    asset.datastreams[DulHydra::Datastreams::THUMBNAIL]
+  end  
 
 end

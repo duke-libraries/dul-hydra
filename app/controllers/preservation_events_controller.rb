@@ -7,7 +7,7 @@ class PreservationEventsController < CatalogController
 
   def index
     get_document
-    load_and_authorize_object
+    get_object
     get_preservation_events
   end
 
@@ -27,7 +27,7 @@ class PreservationEventsController < CatalogController
   end
 
   def preservation_events_query
-    ActiveFedora::SolrService.construct_query_for_rel(:is_preservation_event_for => @document.internal_uri)
+    @object.preservation_events.send(:construct_query)
   end
 
 end

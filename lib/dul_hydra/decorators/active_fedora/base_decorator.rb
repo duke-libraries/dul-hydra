@@ -13,11 +13,15 @@ ActiveFedora::Base.class_eval do
   end
 
   def has_children?
-    self.reflections.has_key?(:children) && self.children.size > 0
+    self.class.reflect_on_association(:children) && self.children.size > 0
   end
 
   def has_thumbnail?
     self.is_a?(DulHydra::Models::HasThumbnail) && self.datastreams[DulHydra::Datastreams::THUMBNAIL].has_content?
+  end
+
+  def has_parent?
+    self.class.reflect_on_association(:parent) && self.parent
   end
 
 end
