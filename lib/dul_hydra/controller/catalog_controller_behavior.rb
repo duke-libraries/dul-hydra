@@ -20,7 +20,7 @@ module DulHydra::Controller
     end
 
     def get_object
-      @object = ActiveFedora::SolrService.reify_solr_results([@document]).first
+      @object = ActiveFedora::SolrService.reify_solr_result(@document)
     end
     
     def get_children
