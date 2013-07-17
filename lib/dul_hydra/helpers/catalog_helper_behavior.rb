@@ -157,6 +157,25 @@ module DulHydra::Helpers
       date.to_formatted_s(:db) if date
     end
 
+    def effective_permissions(object = @object)
+      permissions = current_ability.permissions_doc(object.pid)
+      policy_permissions = current_ability.policy_permissions_doc(current_ability.policy_pid_for(object.pid))
+      results = []
+      [:discover, :read, :edit].each do |access|
+        [:individual, :group].each do |type|
+          permissions.fetch(Hydra.config[:permissions][access][type], []).each do |name|
+            results << {type: type, access: access, name: name, inherited: false}
+          end
+          if policy_permissions
+            policy_permissions.fetch(Hydra.config[:permissions][:inheritable][access][type], []).each do |name|
+              results << {type: type, access: access, name: name, inherited: true}
+            end
+          end
+        end
+      end
+      results
+    end
+
     private
 
     def render_label(text, label)
