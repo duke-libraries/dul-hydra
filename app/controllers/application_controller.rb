@@ -16,11 +16,11 @@ class ApplicationController < ActionController::Base
 
   def exclude_unwanted_models(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
-    params = []
-    ["PreservationEvent", "Target"].each do |model|
-      params << "-#{ActiveFedora::SolrService.solr_name(:has_model, :symbol)}:\"info:fedora/afmodel:#{model}\""
+    unwanted = []
+    DulHydra.unwanted_models.each do |model|
+      unwanted << "-#{ActiveFedora::SolrService.solr_name(:has_model, :symbol)}:\"info:fedora/afmodel:#{model}\""
     end
-    solr_parameters[:fq] << "(#{params.join(' AND ')})"
+    solr_parameters[:fq] << "(#{unwanted.join(' AND ')})"
   end
   
   private
