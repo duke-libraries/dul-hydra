@@ -2,7 +2,7 @@ class ExportSetsController < ApplicationController
   
   include Blacklight::Catalog
 
-  #load_and_authorize_resource
+  before_filter :enforce_read_permissions
   
   def index
     # XXX authz?
@@ -69,6 +69,12 @@ class ExportSetsController < ApplicationController
       end
     end
     redirect_to :action => :show, :id => @export_set
+  end
+
+  protected
+
+  def enforce_read_permissions
+    discovery_permissions = ["read", "edit"]
   end
   
 end

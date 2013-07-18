@@ -11,6 +11,29 @@ GIT
       rails (~> 3.2)
       rubydora (>= 1.6.5)
 
+GIT
+  remote: git://github.com/projecthydra/hydra-head.git
+  revision: 32fd8a8c5d784aa26b5762c7698d1319ff5ee7a3
+  specs:
+    hydra-access-controls (6.3.1)
+      active-fedora (~> 6.1)
+      activesupport
+      blacklight (~> 4.0)
+      cancan
+      deprecation
+    hydra-core (6.3.1)
+      active-fedora
+      blacklight (~> 4.0)
+      block_helpers
+      deprecation (>= 0.0.5)
+      hydra-access-controls (= 6.3.1)
+      jettywrapper (>= 1.4.1)
+      rails (>= 3.2.3, < 5)
+    hydra-head (6.3.1)
+      hydra-access-controls (= 6.3.1)
+      hydra-core (= 6.3.1)
+      rails (>= 3.2.6)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -103,24 +126,6 @@ GEM
     ffi (1.9.0)
     hike (1.2.3)
     hooks (0.3.1)
-    hydra-access-controls (6.3.0)
-      active-fedora (~> 6.1)
-      activesupport
-      blacklight (~> 4.0)
-      cancan
-      deprecation
-    hydra-core (6.3.0)
-      active-fedora
-      blacklight (~> 4.0)
-      block_helpers
-      deprecation (>= 0.0.5)
-      hydra-access-controls (= 6.3.0)
-      jettywrapper (>= 1.4.1)
-      rails (>= 3.2.3, < 5)
-    hydra-head (6.3.0)
-      hydra-access-controls (= 6.3.0)
-      hydra-core (= 6.3.0)
-      rails (>= 3.2.6)
     i18n (0.6.1)
     jettywrapper (1.4.1)
       activesupport (>= 3.0.0)
@@ -284,7 +289,7 @@ DEPENDENCIES
   devise
   factory_girl_rails (~> 4.0)
   fcrepo_admin!
-  hydra-head (~> 6.3.0)
+  hydra-head!
   jettywrapper
   jquery-rails
   launchy
