@@ -2,6 +2,39 @@ require 'spec_helper'
 require 'zip/zip'
 
 describe ExportSetsController do
+  context "#index" do
+    let(:user) { FactoryGirl.create(:user) }
+    before { sign_in user }
+    after { user.delete }    
+    it "should display the user's list of export sets" do
+      get :index
+      response.should render_template(:index)
+    end
+  end
+  context "#new" do
+    let(:user) { FactoryGirl.create(:user) }
+    let(:object_read) { FactoryGirl.create(:test_content) }
+    let(:object_discover) { FactoryGirl.create(:test_content) }
+    before do
+      object_read.read_users = [user.email]
+      object_read.save
+      object_discover.discover_users = [user.email]
+      object_discover.save
+      sign_in user      
+    end
+    after do
+      object_read.delete 
+      object_discover.delete 
+      user.delete
+    end
+    it "should list bookmarks for content-bearing objects on which user has read permission" do
+      pending "Figuring out how to create bookmarks"
+      user.bookmarks.size.should == 2
+      get :new
+      response.should render_template(:new)
+      assigns(:documents).size.should == 1
+    end
+  end
   context "#create" do
     let(:user) { FactoryGirl.create(:user) }
     let(:object) { FactoryGirl.create(:test_content) }
@@ -42,16 +75,28 @@ describe ExportSetsController do
     before do 
       sign_in export_set.user
       export_set.pids = [object.pid]
-      export_set.create_archive
+      export_set.save
     end
     after do
       object.delete
       export_set.user.delete
     end
-    it "should delete the archive and redirect to the show page" do
-      delete :archive, :id => export_set
-      export_set.reload.archive_file_name.should be_nil
-      response.should redirect_to(export_set_path(export_set))
+    context "request method == delete" do
+      before { export_set.create_archive }
+      it "should delete the archive and redirect to the show page" do
+        export_set.archive_file_name.should_not be_nil
+        delete :archive, :id => export_set
+        export_set.reload.archive_file_name.should be_nil
+        response.should redirect_to(export_set_path(export_set))
+      end
+    end
+    context "request method == post" do
+      it "should create the archive" do
+        export_set.archive_file_name.should be_nil
+        post :archive, :id => export_set
+        export_set.reload.archive_file_name.should_not be_nil
+        response.should redirect_to(export_set_path(export_set))
+      end
     end
   end
 end

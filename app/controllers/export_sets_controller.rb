@@ -2,21 +2,18 @@ class ExportSetsController < ApplicationController
   
   include Blacklight::Catalog
 
-  before_filter :enforce_read_permissions
-  
+  before_filter :enforce_read_permissions, :only => [:show, :new]
+
   def index
-    # XXX authz?
     @export_sets = ExportSet.where(:user_id => current_user)
   end
   
   def show
-    # XXX authz?
     @export_set = ExportSet.find(params[:id])
     @response, @documents = get_solr_response_for_field_values(SolrDocument.unique_key, @export_set.pids)
   end
   
   def new
-    # XXX authz?
     @export_set = ExportSet.new
     bookmark_ids = current_user.bookmarks.collect { |b| b.document_id.to_s }
     @response, @documents = get_solr_response_for_field_values(SolrDocument.unique_key, bookmark_ids)
@@ -24,7 +21,6 @@ class ExportSetsController < ApplicationController
   end
   
   def create
-    # XXX authz?
     @export_set = ExportSet.new(params[:export_set])
     @export_set.user = current_user
     @export_set.create_archive # saves
@@ -33,12 +29,10 @@ class ExportSetsController < ApplicationController
   end
 
   def edit
-    # XXX authz?
     @export_set = ExportSet.find(params[:id])
   end
 
   def update
-    # XXX authz?
     @export_set = ExportSet.find(params[:id])
     @export_set.update_attributes(params[:export_set])
     flash[:notice] = "Export Set updated."
@@ -46,7 +40,6 @@ class ExportSetsController < ApplicationController
   end
   
   def destroy
-    # XXX authz?
     @export_set = ExportSet.find(params[:id])
     @export_set.destroy
     flash[:notice] = "Export Set destroyed."
@@ -54,7 +47,6 @@ class ExportSetsController < ApplicationController
   end
 
   def archive
-    # XXX authz?
     @export_set = ExportSet.find(params[:id])
     if request.delete?
       unless @export_set.archive_file_name.nil?
