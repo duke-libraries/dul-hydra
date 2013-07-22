@@ -17,7 +17,7 @@
 	  <% if params[:action] == 'new' -%>
 	  <td><%= check_box_tag 'export_set[pids][]', doc.id, true %></td>
 	  <% end -%>
-	  <td><%= link_to doc.id, fcrepo_admin.object_path(doc.id) %></td>
+	  <td><%= link_to doc.id, catalog_path(doc.id) %></td>
 	  <td><%= doc.active_fedora_model %></td>
 	  <td><%= doc.title %></td>
 	  <td><%= doc.identifier %></td>

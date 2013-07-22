@@ -2,8 +2,6 @@ class ExportSetsController < ApplicationController
   
   include Blacklight::Catalog
 
-  before_filter :enforce_read_permissions, :only => [:show, :new]
-
   def index
     @export_sets = ExportSet.where(:user_id => current_user)
   end
@@ -17,7 +15,7 @@ class ExportSetsController < ApplicationController
     @export_set = ExportSet.new
     bookmark_ids = current_user.bookmarks.collect { |b| b.document_id.to_s }
     @response, @documents = get_solr_response_for_field_values(SolrDocument.unique_key, bookmark_ids)
-    @documents.keep_if { |doc| doc.has_content? }
+    @documents.keep_if { |doc| doc.has_content? and can?(:read, doc) }
   end
   
   def create
@@ -61,12 +59,6 @@ class ExportSetsController < ApplicationController
       end
     end
     redirect_to :action => :show, :id => @export_set
-  end
-
-  protected
-
-  def enforce_read_permissions
-    discovery_permissions = ["read", "edit"]
   end
   
 end
