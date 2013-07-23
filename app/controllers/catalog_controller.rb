@@ -87,8 +87,12 @@ class CatalogController < ApplicationController
 
     # This one uses all the defaults set by the solr request handler. Which
     # solr request handler? The one set in config[:default_solr_parameters][:qt],
-    # since we aren't specifying it otherwise. 
-    config.add_search_field 'all_fields', :label => 'All Fields'
+    # since we aren't specifying it otherwise.
+    config.add_search_field('keywords', :label => 'Keywords') do |field|
+      field.solr_local_parameters = {
+        :qf => "id active_fedora_model_ssi title_tesim creator_tesim subject_tesim description_tesim identifier_tesim"
+      }
+    end
     
     # Now we see how to over-ride Solr request handler defaults, in this
     # case for a BL "search field", which is really a dismax aggregate
@@ -111,6 +115,12 @@ class CatalogController < ApplicationController
     config.add_search_field('identifier') do |field|
       field.solr_local_parameters = {
         :qf => DulHydra::IndexFields::IDENTIFIER
+      }
+    end
+    
+    config.add_search_field('pid', :label => 'PID') do |field|
+      field.solr_local_parameters = {
+        :qf => 'id'
       }
     end
 
