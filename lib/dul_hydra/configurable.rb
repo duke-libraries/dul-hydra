@@ -9,6 +9,9 @@ module DulHydra::Configurable
     mattr_accessor :unwanted_models
     self.unwanted_models = ["PreservationEvent", "Target", "AdminPolicy"]
 
+    mattr_accessor :export_set_manifest_file_name
+    self.export_set_manifest_file_name = "README.txt"
+
   end
 
 end

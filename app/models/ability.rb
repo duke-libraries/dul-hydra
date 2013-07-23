@@ -4,7 +4,11 @@ class Ability
   include FcrepoAdmin::Ability
 
   def custom_permissions
-    alias_action :preservation_events, :to => :read
+    export_sets_permissions
+  end
+
+  def export_sets_permissions
+    can :manage, ExportSet, :user_id => @current_user.id
   end
 
 end

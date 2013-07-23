@@ -46,12 +46,12 @@ describe ExportSetsController do
       user.export_sets.count.should == 1
       expect(response).to redirect_to(export_set_path(assigns[:export_set]))
       Zip::ZipFile.open(assigns[:export_set].archive.path) do |arch|
-        arch.find_entry(ExportSet::MANIFEST_FILE_NAME).should_not be_nil
+        arch.find_entry(DulHydra.export_set_manifest_file_name).should_not be_nil
       end
     end
   end
   context "#update" do
-    let(:export_set) { FactoryGirl.create(:export_set) }
+    let(:export_set) { FactoryGirl.create(:export_set, :pids => ["foo:bar"]) }
     before { sign_in export_set.user }
     after { export_set.user.delete }
     it "should change the title" do
@@ -62,7 +62,7 @@ describe ExportSetsController do
   end
   context "#destroy" do
     before { sign_in export_set.user }
-    let(:export_set) { FactoryGirl.create(:export_set) }
+    let(:export_set) { FactoryGirl.create(:export_set, :pids => ["foo:bar"]) }
     it "should delete the export set and redirect to the index page" do
       delete :destroy, :id => export_set
       lambda { ExportSet.find(export_set.id) }.should raise_error(ActiveRecord::RecordNotFound)
@@ -70,12 +70,10 @@ describe ExportSetsController do
     end
   end
   context "#archive" do 
-    let(:export_set) { FactoryGirl.create(:export_set) }
     let(:object) { FactoryGirl.create(:test_content) }
+    let(:export_set) { FactoryGirl.create(:export_set, :pids => [object.pid]) }
     before do 
       sign_in export_set.user
-      export_set.pids = [object.pid]
-      export_set.save
     end
     after do
       object.delete

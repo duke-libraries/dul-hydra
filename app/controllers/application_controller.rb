@@ -12,6 +12,10 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
 
+  def current_ability
+    current_user.ability
+  end
+
   protected
 
   def exclude_unwanted_models(solr_parameters, user_parameters)

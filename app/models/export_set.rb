@@ -1,35 +1,30 @@
-require 'zip/zip'
-
 class ExportSet < ActiveRecord::Base
 
   belongs_to :user
   has_attached_file :archive
   attr_accessible :archive, :pids, :title
   serialize :pids
+  validates_presence_of :user, :pids
 
-  MANIFEST_FILE_NAME = "README.txt"
-  MANIFEST_HEADER = ['FILE', 'TITLE', 'ITEM', 'COLLECTION']
-
+  # Creates the archive file for the export set
   def create_archive
-    unless pids
-      logger.warn "Export set has no pids -- will not create empty archive."
-      return false
-    end
+    created = false
+    empty = true
     Dir.mktmpdir do |tmpdir|
-      # manifest
-      tmpmf = File.join(tmpdir, MANIFEST_FILE_NAME)
+      # create manifest
+      tmpmf = File.join(tmpdir, DulHydra.export_set_manifest_file_name)
       # create the zip archive
       zip_name = "export_set_#{Time.now.strftime('%Y%m%d%H%M%S')}.zip"
       zip_path = File.join(tmpdir, zip_name)
       Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |zip_file|
         CSV.open(tmpmf, 'wb') do |manifest|
-          manifest << MANIFEST_HEADER
-          pids.each do |pid|
+          manifest << archive_manifest_header
+          self.pids.each do |pid|
             # get Fedora object
             begin
               object = ActiveFedora::Base.find(pid, :cast => true) 
-              # skip if object is not content-bearing - XXX log warning?
-              next unless object.respond_to?(:has_content?) && object.has_content?
+              # skip if object is not content-bearing or user lacks :read permission
+              next unless object.has_content? and self.user.can?(:read, object)
               content_ds = object.datastreams[DulHydra::Datastreams::CONTENT]
               # use guaranteed unique file name based on PID and dsID 
               temp_file_path = File.join(tmpdir, content_ds.default_file_name)
@@ -46,29 +41,36 @@ class ExportSet < ActiveRecord::Base
               file_name = file_name[1..-1] if file_name.start_with? '/'
               # add file to archive
               zip_file.add(file_name, temp_file_path)
-              # add entry to manifest
-              item_title = object.item.title_display rescue ""
-              collection_title = object.collection.title_display rescue ""
-              manifest << [file_name,
-                           object.title_display,
-                           item_title,
-                           collection_title
-                          ]
+              # add row to manifest
+              manifest << archive_manifest_row(file_name, object)
             rescue ActiveFedora::ObjectNotFoundError => e
               logger.error e
               next
             end
           end # document_list
         end # manifest
-        # XXX what if zip file is empty?
+        # check if the zip file is emtpy
+        empty = (zip_file.size == 0)
         # write manifest        
-        zip_file.add(MANIFEST_FILE_NAME, tmpmf)
+        zip_file.add(DulHydra.export_set_manifest_file_name, tmpmf) unless empty
       end # zip_file
       # update_attributes seems to be the way to get paperclip to work 
       # when not using file upload form submission to create the attachment
-      update_attributes({:archive => File.new(zip_path, "rb")})
+      created = !empty && self.update_attributes({:archive => File.new(zip_path, "rb")})
     end # tmpdir is removed
-    # TODO Return a success/fail flag
+    created
+  end
+
+  private
+  
+  def archive_manifest_header
+    ['FILE', 'TITLE', 'ITEM', 'COLLECTION']
+  end
+
+  def archive_manifest_row(file_name, object)
+    item_title = object.item.title_display rescue ""
+    collection_title = object.collection.title_display rescue ""
+    [file_name, object.title_display, item_title, collection_title]
   end
 
 end
