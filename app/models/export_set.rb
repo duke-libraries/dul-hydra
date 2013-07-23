@@ -8,7 +8,7 @@ class ExportSet < ActiveRecord::Base
   serialize :pids
 
   MANIFEST_FILE_NAME = "README.txt"
-  MANIFEST_HEADER = ['FILE', 'TITLE', 'ITEM', 'COLLECTION']
+  MANIFEST_HEADER = ['FILE', 'TITLE', 'ITEM', 'COLLECTION', 'CHECKSUM', 'CHECKSUM_TYPE']
 
   def create_archive
     unless pids
@@ -49,10 +49,14 @@ class ExportSet < ActiveRecord::Base
               # add entry to manifest
               item_title = object.item.title_display rescue ""
               collection_title = object.collection.title_display rescue ""
+              checksum = content_ds.checksum rescue ""
+              checksum_type = content_ds.checksumType rescue ""
               manifest << [file_name,
                            object.title_display,
                            item_title,
-                           collection_title
+                           collection_title,
+                           checksum,
+                           checksum_type
                           ]
             rescue ActiveFedora::ObjectNotFoundError => e
               logger.error e

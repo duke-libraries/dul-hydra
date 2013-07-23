@@ -14,6 +14,10 @@ describe ExportSetsController do
       expect(response).to redirect_to(export_set_path(assigns[:export_set]))
       Zip::ZipFile.open(assigns[:export_set].archive.path) do |arch|
         arch.find_entry(ExportSet::MANIFEST_FILE_NAME).should_not be_nil
+        arch.find_entry(ExportSet::MANIFEST_FILE_NAME).get_input_stream().read.should \
+            include(object.datastreams[DulHydra::Datastreams::CONTENT].checksum)
+        arch.find_entry(ExportSet::MANIFEST_FILE_NAME).get_input_stream().read.should \
+            include(object.datastreams[DulHydra::Datastreams::CONTENT].checksumType)
       end
     end
   end
