@@ -1,3 +1,5 @@
+require 'zip/zip'
+
 class ExportSet < ActiveRecord::Base
 
   belongs_to :user
@@ -19,12 +21,12 @@ class ExportSet < ActiveRecord::Base
       Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |zip_file|
         CSV.open(tmpmf, 'wb') do |manifest|
           manifest << archive_manifest_header
-          self.pids.each do |pid|
+          pids.each do |pid|
             # get Fedora object
             begin
               object = ActiveFedora::Base.find(pid, :cast => true) 
               # skip if object is not content-bearing or user lacks :read permission
-              next unless object.has_content? and self.user.can?(:read, object)
+              next unless object.has_content? and user.can?(:read, object)
               content_ds = object.datastreams[DulHydra::Datastreams::CONTENT]
               # use guaranteed unique file name based on PID and dsID 
               temp_file_path = File.join(tmpdir, content_ds.default_file_name)
@@ -56,9 +58,14 @@ class ExportSet < ActiveRecord::Base
       end # zip_file
       # update_attributes seems to be the way to get paperclip to work 
       # when not using file upload form submission to create the attachment
-      created = !empty && self.update_attributes({:archive => File.new(zip_path, "rb")})
+      created = !empty && update_attributes({:archive => File.new(zip_path, "rb")})
     end # tmpdir is removed
     created
+  end
+
+  def delete_archive
+    archive = nil
+    save
   end
 
   private

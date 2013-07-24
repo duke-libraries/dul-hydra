@@ -1,5 +1,3 @@
-require 'zip/zip'
-
 class ExportSetsController < ApplicationController
   
   include Blacklight::Catalog
