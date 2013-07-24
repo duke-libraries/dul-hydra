@@ -149,7 +149,7 @@ module DulHydra::Helpers
     end
 
     def render_thumbnail(document_or_object)
-      src = document_or_object.has_thumbnail? ? fcrepo_admin.download_object_datastream_path(document_or_object.id, DulHydra::Datastreams::THUMBNAIL) : default_thumbnail
+      src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object.id) : default_thumbnail
       image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
     end
 

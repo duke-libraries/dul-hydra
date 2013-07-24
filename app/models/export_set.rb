@@ -71,13 +71,15 @@ class ExportSet < ActiveRecord::Base
   private
   
   def archive_manifest_header
-    ['FILE', 'TITLE', 'ITEM', 'COLLECTION']
+    ['FILE', 'TITLE', 'ITEM', 'COLLECTION', 'CHECKSUM', 'CHECKSUM_TYPE']
   end
 
   def archive_manifest_row(file_name, object)
     item_title = object.item.title_display rescue ""
     collection_title = object.collection.title_display rescue ""
-    [file_name, object.title_display, item_title, collection_title]
+    checksum = content_ds.checksum rescue ""
+    checksum_type = content_ds.checksumType rescue ""
+    [file_name, object.title_display, item_title, collection_title, checksum, checksum_type]
   end
 
 end
