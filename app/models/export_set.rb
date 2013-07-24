@@ -77,8 +77,8 @@ class ExportSet < ActiveRecord::Base
   def archive_manifest_row(file_name, object)
     item_title = object.item.title_display rescue ""
     collection_title = object.collection.title_display rescue ""
-    checksum = content_ds.checksum rescue ""
-    checksum_type = content_ds.checksumType rescue ""
+    checksum = object.datastreams[DulHydra::Datastreams::CONTENT].checksum
+    checksum_type = object.datastreams[DulHydra::Datastreams::CONTENT].checksumType
     [file_name, object.title_display, item_title, collection_title, checksum, checksum_type]
   end
 
