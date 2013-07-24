@@ -7,7 +7,7 @@ module DulHydra::Configurable
     self.metadata_fields = [:title, :identifier, :source, :description, :date, :creator, :contributor, :publisher, :language, :subject, :type, :relation, :coverage, :rights]
 
     mattr_accessor :unwanted_models
-    self.unwanted_models = ["PreservationEvent", "Target", "AdminPolicy"]
+#    self.unwanted_models = ["PreservationEvent", "Target", "AdminPolicy"]
 
     mattr_accessor :export_set_manifest_file_name
     self.export_set_manifest_file_name = "README.txt"
