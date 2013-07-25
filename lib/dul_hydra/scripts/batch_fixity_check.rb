@@ -130,7 +130,7 @@ module DulHydra::Scripts
       log.info "Querying index: #{query} (limit: #{limit}) ..."
       results = ActiveFedora::SolrService.query(query, :rows => limit, :sort => SORT)
       log.info "#{results.size} matching objects found."
-      ActiveFedora::SolrService.reify_solr_results results
+      ActiveFedora::SolrService.lazy_reify_solr_results results
     end
 
   end

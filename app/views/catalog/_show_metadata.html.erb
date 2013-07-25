@@ -2,10 +2,10 @@
   <div class="navbar-inner">
 	<ul class="nav">
 	  <li>
-		<%= link_to "Download XML", metadata_path(@document.id, format: 'xml') %>
+		<%= link_to "Download XML", fcrepo_admin.download_object_datastream_path(@object, "descMetadata") %>
 	  </li>
 	  <li>
-		<%= link_to "Fcrepo View", fcrepo_admin.object_datastream_path(@document.id, "descMetadata") %>
+		<%= link_to "Fcrepo View", fcrepo_admin.object_datastream_path(@object, "descMetadata") %>
 	  </li>
 	</ul>
   </div>

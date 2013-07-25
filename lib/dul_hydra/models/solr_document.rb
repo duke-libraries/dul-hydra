@@ -99,6 +99,10 @@ module DulHydra::Models
       # We want the multivalued version here
       get(ActiveFedora::SolrService.solr_name(:identifier, :stored_searchable, type: :text))
     end
+
+    def source
+      get(ActiveFedora::SolrService.solr_name(:source, :stored_searchable, type: :text))
+    end
     
     def has_thumbnail?
       has_datastream?(DulHydra::Datastreams::THUMBNAIL)

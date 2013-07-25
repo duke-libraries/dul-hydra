@@ -1,16 +1,32 @@
 require 'spec_helper'
 
 describe ThumbnailController do
+  let(:object) { FactoryGirl.create(:component_with_content) }
   after { object.delete }
-  context "#show" do
-    subject { get :show, :object_id => object }
-    context "object has thumbnail" do
-      let(:object) { FactoryGirl.create(:test_content_thumbnail) }
-      it { should be_successful }
+  context "user with discover permssion but not read permission on asset" do
+    before do
+      object.read_groups = ["registered"]
+      object.discover_groups = ["public"]
+      object.save
     end
-    context "object doesn't have thumbnail" do
-      let(:object) { FactoryGirl.create(:test_model) }
-      it { should_not be_successful }
+    it "should allow user to download thumbnail" do
+      get :show, :id => object
+      response.should be_successful
+    end
+  end
+  context "user with discover policy permission, but not read permission, on asset" do
+    let(:policy) { AdminPolicy.create }
+    before do
+      policy.default_permissions = [{type: 'group', name: 'public', access: 'discover'},
+                                    {type: 'group', name: 'registered', access: 'read'}]
+      policy.save
+      object.admin_policy = policy
+      object.save
+    end
+    after { policy.delete }
+    it "should allow user to download thumbnail" do
+      get :show, :id => object
+      response.should be_successful
     end
   end
 end

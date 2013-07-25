@@ -5,11 +5,10 @@
   </div>
 <% else %>
   <p>
-	<%= link_to "New Export Set", new_export_set_path %>
+	<%= link_to "New Export Set", new_export_set_path, :class => "btn btn-primary" %>
   </p>
 <% end %>
-
-<% if !@export_sets.empty? %>
+<% unless @export_sets.empty? %>
 <table class="table table-bordered table-striped table-condensed">
 	<thead>
 		<tr>

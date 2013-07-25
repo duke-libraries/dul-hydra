@@ -17,7 +17,6 @@ describe "export_sets/index.html.erb" do
     it "should have a 'new export set' link" do
       pending "Figuring out why Capybara doesn't find the control"
       visit catalog_path(object)
-      #click_button "bookmark_toggle_#{object.pid.sub(/:/, '-')}"
       find(:css, "#bookmark_toggle_#{object.pid.sub(/:/, '-')}").set(true)
       visit export_sets_path
       page.should have_link("New Export Set")

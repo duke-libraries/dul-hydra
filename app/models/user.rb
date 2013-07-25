@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
 
   has_many :batches, :inverse_of => :user
   has_many :export_sets, :dependent => :destroy
+  delegate :can?, :cannot?, :to => :ability
 
   # Connects this user object to Hydra behaviors. 
   include Hydra::User
@@ -25,5 +26,11 @@ class User < ActiveRecord::Base
   def to_s
     email
   end
+
+  def ability
+    @ability ||= Ability.new(self)
+  end
+
+  
 
 end

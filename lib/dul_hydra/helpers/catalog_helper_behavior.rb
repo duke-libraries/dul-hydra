@@ -63,9 +63,8 @@ module DulHydra::Helpers
       return structure_contents_info
     end
 
-    def render_thumbnail(document = @document)
-      src = document.has_thumbnail? ? thumbnail_path(document) : 'dul_hydra/no_thumbnail.png'
-      image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
+    def render_object_title
+      @object.title_display rescue "#{@object.class.to_s} #{@object.pid}"
     end
 
     def render_breadcrumbs
@@ -74,15 +73,6 @@ module DulHydra::Helpers
 
     def render_breadcrumb(crumb)
       truncate crumb.title, separator: ' '
-    end
-
-    def render_sidebar_for_model
-      begin
-        partial = "show_%s_sidebar" % document_partial_name(@document)
-        return render partial: partial, locals: {document: @document}
-      rescue ActionView::MissingTemplate
-        nil
-      end
     end
 
     def render_children
@@ -95,35 +85,55 @@ module DulHydra::Helpers
       render partial: 'show_children', locals: {title: title}
     end
 
+    def show_tabs
+      return @show_tabs if @show_tabs
+      @show_tabs = []
+      @show_tabs << {
+        label: @documents.blank? ? "Content" : @documents.first.active_fedora_model.pluralize,
+        partial: @documents.blank? ? 'show_content' : 'show_children',
+        id: 'tab-default', 
+        active: true
+      }
+      @show_tabs << {label: 'Metadata', partial: 'show_metadata', id: 'tab-metadata'} if @object.describable?
+      @show_tabs << {label: 'Permissions', partial: 'show_permissions', id: 'tab-permissions'}
+      @show_tabs
+    end
+
+    def render_show_tab(tab)
+      opts = tab[:active] ? {class: "active"} : {}
+      content_tag :li, opts do
+        link_to tab[:label], "#" + tab[:id], "data-toggle" => "tab" 
+      end
+    end
+
+    def render_show_tab_content(tab)
+      css_class = tab[:active] ? "tab-pane active" : "tab-pane"
+      content_tag :div, class: css_class, id: tab[:id] do
+        render(tab[:partial])
+      end
+    end
+
     def metadata_fields
       DulHydra.metadata_fields
     end
 
     def metadata_field_values(field)
-      @document.get(ActiveFedora::SolrService.solr_name(field, :stored_searchable, type: :text), sep: nil) || []
+      @object.send(field)
     end
 
     def metadata_field_label(field)
       field.to_s.capitalize
     end
 
-    def render_default_show_tab_label
-      @documents.blank? ? "Content" : @documents.first.active_fedora_model.pluralize
-    end
-
-    def render_default_show_tab_content
-      render(@documents.blank? ? 'show_content' : 'show_children')
-    end
-
     def render_object_state
       case
-      when @document.object_state == 'A'
+      when @object.state == 'A'
         text = "Active"
         label = "info"
-      when @document.object_state == 'I'
+      when @object.state == 'I'
         text = "Inactive"
         label = "warning"
-      when @document.object_state == 'D'
+      when @object.state == 'D'
         text = "Deleted"
         label = "important"
       end
@@ -158,8 +168,33 @@ module DulHydra::Helpers
       render_download_link args.merge(:label => label)
     end
 
+    def render_thumbnail(document_or_object)
+      src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object.id) : default_thumbnail
+      image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
+    end
+
     def format_date(date)
       date.to_formatted_s(:db) if date
+    end
+
+    def effective_permissions(object = @object)
+      results = []
+      permissions = current_ability.permissions_doc(object.pid)
+      policy_pid = current_ability.policy_pid_for(object.pid)
+      policy_permissions = policy_pid ? current_ability.policy_permissions_doc(policy_pid) : nil
+      [:discover, :read, :edit].each do |access|
+        [:individual, :group].each do |type|
+          permissions.fetch(Hydra.config[:permissions][access][type], []).each do |name|
+            results << {type: type, access: access, name: name, inherited: false}
+          end
+          if policy_permissions
+            policy_permissions.fetch(Hydra.config[:permissions][:inheritable][access][type], []).each do |name|
+              results << {type: type, access: access, name: name, inherited: true}
+            end
+          end
+        end
+      end
+      results
     end
 
     private
@@ -172,6 +207,10 @@ module DulHydra::Helpers
       breadcrumbs << doc
       document_breadcrumbs(get_solr_response_for_doc_id(doc.parent_pid)[1], breadcrumbs) if doc.has_parent?
       breadcrumbs
+    end
+
+    def default_thumbnail
+      'dul_hydra/no_thumbnail.png'
     end
     
   end

@@ -38,7 +38,10 @@ RSpec.configure do |config|
   #     --seed 1234
   config.order = "random"
   
-  # Devise helper
+  # Devise helpers
   config.include Devise::TestHelpers, :type => :controller
+
+  # Warden helpers
+  config.include Warden::Test::Helpers
   
 end

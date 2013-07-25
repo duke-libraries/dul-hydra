@@ -15,7 +15,8 @@ module DulHydra::Models
                      :rights,
                      :source, 
                      :subject,
-                     :title
+                     :title,
+                     :type
                     ]
 
 
@@ -26,20 +27,12 @@ module DulHydra::Models
                    :label => "Descriptive Metadata for this object", 
                    :control_group => 'X'
       delegate_to DulHydra::Datastreams::DESC_METADATA, DC11_ELEMENTS
-      delegate :dc_type, to: DulHydra::Datastreams::DESC_METADATA
-      after_initialize :add_dc_type
     end
 
     module ClassMethods
       def find_by_identifier(identifier)
         find(DulHydra::IndexFields::IDENTIFIER => identifier)
       end
-    end
-
-    protected
-
-    def add_dc_type
-      datastreams[DulHydra::Datastreams::DESC_METADATA].field(:dc_type, :string, {path: "type", multiple: true})
     end
 
   end

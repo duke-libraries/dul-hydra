@@ -14,6 +14,10 @@ module DulHydra::Models
         children.first
       end      
     end
-    
+
+    def children_query
+      children.send(:construct_query)
+    end
+
   end
 end

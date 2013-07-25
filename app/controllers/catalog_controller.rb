@@ -14,7 +14,7 @@ class CatalogController < ApplicationController
 
   # This applies appropriate access controls to all solr queries
   CatalogController.solr_search_params_logic += [:add_access_controls_to_solr_params]
-  CatalogController.solr_search_params_logic += [:exclude_unwanted_models]
+  CatalogController.solr_search_params_logic += [:exclude_unwanted_models] unless DulHydra.unwanted_models.blank?
 
   configure_blacklight do |config|
     config.default_solr_params = { 
@@ -87,8 +87,12 @@ class CatalogController < ApplicationController
 
     # This one uses all the defaults set by the solr request handler. Which
     # solr request handler? The one set in config[:default_solr_parameters][:qt],
-    # since we aren't specifying it otherwise. 
-    config.add_search_field 'all_fields', :label => 'All Fields'
+    # since we aren't specifying it otherwise.
+    config.add_search_field('all_fields', :label => 'All Fields') do |field|
+      field.solr_local_parameters = {
+        :qf => "id active_fedora_model_ssi title_tesim creator_tesim subject_tesim description_tesim identifier_tesim"
+      }
+    end
     
     # Now we see how to over-ride Solr request handler defaults, in this
     # case for a BL "search field", which is really a dismax aggregate
@@ -111,6 +115,12 @@ class CatalogController < ApplicationController
     config.add_search_field('identifier') do |field|
       field.solr_local_parameters = {
         :qf => DulHydra::IndexFields::IDENTIFIER
+      }
+    end
+    
+    config.add_search_field('pid', :label => 'PID') do |field|
+      field.solr_local_parameters = {
+        :qf => 'id'
       }
     end
 

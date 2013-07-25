@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'digest'
 
 module DulHydra::Scripts
   
@@ -61,7 +62,8 @@ module DulHydra::Scripts
           end
           it "should populate the thumbnail datastream from the first PID in contentMetadata" do
             expect(item.datastreams["thumbnail"].content).to_not be_nil
-            expect(item.datastreams["thumbnail"].content).to eq(item.children[1].datastreams["thumbnail"].content)
+            expect(Digest::SHA256.digest(item.datastreams["thumbnail"].content)).to \
+              eq(Digest::SHA256.digest(item.children[1].datastreams["thumbnail"].content))
           end
         end
         context "no contentMetadata" do

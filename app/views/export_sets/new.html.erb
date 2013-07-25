@@ -10,7 +10,7 @@
     <div class="alert alert-info" style="width: 30em">
 	  Select content-bearing objects from your bookmarks to export:
 	</div>
-	<%= render :partial => 'object_metadata', :locals => {:documents => @documents,} %>
+	<%= render :partial => 'object_metadata', :locals => {:documents => @documents} %>
 	<div>
 	  <%= f.submit :id => 'export_set_submit_button', :class => "btn btn-primary" %>
 	</div>
