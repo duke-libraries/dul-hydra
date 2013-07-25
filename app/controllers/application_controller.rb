@@ -13,11 +13,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   def current_ability
-    begin
-      current_user.ability
-    rescue NoMethodError
-      Ability.new(nil)
-    end
+    current_user ? current_user.ability : Ability.new(current_user)
   end
 
   protected
