@@ -12,6 +12,10 @@ ActiveFedora::Base.class_eval do
     self.is_a?(DulHydra::Models::HasContentMetadata) && self.datastreams[DulHydra::Datastreams::CONTENT_METADATA].has_content?
   end
 
+  def describable?
+    self.is_a?(DulHydra::Models::Describable)
+  end
+
   def has_children?
     self.class.reflect_on_association(:children) && self.children.size > 0
   end
