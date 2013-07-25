@@ -10,8 +10,16 @@ module DulHydra::Controller
     def show
       get_document
       get_object
-      get_children
-      get_collection_info
+      respond_to do |format|
+        format.html do
+          get_children
+          get_collection_info
+        end
+        format.csv do
+          render(text: "Not valid for this object type", status: 404) unless @object.is_a?(Collection)
+          send_data(collection_report, type: "text/csv")
+        end
+      end
     end
 
     protected
@@ -31,9 +39,22 @@ module DulHydra::Controller
       end
     end
 
+    def collection_report
+      CSV.generate do |csv|
+        csv << DulHydra.collection_report_fields.collect {|f| f.to_s.upcase}
+        get_collection_components[1].each do |doc|
+          csv << DulHydra.collection_report_fields.collect {|f| doc.send(f)}
+        end
+      end
+    end
+
+    def get_collection_components
+      get_search_results(params, @object.components_query)
+    end
+
     def get_collection_info
       if @object.is_a?(Collection)
-        response, documents = get_search_results(params, {q: @object.components_query, rows: 10000})
+        response, documents = get_collection_components
         @components = response.total
         @total_file_size = documents.collect {|doc| doc.datastreams["content"]["dsSize"] || 0 }.inject(:+)
       end

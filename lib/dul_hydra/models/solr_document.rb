@@ -2,6 +2,11 @@ require 'json'
 
 module DulHydra::Models
   module SolrDocument
+    extend ActiveSupport::Concern
+
+    included do
+      alias_method :pid, :id
+    end
 
     def safe_id
       id.sub(/:/, "-")

@@ -12,3 +12,6 @@
 	<td><%= number_to_human_size @total_file_size %></td>
   </tr>
 </table>
+<div>
+  <%= link_to "Download CSV Report", catalog_path(@object, format: 'csv'), class: "btn" %>
+</div>

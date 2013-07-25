@@ -12,6 +12,9 @@ module DulHydra::Configurable
     mattr_accessor :export_set_manifest_file_name
     self.export_set_manifest_file_name = "README.txt"
 
+    mattr_accessor :collection_report_fields
+    self.collection_report_fields = [:pid, :identifier]
+
   end
 
 end
