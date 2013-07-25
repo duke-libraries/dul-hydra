@@ -12,6 +12,7 @@ module DulHydra::Batch::Scripts
     # Options
     #   :dirpath - required - path to directory containing files on which manifest is to be based
     #   :manifest - required - path and filename of manifest to make
+    #   :include - optional - extension of files to include - default is given in DEFAULT_CONTENT_EXTENSION
     #   :log_dir - optional - directory for log file - default is given in DEFAULT_LOG_DIR
     #   :log_file - optional - filename of log file - default is given in DEFAULT_LOG_FILE
     def initialize(opts={})
@@ -25,6 +26,7 @@ module DulHydra::Batch::Scripts
       rescue KeyError
         puts "Must specify :manifest in options; e.g., :manifest => /path/to/manifest.yml"
       end
+      @include = opts.fetch(:include, DEFAULT_CONTENT_EXTENSION)
       @log_dir = opts.fetch(:log_dir, DEFAULT_LOG_DIR)
       @log_file = opts.fetch(:log_file, DEFAULT_LOG_FILE)
     end
@@ -59,10 +61,13 @@ module DulHydra::Batch::Scripts
     
     def enumerate_objects
       objects_list = []
-      files = Dir.glob('/nas/TUCASI_CIFS2/dpc-archive/Archived_NoAccess/na_VIC/*').select{|x| test(?f,x)}
+#      files = Dir.glob('/nas/TUCASI_CIFS2/dpc-archive/Archived_NoAccess/na_VIC/*').select{|x| test(?f,x)}
+      files = Dir.glob(File.join(@dirpath, '*')).select{|x| test(?f,x)}
       files.each do |file|
-        base_filename = File.basename(file, File.extname(file))
-        objects_list << { "identifier" => base_filename }
+        if File.extname(file).eql?(@include)
+          base_filename = File.basename(file, File.extname(file))
+          objects_list << { "identifier" => base_filename }
+        end
       end
       @manifest_hash["objects"] = objects_list
     end
