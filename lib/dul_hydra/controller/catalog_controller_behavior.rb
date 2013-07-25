@@ -11,6 +11,7 @@ module DulHydra::Controller
       get_document
       get_object
       get_children
+      get_collection_info
     end
 
     protected
@@ -24,12 +25,18 @@ module DulHydra::Controller
     end
     
     def get_children
-      get_children_search_results if @object.is_a?(DulHydra::Models::HasChildren)
+      if @object.is_a?(DulHydra::Models::HasChildren)
+        configure_blacklight_for_children
+        @response, @documents = get_search_results(params, {q: @object.children_query})
+      end
     end
 
-    def get_children_search_results
-      configure_blacklight_for_children
-      @response, @documents = get_search_results(params, {q: @object.children_query})
+    def get_collection_info
+      if @object.is_a?(Collection)
+        response, documents = get_search_results(params, {q: @object.components_query, rows: 10000})
+        @components = response.total
+        @total_file_size = documents.collect {|doc| doc.datastreams["content"]["dsSize"] || 0 }.inject(:+)
+      end
     end
 
     def configure_blacklight_for_children

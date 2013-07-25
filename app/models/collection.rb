@@ -13,5 +13,9 @@ class Collection < DulHydra::Models::Base
 
   alias_method :items, :children
   alias_method :item_ids, :child_ids
+
+  def components_query
+    "{!join to=#{DulHydra::IndexFields::IS_PART_OF} from=#{DulHydra::IndexFields::INTERNAL_URI}}#{DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION}:\"#{internal_uri}\""
+  end
   
 end

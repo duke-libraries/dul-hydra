@@ -95,6 +95,7 @@ module DulHydra::Helpers
         active: true
       }
       @show_tabs << {label: 'Metadata', partial: 'show_metadata', id: 'tab-metadata'} if @object.describable?
+      @show_tabs << {label: 'Collection Info', partial: 'show_collection_info', id: 'tab-collection-info'} if @object.is_a?(Collection)
       @show_tabs << {label: 'Permissions', partial: 'show_permissions', id: 'tab-permissions'}
       @show_tabs
     end

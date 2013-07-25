@@ -1,0 +1,14 @@
+<table class="table" style="width:auto">
+  <tr>
+	<th scope="row">Items</th>
+	<td><%= @response.total %></td>
+  </tr>
+  <tr>
+	<th scope="row">Components</th>
+	<td><%= @components %></td>
+  </tr>
+  <tr>
+	<th scope="row">Total Content</th>
+	<td><%= number_to_human_size @total_file_size %></td>
+  </tr>
+</table>
