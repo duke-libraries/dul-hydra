@@ -179,6 +179,10 @@ module DulHydra::Batch::Models
     def basepath
       manifest_hash[BASEPATH]
     end
+    
+    def basepath=(basepath)
+      manifest_hash[BASEPATH] = basepath
+    end
   
     def batch
       @batch

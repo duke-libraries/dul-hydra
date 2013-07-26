@@ -9,7 +9,10 @@ module DulHydra::Batch::Scripts
     #   :manifest - required - manifest file path and filename
     #   :log_dir - optional - directory for log file - default is given in DEFAULT_LOG_DIR
     #   :log_file - optional - filename of log file - default is given in DEFAULT_LOG_FILE
+    #   :validate_only - optional - whether to only validate the manifest - default is false
     #   :dryrun - optional - whether this is a processing dry run or the real deal - default is false
+    #   :skip_validation - optional - whether to skip batch object validation step when processing - default is false
+    #   :ignore_validation_errors - optional - whether to continue processing even if batch object validation errors occur - default is false
     def initialize(opts={})
       begin
         @manifest_file = opts.fetch(:manifest)
@@ -18,18 +21,37 @@ module DulHydra::Batch::Scripts
       end
       @log_dir = opts.fetch(:log_dir, DEFAULT_LOG_DIR)
       @log_file = opts.fetch(:log_file, DEFAULT_LOG_FILE)
+      @validate_only = opts.fetch(:validate_only, false)
       @dryrun = opts.fetch(:dryrun, false)
+      @skip_validation = opts.fetch(:skip_validation, false)
+      @ignore_validation_errors = opts.fetch(:ignore_validation_errors, false)
     end
     
     def execute
       config_logger
+      @obj_count = 0
+      @success = 0
       begin
         @log.info("Processing manifest: #{@manifest_file}")
         manifest = DulHydra::Batch::Models::Manifest.new(@manifest_file)
         @log.info("Manifest name: #{manifest.name}")
-        set_batch(manifest)
-        @log.debug("Batch id: #{manifest.batch.id}")
-        manifest.objects.each { |object| process_object(object) }
+        validation_errors = manifest.validate
+        if validation_errors.empty?
+          @log.info("Manifest validates")
+          unless @validate_only
+            set_batch(manifest)
+            @log.debug("Batch id: #{manifest.batch.id}")
+            process_objects(manifest.objects)
+            @log.info "Processed #{@success} of #{@obj_count} manifest objects into batch id #{manifest.batch.id}"
+          end          
+        else
+          validation_errors.each { |err| @log.info(err) }
+          if @ignore_validation_errors
+            @log.info(I18n.t('batch.manifest.validation_errors_ignored'))
+          else
+            @log.info(I18n.t('batch.manifest.validation_failed'))
+          end
+        end
       rescue Exception => e
         @log.error(e.message)
         @log.debug(e.backtrace)
@@ -62,6 +84,19 @@ module DulHydra::Batch::Scripts
         @log.error("Cannot find User with email #{user_email}")
       end
       return user
+    end
+    
+    def process_objects(manifest_objects)
+      manifest_objects.each do |object|
+        @obj_count += 1
+        begin
+          process_object(object)
+          @success += 1
+        rescue Exception => e
+          @log.error(e.message)
+          @log.debug(e.backtrace)
+        end
+      end
     end
     
     def process_object(manifest_object)

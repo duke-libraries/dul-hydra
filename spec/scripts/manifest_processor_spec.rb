@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Scripts
   
-  shared_examples "a successful processing run" do
+  shared_examples "a successful manifest processing run" do
     let(:batch) { DulHydra::Batch::Models::Batch.all.last }
     let(:batch_objects) { batch.batch_objects }
     let(:batch_object) { batch_objects.first }
@@ -27,25 +27,25 @@ module DulHydra::Batch::Scripts
           expect(datastream.checksum).to eq("120ad0814f207c45d968b05f7435034ecfee8ac1a0958cd984a070dad31f66f3")
           expect(datastream.checksum_type).to eq("SHA-256")
         when DulHydra::Datastreams::CONTENTDM
-          expect(datastream.payload).to eq("placeholder/contentdm/metadata.xml")
+          expect(datastream.payload).to eq(File.join(test_dir, 'contentdm', 'metadata.xml'))
           expect(datastream.checksum).to be_nil
         when DulHydra::Datastreams::DESC_METADATA
-          expect(datastream.payload).to eq("placeholder/descMetadata/id001.xml")
+          expect(datastream.payload).to eq(File.join(test_dir, 'descMetadata', 'id001.xml'))
           expect(datastream.checksum).to be_nil          
         when DulHydra::Datastreams::DIGITIZATION_GUIDE
-          expect(datastream.payload).to eq("placeholder/digitizationGuide/metadata.xls")
+          expect(datastream.payload).to eq(File.join(test_dir, 'digitizationGuide', 'metadata.xls'))
           expect(datastream.checksum).to be_nil          
         when DulHydra::Datastreams::DPC_METADATA
-          expect(datastream.payload).to eq("placeholder/dpcMetadata/id001.xml")
+          expect(datastream.payload).to eq(File.join(test_dir, 'dpcMetadata', 'id001.xml'))
           expect(datastream.checksum).to be_nil          
         when DulHydra::Datastreams::FMP_EXPORT
-          expect(datastream.payload).to eq("placeholder/fmpExport/id001.xml")
+          expect(datastream.payload).to eq(File.join(test_dir, 'fmpExport', 'id001.xml'))
           expect(datastream.checksum).to be_nil          
         when DulHydra::Datastreams::MARCXML
-          expect(datastream.payload).to eq("placeholder/marcXML/metadata.xml")
+          expect(datastream.payload).to eq(File.join(test_dir, 'marcXML', 'metadata.xml'))
           expect(datastream.checksum).to be_nil
         when DulHydra::Datastreams::TRIPOD_METS
-          expect(datastream.payload).to eq("placeholder/tripodMets/id001.xml")
+          expect(datastream.payload).to eq(File.join(test_dir, 'tripodMets', 'id001.xml'))
           expect(datastream.checksum).to be_nil          
         end
       end
@@ -55,7 +55,7 @@ module DulHydra::Batch::Scripts
         expect(relationship.object_type).to eq(DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID)
         case relationship.name
         when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY
-          expect(relationship.object).to eq("duke-apo:adminPolicy")
+          expect(relationship.object).to eq(apo.pid)
         when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT
           expect(relationship.object).to eq(parent_batch_object.pid)
         end
@@ -63,17 +63,49 @@ module DulHydra::Batch::Scripts
     end
   end
   
+  shared_examples "an invalid manifest to process" do
+    let(:log) { File.read(File.join(log_dir, "manifest_processor_#{Time.now.strftime('%Y-%m-%d')}.log"))}
+    it "should not create a new batch" do
+      expect(DulHydra::Batch::Models::Batch.all).to be_empty
+    end
+    it "should log the manifest errors" do
+      expect(log).to include(I18n.t('batch.manifest.errors.basepath_error', :path => 'placeholder'))
+      expect(log).to include(I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => 'admin_policy', :pid => 'duke-apo:adminPolicy'))
+      expect(log).to include(I18n.t('batch.manifest.validation_failed'))
+    end
+  end
+  
   describe ManifestProcessor do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
+    let(:manifest_file) { File.join(test_dir, 'manifest.yml') }
     let(:log_dir) { test_dir }
-    after { FileUtils.remove_dir test_dir }
+    let(:apo) { AdminPolicy.create }
+    after do
+      FileUtils.remove_dir test_dir
+      apo.destroy
+    end
     context "process" do
-      let(:manifest_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml') }
       let!(:parent_batch_object) { DulHydra::Batch::Models::BatchObject.create(:identifier => "id0", :pid=> "test:1234") }
-      let(:mp) { DulHydra::Batch::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir) }
-      before { mp.execute }
+      before do
+        FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml'), manifest_file
+        @manifest = DulHydra::Batch::Models::Manifest.new(manifest_file)
+      end
       context "successful processing run" do
-        it_behaves_like "a successful processing run"
+        before do
+          @manifest.manifest_hash[DulHydra::Batch::Models::Manifest::BASEPATH] = test_dir
+          @manifest.manifest_hash['admin_policy'] = apo.pid
+          File.write(manifest_file, @manifest.manifest_hash.to_yaml)
+          mp = DulHydra::Batch::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir)
+          mp.execute
+        end
+        it_behaves_like "a successful manifest processing run"
+      end
+      context "invalid manifest" do
+        before do
+          mp = DulHydra::Batch::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir)
+          mp.execute
+        end
+        it_behaves_like "an invalid manifest to process"
       end
     end
   end

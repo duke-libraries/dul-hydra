@@ -1,6 +1,9 @@
 en:
     batch:
         manifest:
+            validation_failed: "Did not process manifest due to manifest validation errors"
+            validation_skipped: "Skipped validation"
+            validation_errors_ignored: "Attempted to process manifest despite validation errors"
             errors:
                 file_error: "Unable to load manifest file: %{file}"
                 invalid_key: "Invalid key at manifest level: %{key}"
