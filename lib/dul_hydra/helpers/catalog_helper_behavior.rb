@@ -95,6 +95,7 @@ module DulHydra::Helpers
         active: true
       }
       @show_tabs << {label: 'Metadata', partial: 'show_metadata', id: 'tab-metadata'} if @object.describable?
+      @show_tabs << {label: 'Collection Info', partial: 'show_collection_info', id: 'tab-collection-info'} if @object.is_a?(Collection)
       @show_tabs << {label: 'Permissions', partial: 'show_permissions', id: 'tab-permissions'}
       @show_tabs
     end
@@ -159,7 +160,7 @@ module DulHydra::Helpers
       document = args.fetch(:document, @document)
       label = args.fetch(:label, "Download")
       css_class = args.fetch(:css_class, "")
-      css_id = args.fetch(:css_id, "download-#{document.id.sub(/:/, "-")}")
+      css_id = args.fetch(:css_id, "download-#{document.safe_id}")
       link_to label, download_path(document.id), :class => css_class, :id => css_id
     end
     
@@ -171,6 +172,22 @@ module DulHydra::Helpers
     def render_thumbnail(document_or_object)
       src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object.id) : default_thumbnail
       image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
+    end
+
+    def render_index_thumbnail(document)
+      if can? :read, document
+        link_to render_thumbnail(document), catalog_path(document.id)
+      else
+        render_thumbnail(document)
+      end
+    end
+
+    def render_index_content(document)
+      if can? :read, document
+        render partial: 'index_download', locals: {document: document}
+      else
+        render_content_type_and_size document
+      end
     end
 
     def format_date(date)

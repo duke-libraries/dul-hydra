@@ -1,6 +1,6 @@
 <div class="row">
   <div class="span1">
-    <%= link_to render_thumbnail(document), catalog_path(document.id) %>
+	<%= render_index_thumbnail document %>
   </div>
   <div class="span8">
 	<ul class="unstyled">
@@ -11,15 +11,10 @@
 	    <li>
 		  <small><%= document.identifier %></small>
 	    </li>
-	  <% end %>
+	  <% end -%>
 	  <% if document.has_content? -%>
 	    <li>
-		<% if can? :read, document -%>
-		  <small><%= render_download_link(document: document, label: render_content_type_and_size(document)) %></small>
-		  <%= render_download_icon :document => document %>
-		<% else -%>
-		  <%= render_content_type_and_size(document) %>
-		<% end -%>
+		  <small><%= render_index_content document %></small>
 	    </li>
 	  <% end -%>
 	</ul>
