@@ -22,4 +22,6 @@ DulHydra::Application.routes.draw do
     end
   end
   
+  resources :batches
+  
 end

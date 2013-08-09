@@ -7,10 +7,15 @@ class Ability
   def custom_permissions
     discover_permissions
     export_sets_permissions
+    batches_permissions
   end
 
   def export_sets_permissions
     can :manage, ExportSet, :user_id => @current_user.id
+  end
+  
+  def batches_permissions
+    can :manage, DulHydra::Batch::Models::Batch, :user_id => @current_user.id
   end
 
   # Mimics Hydra::Ability#read_permissions

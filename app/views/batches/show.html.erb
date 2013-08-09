@@ -1,0 +1,85 @@
+<%= content_tag :h1, I18n.t('batch.web.page_titles.batch', :id => @batch.id) %>
+<%= content_tag :table, :class => 'table table-bordered table-striped table-condensed' do %>
+	<%= content_tag :thead do %>
+		<%= content_tag :tr do %>
+			<%= content_tag :th, '', :scope => 'col', :colspan => 4 %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.last_run'), :scope => 'col', :colspan => 3 %>
+		<% end %>
+		<%= content_tag :tr do %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.name'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.description'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.objects'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.runs'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.start'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.status'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.outcome'), :scope => 'col' %>
+		<% end %>
+
+	<% end %>
+	<%= content_tag :tbody do %>
+		<%= content_tag :tr do %>
+			<%= content_tag :td, @batch.name %>
+			<%= content_tag :td, @batch.description %>
+			<%= content_tag :td, @batch.batch_objects.count %>
+			<%= content_tag :td, @batch.batch_runs.count %>
+			<%= content_tag :td, @batch.batch_runs.empty? ? '--' : @batch.batch_runs.last.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
+			<%= content_tag :td, @batch.batch_runs.empty? ? '--' : @batch.batch_runs.last.status %>
+			<%= content_tag :td, @batch.batch_runs.empty? ? '--' : @batch.batch_runs.last.outcome %>
+		<% end %>
+	<% end %>
+<% end %>
+<%= content_tag :h2, I18n.t('batch.web.page_titles.batch_runs') %>
+<% unless @batch.batch_runs.empty? %>
+<%= content_tag :table, :class => 'table table-bordered table-striped table-condensed' do %>
+	<%= content_tag :thead do %>
+		<%= content_tag :tr do %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.id'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.start'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.stop'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.status'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.outcome'), :scope => 'col' %>
+		<% end %>
+
+	<% end %>
+	<%= content_tag :tbody do %>
+		<% @batch.batch_runs.each do |br| %>
+		<%= content_tag :tr do %>
+			<%= content_tag :td, br.id %>
+			<%= content_tag :td, br.start ? br.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") : '--' %>
+			<%= content_tag :td, br.stop ? br.stop.getlocal.strftime("%Y-%m-%d %H:%M:%S") : '--' %>
+			<%= content_tag :td, br.status %>
+			<%= content_tag :td, br.outcome %>
+		<% end %>
+		<% end %>
+	<% end %>
+<% end %>
+<% else %>
+	<%= content_tag :p, I18n.t('batch.web.no_batch_runs') %>
+<% end %>
+<%= content_tag :h2, I18n.t('batch.web.page_titles.batch_objects') %>
+<% unless @batch.batch_objects.empty? %>
+<%= content_tag :table, :class => 'table table-bordered table-striped table-condensed' do %>
+	<%= content_tag :thead do %>
+		<%= content_tag :tr do %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.id'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.identifier'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.model'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.pid'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.verified'), :scope => 'col' %>
+		<% end %>
+	<% end %>
+	<%= content_tag :tbody do %>
+		<% @batch.batch_objects.each do |bo| %>
+		<%= content_tag :tr do %>
+			<%= content_tag :td, bo.id %>
+			<%= content_tag :td, bo.identifier %>
+			<%= content_tag :td, bo.model %>
+			<%= content_tag :td, bo.pid %>
+			<%= content_tag :td, bo.verified %>
+		<% end %>
+		<% end %>
+	<% end %>
+<% end %>
+<% else %>
+	<%= content_tag :p, I18n.t('batch.web.no_batch_runs') %>
+<% end %>
