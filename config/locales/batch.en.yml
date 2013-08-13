@@ -36,6 +36,7 @@ en:
         web:
             no_batches: "No batches found for your user account."
             no_batch_runs: "No runs found for this batch."
+            batch_queued: "Batch %{id} queued for processing."
             page_titles:
                 batch: "Batch %{id}"
                 batches: "Batches"
@@ -57,3 +58,6 @@ en:
                 pid: "PID"
                 verified: "Verified"
                 operation: "Operation"
+                action: "Action"
+            action_names:
+                procezz: "Process"
