@@ -42,6 +42,7 @@ module DulHydra::Batch::Scripts
         end
         close_batch_run
       end
+      save_logfile
     end
     
     private
@@ -67,6 +68,8 @@ module DulHydra::Batch::Scripts
     end
     
     def initiate_batch_run
+      @log.info "Batch id: #{@batch.id}"
+      @log.info "Batch name: #{@batch.name}" if @batch.name
       @log.info "Batch size: #{@batch.batch_objects.size}"
       @batch_run = DulHydra::Batch::Models::BatchRun.create(:batch => @batch,
                                    :start => DateTime.now,
@@ -109,10 +112,16 @@ module DulHydra::Batch::Scripts
     
     def config_logger
       logconfig = Log4r::YamlConfigurator
-      logconfig['LOG_DIR'] = @log_dir
-      logconfig['LOG_FILE'] = @log_file
+      logconfig['LOG_FILE'] = File.join(@log_dir, @log_file)
       logconfig.load_yaml_file File.join(LOG_CONFIG_FILEPATH)
       @log = Log4r::Logger['batch_processor']
+    end
+    
+    def save_logfile
+      @log.outputters.each do |outputter|
+        @logfilename = outputter.filename if outputter.respond_to?(:filename)
+      end
+      @batch_run.update_attributes({:logfile => File.new(@logfilename)}) if @logfilename
     end
     
   end

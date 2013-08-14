@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130813134858) do
+ActiveRecord::Schema.define(:version => 20130814175759) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -53,13 +53,17 @@ ActiveRecord::Schema.define(:version => 20130813134858) do
     t.datetime "start"
     t.datetime "stop"
     t.string   "outcome"
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
     t.text     "details"
-    t.integer  "failure",    :default => 0
-    t.integer  "success",    :default => 0
-    t.integer  "total",      :default => 0
+    t.integer  "failure",              :default => 0
+    t.integer  "success",              :default => 0
+    t.integer  "total",                :default => 0
     t.string   "version"
+    t.string   "logfile_file_name"
+    t.string   "logfile_content_type"
+    t.integer  "logfile_file_size"
+    t.datetime "logfile_updated_at"
   end
 
   create_table "batches", :force => true do |t|
