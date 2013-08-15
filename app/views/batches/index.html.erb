@@ -4,7 +4,7 @@
 	<%= content_tag :thead do %>
 		<%= content_tag :tr do %>
 			<%= content_tag :th, '', :scope => 'col', :colspan => 6 %>
-			<%= content_tag :th, I18n.t('batch.web.column_names.last_run'), :scope => 'col', :colspan => 3 %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.last_run'), :scope => 'col', :colspan => 4 %>
 		<% end %>
 		<%= content_tag :tr do %>
 			<%= content_tag :th, I18n.t('batch.web.column_names.id'), :scope => 'col' %>
@@ -16,6 +16,7 @@
 			<%= content_tag :th, I18n.t('batch.web.column_names.start'), :scope => 'col' %>
 			<%= content_tag :th, I18n.t('batch.web.column_names.status'), :scope => 'col' %>
 			<%= content_tag :th, I18n.t('batch.web.column_names.outcome'), :scope => 'col' %>
+			<%= content_tag :th, I18n.t('batch.web.column_names.log'), :scope => 'col' %>
 		<% end %>
 
 	<% end %>
@@ -31,6 +32,7 @@
 			<%= content_tag :td, b.batch_runs.empty? ? '--' : b.batch_runs.last.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
 			<%= content_tag :td, b.batch_runs.empty? ? '--' : b.batch_runs.last.status %>
 			<%= content_tag :td, b.batch_runs.empty? ? '--' : b.batch_runs.last.outcome %>
+			<%= content_tag :td, b.batch_runs.empty? ? '--' : link_to(I18n.t('batch.web.column_names.log'), b.batch_runs.last.logfile.url) %>
 		<% end %>
 		<% end %>
 	<% end %>

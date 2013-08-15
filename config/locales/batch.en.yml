@@ -59,5 +59,6 @@ en:
                 verified: "Verified"
                 operation: "Operation"
                 action: "Action"
+                log: "Log"
             action_names:
                 procezz: "Process"
