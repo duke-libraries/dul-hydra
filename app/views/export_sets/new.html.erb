@@ -2,7 +2,7 @@
 
 <% if @documents.empty? %>
   <div class="alert alert-error">
-     You have no bookmarks for content-bearing objects.
+     You have no bookmarks for content-bearing objects or you do not have export permission for your bookmarked content-bearing objects.
   </div>
 <% else %>
   <%= form_for @export_set do |f| %>

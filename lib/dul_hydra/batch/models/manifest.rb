@@ -116,7 +116,9 @@ module DulHydra::Batch::Models
           errs << I18n.t('batch.manifest.errors.relationship_object_class_mismatch', :relationship => relationship, :exp_class => object_class, :actual_class => obj.class) unless obj.is_a?(object_class)
         end
       else
-        errs << I18n.t('batch.manifest.errors.relationship_object_pid_not_determined', :relationship => relationship)
+        unless @manifest_hash[relationship].has_key?(Manifest::AUTOIDLENGTH) # when autoidlength specified at manifest level, pid is determined at object level
+          errs << I18n.t('batch.manifest.errors.relationship_object_pid_not_determined', :relationship => relationship)
+        end
       end
       return errs
     end
