@@ -19,11 +19,21 @@ module DulHydra::Batch::Models
     context "validate" do
       let(:admin_policy_pid) { "duke-apo:adminPolicy" }
       context "valid" do
-        let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
         let!(:admin_policy) { AdminPolicy.create(:pid => admin_policy_pid) }
-        before { manifest.manifest_hash['basepath'] = File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous') }
         after { admin_policy.destroy }
-        it_behaves_like "a valid manifest"
+        context "manifest with files" do
+          let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
+          before { manifest.manifest_hash['basepath'] = File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous') }
+          it_behaves_like "a valid manifest"
+        end
+        context "manifest with parent autoidlength" do
+          let(:manifest) { Manifest.new }
+          before do
+            manifest.manifest_hash[Manifest::BASEPATH] = "/tmp"
+            manifest.manifest_hash[BatchObjectRelationship::RELATIONSHIP_PARENT] = { Manifest::AUTOIDLENGTH => 5 }
+          end
+          it_behaves_like "a valid manifest"
+        end
       end
       context "invalid" do
         let(:manifest) { Manifest.new }
