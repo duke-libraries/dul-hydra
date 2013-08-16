@@ -62,3 +62,4 @@ en:
                 log: "Log"
             action_names:
                 procezz: "Process"
+                reprocezz: "Re-Process"

@@ -8,7 +8,6 @@ module DulHydra::Batch::Models
     OUTCOME_SUCCESS = "SUCCESS"
     OUTCOME_FAILURE = "FAILURE"
     
-    STATUS_NEW = "NEW"
     STATUS_RUNNING = "RUNNING"
     STATUS_FINISHED = "FINISHED"
   end

@@ -22,18 +22,18 @@
 	<% end %>
 	<%= content_tag :tbody do %>
 		<% @batches.each do |b| %>
-		<%= content_tag :tr do %>
-			<%= content_tag :td, link_to(b.id, batch_path(b)) %>
-			<%= content_tag :td, link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(b)) %>
-			<%= content_tag :td, b.name %>
-			<%= content_tag :td, b.description %>
-			<%= content_tag :td, b.batch_objects.count %>
-			<%= content_tag :td, b.batch_runs.count %>
-			<%= content_tag :td, b.batch_runs.empty? ? '--' : b.batch_runs.last.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
-			<%= content_tag :td, b.batch_runs.empty? ? '--' : b.batch_runs.last.status %>
-			<%= content_tag :td, b.batch_runs.empty? ? '--' : b.batch_runs.last.outcome %>
-			<%= content_tag :td, b.batch_runs.empty? ? '--' : link_to(I18n.t('batch.web.column_names.log'), b.batch_runs.last.logfile.url) %>
-		<% end %>
+			<%= content_tag :tr do %>
+				<%= content_tag :td, link_to(b.id, batch_path(b)) %>
+				<%= content_tag :td, batch_action(b) %>
+				<%= content_tag :td, b.name %>
+				<%= content_tag :td, b.description %>
+				<%= content_tag :td, b.batch_objects.count %>
+				<%= content_tag :td, b.batch_runs.count %>
+				<%= content_tag :td, b.batch_runs.empty? ? '--' : b.batch_runs.last.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
+				<%= content_tag :td, b.batch_runs.empty? ? '--' : b.batch_runs.last.status %>
+				<%= content_tag :td, b.batch_runs.empty? ? '--' : b.batch_runs.last.outcome %>
+				<%= content_tag :td, (b.batch_runs.empty? || b.batch_runs.last.logfile_file_name.nil?) ? '--' : link_to(I18n.t('batch.web.column_names.log'), b.batch_runs.last.logfile.url) %>
+			<% end %>
 		<% end %>
 	<% end %>
 <% end %>
