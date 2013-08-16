@@ -18,11 +18,7 @@ class BatchesController < ApplicationController
     @errors = @batch.validate
     valid = @errors.empty?
     flash[:notice] = "Batch is #{valid ? '' : 'not '}valid"
-    if valid
-      redirect_to batch_url(@batch)
-    else
-      render :error
-    end
+    render :show
   end
   
 end

@@ -28,3 +28,11 @@
 		<% end %>
 	<% end %>
 <% end %>
+<% unless @errors.blank? %>
+	<%= content_tag :h3, I18n.t('batch.web.headings.object_validation_errors') %>
+	<%= content_tag :ul do %>
+		<% @errors.each do |error| %>
+			<%= content_tag :li, error %>	
+		<% end %>
+	<% end %>
+<% end %>
