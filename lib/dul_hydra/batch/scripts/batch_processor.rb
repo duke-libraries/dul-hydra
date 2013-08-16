@@ -49,15 +49,13 @@ module DulHydra::Batch::Scripts
     
     def validate_batch
       valid = true
-      @batch.batch_objects.each do |object|
-        errors = object.validate
-        unless errors.empty?
-          valid = false
-          errors.each do |error|
-            message = "#{object.identifier} [Database ID: #{object.id}] Batch Object Validation Error: #{error}"
-            @details << message
-            @log.error(message)
-          end
+      errors = @batch.validate
+      unless errors.empty?
+        valid = false
+        errors.each do |error|
+          message = "Batch Object Validation Error: #{error}"
+          @details << message
+          @log.error(message)
         end
       end
       return valid

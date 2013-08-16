@@ -22,6 +22,7 @@ en:
                 model_invalid: "Invalid model at manifest level: #{model}"
         manifest_object:
             errors:
+                prefix: "%{identifier} [Database ID: %{id}]:"
                 relationship_object_not_found: "Cannot find manifest object %{identifier} %{relationship} object in repository: %{pid}"
                 relationship_object_class_mismatch: "Manifest object %{identifier} %{relationship} object should be a(n) %{exp_class} but is a(n) %{actual_class}"
                 relationship_object_pid_not_determined: "Pid for manifest object %{identifier} %{relationship} object could not be determined"
@@ -37,6 +38,8 @@ en:
             no_batches: "No batches found for your user account."
             no_batch_runs: "No runs found for this batch."
             batch_queued: "Batch %{id} queued for processing."
+            headings:
+                object_validation_errors: "Batch Object Validation Errors"
             page_titles:
                 batch: "Batch %{id}"
                 batches: "Batches"

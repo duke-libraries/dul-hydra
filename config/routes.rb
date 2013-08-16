@@ -25,6 +25,7 @@ DulHydra::Application.routes.draw do
   resources :batches do
     member do
       get 'procezz'
+      get 'validate'
     end
     resources :batch_runs
     resources :batch_objects do
