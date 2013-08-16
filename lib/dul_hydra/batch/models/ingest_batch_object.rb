@@ -4,7 +4,7 @@ module DulHydra::Batch::Models
   
     def validate_required_attributes
       errs = []
-      errs << "Model required for INGEST operation" unless model
+      errs << "#{@error_prefix} Model required for INGEST operation" unless model
       errs
     end
   
