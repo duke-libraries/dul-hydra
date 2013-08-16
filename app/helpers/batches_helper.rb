@@ -10,20 +10,32 @@ module BatchesHelper
     end
   end
 
-  def event_outcome_label(document)
-    content_tag :span, document.event_outcome.capitalize, :class => "label label-#{document.event_outcome == PreservationEvent::SUCCESS ? 'success' : 'important'}"
+  def show_batch_tabs
+      return @show_tabs if @show_tabs
+      @show_tabs = []
+      @show_tabs << {
+        :label => I18n.t('batch.web.tab_names.batch_info'),
+        :partial => 'show_batch_info',
+        :id => 'tab-default',
+        :active => true
+      }
+      @show_tabs << { :label => I18n.t('batch.web.tab_names.batch_objects'), :partial => 'show_batch_objects', :id => 'tab-batch-objects' }
+      @show_tabs << { :label => I18n.t('batch.web.tab_names.batch_runs'), :partial => 'show_batch_runs', :id => 'tab-batch-runs' }
+      @show_tabs
   end
+  
+    def render_show_batch_tab(tab)
+      opts = tab[:active] ? {class: "active"} : {}
+      content_tag :li, opts do
+        link_to tab[:label], "#" + tab[:id], "data-toggle" => "tab" 
+      end
+    end
 
-  def event_detail_id(document)
-    "event-detail-#{document.safe_id}"
-  end
-
-  def event_detail_partial(document)
-    "#{document.event_type.sub(/ /, "_")}_detail"
-  end
-
-  def render_event_detail(document)
-    render partial: event_detail_partial(document), locals: {detail: document.parsed_event_outcome_detail_note}
-  end
-
+    def render_show_tab_batch_content(tab)
+      css_class = tab[:active] ? "tab-pane active" : "tab-pane"
+      content_tag :div, class: css_class, id: tab[:id] do
+        render(tab[:partial])
+      end
+    end
+  
 end

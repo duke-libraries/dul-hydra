@@ -37,6 +37,7 @@ en:
         web:
             no_batches: "No batches found for your user account."
             no_batch_runs: "No runs found for this batch."
+            no_batch_objects: "No objects in this batch."
             batch_queued: "Batch %{id} queued for processing."
             headings:
                 object_validation_errors: "Batch Object Validation Errors"
@@ -66,3 +67,7 @@ en:
             action_names:
                 procezz: "Process"
                 reprocezz: "Re-Process"
+            tab_names:
+                batch_info: "Batch Info"
+                batch_objects: "Batch Objects"
+                batch_runs: "Batch Runs"
