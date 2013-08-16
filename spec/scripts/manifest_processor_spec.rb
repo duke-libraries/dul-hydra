@@ -64,7 +64,7 @@ module DulHydra::Batch::Scripts
   end
   
   shared_examples "an invalid manifest to process" do
-    let(:log) { File.read(File.join(log_dir, "manifest_processor_#{Time.now.strftime('%Y-%m-%d')}.log"))}
+    let(:log) { File.read(File.join(log_dir, "manifest_processor.log"))}
     it "should not create a new batch" do
       expect(DulHydra::Batch::Models::Batch.all).to be_empty
     end
