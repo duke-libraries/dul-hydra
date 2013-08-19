@@ -14,10 +14,9 @@ log4r_config:
             date_pattern: '%F %T.%L'
             pattern     : '%d %l: %m'
             type        : PatternFormatter
-        - type        : DateFileOutputter
+        - type        : FileOutputter
           name        : logfile
           trunc       : 'false'
-          dirname     : "#{LOG_DIR}"
           filename    : "#{LOG_FILE}"
           formatter   :
             date_pattern: '%F %T.%L'

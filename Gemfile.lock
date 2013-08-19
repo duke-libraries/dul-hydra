@@ -68,6 +68,11 @@ GEM
     cocaine (0.5.1)
       climate_control (>= 0.0.3, < 1.0)
     daemons (1.1.9)
+    delayed_job (4.0.0)
+      activesupport (>= 3.0, < 4.1)
+    delayed_job_active_record (4.0.0)
+      activerecord (>= 3.0, < 4.1)
+      delayed_job (>= 3.0, < 4.1)
     deprecation (0.0.5)
       activesupport
     devise (2.2.3)
@@ -276,6 +281,7 @@ DEPENDENCIES
   blacklight (~> 4.2.1)
   bootstrap-sass
   capybara (~> 2.0)
+  delayed_job_active_record
   devise
   factory_girl_rails (~> 4.0)
   fcrepo_admin (~> 0.6.1)

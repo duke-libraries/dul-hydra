@@ -22,4 +22,16 @@ DulHydra::Application.routes.draw do
     end
   end
   
+  resources :batches do
+    member do
+      get 'procezz'
+      get 'validate'
+    end
+    resources :batch_runs
+    resources :batch_objects do
+      resources :batch_object_datastreams
+      resources :batch_object_relationships
+    end
+  end
+  
 end

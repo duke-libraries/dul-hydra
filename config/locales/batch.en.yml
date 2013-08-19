@@ -22,6 +22,7 @@ en:
                 model_invalid: "Invalid model at manifest level: #{model}"
         manifest_object:
             errors:
+                prefix: "%{identifier} [Database ID: %{id}]:"
                 relationship_object_not_found: "Cannot find manifest object %{identifier} %{relationship} object in repository: %{pid}"
                 relationship_object_class_mismatch: "Manifest object %{identifier} %{relationship} object should be a(n) %{exp_class} but is a(n) %{actual_class}"
                 relationship_object_pid_not_determined: "Pid for manifest object %{identifier} %{relationship} object could not be determined"
@@ -33,3 +34,40 @@ en:
                 identifier_missing: "Manifest object does not contain an identifier"
                 invalid_key: "Invalid key in manifest object %{identifier}: %{key}"
                 invalid_subkey: "Invalid subkey in manifest object %{identifier}: %{key} - %{subkey}"
+        web:
+            no_batches: "No batches found for your user account."
+            no_batch_runs: "No runs found for this batch."
+            no_batch_objects: "No objects in this batch."
+            batch_queued: "Batch %{id} queued for processing."
+            headings:
+                object_validation_errors: "Batch Object Validation Errors"
+            page_titles:
+                batch: "Batch %{id}"
+                batches: "Batches"
+                batch_runs: "Batch Runs"
+                batch_objects: "Objects in Batch"
+            column_names:
+                id: "ID"
+                name: "Name"
+                description: "Description"
+                objects: "Objects"
+                runs: "Runs"
+                last_run: "Last Run"
+                start: "Start"
+                stop: "Stop"
+                status: "Status"
+                outcome: "Outcome"
+                identifier: "Identifier"
+                model: "Model"
+                pid: "PID"
+                verified: "Verified"
+                operation: "Operation"
+                action: "Action"
+                log: "Log"
+            action_names:
+                procezz: "Process"
+                reprocezz: "Re-Process"
+            tab_names:
+                batch_info: "Batch Info"
+                batch_objects: "Batch Objects"
+                batch_runs: "Batch Runs"

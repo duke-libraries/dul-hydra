@@ -13,6 +13,8 @@ gem 'active-fedora', '~> 6.4.3'
 
 gem 'log4r'
 
+gem 'delayed_job_active_record'
+
 # ExecJS runtime
 gem 'therubyracer', '~> 0.11.3', :require => 'v8'
 

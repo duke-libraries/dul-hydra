@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130506134449) do
+ActiveRecord::Schema.define(:version => 20130814175759) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -53,13 +53,17 @@ ActiveRecord::Schema.define(:version => 20130506134449) do
     t.datetime "start"
     t.datetime "stop"
     t.string   "outcome"
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
     t.text     "details"
-    t.integer  "failure",    :default => 0
-    t.integer  "success",    :default => 0
-    t.integer  "total",      :default => 0
+    t.integer  "failure",              :default => 0
+    t.integer  "success",              :default => 0
+    t.integer  "total",                :default => 0
     t.string   "version"
+    t.string   "logfile_file_name"
+    t.string   "logfile_content_type"
+    t.integer  "logfile_file_size"
+    t.datetime "logfile_updated_at"
   end
 
   create_table "batches", :force => true do |t|
@@ -78,6 +82,22 @@ ActiveRecord::Schema.define(:version => 20130506134449) do
     t.datetime "updated_at",  :null => false
     t.string   "user_type"
   end
+
+  create_table "delayed_jobs", :force => true do |t|
+    t.integer  "priority",   :default => 0, :null => false
+    t.integer  "attempts",   :default => 0, :null => false
+    t.text     "handler",                   :null => false
+    t.text     "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by"
+    t.string   "queue"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
+  end
+
+  add_index "delayed_jobs", ["priority", "run_at"], :name => "delayed_jobs_priority"
 
   create_table "export_sets", :force => true do |t|
     t.integer  "user_id"
