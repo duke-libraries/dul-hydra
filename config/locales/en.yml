@@ -17,6 +17,13 @@ en:
         fcrepo_admin: 'Fcrepo View'
         last_fixity_check_on: 'Checked'
         last_fixity_check_outcome: 'Outcome'
+    column_names:
+      pid: 'PID'
+    admin_policies:
+      headings:
+        index: 'Admin Policies'
+      messages:
+        no_admin_policies: 'There are no Admin Policy objects to which you have access.'
   blacklight:
     application_name: 'DUL Preservation Repository'
     header_links:
