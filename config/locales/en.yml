@@ -19,6 +19,8 @@ en:
         last_fixity_check_outcome: 'Outcome'
     column_names:
       pid: 'PID'
+      title: 'Title'
+      default_permissions: 'Default Permissions'
     admin_policies:
       headings:
         index: 'Admin Policies'

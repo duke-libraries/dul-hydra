@@ -12,11 +12,18 @@
 </div>
 <table class="table">
   <% metadata_fields.each do |field| %>
-    <% metadata_field_values(field).each do |value| %>
+    <% if metadata_field_values(field).respond_to?(:each) %>
+      <% metadata_field_values(field).each do |value| %>
+	  <tr>
+	    <th scope="row"><%= metadata_field_label field %></th>
+	    <td><%= value %></td>
+	  </tr>
+      <% end %>
+    <% else %>
 	<tr>
 	  <th scope="row"><%= metadata_field_label field %></th>
-	  <td><%= value %></td>
+	  <td><%= metadata_field_values(field) %></td>
 	</tr>
-	<% end %>
+    <% end %>
   <% end %>
 </table>

@@ -34,6 +34,6 @@ DulHydra::Application.routes.draw do
     end
   end
 
-  resources :admin_policies
+  resources :admin_policies, :only => [:edit, :update]
   
 end

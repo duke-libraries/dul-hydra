@@ -141,6 +141,10 @@ module DulHydra::Models
       targets_count > 0
     end
     
+    def has_default_rights?
+      has_datastream?(DulHydra::Datastreams::DEFAULT_RIGHTS)
+    end
+    
     def parsed_content_metadata
       JSON.parse(self[DulHydra::IndexFields::CONTENT_METADATA_PARSED].first)
     end
