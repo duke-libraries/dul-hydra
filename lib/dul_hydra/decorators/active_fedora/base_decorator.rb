@@ -16,10 +16,6 @@ ActiveFedora::Base.class_eval do
     self.is_a?(DulHydra::Models::Describable)
   end
   
-  def has_descriptive_metadata?
-    self.describable? || self.datastreams[DulHydra::Datastreams::DESC_METADATA].has_content?
-  end
-
   def has_children?
     self.class.reflect_on_association(:children) && self.children.size > 0
   end
