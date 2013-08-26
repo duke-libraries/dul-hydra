@@ -10,7 +10,7 @@
 	</div>
   </div>
   <% elsif @document.has_default_rights? %>
-    Testing
+    <%= render partial: 'show_inheritable_rights' %>
   <% else %>
   <div class="alert">
 	This object has no content.
