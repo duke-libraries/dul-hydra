@@ -1,5 +1,5 @@
 <%= content_tag :div do %>
-  <%= content_tag :strong, I18n.t('dul_hydra.inheritable_rights') %>
+  <%= content_tag :strong, I18n.t('dul_hydra.admin_policies.headings.inheritable_rights') %>
 <% end %>
 <table class="table" style="width:auto">
   <thead>
@@ -17,7 +17,6 @@
 	  </td>
 	  <td>
 		<%= perm[:access] %>
-		<% if perm[:inherited] %>(inherited)<% end %>
 	  </td>
 	</tr>
 	<% end %>

@@ -1,0 +1,6 @@
+<%= content_tag :div do %>
+  <%= content_tag :strong, I18n.t('dul_hydra.admin_policies.headings.license') %>
+<% end %>
+<%= content_tag :h4, @object.default_license_title %>
+<%= content_tag :p, @object.default_license_description %>
+<%= link_to @object.default_license_url, @object.default_license_url %>

@@ -17,7 +17,13 @@ en:
         fcrepo_admin: 'Fcrepo View'
         last_fixity_check_on: 'Checked'
         last_fixity_check_outcome: 'Outcome'
-    inheritable_rights: 'Access restrictions inherited by objects governed by this Admin Policy'
+    license: 'Copyright / license statement inherited by objects governed by this Admin Policy'
+    admin_policies:
+      headings:
+        inheritable_rights: 'Access restrictions inherited by objects governed by this Admin Policy'
+        license: 'Copyright / license statement inherited by objects governed by this Admin Policy'
+      page_titles:
+        edit: 'Editing Admin Policy'
   blacklight:
     application_name: 'DUL Preservation Repository'
     header_links:
