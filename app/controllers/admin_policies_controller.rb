@@ -24,7 +24,7 @@ class AdminPoliciesController < ApplicationController
       end
     end
     @admin_policy.save
-    unless params[:new_group_name].blank?
+    unless params[:new_group_name].blank? || params[:new_group_perm].blank?
       @admin_policy.default_permissions = [{:name => params[:new_group_name], :access => params[:new_group_perm], :type => 'group'}]
       @admin_policy.save
     end
