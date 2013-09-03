@@ -3,15 +3,6 @@ class AdminPoliciesController < ApplicationController
   load_and_authorize_resource
 
   def edit
-    existing_groups = []
-    default_permissions = @admin_policy.default_permissions
-    default_permissions.each do |perm|
-      existing_groups << [ perm[:name] ]
-    end
-    all_groups = [["public"],["registered"],["repositoryReader"],["repositoryEditor"],["repositoryAdmin"],["componentaccess"]]
-    @add_groups = all_groups - existing_groups
-    @permissions = [['discover'],['read'],['edit']]
-    @existing_permissions = @permissions + [["**Remove**", "_remove_"]]
   end
   
   def update

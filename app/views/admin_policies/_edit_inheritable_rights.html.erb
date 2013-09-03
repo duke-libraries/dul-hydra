@@ -1,9 +1,9 @@
   <%= content_tag :h4, I18n.t('dul_hydra.admin_policies.headings.inheritable_rights') %>
   <% @admin_policy.default_permissions.each do |perm| %>
     <%= perm[:name] %>
-    <%= select_tag "perm[#{perm[:name]}]", options_for_select(@existing_permissions, perm[:access]) %>
+    <%= select_tag "perm[#{perm[:name]}]", options_for_select(permissions_select_options(true), perm[:access]) %>
     <br />
   <% end %>  
-  <%= select_tag 'new_group_name', options_for_select(@add_groups), {prompt: 'Select group to add'} %>
-  <%= select_tag 'new_group_perm', options_for_select(@permissions), {prompt: 'Select permission'} %>
+  <%= select_tag 'new_group_name', options_for_select(add_group_select_options), {prompt: 'Select group to add'} %>
+  <%= select_tag 'new_group_perm', options_for_select(permissions_select_options(false)), {prompt: 'Select permission'} %>
   
