@@ -29,7 +29,7 @@ class AdminPoliciesController < ApplicationController
       @admin_policy.save
     end
     @admin_policy.update_attributes(params[:admin_policy])
-    flash[:notice] = "Admin Policy updated."
+    flash[:notice] = I18n.t('dul_hydra.admin_policies.messages.updated')
     redirect_to catalog_path(@admin_policy)
   end
   
