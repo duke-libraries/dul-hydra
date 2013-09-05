@@ -33,5 +33,7 @@ DulHydra::Application.routes.draw do
       resources :batch_object_relationships
     end
   end
+
+  resources :admin_policies, :only => [:edit, :update]
   
 end

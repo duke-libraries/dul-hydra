@@ -4,6 +4,7 @@ module DulHydra::Datastreams
   CONTENT_METADATA = "contentMetadata"
   CONTENTDM = "contentdm"
   DC = "DC"
+  DEFAULT_RIGHTS = "defaultRights"
   DESC_METADATA = "descMetadata"
   DIGITIZATION_GUIDE = "digitizationGuide"
   DPC_METADATA = "dpcMetadata"

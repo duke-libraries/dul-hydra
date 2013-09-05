@@ -15,7 +15,7 @@ ActiveFedora::Base.class_eval do
   def describable?
     self.is_a?(DulHydra::Models::Describable)
   end
-
+  
   def has_children?
     self.class.reflect_on_association(:children) && self.children.size > 0
   end

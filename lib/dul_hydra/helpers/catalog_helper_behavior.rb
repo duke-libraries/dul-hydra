@@ -214,6 +214,10 @@ module DulHydra::Helpers
       results
     end
 
+    def inheritable_permissions(object = @object)
+      object.default_permissions
+    end
+
     private
 
     def render_label(text, label)
@@ -229,6 +233,6 @@ module DulHydra::Helpers
     def default_thumbnail
       'dul_hydra/no_thumbnail.png'
     end
-    
+
   end
 end
