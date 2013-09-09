@@ -1,0 +1,32 @@
+<Table>
+	<Title>Another Title, 1987 Oct.</Title>
+	<Description>Caption by photographer (Name): "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla accumsan leo id elementum aliquam. Maecenas."</Description>
+	<Creator>Last, First, 1928-</Creator>
+	<Date>1981-01</Date>
+	<Type-DCMI>Image</Type-DCMI>
+	<Type-DCMI>Still Image</Type-DCMI>
+	<Type-AAT>photographs</Type-AAT>
+	<Type-AAT>black-and-white photographs</Type-AAT>
+	<Type-AAT>documentary photographs</Type-AAT>
+	<Identifier-DukeID>abcph010010020</Identifier-DukeID>
+	<Print_Number>16-654-1</Print_Number>
+	<Identifier-Other>Box PHO 1</Identifier-Other>
+	<Source>Digital Collection, 1980-1998 and undated</Source>
+	<Digital_Collection>Digital Collection</Digital_Collection>
+	<Rights>The copyright in the materials included in the Digital Collection collection are owned by the photographer's heirs. The photographs are made available by Duke University Libraries, with permission, for the purpose of research, teaching, and private study. For these purposes users may reproduce single copies of the images from this website without prior permission, on the condition that proper attribution is provided on all such copies. For all other uses, and especially for any proposed commercial uses, researchers must contact the Library to request permission.</Rights>
+	<Extent>11 x 14 in.</Extent>
+	<Spatial>State</Spatial>
+	<Spatial>Some County (St.)</Spatial>
+	<Spatial>City (St.)</Spatial>
+	<Series>Photographic Materials Series</Series>
+	<Subseries>Some County Court House</Subseries>
+	<Provenance>The Digital Collection was purchased by the Library from 1991 to 2010.</Provenance>
+	<Cataloged_by>xy12</Cataloged_by>
+	<EAD_ID>digitalcollection</EAD_ID>
+	<Date_created>2011-07-15</Date_created>
+	<Date_modified>2011-09-18</Date_modified>
+	<Reference_URL>http://someurl</Reference_URL>
+	<CONTENTdm_number>1</CONTENTdm_number>
+	<CONTENTdm_file_name>2.jp2</CONTENTdm_file_name>
+	<CONTENTdm_file_path>/digcoll/image/2.jp2</CONTENTdm_file_path>
+</Table>
