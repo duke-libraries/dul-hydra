@@ -83,6 +83,24 @@ module DulHydra::Scripts
         end          
       end
       
+      context "Hydra qualified Dublin Core schema" do
+        let(:script) { DulHydra::Scripts::CsvToXml.new(:csv => input, :xml => output, :profile => profile, :schema_map => schema) }
+        let(:output) { File.join(test_dir, 'outputs') }
+        let(:profile) { File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm_split.yml') }
+        let(:schema) { File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm2qdc.yml') }
+        let(:expected) do
+          [ File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm1_qdc.xml'),
+          File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm2_qdc.xml') ]
+        end
+        let(:expected_xml) do
+          exps = []
+          expected.each { |exp| exps << File.open(exp) { |f| Nokogiri::XML(f) } }
+          exps
+        end
+        it_behaves_like "a successful split conversion"          
+        
+      end
+      
     end
     
   end

@@ -53,24 +53,22 @@ module DulHydra::Scripts
         end
       end
       write_xml(@xml_file) unless xml_options[:split]
-      puts @xml.to_xml
-      puts @schema_map
     end
     
     def add_field_to_node(parent_node, field_name, field_content)
-      if @field_map
-        if @field_map[field_name] == "__exclude__"
-          field_name = nil
-        elsif @field_map[field_name].blank?
-          field_name = field_name.gsub(" ", "_")
-        else
-          field_name = @field_map[field_name]
+      # TO DO: only works for umapped = exclude
+      if field_map
+        if field_map[field_name]
+          fld_name = field_map[field_name]
+          if schema_fields[:namespace]
+            fld_name = "#{schema_fields[:namespace]}:#{fld_name}"
+          end
         end
       else
-        field_name = field_name.gsub(" ", "_")
+        fld_name = field_name.gsub(" ", "_")
       end
-      if field_name
-        field_node = Nokogiri::XML::Node.new field_name, @xml
+      if fld_name
+        field_node = Nokogiri::XML::Node.new fld_name, @xml
         field_node.content = field_content
         parent_node.add_child field_node
       end
