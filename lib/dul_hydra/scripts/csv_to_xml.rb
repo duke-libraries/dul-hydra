@@ -57,7 +57,7 @@ module DulHydra::Scripts
     
     def add_field_to_node(parent_node, field_name, field_content)
       # TO DO: only works for umapped = exclude
-      if field_map
+      if field_map?
         if field_map[field_name]
           fld_name = field_map[field_name]
           if schema_fields[:namespace]
@@ -131,6 +131,10 @@ module DulHydra::Scripts
     
     def field_map
       schema_fields[:field_map]
+    end
+    
+    def field_map?
+      @schema_map && schema_fields && field_map
     end
     
   end
