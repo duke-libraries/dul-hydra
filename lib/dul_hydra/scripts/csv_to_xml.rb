@@ -56,7 +56,7 @@ module DulHydra::Scripts
     end
     
     def add_field_to_node(parent_node, field_name, field_content)
-      # TO DO: only works for umapped = exclude
+      # TO DO: only works for umapped = exclude -- do we need to handle any other cases?
       if field_map?
         if field_map[field_name]
           fld_name = field_map[field_name]
@@ -106,14 +106,14 @@ module DulHydra::Scripts
     def csv_options
       options = Hash.new.update(CSV::DEFAULT_OPTIONS)
       options.update(@profile.fetch(:csv)) if @profile && @profile.has_key?(:csv)
-      # TO DO: add facility to then overlay options with command line options
+      # TO DO: add facility to then overlay options with command line options?
       options
     end
     
     def xml_options
       options = Hash.new.update(DEFAULT_XML_OPTIONS)
       options.update(@profile.fetch(:xml)) if @profile && @profile.has_key?(:xml)
-      # TO DO: add facility to then overlay options with command line options
+      # TO DO: add facility to then overlay options with command line options?
       options
     end
     

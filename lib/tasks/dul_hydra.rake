@@ -16,6 +16,19 @@ namespace :dul_hydra do
 	end
     end
     namespace :batch do
+        desc "Converts CSV file to one or more XML files"
+        task :csv_to_xml => :environment do
+          raise "Must specify CSV file.  Ex.: csv=/srv/fedora-working/ingest/COL/cdm/export.csv" unless ENV['csv']
+          raise "Must specify XML file or directory path.  Ex.: csv=/srv/fedora-working/ingest/COL/cdm/export.xml" unless ENV['xml']
+          opts = {
+            :csv => ENV['csv'],
+            :xml => ENV['xml'],
+            :profile => ENV['profile'],
+            :schema_map => ENV['schema_map']
+          }
+          script = DulHydra::Scripts::CsvToXml.new(opts)
+          script.execute
+        end
         desc "Runs the fixity check routine"
         task :fixity_check => :environment do
             opts = {
