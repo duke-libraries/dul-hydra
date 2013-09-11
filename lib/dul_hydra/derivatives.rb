@@ -54,9 +54,9 @@ module DulHydra::Derivatives
       derivative.to_blob
     end
 
-    private
+    # private
 
-    def valid_content_type?(content_type)
+    def self.valid_content_type?(content_type)
       return false if content_type.blank?
       content_type.start_with?("image/") || EXTRA_IMAGE_TYPES.include?(content_type)
     end
