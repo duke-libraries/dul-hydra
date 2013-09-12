@@ -9,6 +9,11 @@ module DulHydra::Derivatives
     attr_accessor :derivative
     delegate :[], :write, :path, :content_type, :to => :derivative
 
+    def self.derivable?(content_type)
+      return false if content_type.blank?
+      content_type.start_with?("image/") || EXTRA_IMAGE_TYPES.include?(content_type)
+    end
+
     # Returns an image derived from the source.
     # The source can be an IO object, datastream (anything that responds to :read)
     # or a file path (String)
@@ -16,7 +21,7 @@ module DulHydra::Derivatives
       if source.is_a?(IO)
         image = MiniMagick::Image.read(source)
       elsif source.is_a?(ActiveFedora::Datastream)
-        if valid_content_type?(source.mimeType)
+        if Image.derivable?(source.mimeType)
           image = MiniMagick::Image.read(source.read)
         else
           raise DulHydra::Error, "Datastream content is not an image."
@@ -27,7 +32,7 @@ module DulHydra::Derivatives
         end
         if File.exists?(source)
           content_type = MIME::Types.type_for(source).first.to_s rescue nil
-          if valid_content_type?(content_type)
+          if Image.derivable?(content_type)
             image = MiniMagick::Image.open(source)
           else
             raise DulHydra::Error, "The file is not an image or unable to determine content type."
@@ -52,13 +57,6 @@ module DulHydra::Derivatives
 
     def read
       derivative.to_blob
-    end
-
-    # private
-
-    def self.valid_content_type?(content_type)
-      return false if content_type.blank?
-      content_type.start_with?("image/") || EXTRA_IMAGE_TYPES.include?(content_type)
     end
 
   end # Image

@@ -7,7 +7,6 @@ class Component < DulHydra::Models::Base
 
   belongs_to :parent, :property => :is_part_of, :class_name => 'Item'
   belongs_to :target, :property => :has_external_target, :class_name => 'Target'
-  has_many :ancillaries, :property => :is_ancillary_for_component, :inbound => true, :class_name => 'Ancillary'
 
   alias_method :item, :parent
   alias_method :item=, :parent=

@@ -123,7 +123,7 @@ module DulHydra::Batch::Models
         end
       end
       if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
-        if DulHydra::Derivatives::Image.valid_content_type?(repo_object.datastreams[datastream[:name]].mimeType)
+        if DulHydra::Derivatives::Image.derivable?(repo_object.datastreams[datastream[:name]].mimeType)
           if dryrun
             repo_object.generate_thumbnail(repo_object.datastreams[datastream[:name]])
           else
