@@ -10,26 +10,14 @@ module DulHydra::Scripts
   end
   
   shared_examples "a successful split conversion" do
-    let(:actual_xml) { [] }
-    let(:outputs) do      
-      outs = []
-      Dir.foreach(output) do |f|
-        puts File.join(output, f)
-        outs << File.join(output, f) if File.extname(f).eql?(".xml")
-      end
-      outs
-    end
+    let(:actual_xml) { {} }
     before do
-      outputs.each do |output|
-        puts output
-        actual_xml << File.open(output) { |f| Nokogiri::XML(f) }
+      expected.each do |exp|
+        actual_xml[exp] = File.open(File.join(output, exp)) { |f| Nokogiri::XML(f) }
       end
     end
     it "should produce xml that matches the expected xml for each output file" do
-      actual_xml.each_index do |index|
-        puts index
-        expect(actual_xml[index]).to be_equivalent_to(expected_xml[index])
-      end
+      expected.each { |exp| expect(actual_xml[exp]).to be_equivalent_to(expected_xml[exp]) }
     end
   end
   
@@ -77,15 +65,13 @@ module DulHydra::Scripts
         context "split" do
           let(:output) { File.join(test_dir, 'outputs') }
           let(:profile) { File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm_split.yml') }
-          let(:expected) do
-            [ File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm1.xml'),
-            File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm2.xml') ]
-          end
-          let(:expected_xml) do
-            exps = []
-            expected.each { |exp| exps << File.open(exp) { |f| Nokogiri::XML(f) } }
-            exps
-          end
+        let(:expected) { ['abcph010010010.xml', 'abcph010010020.xml'] }
+        let(:expected_xml) do
+          exps = {}
+          exps[expected[0]] = File.open(File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm1.xml')) { |f| Nokogiri::XML(f) }
+          exps[expected[1]] = File.open(File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm2.xml')) { |f| Nokogiri::XML(f) }
+          exps
+        end
           it_behaves_like "a successful split conversion"          
         end          
       end
@@ -95,13 +81,11 @@ module DulHydra::Scripts
         let(:output) { File.join(test_dir, 'outputs') }
         let(:profile) { File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm_split.yml') }
         let(:schema) { File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm2qdc.yml') }
-        let(:expected) do
-          [ File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm1_qdc.xml'),
-          File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm2_qdc.xml') ]
-        end
+        let(:expected) { ['abcph010010010.xml', 'abcph010010020.xml'] }
         let(:expected_xml) do
-          exps = []
-          expected.each { |exp| exps << File.open(exp) { |f| Nokogiri::XML(f) } }
+          exps = {}
+          exps[expected[0]] = File.open(File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm1_qdc.xml')) { |f| Nokogiri::XML(f) }
+          exps[expected[1]] = File.open(File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'contentdm2_qdc.xml')) { |f| Nokogiri::XML(f) }
           exps
         end
         it_behaves_like "a successful split conversion"          
