@@ -11,16 +11,23 @@ module DulHydra::Scripts
   
   shared_examples "a successful split conversion" do
     let(:actual_xml) { [] }
-    let(:outputs) do
+    let(:outputs) do      
       outs = []
-      Dir.foreach(output) { |f| outs << File.join(output, f) if File.extname(f).eql?(".xml") }
+      Dir.foreach(output) do |f|
+        puts File.join(output, f)
+        outs << File.join(output, f) if File.extname(f).eql?(".xml")
+      end
       outs
     end
     before do
-      outputs.each { |output| actual_xml << File.open(output) { |f| Nokogiri::XML(f) } }
+      outputs.each do |output|
+        puts output
+        actual_xml << File.open(output) { |f| Nokogiri::XML(f) }
+      end
     end
     it "should produce xml that matches the expected xml for each output file" do
       actual_xml.each_index do |index|
+        puts index
         expect(actual_xml[index]).to be_equivalent_to(expected_xml[index])
       end
     end
