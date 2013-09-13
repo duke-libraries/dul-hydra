@@ -1,12 +1,6 @@
 require 'json'
 
-class PreservationEvent < ActiveFedora::Base
-
-  before_create :assign_admin_policy
-    
-  include DulHydra::Models::Governable
-  include DulHydra::Models::AccessControllable
-  include ActiveFedora::Auditable
+class PreservationEvent < ActiveRecord::Base
 
   # Event date time
   DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
@@ -27,22 +21,14 @@ class PreservationEvent < ActiveFedora::Base
   DATASTREAM = "datastream"
   OBJECT = "object"
   
-  has_metadata :name => DulHydra::Datastreams::EVENT_METADATA, :type => DulHydra::Datastreams::PremisEventDatastream, 
-               :versionable => true, :label => "Preservation event metadata", :control_group => 'X'
-
-  belongs_to :for_object, 
-             :property => :is_preservation_event_for, 
-             :class_name => 'DulHydra::Models::HasPreservationEvents'
-
-  delegate_to :eventMetadata, [:event_date_time, :event_detail, :event_type, :event_id_type,
-                               :event_id_value, :event_outcome, :event_outcome_detail_note,
-                               :linking_object_id_type, :linking_object_id_value
-                              ], :unique => true
-
+  # delegate_to :eventMetadata, [:event_date_time, :event_detail, :event_type, :event_id_type,
+  #                              :event_id_value, :event_outcome, :event_outcome_detail_note,
+  #                              :linking_object_id_type, :linking_object_id_value
+  #                             ], :unique => true
 
   def self.fixity_check(object)
     outcome, detail = object.validate_checksums
-    pe = new(:for_object => object,
+    pe = new(:object_pid => object.pid,
              :label => "Validation of datastream checksums",
              :event_date_time => to_event_date_time,
              :event_type => FIXITY_CHECK,
@@ -64,7 +50,6 @@ class PreservationEvent < ActiveFedora::Base
   def self.fixity_check!(object)
     pe = PreservationEvent.fixity_check(object)
     pe.save
-    # pe.for_object.update_index
     pe
   end
 
@@ -85,44 +70,17 @@ class PreservationEvent < ActiveFedora::Base
     self.event_outcome == FAILURE
   end
 
-  def self.events_for(object, type)
-    PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => object.internal_uri,
-                            DulHydra::IndexFields::EVENT_TYPE => type
-                            ).order("#{DulHydra::IndexFields::EVENT_DATE_TIME} asc")
+  def for_object
+    ActiveFedora::Base.find(self.object_pid, cast: true)
   end
 
-  # Overriding to_solr here seems cleaner than using :index_as on eventMetadata OM terminology.
-  def to_solr(solr_doc=Hash.new, opts={})
-    solr_doc = super(solr_doc, opts)
-    solr_doc.merge!(DulHydra::IndexFields::EVENT_DATE_TIME => event_date_time,
-                    DulHydra::IndexFields::EVENT_TYPE => event_type,
-                    DulHydra::IndexFields::EVENT_OUTCOME => event_outcome,
-                    DulHydra::IndexFields::EVENT_OUTCOME_DETAIL_NOTE => event_outcome_detail_note,
-                    DulHydra::IndexFields::EVENT_ID_TYPE => event_id_type,
-                    DulHydra::IndexFields::EVENT_ID_VALUE => event_id_value,                    
-                    DulHydra::IndexFields::LINKING_OBJECT_ID_TYPE => linking_object_id_type,
-                    DulHydra::IndexFields::LINKING_OBJECT_ID_VALUE => linking_object_id_value,
-                    DulHydra::IndexFields::TITLE => title)
-    return solr_doc
+  def self.events_for(object, event_type)
+    PreservationEvent.where(object_pid: object.pid, event_type: event_type).order("event_date_time ASC")
   end
 
   # Return a date/time formatted as a string suitable for use as a PREMIS eventDateTime.
   def self.to_event_date_time(t=Time.now.utc)
     t.strftime(DATE_TIME_FORMAT)
-  end
-
-  def self.default_admin_policy
-    AdminPolicy.find(DulHydra::AdminPolicies::PRESERVATION_EVENTS) rescue nil
-  end
-  
-  def title
-    label || pid
-  end
-
-  private
-
-  def assign_admin_policy
-    self.admin_policy = PreservationEvent.default_admin_policy unless self.admin_policy
   end
 
 end
