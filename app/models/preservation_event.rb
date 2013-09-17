@@ -6,8 +6,6 @@ class PreservationEvent < ActiveRecord::Base
   after_initialize :set_event_id
   after_initialize :set_event_date_time
 
-  serialize :event_outcome_detail_note, JSON
-
   # Event types
   FIXITY_CHECK = "fixity check" # http://id.loc.gov/vocabulary/preservationEvents/fixityCheck
   INGESTION    = "ingestion"    # http://id.loc.gov/vocabulary/preservationEvents/ingestion
@@ -18,6 +16,10 @@ class PreservationEvent < ActiveRecord::Base
   SUCCESS = "success"
   FAILURE = "failure"
   EVENT_OUTCOMES = [SUCCESS, FAILURE]
+
+  # Fixity checks
+  VALID = "VALID"
+  INVALID = "INVALID"
   
   # Event identifier types
   UUID = "UUID"
@@ -43,11 +45,16 @@ class PreservationEvent < ActiveRecord::Base
   validate :for_object_must_exist_and_have_preservation_events
   
   def self.fixity_check(object)
-    outcome, detail = object.validate_checksums
+    outcome, results = object.validate_checksums
+    outcome_detail_note = ["Datastream checksum validation results:"]
+    results.each do |dsid, dsProfile|
+      outcome_detail_note << "%s ... %s" % [dsid, dsProfile["dsChecksumValid"] ? VALID : INVALID]
+    end
     pe = new(event_detail: "Validation of datastream checksums\nDulHydra version #{DulHydra::VERSION}",
              event_type: FIXITY_CHECK,
              event_outcome: outcome ? SUCCESS : FAILURE,
-             event_outcome_detail_note: detail)
+             event_outcome_detail_note: outcome_detail_note.join("\n")
+             )
     pe.for_object = object
     pe
   end
@@ -81,6 +88,7 @@ class PreservationEvent < ActiveRecord::Base
   end
 
   def for_object
+    # Raises ArgumentError and ActiveFedora::ObjectNotFoundError
     ActiveFedora::Base.find(self.linking_object_id_value, cast: true) if for_object?
   end
 
@@ -94,8 +102,10 @@ class PreservationEvent < ActiveRecord::Base
     if for_object?
       begin
         errors.add(:linking_object_id_value, "Object does not support preservation events") unless for_object.is_a?(DulHydra::Models::HasPreservationEvents)
-      rescue ActiveFedora::ObjectNotFoundError
-        errors.add(:linking_object_id_value, "Object not found in the repository")
+      rescue ArgumentError => e
+        errors.add(:linking_object_id_value, e.message)
+      rescue ActiveFedora::ObjectNotFoundError => e
+        errors.add(:linking_object_id_value, e.message)
       end
     end
   end
@@ -115,6 +125,24 @@ class PreservationEvent < ActiveRecord::Base
     t.strftime(DATE_TIME_FORMAT)
   end
 
+  def as_premis
+    doc = DulHydra::Metadata::PremisEvent.new
+    doc.event_type = self.event_type
+    doc.event_id_type = self.event_id_type
+    doc.event_id_value = self.event_id_value
+    doc.event_detail = self.event_detail
+    doc.linking_object_id_type = self.linking_object_id_type
+    doc.linking_object_id_value = self.linking_object_id_value
+    doc.event_outcome = self.event_outcome
+    doc.event_outcome_detail_note = self.event_outcome_detail_note
+    doc.event_date_time = PreservationEvent.to_event_date_time(self.event_date_time)
+    doc
+  end
+
+  def to_xml
+    as_premis.to_xml
+  end
+
   private
 
   def set_event_id
@@ -127,4 +155,3 @@ class PreservationEvent < ActiveRecord::Base
   end
 
 end
-

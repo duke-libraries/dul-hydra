@@ -7,15 +7,21 @@
 	  <table class="table table-condensed">
 		<tr>
 		  <th scope="row"><%= t('dul_hydra.object_nav.items.active_fedora_model') %>:</th>
-		  <td><%= @document.active_fedora_model %></td>
+		  <td>
+			<%= @object.class.to_s %>
+		  </td>
 		</tr>
 		<tr>
 		  <th scope="row"><%= t('dul_hydra.object_nav.items.id') %>:</th>
-		  <td><%= @document.id %></td>
+		  <td>
+			<%= @object.pid %>
+		  </td>
 		</tr>
 		<tr>
 		  <th scope="row"><%= t('dul_hydra.object_nav.items.identifier') %>:</th>
-		  <td><%= @document.identifier %></td>
+		  <td>
+			<%= render_object_identifier %>
+		  </td>
 		</tr>
 		<tr>
 		  <th scope="row"><%= t('dul_hydra.object_nav.items.object_state') %>:</th>
@@ -23,18 +29,18 @@
 		</tr>
 		<tr>
 		  <th scope="row"><%= t('dul_hydra.object_nav.items.object_create_date') %>:</th>
-		  <td><%= format_date @document.object_create_date %></td>
+		  <td><%= render_object_date @object.create_date %></td>
 		</tr>
 		<tr>
 		  <th scope="row"><%= t('dul_hydra.object_nav.items.object_modified_date') %>:</th>
-		  <td><%= format_date @document.object_modified_date %></td>
+		  <td><%= render_object_date @object.modified_date %></td>
 		</tr>
 	  </table>
 	</li>
 	<li class="nav-header">
 	  <%= t('dul_hydra.object_nav.headings.more_info') %>
 	</li>
-	<% if @object.has_preservation_events? -%>
+	<% if @object.has_preservation_events? && @object.preservation_events.count > 0 -%>
 	<li>
 	  <%= link_to_unless_current t('dul_hydra.object_nav.items.preservation_events'), preservation_events_path(@document.id) %>
 	</li>

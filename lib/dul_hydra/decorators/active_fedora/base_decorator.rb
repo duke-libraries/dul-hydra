@@ -28,4 +28,8 @@ ActiveFedora::Base.class_eval do
     self.class.reflect_on_association(:parent) && self.parent
   end
 
+  def safe_id
+    id.sub(/:/, "-")
+  end
+
 end

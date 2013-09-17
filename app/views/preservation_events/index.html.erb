@@ -3,29 +3,29 @@
   <i class="icon-backward"></i>
   <small><%= link_to "Return to Object View", catalog_path(@document.id), :class => "muted" %></small>
 </p>
-<% unless @documents.blank? %>
+<% unless @preservation_events.empty? %>
 <table class="table table-bordered table-condensed table-hover" id="preservation-events">
 	<thead>
 		<tr>
 			<th scope="col">Event Date</th>
 			<th scope="col">Event Type</th>
 			<th scope="col">Outcome</th>
-			<th scope="col">More Information</th>
+			<th scope="col">Detail</th>
 		</tr>
 	</thead>
 	<tbody>
-  		<% @documents.each do |document| %>
+  		<% @preservation_events.each do |pe| %>
   		<tr class="summary">
-    	 	<td><%= format_date document.event_date_time %></td>
-    	 	<td><%= document.event_type %></td>
+    	 	<td><%= format_date pe.event_date_time %></td>
+    	 	<td><%= pe.event_type %></td>
     	 	<td>
-			  <%= event_outcome_label document %>
-			  <small><%= link_to "Detail", "##{event_detail_id(document)}", "data-toggle" => "modal" %><small>
-			  <%= render partial: 'detail', locals: {document: document} %>
+			  <%= event_outcome_label pe %>
+			  <% if pe.event_outcome_detail_note.present? -%>
+			    <%= link_to content_tag(:i, "", class: "icon-zoom-in"), "##{event_outcome_detail_note_id(pe)}", "data-toggle" => "modal", title: "View event outcome detail note" %>
+			    <%= render partial: 'event_outcome_detail_note', locals: {pe: pe} %>
+			  <% end -%>
 			</td>
-			<td>
-			  <%= link_to "PREMIS Event XML", fcrepo_admin.download_object_datastream_path(document.id, "eventMetadata") %>
-			</td>
+			<td><%= simple_format(pe.event_detail, style: "margin: 0; font-size: smaller") %></td>
   		</tr>
   		<% end %>
 	</tbody>

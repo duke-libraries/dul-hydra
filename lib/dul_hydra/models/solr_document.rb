@@ -149,22 +149,22 @@ module DulHydra::Models
       JSON.parse(self[DulHydra::IndexFields::CONTENT_METADATA_PARSED].first)
     end
 
-    def event_date_time
-      get_date(DulHydra::IndexFields::EVENT_DATE_TIME)
-    end
+    # def event_date_time
+    #   get_date(DulHydra::IndexFields::EVENT_DATE_TIME)
+    # end
 
-    def event_outcome
-      get(DulHydra::IndexFields::EVENT_OUTCOME)
-    end
+    # def event_outcome
+    #   get(DulHydra::IndexFields::EVENT_OUTCOME)
+    # end
 
-    def event_type
-      get(DulHydra::IndexFields::EVENT_TYPE)
-    end
+    # def event_type
+    #   get(DulHydra::IndexFields::EVENT_TYPE)
+    # end
 
-    def parsed_event_outcome_detail_note
-      field = DulHydra::IndexFields::EVENT_OUTCOME_DETAIL_NOTE
-      event_type == PreservationEvent::FIXITY_CHECK ? get_json(field) : get(field)
-    end
+    # def parsed_event_outcome_detail_note
+    #   field = DulHydra::IndexFields::EVENT_OUTCOME_DETAIL_NOTE
+    #   event_type == PreservationEvent::FIXITY_CHECK ? get_json(field) : get(field)
+    # end
 
     private
 

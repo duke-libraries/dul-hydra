@@ -17,7 +17,7 @@ class Ability
 
   def preservation_events_permissions
     can :read, PreservationEvent do |pe|
-      pe.for_object? && test_read(pe.for_object_pid)
+      pe.for_object? && test_read(pe.for_object)
     end
   end
   

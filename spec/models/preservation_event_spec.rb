@@ -15,63 +15,63 @@ describe PreservationEvent do
     let!(:pe) { PreservationEvent.fixity_check(obj) }
     after { obj.destroy }
     it "should validate event_date_time" do
-      pe.valid?.should be_true
+      pe.should be_valid
       pe.event_date_time = nil
-      pe.valid?.should be_false
+      pe.should_not be_valid
     end
     it "should validate event_type" do
-      pe.valid?.should be_true
+      pe.should be_valid
       PreservationEvent::EVENT_TYPES.each do |t|
         pe.event_type = t
-        pe.valid?.should be_true
+        pe.should be_valid
       end
       pe.event_type = "foo"
-      pe.valid?.should be_false
+      pe.should_not be_valid
     end
     it "should validate event_outcome" do
-      pe.valid?.should be_true
+      pe.should be_valid
       PreservationEvent::EVENT_OUTCOMES.each do |o|
         pe.event_outcome = o
-        pe.valid?.should be_true
+        pe.should be_valid
       end
       pe.event_outcome = "foo"
-      pe.valid?.should be_false
+      pe.should_not be_valid
     end
     it "should validate event_id_type" do
-      pe.valid?.should be_true
+      pe.should be_valid
       PreservationEvent::EVENT_ID_TYPES.each do |t|
         pe.event_id_type = t
-        pe.valid?.should be_true
+        pe.should be_valid
       end
       pe.event_id_type = "foo"
-      pe.valid?.should be_false
+      pe.should_not be_valid
     end
     it "should validate event_id_value" do
-      pe.valid?.should be_true
+      pe.should be_valid
       pe.event_id_value = nil
-      pe.valid?.should be_false
+      pe.should_not be_valid
     end
     context "validate linking_object_id_type and linking_object_id_value" do
       it "should validate the presence of the linking_object_id_value if the linking_object_id_type is present" do
-        pe.valid?.should be_true
+        pe.should be_valid
         pe.linking_object_id_type.should_not be_nil
         pe.linking_object_id_value.should_not be_nil
         pe.linking_object_id_value = nil
-        pe.valid?.should be_false
+        pe.should_not be_valid
       end
       it "should validate the presence of the linking_object_id_type if the linking_object_id_value is present" do
-        pe.valid?.should be_true
+        pe.should be_valid
         pe.linking_object_id_value.should_not be_nil
         pe.linking_object_id_type.should_not be_nil
         pe.linking_object_id_type = nil
-        pe.valid?.should be_false
+        pe.should_not be_valid
       end
       it "should validate the existence and proper type of object referenced in the linking_object_id_value if the linking_object_id_type is 'object'" do
-        pe.valid?.should be_true
+        pe.should be_valid
         pe.linking_object_id_type.should == PreservationEvent::OBJECT
         pe.for_object.should be_kind_of(DulHydra::Models::HasPreservationEvents)
         pe.linking_object_id_value = "foo:bar"
-        pe.valid?.should be_false
+        pe.should_not be_valid
       end
     end
   end

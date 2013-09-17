@@ -10,10 +10,11 @@ module DulHydra::Batch::Models
     VERIFICATION_FAIL = "FAIL"
     
     PRESERVATION_EVENT_DETAIL = <<-EOS
-      DulHydra version #{DulHydra::VERSION}
+      %{label}
       Batch object database id: %{batch_id}
       Batch object identifier: %{identifier}
       Model: %{model}
+      DulHydra version #{DulHydra::VERSION}
     EOS
   
     def self.pid_from_identifier(identifier, batch_id)
@@ -213,26 +214,24 @@ module DulHydra::Batch::Models
     end
     
     def create_preservation_event(event_type, event_outcome, outcome_details, repository_object)
-      event_label = case event_type
-      when PreservationEvent::INGESTION
-        "Object ingestion"
-      when PreservationEvent::VALIDATION
-        "Object ingest validation"
-      end
-      event = PreservationEvent.new(:label => event_label,
-                                    :event_type => event_type,
-                                    :event_date_time => Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT),
-                                    :event_detail => event_detail,
+      event = PreservationEvent.new(:event_type => event_type,
+                                    :event_detail => event_detail(event_type),
                                     :event_outcome => event_outcome,
                                     :event_outcome_detail_note => outcome_details.join("\n"),
-                                    :linking_object_id_type => PreservationEvent::OBJECT,
-                                    :linking_object_id_value => repository_object.internal_uri,
-                                    :for_object => repository_object)
+                                    )
+      event.for_object = repository_object
       event.save
     end
     
-    def event_detail
+    def event_detail(event_type)
+      event_label = case event_type
+              when PreservationEvent::INGESTION
+                "Object ingestion"
+              when PreservationEvent::VALIDATION
+                "Object ingest validation"
+              end
       PRESERVATION_EVENT_DETAIL % {
+        :label => event_label,
         :batch_id => id,
         :identifier => identifier,
         :model => model
