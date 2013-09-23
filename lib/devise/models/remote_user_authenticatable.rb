@@ -1,13 +1,8 @@
 require 'devise/strategies/remote_user_authenticatable'
-require 'bcrypt'
 
 module Devise::Models
   module RemoteUserAuthenticatable
     extend ActiveSupport::Concern
-
-    # def active_for_authentication?
-    #   super && request.env['REMOTE_USER'].present?
-    # end
 
     module ClassMethods
 
@@ -20,7 +15,7 @@ module Devise::Models
         if !resource # auto-create
           resource = new.tap do |r|
             r.email = remote_user
-            r.password_confirmation = r.password = BCrypt::Password.create(SecureRandom.hex(16))
+            r.password_confirmation = r.password = SecureRandom.hex(16)
             r.save!
           end
         end

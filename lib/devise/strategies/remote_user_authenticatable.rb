@@ -4,12 +4,18 @@ module Devise::Strategies
   class RemoteUserAuthenticatable < Authenticatable
 
     def valid?
-      env['REMOTE_USER'].present?
+      remote_user_id.present?
     end
 
     def authenticate!
-      resource = mapping.to.find_or_create_for_remote_user_authentication(env['REMOTE_USER'])
+      resource = mapping.to.find_or_create_for_remote_user_authentication(remote_user_id)
       resource ? success!(resource) : fail
+    end
+
+    protected
+
+    def remote_user_id
+      env['REMOTE_USER']
     end
 
   end
