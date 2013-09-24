@@ -1,8 +1,9 @@
-require 'securerandom'
+require 'om'
 
-module DulHydra::Datastreams
+module DulHydra::Metadata
+  class PremisEvent
 
-  class PremisEventDatastream < ActiveFedora::OmDatastream
+    include OM::XML::Document
 
     PREMIS_VERSION = "2.2"
     PREMIS_XMLNS = "info:lc/xmlns/premis-v2"
@@ -45,19 +46,12 @@ module DulHydra::Datastreams
     def self.xml_template
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.event(:xmlns => PREMIS_XMLNS, 
-                   "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
-                   "xsi:schemaLocation" => "#{PREMIS_XMLNS} #{PREMIS_SCHEMA}",
-                  :version => PREMIS_VERSION) {
-          xml.eventDetail("DulHydra version #{DulHydra::VERSION}")
-          xml.eventIdentifier {
-            xml.eventIdentifierType(PreservationEvent::UUID)
-            xml.eventIdentifierValue(SecureRandom.uuid)
-          }
-        }
+                  "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
+                  "xsi:schemaLocation" => "#{PREMIS_XMLNS} #{PREMIS_SCHEMA}",
+                  :version => PREMIS_VERSION)
       end
-      return builder.doc
+      builder.doc
     end
 
   end
-
 end

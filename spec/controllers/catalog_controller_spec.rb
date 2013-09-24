@@ -15,7 +15,7 @@ describe CatalogController do
       it { should render_template(:partial => '_show_metadata') }
     end
     context "object is not describable" do
-      let(:object) { PreservationEvent.create }
+      let(:object) { AdminPolicy.create }
       before do
         object.read_groups = ["public"]
         object.save!

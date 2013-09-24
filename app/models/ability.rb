@@ -8,10 +8,17 @@ class Ability
     discover_permissions
     export_sets_permissions
     batches_permissions
+    preservation_events_permissions
   end
 
   def export_sets_permissions
     can :manage, ExportSet, :user_id => @current_user.id
+  end
+
+  def preservation_events_permissions
+    can :read, PreservationEvent do |pe|
+      pe.for_object? && test_read(pe.for_object)
+    end
   end
   
   def batches_permissions

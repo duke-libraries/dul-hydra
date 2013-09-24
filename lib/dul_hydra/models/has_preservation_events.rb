@@ -3,11 +3,11 @@ module DulHydra::Models
     extend ActiveSupport::Concern
 
     included do
-      has_many :preservation_events, 
-               :property => :is_preservation_event_for, 
-               :inbound => true, 
-               :class_name => 'PreservationEvent'
       before_destroy :delete_preservation_events
+    end
+
+    def preservation_events
+      PreservationEvent.events_for(self)
     end
 
     def fixity_checks
@@ -23,9 +23,9 @@ module DulHydra::Models
     end
 
     def last_fixity_check_to_solr
-      e = self.fixity_checks.to_a.last
+      e = self.fixity_checks.last
       e ? {
-        DulHydra::IndexFields::LAST_FIXITY_CHECK_ON => e.event_date_time,
+        DulHydra::IndexFields::LAST_FIXITY_CHECK_ON => PreservationEvent.to_event_date_time(e.event_date_time),
         DulHydra::IndexFields::LAST_FIXITY_CHECK_OUTCOME => e.event_outcome
       } : {}
     end
@@ -51,7 +51,7 @@ module DulHydra::Models
     protected
 
     def delete_preservation_events
-      PreservationEvent.where(DulHydra::IndexFields::IS_PRESERVATION_EVENT_FOR => internal_uri).delete_all
+      self.preservation_events.delete_all
     end
 
   end

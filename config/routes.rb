@@ -15,6 +15,8 @@ DulHydra::Application.routes.draw do
     get 'thumbnail' => 'thumbnail#show'
   end
 
+  resources :preservation_events, :only => :show
+
   resources :export_sets do
     member do
       post 'archive'

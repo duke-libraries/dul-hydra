@@ -86,12 +86,7 @@ FactoryGirl.define do
     end
       
     factory :test_content_with_fixity_check do
-      after(:create) do |c| 
-        p = c.fixity_check
-        # XXX PreservationEvents do not have default permissions
-        p.permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS]
-        p.save!
-      end 
+      after(:create) { |c| c.fixity_check! }
     end
 
     factory :test_content_thumbnail do

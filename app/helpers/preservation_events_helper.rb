@@ -1,19 +1,20 @@
 module PreservationEventsHelper
 
-  def event_outcome_label(document)
-    content_tag :span, document.event_outcome.capitalize, :class => "label label-#{document.event_outcome == PreservationEvent::SUCCESS ? 'success' : 'important'}"
+  def event_outcome_label(pe)
+    content_tag :span, pe.event_outcome.capitalize, :class => "label label-#{pe.success? ? 'success' : 'important'}"
   end
 
-  def event_detail_id(document)
-    "event-detail-#{document.safe_id}"
+  def event_outcome_detail_note_id(pe)
+    # XXX This will work for pids, maybe not be other values
+    "event-detail-#{pe.linking_object_id_value.sub(/:/, "_")}"
   end
 
-  def event_detail_partial(document)
-    "#{document.event_type.sub(/ /, "_")}_detail"
+  def event_outcome_detail_note_partial(pe)
+    "#{pe.event_type.sub(/ /, "_")}_outcome_detail_note"
   end
 
-  def render_event_detail(document)
-    render partial: event_detail_partial(document), locals: {detail: document.parsed_event_outcome_detail_note}
-  end
+  # def render_event_outcome_detail_note(pe)
+  #   render partial: event_outcome_detail_note_partial(pe), locals: {detail: pe.event_outcome_detail_note}
+  # end
 
 end
