@@ -49,6 +49,7 @@
     :oai_item_id: itemID
   http://projecthydra.org/ns/relations#:
     :is_governed_by: isGovernedBy
+    :is_attached_to: isAttachedTo
   http://id.loc.gov/vocabulary/preservationEvents#:
     :is_preservation_event_for: isPreservationEventFor
     :has_preservation_event: hasPreservationEvent
