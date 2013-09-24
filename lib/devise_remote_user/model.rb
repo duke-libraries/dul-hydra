@@ -1,4 +1,4 @@
-require 'devise/strategies/remote_user_authenticatable'
+require 'devise_remote_user/strategy'
 
 module Devise::Models
   module RemoteUserAuthenticatable

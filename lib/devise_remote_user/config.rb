@@ -11,3 +11,8 @@ module Devise
   mattr_accessor :remote_user_autocreate
   @@remote_user_autocreate = false
 end
+
+Devise.add_module(:remote_user_authenticatable,
+                  :strategy => true,
+                  :controller => :sessions,
+                  :model => 'devise_remote_user/model')
