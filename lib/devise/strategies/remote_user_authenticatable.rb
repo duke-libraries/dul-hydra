@@ -1,23 +1,20 @@
 require 'devise/strategies/authenticatable'
 
-module Devise::Strategies
-  class RemoteUserAuthenticatable < Authenticatable
+module Devise
 
-    def valid?
-      remote_user_id.present?
+  module Strategies
+    class RemoteUserAuthenticatable < Authenticatable
+
+      def valid?
+        env[Devise.remote_user_env_key].present?
+      end
+
+      def authenticate!
+        resource = mapping.to.find_for_remote_user_authentication(env)
+        resource ? success!(resource) : fail
+      end
+
     end
-
-    def authenticate!
-      resource = mapping.to.find_or_create_for_remote_user_authentication(remote_user_id)
-      resource ? success!(resource) : fail
-    end
-
-    protected
-
-    def remote_user_id
-      env['REMOTE_USER']
-    end
-
   end
 end
 

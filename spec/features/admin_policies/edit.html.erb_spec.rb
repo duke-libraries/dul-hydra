@@ -39,10 +39,4 @@ describe 'admin_policies/edit.html.erb' do
       end
     end
   end
-  context "no logged in user" do
-    before { visit edit_admin_policy_path(apo) }
-    it "should return unauthorized status" do 
-      page.driver.browser.last_response.status.should be(403)
-    end
-  end
 end

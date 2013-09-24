@@ -6,9 +6,9 @@ describe "export_sets/new.html.erb" do
   let(:object_discover) { FactoryGirl.create(:component_with_content) }
   let(:user) { FactoryGirl.create(:user) }
   before do
-    object_read.read_users = [user.email]
+    object_read.read_users = [user.username]
     object_read.save
-    object_discover.discover_users = [user.email]
+    object_discover.discover_users = [user.username]
     object_discover.save
     user.bookmarks.create(:document_id => object_read.pid)
     user.bookmarks.create(:document_id => object_discover.pid)
