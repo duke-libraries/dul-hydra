@@ -67,8 +67,16 @@ module DulHydra::Helpers
       @object.title_display rescue "#{@object.class.to_s} #{@object.pid}"
     end
 
+    def render_object_identifier
+      @object.identifier.join("<br />") rescue nil
+    end
+
+    def render_object_date(date)
+      format_date(DateTime.strptime(date, "%Y-%m-%dT%H:%M:%S.%LZ"))
+    end
+
     def render_breadcrumbs
-      render partial: 'show_breadcrumbs', locals: {breadcrumbs: document_breadcrumbs}
+      render partial: 'catalog/show_breadcrumbs', locals: {breadcrumbs: document_breadcrumbs}
     end
 
     def render_breadcrumb(crumb)
@@ -141,8 +149,11 @@ module DulHydra::Helpers
       render_label(text, label)
     end
 
-    def render_last_fixity_check_outcome
-      outcome = @document.last_fixity_check_outcome
+    def render_last_fixity_check
+      render 'catalog/show_fixity' if @object.has_preservation_events?
+    end
+
+    def render_last_fixity_check_outcome(outcome)
       return nil unless outcome
       label = outcome == "success" ? "success" : "important"
       render_label(outcome.capitalize, label)

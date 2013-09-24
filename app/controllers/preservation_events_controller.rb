@@ -1,33 +1,23 @@
-class PreservationEventsController < CatalogController
+class PreservationEventsController < ApplicationController
   
+  include Blacklight::Catalog
+
   layout 'application'
 
-  PreservationEventsController.solr_search_params_logic.delete(:exclude_unwanted_models)
-  before_filter :enforce_show_permissions, :only => :index
-
   def index
-    get_document
-    get_object
-    get_preservation_events
+    @document = get_solr_response_for_doc_id[1]
+    @object = ActiveFedora::SolrService.reify_solr_result(@document)
+    authorize! :read, @object
+    @preservation_events = @object.preservation_events
   end
 
-  protected
-
-  def configure_blacklight_for_preservation_events
-    blacklight_config.configure do |config|
-      config.sort_fields.clear
-      config.add_sort_field "#{DulHydra::IndexFields::EVENT_DATE_TIME} desc"
-      config.qt = "standard"
+  def show
+    @preservation_event = PreservationEvent.find(params[:id])
+    authorize! :read, @preservation_event
+    respond_to do |format|
+      format.html
+      format.xml
     end
-  end
-  
-  def get_preservation_events
-    configure_blacklight_for_preservation_events
-    @response, @documents = get_search_results(params, {q: preservation_events_query})
-  end
-
-  def preservation_events_query
-    @object.preservation_events.send(:construct_query)
   end
 
 end

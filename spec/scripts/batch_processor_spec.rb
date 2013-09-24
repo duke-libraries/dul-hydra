@@ -18,17 +18,17 @@ module DulHydra::Batch::Scripts
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
         batch_obj_rs = batch_obj.batch_object_relationships
         batch_obj_rs.each { |r| expect(obj.send(r.name).pid).to eq(r.object) }
-        expect(obj.preservation_events.size).to eq(3)
+        expect(obj.preservation_events.count).to eq(3)
         obj.preservation_events.each do |pe|
           expect([PreservationEvent::FIXITY_CHECK, PreservationEvent::INGESTION, PreservationEvent::VALIDATION]).to include(pe.event_type)
           expect(pe.event_outcome).to eq(PreservationEvent::SUCCESS)
           expect(pe.linking_object_id_type).to eq(PreservationEvent::OBJECT)
-          expect(pe.linking_object_id_value).to eq(obj.internal_uri)
-          expect(DateTime.strptime(pe.event_date_time, PreservationEvent::DATE_TIME_FORMAT)).to be_within(3.minutes).of(DateTime.now)
+          expect(pe.linking_object_id_value).to eq(obj.pid)
+          expect(pe.event_date_time).to be_within(3.minutes).of(DateTime.now)
           case pe.event_type
           when PreservationEvent::FIXITY_CHECK
-            expect(pe.event_outcome_detail_note).to include("\"dsChecksumValid\":true")
-            expect(pe.event_outcome_detail_note).to_not include("\"dsChecksumValid\":false")
+            expect(pe.event_outcome_detail_note).to include(PreservationEvent::VALID)
+            expect(pe.event_outcome_detail_note).to_not include(PreservationEvent::INVALID)
           when PreservationEvent::INGESTION
             expect(pe.event_detail).to include("Batch object identifier: #{batch_obj.identifier}")
           when PreservationEvent::VALIDATION

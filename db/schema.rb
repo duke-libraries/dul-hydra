@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130814175759) do
+ActiveRecord::Schema.define(:version => 20130916131318) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -109,6 +109,20 @@ ActiveRecord::Schema.define(:version => 20130814175759) do
     t.datetime "archive_updated_at"
     t.text     "pids"
     t.string   "title"
+  end
+
+  create_table "preservation_events", :force => true do |t|
+    t.datetime "event_date_time"
+    t.text     "event_detail"
+    t.string   "event_type"
+    t.string   "event_id_type"
+    t.string   "event_id_value"
+    t.string   "event_outcome"
+    t.text     "event_outcome_detail_note"
+    t.string   "linking_object_id_type"
+    t.string   "linking_object_id_value"
+    t.datetime "created_at",                :null => false
+    t.datetime "updated_at",                :null => false
   end
 
   create_table "searches", :force => true do |t|
