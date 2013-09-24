@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/duke-libraries/devise-remote-user.git
+  revision: 3258a835ff34071db3f463c758ab61cb9fdbd2d4
+  specs:
+    devise-remote-user (0.0.1)
+      devise
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -283,6 +290,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   delayed_job_active_record
   devise
+  devise-remote-user!
   factory_girl_rails (~> 4.0)
   fcrepo_admin (~> 0.6.1)
   hydra-head (~> 6.3.2)

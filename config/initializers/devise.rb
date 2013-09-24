@@ -1,4 +1,3 @@
-require 'devise_remote_user/config'
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
@@ -232,6 +231,7 @@ Devise.setup do |config|
   # config.omniauth_path_prefix = "/my_engine/users/auth"
 
   # ==> Remote user authenticatable config
+  require 'devise_remote_user'
   # Set to 'HTTP_REMOTE_USER' if behind reverse proxy
   # config.remote_user_env_key = 'REMOTE_USER'
   # Auto-create user for remote user
