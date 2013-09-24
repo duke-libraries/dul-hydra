@@ -17,10 +17,6 @@ DulHydra::Application.routes.draw do
 
   resources :preservation_events, :only => :show
 
-  # scope "preservation_events/:id" do
-  #   get 'premis' => 'preservation_events#premis'
-  # end
-
   resources :export_sets do
     member do
       post 'archive'
