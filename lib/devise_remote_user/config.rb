@@ -6,6 +6,7 @@ module Devise
   
   # request.env key for remote user email address, required for auto-creation
   mattr_accessor :remote_user_email_env_key
+  @@remote_user_email_env_key = 'mail'
 
   # Enable user auto-creation for remote user
   mattr_accessor :remote_user_autocreate

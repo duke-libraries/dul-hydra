@@ -237,6 +237,6 @@ Devise.setup do |config|
   # Auto-create user for remote user
   config.remote_user_autocreate = true
   # If auto-creation enable, must set env key for user's email address
-  config.remote_user_email_env_key = 'HTTP_SHIB_MAIL'
+  # config.remote_user_email_env_key = 'mail'
 
 end
