@@ -8,7 +8,7 @@ gem 'blacklight', '~> 4.2.1'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise'
-gem 'devise-remote-user', github: 'duke-libraries/devise-remote-user'
+gem 'devise-remote-user'
 gem 'fcrepo_admin', '~> 0.6.1'
 gem 'active-fedora', '~> 6.4.3'
 

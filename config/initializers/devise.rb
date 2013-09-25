@@ -232,11 +232,7 @@ Devise.setup do |config|
 
   # ==> Remote user authenticatable config
   require 'devise_remote_user'
-  # Set to 'HTTP_REMOTE_USER' if behind reverse proxy
-  # config.remote_user_env_key = 'REMOTE_USER'
-  # Auto-create user for remote user
   config.remote_user_autocreate = true
-  # If auto-creation enable, must set env key for user's email address
-  # config.remote_user_email_env_key = 'mail'
+  config.remote_user_attribute_map = {:email => 'mail'}
 
 end
