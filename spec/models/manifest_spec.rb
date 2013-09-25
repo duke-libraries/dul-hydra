@@ -240,7 +240,7 @@ module DulHydra::Batch::Models
       end
       context "batch" do
         context "new batch" do
-          let(:user) { User.create(:email => "username@domain") }
+          let(:user) { FactoryGirl.create(:user) }
           let(:batch_name) { "New Batch Name #{Time.now.to_s}" }
           let(:batch_description) { "New Batch Description #{Time.now.to_s}" }
           before do

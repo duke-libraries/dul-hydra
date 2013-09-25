@@ -2,7 +2,10 @@ require 'spec_helper'
 require 'helpers/user_helper'
 
 describe "catalog/show.html.erb" do
+  before { login user }
+  after { user.delete }
   context "admin policy" do
+    let(:user) { FactoryGirl.create(:user) }
     let(:apo) { FactoryGirl.create(:admin_policy) }
     after { apo.delete }
     context "display default permissions" do
@@ -18,10 +21,8 @@ describe "catalog/show.html.erb" do
     end
     context "display edit link" do
       before do
-        login user
         visit catalog_path(apo)
       end
-      after { user.delete }
       context "user has edit permissions" do
         let!(:user) { FactoryGirl.create(:editor) }
         it "should display an edit link" do

@@ -16,9 +16,9 @@ describe ExportSetsController do
     let(:object_read) { FactoryGirl.create(:test_content) }
     let(:object_discover) { FactoryGirl.create(:test_content) }
     before do
-      object_read.read_users = [user.email]
+      object_read.read_users = [user.username]
       object_read.save
-      object_discover.discover_users = [user.email]
+      object_discover.discover_users = [user.username]
       object_discover.save
       sign_in user      
     end

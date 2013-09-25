@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe CatalogController do
   render_views
+  let(:user) { FactoryGirl.create(:user) }
+  after(:all) { user.delete }
+  before(:each) { sign_in user }
+  after(:each) { sign_out user }
   context "#show" do
     subject { get :show, :id => object }
     after { object.delete }

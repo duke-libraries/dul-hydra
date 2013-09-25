@@ -1,8 +1,15 @@
 require 'spec_helper'
+require 'helpers/user_helper'
 
 describe "catalog/index.html.erb" do
+  let(:user) { FactoryGirl.create(:user) }
   let(:object) { FactoryGirl.create(:component_with_content) }
-  after { object.delete }
+  before(:each) { login user }
+  after(:each) do
+    logout user
+    object.delete
+  end
+  after(:all) { user.delete }
   context "search options" do
     before do
       object.discover_groups = ["public"]
