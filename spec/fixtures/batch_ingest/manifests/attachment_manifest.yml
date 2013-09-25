@@ -1,0 +1,15 @@
+batch:
+    name: Attachment Batch
+    description: Description of attachment batch
+basepath: placeholder
+model: Attachment
+admin_policy: duke-apo:adminPolicy
+label: Manifest Label
+datastreams:
+    - content
+    - descMetadata
+objects:
+    - identifier: att001
+      content: placeholder
+      attached_to:
+          id: id001
