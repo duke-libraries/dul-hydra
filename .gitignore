@@ -24,6 +24,9 @@
 # Environment configs
 /config/environments
 
+# Secret token
+/config/initializers/secret_token.rb
+
 # Pre-compiled assets
 /public/assets
 
