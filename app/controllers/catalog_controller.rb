@@ -1,6 +1,5 @@
 # -*- encoding : utf-8 -*-
 require 'blacklight/catalog'
-require 'dul_hydra'
 
 class CatalogController < ApplicationController  
 
