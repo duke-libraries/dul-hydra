@@ -1,0 +1,16 @@
+<% if @breadcrumbs && @breadcrumbs.size > 1 -%>
+  <% breadcrumbs = @breadcrumbs.reverse -%>
+  <ul id="show-breadcrumbs" class="breadcrumb">
+	<% breadcrumbs.each_with_index do |crumb, index| -%>
+	<% if index == breadcrumbs.size - 1 -%>
+      <li class="active">
+		<%= render_breadcrumb(crumb) %>
+	  </li> 
+	<% else -%>
+      <li>
+	    <%= link_to render_breadcrumb(crumb), object_path(crumb.id) %> <span class="divider">/</span>
+	  </li>
+	<% end -%>
+  <% end -%>
+</ul>
+<% end -%>

@@ -19,7 +19,6 @@ module DulHydra::Models
                      :type
                     ]
 
-
     included do
       has_metadata :name => DulHydra::Datastreams::DESC_METADATA, 
                    :type => ActiveFedora::QualifiedDublinCoreDatastream,
@@ -27,6 +26,10 @@ module DulHydra::Models
                    :label => "Descriptive Metadata for this object", 
                    :control_group => 'X'
       delegate_to DulHydra::Datastreams::DESC_METADATA, DC11_ELEMENTS
+    end
+
+    def descriptive_metadata_terms
+      DC11_ELEMENTS
     end
 
     module ClassMethods
