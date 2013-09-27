@@ -3,8 +3,8 @@ module DulHydra::Batch::Models
   class BatchObject < ActiveRecord::Base
     attr_accessible :batch, :batch_id, :identifier, :label, :model, :pid, :verified
     belongs_to :batch, :inverse_of => :batch_objects
-    has_many :batch_object_datastreams, :inverse_of => :batch_object
-    has_many :batch_object_relationships, :inverse_of => :batch_object
+    has_many :batch_object_datastreams, :inverse_of => :batch_object, :dependent => :destroy
+    has_many :batch_object_relationships, :inverse_of => :batch_object, :dependent => :destroy
     
     VERIFICATION_PASS = "PASS"
     VERIFICATION_FAIL = "FAIL"
