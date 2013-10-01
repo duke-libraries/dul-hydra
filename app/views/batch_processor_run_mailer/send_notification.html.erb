@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <style type="text/css">
+th { text-align: left; }
+td { text-align: right; }
+    </style>
+  </head>
+  <body>
+    <h1><%= @title %></h1>
+	<p>
+	  Host: <%= @host %><br />
+	  DulHydra version: <%= @batch_run.version %>
+	</p>
+	<p>
+	  Batch Id: <%= @batch_run.batch.id %><br />
+	  Batch Name: <%= @batch_run.batch.name %><br />
+	  Batch Run Id: <%= @batch_run.id %><br />
+	  Started at: <%= @batch_run.start %><br />
+	  Stopped at: <%= @batch_run.stop %><br />
+	  Status: <%= @batch_run.status %><br />
+	  Outcome: <%= @batch_run.outcome %>
+	</p>
+	<p>
+	  Objects in batch: <%= @batch_run.total %><br />
+	  Successfully processed: <%= @batch_run.success %><br />
+	  Processing failures: <%= @batch_run.failure %><br />
+	  Unprocessed: <%= @batch_run.total - @batch_run.success - @batch_run.failure %>
+	</p>
+	<p>
+	  See attachment for details of batch run.
+	</p>
+  </body>
+</html>
