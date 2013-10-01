@@ -6,9 +6,17 @@ module DulHydra::Batch::Models
     
     context "destroy" do
     
-      let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
-      before { batch.destroy }
+      let(:batch) { FactoryGirl.create(:batch_with_ingest_batch_objects) }
+      before do
+        # In the context of this test, before we destroy the batch, we delete the
+        # related repository objects created by the factory that created the batch.
+        # AdminPolicy.all.each { |obj| obj.destroy }
+        # TestParent.all.each { |obj| obj.destroy }
+        batch.destroy
+      end
       after do
+        # The following clean-up steps are needed only to cover the case that the test fails;
+        # i.e., that batch.destroy does not successfully destroy itself and all related batch objects
         DulHydra::Batch::Models::BatchRun.all.each { |obj| obj.destroy }
         DulHydra::Batch::Models::BatchObjectRelationship.all.each { |obj| obj.destroy }
         DulHydra::Batch::Models::BatchObjectDatastream.all.each { |obj| obj.destroy }
