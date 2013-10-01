@@ -43,6 +43,7 @@ module DulHydra::Batch::Scripts
         close_batch_run
       end
       save_logfile
+      send_notification if @batch.user && @batch.user.email
     end
     
     private
@@ -120,6 +121,10 @@ module DulHydra::Batch::Scripts
         @logfilename = outputter.filename if outputter.respond_to?(:filename)
       end
       @batch_run.update_attributes({:logfile => File.new(@logfilename)}) if @logfilename
+    end
+    
+    def send_notification
+      BatchProcessorRunMailer.send_notification(@batch_run, @batch.user.email).deliver!
     end
     
   end
