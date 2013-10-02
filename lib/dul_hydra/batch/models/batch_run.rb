@@ -10,6 +10,7 @@ module DulHydra::Batch::Models
     
     STATUS_RUNNING = "RUNNING"
     STATUS_FINISHED = "FINISHED"
+    STATUS_INTERRUPTED = "INTERRUPTED"
   end
 
 end

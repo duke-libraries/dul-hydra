@@ -43,6 +43,10 @@ FactoryGirl.define do
     has_identifier
     has_label
     
+    factory :basic_ingest_batch_object do
+      has_model
+    end
+    
     factory :generic_ingest_batch_object do
       has_model
       has_admin_policy
