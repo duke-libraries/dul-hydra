@@ -16,12 +16,6 @@ FactoryGirl.define do
         payload_type DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
       end
 
-      factory :batch_object_add_digitization_guide_datastream do
-        name DulHydra::Datastreams::DIGITIZATION_GUIDE
-        payload File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'metadata.xls')
-        payload_type DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-      end
-
       factory :batch_object_add_content_datastream do
         name DulHydra::Datastreams::CONTENT
         payload File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'id001.tif')
