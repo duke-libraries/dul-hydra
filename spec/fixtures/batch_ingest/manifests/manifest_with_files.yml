@@ -2,28 +2,19 @@ batch:
     name: Test Batch
     description: Description of test batch
 basepath: placeholder
-model: TestFileDatastreams
+model: TestContent
 admin_policy: duke-apo:adminPolicy
 label: Manifest Label
 checksum:
     location: spec/fixtures/batch_ingest/miscellaneous/checksums.xml
 datastreams:
     - content
-    - contentdm
     - descMetadata
-    - digitizationGuide
-    - dpcMetadata
-    - fmpExport
-    - marcXML
-    - tripodMets
 content:
     extension: .tif
     location: spec/fixtures/batch_ingest/miscellaneous/
 objects:
     - identifier: id001
-      contentdm: metadata.xml
-      digitizationGuide: metadata.xls
-      marcXML: metadata.xml
       parent:
         id: id0
     

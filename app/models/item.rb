@@ -1,9 +1,6 @@
 class Item < DulHydra::Models::Base
   
-  include DulHydra::Models::HasContentdm
-  include DulHydra::Models::HasMarcXML
   include DulHydra::Models::HasContentMetadata
-  include DulHydra::Models::HasTripodMets
   include DulHydra::Models::HasChildren
 
   has_many :children, :property => :is_part_of, :inbound => true, :class_name => 'Component'
