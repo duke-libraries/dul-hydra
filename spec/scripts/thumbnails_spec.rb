@@ -29,6 +29,7 @@ module DulHydra::Scripts
         let(:items) { collection.children }
         context "contentMetadata" do
           let(:item) { items[0] }
+          let(:children) { item.children }
           before do
             contentMetadata = <<-EOD
 <?xml version="1.0"?>
@@ -36,10 +37,10 @@ module DulHydra::Scripts
   <fileSec>
     <fileGrp ID="GRP01" USE="Master Image">
       <file ID="FILE001">
-        <FLocat LOCTYPE="URL" xlink:href="#{item.children[1].pid}/content"/>
+        <FLocat LOCTYPE="URL" xlink:href="#{children[1].pid}/content"/>
       </file>
       <file ID="FILE002">
-        <FLocat LOCTYPE="URL" xlink:href="#{item.children[0].pid}/content"/>
+        <FLocat LOCTYPE="URL" xlink:href="#{children[0].pid}/content"/>
       </file>
     </fileGrp>
   </fileSec>
@@ -62,7 +63,7 @@ module DulHydra::Scripts
           end
           it "should populate the thumbnail datastream from the first PID in contentMetadata" do
             expect(item.datastreams["thumbnail"].content).to_not be_nil
-            expect(item.datastreams["thumbnail"].checksum).to eq(item.children[1].datastreams["thumbnail"].checksum)
+            expect(item.datastreams["thumbnail"].checksum).to eq(children[1].datastreams["thumbnail"].checksum)
           end
         end
         context "no contentMetadata" do
