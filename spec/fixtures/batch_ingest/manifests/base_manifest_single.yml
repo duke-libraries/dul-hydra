@@ -4,7 +4,6 @@ model: TestFileDatastreams
 admin_policy: duke-apo:adminPolicy
 label: Manifest Label
 metadata:
-    - contentdm
     - descmetadata
 objects:
     - identifier: id005
