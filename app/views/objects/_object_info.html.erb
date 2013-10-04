@@ -17,12 +17,14 @@
 			<%= @object.pid %>
 		  </td>
 		</tr>
+		<% if @object.respond_to?(:identifier) && @object.identifier.present? -%>
 		<tr>
 		  <th scope="row"><%= t('dul_hydra.object_nav.items.identifier') %>:</th>
 		  <td>
 			<%= render_object_identifier %>
 		  </td>
 		</tr>
+		<% end -%>
 		<tr>
 		  <th scope="row"><%= t('dul_hydra.object_nav.items.object_state') %>:</th>
 		  <td><%= render_object_state %></td>
@@ -40,11 +42,6 @@
 	<li class="nav-header">
 	  <%= t('dul_hydra.object_nav.headings.more_info') %>
 	</li>
-	<% if @object.has_preservation_events? && @object.preservation_events.count > 0 -%>
-	<li>
-	  <%= link_to_unless_current t('dul_hydra.object_nav.items.preservation_events'), preservation_events_path(@document.id) %>
-	</li>
-	<% end -%>
 	<li>
 	  <%= link_to t('dul_hydra.object_nav.items.fcrepo_admin'), fcrepo_admin.object_path(@document.id) %> 
 	</li>

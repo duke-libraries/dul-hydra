@@ -65,95 +65,72 @@ module ApplicationHelper
   end
 
   def render_object_identifier
-    @object.identifier.join("<br />") rescue nil
+    if @object.identifier.respond_to?(:join)
+      @object.identifier.join("<br />")
+    else
+      @object.identifier
+    end
   end
 
   def render_object_date(date)
     format_date(DateTime.strptime(date, "%Y-%m-%dT%H:%M:%S.%LZ"))
   end
 
-  def render_breadcrumbs
-    render partial: 'catalog/show_breadcrumbs', locals: {breadcrumbs: document_breadcrumbs}
-  end
-
   def render_breadcrumb(crumb)
     truncate crumb.title, separator: ' '
   end
 
-  def render_children
-    title = case
-            when @document.active_fedora_model == "Collection"
-              "Items"
-            when @document.active_fedora_model == "Item"
-              "Components"
-            end
-    render partial: 'show_children', locals: {title: title}
-  end
-
-  def show_tabs
-    return @show_tabs if @show_tabs
-    @show_tabs = []
-    @show_tabs << {
-      label: @documents.blank? ? "Content" : @documents.first.active_fedora_model.pluralize,
-      partial: @documents.blank? ? 'show_content' : 'show_children',
-      id: 'tab-default', 
-      active: true
-    }
-    @show_tabs << {label: 'Metadata', partial: 'show_metadata', id: 'tab-metadata'} if @object.describable?
-    @show_tabs << {label: 'Collection Info', partial: 'show_collection_info', id: 'tab-collection-info'} if @object.is_a?(Collection)
-    @show_tabs << {label: 'Permissions', partial: 'show_permissions', id: 'tab-permissions'}
-    @show_tabs
-  end
-
-  def render_show_tab(tab)
-    opts = tab[:active] ? {class: "active"} : {}
-    content_tag :li, opts do
-      link_to tab[:label], "#" + tab[:id], "data-toggle" => "tab" 
+  def render_tab(tab, active = false)
+    content_tag(:li, active ? {class: "active"} : {}) do
+      link_to(tab.label, "##{tab.css_id}", "data-toggle" => "tab")
     end
   end
 
-  def render_show_tab_content(tab)
-    css_class = tab[:active] ? "tab-pane active" : "tab-pane"
-    content_tag :div, class: css_class, id: tab[:id] do
-      render(tab[:partial])
+  def render_tabs
+    return if @tabs.blank?
+    output = ""
+    @tabs.each_with_index do |tab, index|
+      output << render_tab(tab, index == 0 ? true : false)
+    end
+    output.html_safe
+  end
+
+  def render_tab_content(tab, active = false)
+    css_class = active ? "tab-pane active" : "tab-pane"
+    content_tag :div, class: css_class, id: tab.css_id do
+      render partial: tab.partial, locals: {tab: tab}
     end
   end
 
-  def metadata_fields
-    DulHydra.metadata_fields
-  end
-
-  def metadata_field_values(field)
-    @object.send(field)
-  end
-
-  def metadata_field_label(field)
-    field.to_s.capitalize
+  def render_tabs_content
+    return if @tabs.blank?
+    output = ""
+    @tabs.each_with_index do |tab, index|
+      output << render_tab_content(tab, index == 0 ? true : false)
+    end
+    output.html_safe
   end
 
   def render_object_state
     case
     when @object.state == 'A'
-      text = "Active"
-      label = "info"
+      render_label "Active", "info"
     when @object.state == 'I'
-      text = "Inactive"
-      label = "warning"
+      render_label "Inactive", "warning"
     when @object.state == 'D'
-      text = "Deleted"
-      label = "important"
+      render_label "Deleted", "important"
     end
-    render_label(text, label)
   end
 
   def render_last_fixity_check
-    render 'catalog/show_fixity' if @object.has_preservation_events?
+    render 'fixity' if @object.has_preservation_events?
   end
 
   def render_last_fixity_check_outcome(outcome)
-    return nil unless outcome
-    label = outcome == "success" ? "success" : "important"
-    render_label(outcome.capitalize, label)
+    if outcome.present?
+      label = outcome == "success" ? "success" : "important"
+      render_label outcome.capitalize, label
+    end
   end
 
   def render_content_size(document = @document)
@@ -169,7 +146,7 @@ module ApplicationHelper
     label = args.fetch(:label, "Download")
     css_class = args.fetch(:css_class, "")
     css_id = args.fetch(:css_id, "download-#{document.safe_id}")
-    link_to label, download_path(document.id), :class => css_class, :id => css_id
+    link_to label, download_object_path(document.id), :class => css_class, :id => css_id
   end
   
   def render_download_icon(args = {})
@@ -178,13 +155,13 @@ module ApplicationHelper
   end
 
   def render_thumbnail(document_or_object)
-    src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object.id) : default_thumbnail
+    src = document_or_object.has_thumbnail? ? thumbnail_object_path(document_or_object.id) : default_thumbnail
     image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
   end
 
   def render_index_thumbnail(document)
     if can? :read, document
-      link_to render_thumbnail(document), catalog_path(document.id)
+      link_to render_thumbnail(document), object_path(document.id)
     else
       render_thumbnail(document)
     end
@@ -192,7 +169,7 @@ module ApplicationHelper
 
   def render_index_content(document)
     if can? :read, document
-      render partial: 'index_download', locals: {document: document}
+      render partial: 'catalog/index_download', locals: {document: document}
     else
       render_content_type_and_size document
     end
@@ -230,25 +207,10 @@ module ApplicationHelper
     content_tag :span, pe.event_outcome.capitalize, :class => "label label-#{pe.success? ? 'success' : 'important'}"
   end
 
-  def event_outcome_detail_note_id(pe)
-    # XXX This will work for pids, maybe not be other values
-    "event-detail-#{pe.linking_object_id_value.sub(/:/, "_")}"
-  end
-
-  def event_outcome_detail_note_partial(pe)
-    "#{pe.event_type.sub(/ /, "_")}_outcome_detail_note"
-  end
-
   private
 
   def render_label(text, label)
     content_tag :span, text, :class => "label label-#{label}"
-  end
-
-  def document_breadcrumbs(doc = @document, breadcrumbs = [])
-    breadcrumbs << doc
-    document_breadcrumbs(get_solr_response_for_doc_id(doc.parent_pid)[1], breadcrumbs) if doc.has_parent?
-    breadcrumbs
   end
 
   def default_thumbnail

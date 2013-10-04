@@ -15,6 +15,7 @@ en:
         metadata: 'Metadata'
         preservation_events: 'Preservation Events'
         fcrepo_admin: 'Fcrepo View'
+        collection_report: 'Collection Report'
         last_fixity_check_on: 'Checked'
         last_fixity_check_outcome: 'Outcome'
     field_labels:

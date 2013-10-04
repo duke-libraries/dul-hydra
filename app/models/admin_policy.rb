@@ -16,6 +16,10 @@ class AdminPolicy < Hydra::AdminPolicy
     "#{APO_NAMESPACE}:#{suffix}"
   end
 
+  def descriptive_metadata_terms
+    [:title, :description]
+  end
+
   #
   # Load admin policy objects from YAML file
   #

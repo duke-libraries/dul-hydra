@@ -135,4 +135,29 @@ describe PreservationEvent do
     end
   end
 
+  describe ".events_for" do
+    let(:obj) { FactoryGirl.create(:component_with_content) }
+    let(:pe) { obj.fixity_check! }
+    after { obj.destroy }
+    context "object_or_pid" do
+      it "should return preservation events associated with that object" do
+        PreservationEvent.events_for(obj).should include(pe)
+        PreservationEvent.events_for(obj.pid).should include(pe)
+      end
+    end
+    context "filtered by event type" do
+      it "should return only preservation events of that type associated with the object" do
+        PreservationEvent.events_for(obj, PreservationEvent::FIXITY_CHECK).should include(pe)
+        PreservationEvent.events_for(obj, PreservationEvent::INGESTION).should_not include(pe)
+        PreservationEvent.events_for(obj, PreservationEvent::VALIDATION).should_not include(pe)
+      end
+    end
+    context "invalid paramaters" do
+      it "should raise a TypeError exception" do
+        expect { PreservationEvent.events_for(1) }.to raise_error(TypeError)
+        expect { PreservationEvent.events_for(obj, "foo") }.to raise_error(TypeError)
+      end
+    end
+  end
+
 end
