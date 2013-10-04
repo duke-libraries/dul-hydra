@@ -1,9 +1,0 @@
---- !map:HashWithIndifferentAccess
-basepath: placeholder
-model: TestFileDatastreams
-admin_policy: duke-apo:adminPolicy
-label: Manifest Label
-metadata:
-    - descmetadata
-objects:
-    - identifier: id005
