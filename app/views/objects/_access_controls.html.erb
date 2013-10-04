@@ -1,3 +1,4 @@
+<h4>Access Controls</h4>
 <table class="table" style="width:auto">
   <thead>
 	<tr>
@@ -6,15 +7,14 @@
 	</tr>
   </thead>
   <tbody>
-	<% effective_permissions.each do |perm| %>
+	<% permissions.each do |perm| %>
 	<tr>
 	  <td>
 		<i class="icon-user"></i><% if perm[:type] == :group %><i class="icon-user"></i><% end %>
 		<%= perm[:name] %>
 	  </td>
 	  <td>
-		<%= perm[:access] %>
-		<% if perm[:inherited] %>(inherited)<% end %>
+		<%= perm[:access] %> <% if perm[:inherited] %>(inherited)<% end %>
 	  </td>
 	</tr>
 	<% end %>

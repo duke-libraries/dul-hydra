@@ -1,0 +1,6 @@
+<p class="alert">
+  These settings are inherited by objects governed by this policy. 
+  They do not apply to this admin policy object itself.
+</p>
+<%= render partial: 'access_controls', locals: {permissions: @object.default_permissions} %>
+<%= render partial: 'license', locals: {license: @object.defaultRights.license, inherited: false} %>

@@ -1,0 +1,12 @@
+<table class="table">
+  <% @object.descriptive_metadata_terms.each do |term| %>
+    <% label = term.to_s.titleize %>
+    <% if @object.class.delegates[term][:multiple] %>
+      <% @object.send(term).each do |value| %>
+        <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: value} %>
+      <% end %>
+    <% else %>
+      <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: @object.send(term)} %>
+    <% end %>
+  <% end %>
+</table>

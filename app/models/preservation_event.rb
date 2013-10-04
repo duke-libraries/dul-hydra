@@ -33,6 +33,8 @@ class PreservationEvent < ActiveRecord::Base
   OBJECT = "object"
   LINKING_OBJECT_ID_TYPES = [DATASTREAM, OBJECT]
 
+  DEFAULT_SORT_ORDER = "event_date_time ASC"
+
   # Validation is based on PREMIS mandatory elements and controlled vocabulary values 
   # used in DulHydra.
   validates :event_date_time, presence: true
@@ -110,13 +112,21 @@ class PreservationEvent < ActiveRecord::Base
     end
   end
 
-  def self.events_for(object, event_type=nil)
+  def self.events_for(object_or_pid, event_type=nil)
+    raise TypeError, 'Invalid event type' unless event_type.nil? || EVENT_TYPES.include?(event_type)
+    if object_or_pid.is_a?(DulHydra::Models::HasPreservationEvents)
+      pid = object_or_pid.pid
+    elsif object_or_pid.is_a?(String)
+      pid = object_or_pid
+    else
+      raise TypeError, "First argument must be a DulHydra::Models::HasPreservationEvents or a PID string."
+    end
     params = {
       linking_object_id_type: OBJECT,
-      linking_object_id_value: object.pid
+      linking_object_id_value: pid
       }
-    params[:event_type] = event_type if event_type
-    PreservationEvent.where(params).order("event_date_time ASC")
+    params[:event_type] = event_type unless event_type.nil?
+    PreservationEvent.where(params).order(DEFAULT_SORT_ORDER)
   end
 
   # Return a date/time formatted as a string suitable for use as a PREMIS eventDateTime.

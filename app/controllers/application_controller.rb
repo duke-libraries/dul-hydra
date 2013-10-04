@@ -12,8 +12,6 @@ class ApplicationController < ActionController::Base
     render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
   end
 
-  layout 'blacklight'
-
   protect_from_forgery
 
   def current_ability
@@ -29,6 +27,31 @@ class ApplicationController < ActionController::Base
       unwanted << "-#{ActiveFedora::SolrService.solr_name(:has_model, :symbol)}:\"info:fedora/afmodel:#{model}\""
     end
     solr_parameters[:fq] << "(#{unwanted.join(' AND ')})"
+  end
+
+  def configure_tabs(*tabs)
+    @tabs = Tabs.new(self, *tabs)
+  end
+
+  Tab = Struct.new(:label, :id, :href) do
+    def css_id
+      "tab_#{id}"
+    end
+    def partial      
+      href ? 'tab_ajax_content' : id
+    end
+  end
+
+  class Tabs
+    include Enumerable
+
+    def initialize(controller, *tab_symbols)
+      @tabs = tab_symbols.collect {|t| controller.send("tab_#{t}") }.reject { |t| t.blank? }
+    end
+
+    def each
+      @tabs.each { |t| yield t }
+    end
   end
   
   private

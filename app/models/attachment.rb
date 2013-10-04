@@ -4,6 +4,6 @@ class Attachment < DulHydra::Models::Base
   
   belongs_to :attached_to, 
              :property => :is_attached_to, 
-             :class_name => 'DulHydra::Models::HasAttachments'
+             :class_name => 'ActiveFedora::Base'
   
 end
