@@ -4,7 +4,7 @@ en:
       headings:
         object_info: 'About This Object'
         more_info: 'More Information'
-        fixity: 'Fixity'
+        fixity: 'Last Fixity Check'
       items:
         id: 'PID'
         active_fedora_model: 'Type'

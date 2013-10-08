@@ -1,0 +1,14 @@
+<ul class="unstyled">
+  <li>
+	<%= render_document_model_and_id document %>
+  </li>
+  <% if document.identifier -%>
+    <li>
+  	  <small><%= document.identifier %></small>
+    </li>
+  <% end -%>
+  <% if document.id == params[:id] -%>
+    <%= render_document_summary_association document %>
+  <% end -%>
+  <%= render partial: 'document_summary_content', locals: {document: document} %>
+</ul>
