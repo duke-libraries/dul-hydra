@@ -10,7 +10,7 @@ DulHydra::Application.routes.draw do
 
   resources :objects, :only => :show do
     member do
-      get 'attachments'
+      # get 'attachments'
       get 'collection'
       get 'download' => 'downloads#show'
       get 'preservation_events'

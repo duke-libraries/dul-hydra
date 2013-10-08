@@ -12,8 +12,8 @@ class ObjectsController < ApplicationController
     load_document
     load_object
     configure_blacklight_for_related_objects
-    #configure_breadcrumbs
     load_children
+    load_attachments
     configure_tabs :children, :metadata, :default_permissions, :permissions, :preservation_events, :attachments
   end
 
@@ -61,7 +61,7 @@ class ObjectsController < ApplicationController
   def load_children
     if @object.has_children?
       @children = SolrResult.new(*get_search_results(params, {q: @object.children_query}))
-      # For compatibility with Blacklight partials and helpers
+      # For compatibility with Blacklight partials and helpers that paginate results
       @response = @children.response
       @documents = @children.documents
       @partial_path_templates = ["catalog/index_default"]
@@ -72,8 +72,8 @@ class ObjectsController < ApplicationController
     if @object.has_attachments?
       @attachments = SolrResult.new(*get_search_results(params, {q: @object.attachments.send(:construct_query)}))
       # For compatibility with Blacklight partials and helpers
-      @response = @attachments.response
-      @documents = @attachments.documents
+      #@response = @attachments.response
+      #@documents = @attachments.documents
       @partial_path_templates = ["catalog/index_default"]
     end
   end
@@ -148,8 +148,8 @@ class ObjectsController < ApplicationController
   end
 
   def tab_attachments
-    if @object.has_attachments? && @object.attachments.size > 0
-      Tab.new("Attachments", "attachments", attachments_object_path(@object))
+    if @attachments && @attachments.response.total > 0
+      Tab.new("Attachments", "attachments")
     end
   end
 
