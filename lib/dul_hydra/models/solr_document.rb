@@ -49,11 +49,11 @@ module DulHydra::Models
     end
 
     def has_datastream?(dsID)
-      !datastreams[dsID].blank?
+      datastreams[dsID].present?
     end
 
     def has_admin_policy?
-      !admin_policy_uri.blank?
+      admin_policy_uri.present?
     end
 
     def admin_policy_uri
@@ -66,38 +66,37 @@ module DulHydra::Models
     end
 
     def has_children?
-      # XXX We should come up with something better
-      ["Collection", "Item"].include?(active_fedora_model)
+      ActiveFedora::SolrService.class_from_solr_document(self).reflect_on_association(:children).present?
     end
 
-    def has_parent?
-      !parent_uri.blank?
-    end
+    # def has_parent?
+    #   parent_uri.present?
+    # end
 
-    def parent_uri
-      get(parent_index_field)
-    end
+    # def parent_uri
+    #   get(parent_index_field)
+    # end
 
-    def parent_pid
-      ActiveFedora::Base.pids_from_uris(parent_uri) if has_parent?
-    end
+    # def parent_pid
+    #   @parent_pid ||= ActiveFedora::Base.pids_from_uris(parent_uri) if has_parent?
+    # end
 
-    # Field name for parent PID on the child index document
-    def parent_index_field
-      case
-      when active_fedora_model == "Component"
-        DulHydra::IndexFields::IS_PART_OF
-      when active_fedora_model == "Item"
-        DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
-      end
-    end
+    # # Field name for parent PID on the child index document
+    # def parent_index_field
+    #   case active_fedora_model
+    #   when "Component"
+    #     DulHydra::IndexFields::IS_PART_OF
+    #   when "Item"
+    #     DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
+    #   end
+    # end
 
     def label
       object_profile["objLabel"]
     end
 
     def title
-      get(DulHydra::IndexFields::TITLE) || label || "#{active_fedora_model} #{id}"
+      get(DulHydra::IndexFields::TITLE)
     end
 
     def identifier
@@ -149,6 +148,10 @@ module DulHydra::Models
       JSON.parse(self[DulHydra::IndexFields::CONTENT_METADATA_PARSED].first)
     end
 
+    def association(name)
+      get_pid(ActiveFedora::SolrService.solr_name(name, :symbol))
+    end
+
     private
 
     def targets_query
@@ -169,6 +172,10 @@ module DulHydra::Models
 
     def parse_date(date)
       Time.parse(date).localtime if date
+    end
+
+    def get_pid(field)
+      ActiveFedora::Base.pids_from_uris(get(field))
     end
 
   end
