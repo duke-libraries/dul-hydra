@@ -5,6 +5,8 @@ module BatchesHelper
       link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
     elsif batch.batch_runs.last.status == DulHydra::Batch::Models::BatchRun::STATUS_FINISHED
       link_to(I18n.t('batch.web.action_names.reprocezz'), procezz_batch_path(batch))
+    elsif batch.batch_runs.last.status == DulHydra::Batch::Models::BatchRun::STATUS_INTERRUPTED
+      link_to(I18n.t('batch.web.action_names.reprocezz'), procezz_batch_path(batch))
     else
       DulHydra::Batch::Models::BatchRun::STATUS_RUNNING
     end
