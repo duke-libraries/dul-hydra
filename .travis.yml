@@ -10,6 +10,7 @@ before_script:
   - "cp config/role_map_test.yml.sample config/role_map_test.yml"
   - "cp config/solr.yml.sample config/solr.yml"
   - "cp config/fedora.yml.sample config/fedora.yml"
+  - "cp config/environments/test.rb.sample config/environments/test.rb"
   - "rake db:migrate"
   - "rake db:test:prepare"
   - "rake jetty:clean"
