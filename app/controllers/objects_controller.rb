@@ -6,13 +6,15 @@ class ObjectsController < ApplicationController
 
   before_filter :enforce_show_permissions
 
+  helper_method :get_solr_response_for_field_values
+
   def show
     load_document
     load_object
     configure_blacklight_for_related_objects
-    configure_breadcrumbs
+    #configure_breadcrumbs
     load_children
-    configure_tabs :content, :children, :metadata, :default_permissions, :permissions, :preservation_events, :attachments
+    configure_tabs :children, :metadata, :default_permissions, :permissions, :preservation_events, :attachments
   end
 
   # Intended for tab content loaded via ajax

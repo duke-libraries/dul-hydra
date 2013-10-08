@@ -122,11 +122,8 @@ module ApplicationHelper
     end
   end
 
-  def render_last_fixity_check
-    render 'fixity' if @object.has_preservation_events?
-  end
-
-  def render_last_fixity_check_outcome(outcome)
+  def render_last_fixity_check_outcome
+    outcome = @document.last_fixity_check_outcome
     if outcome.present?
       label = outcome == "success" ? "success" : "important"
       render_label outcome.capitalize, label
@@ -154,24 +151,48 @@ module ApplicationHelper
     render_download_link args.merge(:label => label)
   end
 
-  def render_thumbnail(document_or_object)
-    src = document_or_object.has_thumbnail? ? thumbnail_object_path(document_or_object.id) : default_thumbnail
-    image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
-  end
-
-  def render_index_thumbnail(document)
-    if can? :read, document
-      link_to render_thumbnail(document), object_path(document.id)
+  def render_document_thumbnail(document = @document, linked = false)
+    src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail
+    thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
+    if linked && can?(:read, document)
+      link_to thumbnail, object_path(document)
     else
-      render_thumbnail(document)
+      thumbnail
     end
   end
 
-  def render_index_content(document)
-    if can? :read, document
-      render partial: 'catalog/index_download', locals: {document: document}
+  def render_document_summary(document = @document)
+    render partial: 'document_summary', locals: {document: document}
+  end
+
+  def render_document_summary_association(document)
+    association, label = case document.active_fedora_model
+                         when "Attachment"
+                           [:is_attached_to, "Attached to"]
+                         when "Item"
+                           [:is_member_of_collection, "Member of"]
+                         when "Component"
+                           [:is_part_of, "Part of"]
+                         end
+    if association && label
+      associated_doc = get_associated_document(document, association)
+      if associated_doc
+        render partial: 'document_summary_association', locals: {label: label, document: associated_doc}
+      end
+    end
+  end
+
+  def get_associated_document(document, association)
+    associated_pid = document.association(association)
+    get_solr_response_for_field_values(:id, associated_pid)[1].first if associated_pid
+  end
+
+  def link_to_associated(document_or_object, label = nil)
+    label ||= document_or_object.title rescue document_or_object.id
+    if can? :read, document_or_object
+      link_to label, object_path(document_or_object.id)
     else
-      render_content_type_and_size document
+      label
     end
   end
 
@@ -205,6 +226,10 @@ module ApplicationHelper
 
   def event_outcome_label(pe)
     content_tag :span, pe.event_outcome.capitalize, :class => "label label-#{pe.success? ? 'success' : 'important'}"
+  end
+
+  def render_document_model_and_id(document = @document)
+    "#{document.active_fedora_model} #{document.id}"
   end
 
   private

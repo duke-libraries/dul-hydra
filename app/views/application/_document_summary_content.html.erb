@@ -1,0 +1,10 @@
+<% if document.has_content? -%>
+  <li>
+	<% if can? :read, document -%>
+	  <small><%= render_download_link document: document, label: render_content_type_and_size(document) %></small>
+	  <%= render_download_icon document: document %>
+	<% else -%>
+	  <small><%= render_content_type_and_size document %></small>
+	<% end -%>
+  </li>
+<% end -%>

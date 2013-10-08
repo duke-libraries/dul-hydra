@@ -1,15 +1,13 @@
 <% content_for :main_content do %>
 <div class="span9">
-  <%= render 'breadcrumbs' %>
   <div id="document" class="<%= render_document_class %>">
-	<div class="row" style="min-height:100px">
-	  <div class="span7">
-		<h3><%= render_object_title %></h3>
-	  </div>
+	<h3><%= @document.title %></h3>
+	<div class="row" style="margin-bottom:1em">
 	  <div class="span2">
-		<div class="pull-right">
-		  <%= render_thumbnail @object %>
-		</div>
+		<%= render_document_thumbnail %>
+	  </div>
+	  <div class="span7">
+		<%= render_document_summary %>
 	  </div>
 	</div>
 	<div class="document">

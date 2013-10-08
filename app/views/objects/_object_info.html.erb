@@ -1,43 +1,27 @@
 <div class="well well-small">
   <ul class="nav nav-list">
 	<li class="nav-header">
-	  <%= t('dul_hydra.object_nav.headings.object_info') %>
+	  Created
 	</li>
 	<li>
-	  <table class="table table-condensed">
-		<tr>
-		  <th scope="row"><%= t('dul_hydra.object_nav.items.active_fedora_model') %>:</th>
-		  <td>
-			<%= @object.class.to_s %>
-		  </td>
-		</tr>
-		<tr>
-		  <th scope="row"><%= t('dul_hydra.object_nav.items.id') %>:</th>
-		  <td>
-			<%= @object.pid %>
-		  </td>
-		</tr>
-		<% if @object.respond_to?(:identifier) && @object.identifier.present? -%>
-		<tr>
-		  <th scope="row"><%= t('dul_hydra.object_nav.items.identifier') %>:</th>
-		  <td>
-			<%= render_object_identifier %>
-		  </td>
-		</tr>
-		<% end -%>
-		<tr>
-		  <th scope="row"><%= t('dul_hydra.object_nav.items.object_state') %>:</th>
-		  <td><%= render_object_state %></td>
-		</tr>
-		<tr>
-		  <th scope="row"><%= t('dul_hydra.object_nav.items.object_create_date') %>:</th>
-		  <td><%= render_object_date @object.create_date %></td>
-		</tr>
-		<tr>
-		  <th scope="row"><%= t('dul_hydra.object_nav.items.object_modified_date') %>:</th>
-		  <td><%= render_object_date @object.modified_date %></td>
-		</tr>
-	  </table>
+	  <%= render_object_date @object.create_date %>
+	</li>
+	<li class="nav-header">
+	  Modified
+	</li>
+	<li>
+	   <%= render_object_date @object.modified_date %>
+	</li>
+	<li class="nav-header">
+	  <%= t('dul_hydra.object_nav.headings.fixity') %>
+	</li>
+	<li>
+	  <% if @document.last_fixity_check_outcome.present? %>
+	    <%= format_date @document.last_fixity_check_on %>
+		<%= render_last_fixity_check_outcome %>
+      <% else %>
+	    No fixity checks
+	  <% end %>
 	</li>
 	<li class="nav-header">
 	  <%= t('dul_hydra.object_nav.headings.more_info') %>
