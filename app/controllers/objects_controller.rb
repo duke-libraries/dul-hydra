@@ -14,7 +14,7 @@ class ObjectsController < ApplicationController
     configure_blacklight_for_related_objects
     load_children
     load_attachments
-    configure_tabs :children, :metadata, :default_permissions, :permissions, :preservation_events, :attachments
+    configure_tabs :children, :metadata, :default_permissions, :permissions, :preservation_events, :attachments, :collection_info
   end
 
   # Intended for tab content loaded via ajax
@@ -30,11 +30,14 @@ class ObjectsController < ApplicationController
     render layout: false
   end
   
-  def collection
+  def collection_info
     load_object
     respond_to do |format|
-      format.html { render layout: false }
-      format.csv { send_data(collection_report, type: "text/csv") }
+      format.html do
+        collection_report
+        render layout: false
+      end
+      format.csv { send_data(collection_csv_report, type: "text/csv") }
     end
   end
 
@@ -72,8 +75,6 @@ class ObjectsController < ApplicationController
     if @object.has_attachments?
       @attachments = SolrResult.new(*get_search_results(params, {q: @object.attachments.send(:construct_query)}))
       # For compatibility with Blacklight partials and helpers
-      #@response = @attachments.response
-      #@documents = @attachments.documents
       @partial_path_templates = ["catalog/index_default"]
     end
   end
@@ -87,6 +88,17 @@ class ObjectsController < ApplicationController
   end
 
   def collection_report
+    components = get_collection_components
+    total_file_size = 0
+    components.documents.each { |doc| total_file_size += (doc.content_size || 0) }
+    @report = {
+      components: components.response.total,
+      items: get_search_results(params, {q: @object.children_query})[0].total,
+      total_file_size: total_file_size
+    }
+  end
+
+  def collection_csv_report
     CSV.generate do |csv|
       csv << DulHydra.collection_report_fields.collect {|f| f.to_s.upcase}
       get_collection_components.documents.each do |doc|
@@ -150,6 +162,12 @@ class ObjectsController < ApplicationController
   def tab_attachments
     if @attachments && @attachments.response.total > 0
       Tab.new("Attachments", "attachments")
+    end
+  end
+
+  def tab_collection_info
+    if @object.is_a?(Collection)
+      Tab.new("Collection Info", "collection_info", collection_info_object_path(@object))
     end
   end
 

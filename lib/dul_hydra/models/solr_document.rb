@@ -69,28 +69,6 @@ module DulHydra::Models
       ActiveFedora::SolrService.class_from_solr_document(self).reflect_on_association(:children).present?
     end
 
-    # def has_parent?
-    #   parent_uri.present?
-    # end
-
-    # def parent_uri
-    #   get(parent_index_field)
-    # end
-
-    # def parent_pid
-    #   @parent_pid ||= ActiveFedora::Base.pids_from_uris(parent_uri) if has_parent?
-    # end
-
-    # # Field name for parent PID on the child index document
-    # def parent_index_field
-    #   case active_fedora_model
-    #   when "Component"
-    #     DulHydra::IndexFields::IS_PART_OF
-    #   when "Item"
-    #     DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
-    #   end
-    # end
-
     def label
       object_profile["objLabel"]
     end
