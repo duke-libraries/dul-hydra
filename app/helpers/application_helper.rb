@@ -151,6 +151,10 @@ module ApplicationHelper
     render_download_link args.merge(:label => label)
   end
 
+  def render_document_title
+    @document.title
+  end
+
   def render_document_thumbnail(document = @document, linked = false)
     src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
@@ -194,6 +198,11 @@ module ApplicationHelper
     else
       label
     end
+  end
+
+  def link_to_fcrepo_view(dsid = nil)
+    path = dsid ? fcrepo_admin.object_datastream_path(@object, dsid) : fcrepo_admin.object_path(@object)
+    link_to "Fcrepo View", path
   end
 
   def format_date(date)
