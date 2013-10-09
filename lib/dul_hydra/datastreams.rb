@@ -6,6 +6,7 @@ module DulHydra::Datastreams
   DEFAULT_RIGHTS = "defaultRights"
   DESC_METADATA = "descMetadata"
   EVENT_METADATA = "eventMetadata"
+  PROPERTIES = "properties"
   RELS_EXT = "RELS-EXT"
   RIGHTS_METADATA = "rightsMetadata"
   THUMBNAIL = "thumbnail"

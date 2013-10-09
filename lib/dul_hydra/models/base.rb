@@ -6,6 +6,7 @@ module DulHydra::Models
     include AccessControllable
     include HasAttachments
     include HasPreservationEvents
+    include HasProperties
     include HasThumbnail
     include ActiveFedora::Auditable
 
