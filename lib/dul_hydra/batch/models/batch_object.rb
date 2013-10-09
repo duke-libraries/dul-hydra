@@ -10,11 +10,11 @@ module DulHydra::Batch::Models
     VERIFICATION_FAIL = "FAIL"
     
     PRESERVATION_EVENT_DETAIL = <<-EOS
-      %{label}
-      Batch object database id: %{batch_id}
-      Batch object identifier: %{identifier}
-      Model: %{model}
-      DulHydra version #{DulHydra::VERSION}
+%{label}
+Batch object database id: %{batch_id}
+Batch object identifier: %{identifier}
+Model: %{model}
+DulHydra version #{DulHydra::VERSION}
     EOS
   
     def self.pid_from_identifier(identifier, batch_id)
