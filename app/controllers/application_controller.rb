@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior
   include Hydra::PolicyAwareAccessControlsEnforcement
+  include DulHydra::Grouper::Controller
 
   before_filter :authenticate_user!
   
@@ -15,7 +16,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   def current_ability
-    current_user ? current_user.ability : Ability.new(current_user)
+    current_user ? current_user.ability(session) : Ability.new(nil)
   end
 
   protected

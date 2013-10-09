@@ -11,6 +11,9 @@ class User < ActiveRecord::Base
 
   # Connects this user object to Blacklights Bookmarks and Folders. 
   include Blacklight::User
+
+  # Overrides #groups instance method to integrate with Grouper
+  include DulHydra::Grouper::User
   
   devise :remote_user_authenticatable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
@@ -24,8 +27,8 @@ class User < ActiveRecord::Base
     username
   end
 
-  def ability
-    @ability ||= Ability.new(self)
+  def ability(session = nil)
+    @ability ||= Ability.new(self, session)
   end
 
 end
