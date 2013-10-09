@@ -124,7 +124,11 @@ module DulHydra::Batch::Scripts
     end
     
     def send_notification
-      BatchProcessorRunMailer.send_notification(@batch_run, @batch.user.email).deliver!
+      begin
+        BatchProcessorRunMailer.send_notification(@batch_run, @batch.user.email).deliver!
+      rescue
+        puts "An error occurred while attempting to send the notification."
+      end
     end
     
   end
