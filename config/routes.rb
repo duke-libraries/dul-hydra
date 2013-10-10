@@ -11,7 +11,7 @@ DulHydra::Application.routes.draw do
   resources :objects, :only => :show do
     member do
       # get 'attachments'
-      get 'collection'
+      get 'collection_info'
       get 'download' => 'downloads#show'
       get 'preservation_events'
       get 'thumbnail' => 'thumbnail#show'
