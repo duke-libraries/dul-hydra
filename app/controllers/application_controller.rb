@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   def current_ability
-    current_user ? current_user.ability(session) : Ability.new(nil)
+    current_user ? current_user.ability : Ability.new(nil)
   end
 
   protected
