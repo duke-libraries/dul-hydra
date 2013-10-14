@@ -31,6 +31,10 @@ module DulHydra::Models
     def descriptive_metadata_terms
       DC11_ELEMENTS
     end
+    
+    def descriptive_metadata_editable?
+      return descmetadata_source.nil?
+    end
 
     module ClassMethods
       def find_by_identifier(identifier)
