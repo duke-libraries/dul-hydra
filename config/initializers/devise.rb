@@ -234,5 +234,9 @@ Devise.setup do |config|
   require 'devise_remote_user'
   config.remote_user_autocreate = true
   config.remote_user_attribute_map = {:email => 'mail'}
+end
 
+# Grouper integration
+Warden::Manager.after_set_user do |user, auth, opts|
+  user.set_grouper_groups(auth.env)
 end

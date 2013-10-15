@@ -18,17 +18,21 @@ module DulHydra::Configurable
     self.collection_report_fields = [:pid, :identifier, :content_size]
 
     ## Grouper config settings
-    # request.env key containing list of groups of which user is a member
+    # request.env key for group memberships
     mattr_accessor :grouper_groups_env_key
     self.grouper_groups_env_key = "ismemberof"
 
-    # session key for Grouper groups list
-    mattr_accessor :grouper_groups_session_key
-    self.grouper_groups_session_key = :grouper_groups
+    # request.env value internal delimiter
+    mattr_accessor :grouper_groups_env_value_delim
+    self.grouper_groups_env_value_delim = ";"
+
+    # pattern/repl for converting request.env membership values to proper Grouper group names
+    mattr_accessor :grouper_groups_env_value_sub
+    self.grouper_groups_env_value_sub = [/^urn:mace:duke\.edu:groups/, "duke"]
 
     # Filter for getting list of Grouper groups for the repository
     mattr_accessor :grouper_groups_name_filter
-    self.grouper_groups_name_filter = "duke:library:repository"
+    self.grouper_groups_name_filter = /^duke:library:repository:/
   end
 
 end

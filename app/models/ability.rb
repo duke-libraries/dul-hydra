@@ -1,7 +1,6 @@
 class Ability
   include Hydra::PolicyAwareAbility
   include FcrepoAdmin::Ability
-  include DulHydra::Grouper::Ability
 
   # Hydra::Ability provides this hook into its initialization
   def custom_permissions
