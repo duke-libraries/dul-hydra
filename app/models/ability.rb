@@ -1,5 +1,4 @@
 class Ability
-  include Hydra::Ability
   include Hydra::PolicyAwareAbility
   include FcrepoAdmin::Ability
 
@@ -12,7 +11,7 @@ class Ability
   end
 
   def export_sets_permissions
-    can :manage, ExportSet, :user_id => @current_user.id
+    can :manage, ExportSet, :user_id => current_user.id
   end
 
   def preservation_events_permissions
@@ -22,7 +21,7 @@ class Ability
   end
   
   def batches_permissions
-    can :manage, DulHydra::Batch::Models::Batch, :user_id => @current_user.id
+    can :manage, DulHydra::Batch::Models::Batch, :user_id => current_user.id
   end
 
   # Mimics Hydra::Ability#read_permissions

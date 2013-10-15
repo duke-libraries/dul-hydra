@@ -14,6 +14,7 @@ gem 'devise-remote-user'
 gem 'fcrepo_admin', '~> 0.6.1'
 #gem 'active-fedora', '~> 6.6'
 gem 'active-fedora', '6.6.0.rc5'
+gem 'grouper-rest-client'
 
 gem 'log4r'
 
