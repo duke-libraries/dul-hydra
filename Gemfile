@@ -4,7 +4,7 @@ gem 'rails', '~> 3.2.13'
 
 gem 'sqlite3'
 #gem 'hydra-head', '~> 6.4'
-gem 'hydra-head', '6.4.0.rc4'
+gem 'hydra-head', '6.4.0.rc5'
 #gem 'blacklight', '~> 4.4'
 gem 'blacklight', github: 'projectblacklight/blacklight', branch: 'issue-620'
 gem 'bootstrap-sass' # blacklight 4.0
