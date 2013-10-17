@@ -3,17 +3,14 @@ source 'http://rubygems.org'
 gem 'rails', '~> 3.2.13'
 
 gem 'sqlite3'
-#gem 'hydra-head', '~> 6.4'
-gem 'hydra-head', '6.4.0.rc5'
-#gem 'blacklight', '~> 4.4'
+gem 'hydra-head', '~> 6.4'
 gem 'blacklight', github: 'projectblacklight/blacklight', branch: 'issue-620'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise'
 gem 'devise-remote-user'
 gem 'fcrepo_admin', '~> 0.6.1'
-#gem 'active-fedora', '~> 6.6'
-gem 'active-fedora', '6.6.0.rc5'
+gem 'active-fedora', '~> 6.6'
 gem 'grouper-rest-client'
 
 gem 'log4r'
