@@ -32,7 +32,20 @@ module DulHydra::Configurable
 
     # Filter for getting list of Grouper groups for the repository
     mattr_accessor :grouper_groups_name_filter
-    self.grouper_groups_name_filter = /^duke:library:repository:/
+    self.grouper_groups_name_filter = /^duke:library:repository:ddr:/
+
+    # Groups authz for downloading Component content
+    mattr_accessor :component_download_group
+    self.component_download_group = "duke:library:repository:ddr:component_download"
+
+    # Methods to add to Ability initialization
+    mattr_accessor :extra_ability_logic
+    self.extra_ability_logic = [:discover_permissions, 
+                                :export_sets_permissions, 
+                                :preservation_events_permissions,
+                                :batches_permissions,
+                                :download_permissions
+                               ]
   end
 
 end

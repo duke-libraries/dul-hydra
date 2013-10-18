@@ -25,7 +25,11 @@ module DulHydra::Models
     end
 
     def ability
-      @ability ||= Ability.new(self)
+      @ability ||= ::Ability.new(self)
+    end
+
+    def member_of?(group)
+      self.groups.include? group
     end
 
   end
