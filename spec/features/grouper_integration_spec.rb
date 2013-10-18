@@ -16,6 +16,7 @@ describe "Grouper integration" do
     end
   end
   after do
+    object.delete
     user.delete
     Warden.test_reset!
   end
