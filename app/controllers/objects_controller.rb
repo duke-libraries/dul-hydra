@@ -1,10 +1,11 @@
 class ObjectsController < ApplicationController
 
   include Blacklight::Base
+  #include RecordsControllerBehavior
 
   copy_blacklight_config_from(CatalogController)
 
-  before_filter :enforce_show_permissions
+  before_filter :enforce_show_permissions, only: :show
 
   helper_method :get_solr_response_for_field_values
 
@@ -122,6 +123,15 @@ class ObjectsController < ApplicationController
       config.default_sort_field = "#{DulHydra::IndexFields::IDENTIFIER} asc"
       #config.qt = "standard"
     end
+  end
+
+  # Override RecordsControllerBehavior
+  def redirect_after_create
+    object_path @object
+  end
+
+  def redirect_after_update
+    object_path @object
   end
 
   # tabs

@@ -1,0 +1,19 @@
+<%= bootstrap_form_for record, url: record.new_record? ? hydra_editor.records_path : hydra_editor.record_path(record), html: {class: 'form-inline editor'} do |f| %>
+  <div id="descriptions_display">
+    <h4 class="non lower">
+	  <%= t('hydra.editor.form.subtitle') %>
+	  <small class="pull-right"><span class="error">*</span> indicates required fields</small>
+	</h2>
+	<div class="well">
+      <% f.object.terms_for_editing.each do |term| %>
+        <%= render :partial => "records/edit_field", :locals => {:f =>f, :render_req => true, :key => term } %>
+      <% end %>
+	</div>
+  </div>
+  <%= hidden_field_tag :type, params[:type] %>
+  <%= f.actions do %>
+    <%= f.submit 'Save' %>
+    <%= f.cancel %>
+  <% end %>
+<% end %>
+

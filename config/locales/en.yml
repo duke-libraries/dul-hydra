@@ -1,4 +1,8 @@
 en:
+  hydra:
+    editor:
+      form:
+        subtitle: 'Edit Descriptive Metadata'
   dul_hydra:
     object_nav:
       headings:

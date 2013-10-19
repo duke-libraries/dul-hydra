@@ -24,4 +24,7 @@
 // Syntax lighlighting with google-code-prettify
 //= require google-code-prettify/run_prettify
 //
+// hydra-editor
+//= require hydra-editor/hydra-editor
+//
 //= require_tree .

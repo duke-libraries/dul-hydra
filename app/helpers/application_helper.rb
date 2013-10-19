@@ -60,15 +60,20 @@ module ApplicationHelper
     return structure_contents_info
   end
 
+  # This helper smoothes the integration of hydra-editor into dul-hydra
+  def current_object
+    @object || @record
+  end
+
   def render_object_title
-    @object.title_display rescue "#{@object.class.to_s} #{@object.pid}"
+    current_object.title_display rescue "#{current_object.class.to_s} #{current_object.pid}"
   end
 
   def render_object_identifier
-    if @object.identifier.respond_to?(:join)
-      @object.identifier.join("<br />")
+    if current_object.identifier.respond_to?(:join)
+      current_object.identifier.join("<br />")
     else
-      @object.identifier
+      current_object.identifier
     end
   end
 
@@ -113,11 +118,11 @@ module ApplicationHelper
 
   def render_object_state
     case
-    when @object.state == 'A'
+    when current_object.state == 'A'
       render_label "Active", "info"
-    when @object.state == 'I'
+    when current_object.state == 'I'
       render_label "Inactive", "warning"
-    when @object.state == 'D'
+    when current_object.state == 'D'
       render_label "Deleted", "important"
     end
   end
@@ -201,7 +206,7 @@ module ApplicationHelper
   end
 
   def link_to_fcrepo_view(dsid = nil)
-    path = dsid ? fcrepo_admin.object_datastream_path(@object, dsid) : fcrepo_admin.object_path(@object)
+    path = dsid ? fcrepo_admin.object_datastream_path(current_object, dsid) : fcrepo_admin.object_path(current_object)
     link_to "Fcrepo View", path
   end
 
@@ -209,7 +214,7 @@ module ApplicationHelper
     date.to_formatted_s(:db) if date
   end
 
-  def effective_permissions(object = @object)
+  def effective_permissions(object = current_object)
     results = []
     permissions = current_ability.permissions_doc(object.pid)
     policy_pid = current_ability.policy_pid_for(object.pid)
@@ -229,7 +234,7 @@ module ApplicationHelper
     results
   end
 
-  def inheritable_permissions(object = @object)
+  def inheritable_permissions(object = current_object)
     object.default_permissions
   end
 
