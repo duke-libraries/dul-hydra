@@ -3,7 +3,7 @@
 	<ul class="nav">
 	  <% if can? :edit, @object -%>
 	  <li>
-		<%= link_to "Edit", hydra_editor.edit_record_path(@object.pid) %>
+		<%= link_to "Edit", edit_object_path(@object) %>
 	  </li>
 	  <% end -%>
 	  <% if can? :download, @object.descMetadata -%>

@@ -60,11 +60,6 @@ module ApplicationHelper
     return structure_contents_info
   end
 
-  # This helper smoothes the integration of hydra-editor into dul-hydra
-  def current_object
-    @object || @record
-  end
-
   def render_object_title
     current_object.title_display rescue "#{current_object.class.to_s} #{current_object.pid}"
   end

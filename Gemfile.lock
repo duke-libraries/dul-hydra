@@ -1,7 +1,7 @@
 GIT
   remote: git://github.com/dchandekstark/hydra-editor.git
-  revision: 8df4bf87a22163a2b22ece58d1b201d496ed280b
-  branch: redirect_after_hooks
+  revision: 562fddd152d3f2bc6bdd3319499df790a35a9fd8
+  branch: reusable-controller-behavior
   specs:
     hydra-editor (0.0.6)
       active-fedora (>= 6.3.0)

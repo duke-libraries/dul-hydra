@@ -7,11 +7,10 @@ DulHydra::Application.routes.draw do
   devise_for :users
 
   mount FcrepoAdmin::Engine => '/fcrepo', as: 'fcrepo_admin'
-  mount HydraEditor::Engine => '/metadata', as: 'hydra_editor'
+  mount HydraEditor::Engine => '/', as: 'hydra_editor'
 
-  resources :objects, only: :show do
+  resources :objects, only: [:show, :new, :create, :edit, :update] do
     member do
-      get 'metadata/edit' => 'records#edit'
       get 'collection_info'
       get 'download' => 'downloads#show'
       get 'preservation_events'

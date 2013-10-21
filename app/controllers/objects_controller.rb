@@ -1,17 +1,21 @@
 class ObjectsController < ApplicationController
 
   include Blacklight::Base
-  #include RecordsControllerBehavior
+  include RecordsControllerBehavior
 
   copy_blacklight_config_from(CatalogController)
 
-  before_filter :enforce_show_permissions, only: :show
+  before_filter :enforce_show_permissions, only: [:show, :attachments, :collection_info]
+  before_filter :load_document, only: [:show, :new, :edit]
+  before_filter :load_object, only: [:show, :edit, :attachments, :collection_info]
 
   helper_method :get_solr_response_for_field_values
+  helper_method :current_object
+  helper_method :current_document
 
   def show
-    load_document
-    load_object
+    # load_document
+    # load_object
     configure_blacklight_for_related_objects
     load_children
     load_attachments
@@ -26,15 +30,16 @@ class ObjectsController < ApplicationController
 
   # Intended for tab content loaded via ajax
   def attachments
-    load_object
+    # load_object
     load_attachments
     render layout: false
   end
   
+  # HTML format intended for tab content loaded via ajax
   def collection_info
-    load_object
+    # load_object
     respond_to do |format|
-      format.html do
+      format.html do 
         collection_report
         render layout: false
       end
@@ -44,12 +49,23 @@ class ObjectsController < ApplicationController
 
   protected
 
+  def current_object
+    # Include @record for hydra-editor integration
+    @object || @record
+  end
+
+  def current_document
+    @document
+  end
+
   def load_document
     @document = get_solr_response_for_doc_id[1]
   end
   
   def load_object
-    if @document
+    if @record # :edit
+      @object = @record
+    elsif @document
       @object = ActiveFedora::SolrService.reify_solr_result(@document)
     else
       @object = ActiveFedora::Base.find(params[:id], cast: true)
@@ -127,11 +143,12 @@ class ObjectsController < ApplicationController
 
   # Override RecordsControllerBehavior
   def redirect_after_create
-    object_path @object
+    object_path(current_object)
   end
 
+  # Override RecordsControllerBehavior
   def redirect_after_update
-    object_path @object
+    object_path(current_object)
   end
 
   # tabs
