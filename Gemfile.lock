@@ -1,17 +1,3 @@
-GIT
-  remote: git://github.com/projectblacklight/blacklight.git
-  revision: c2a85b2bd634d3bbce8eed0b56cc5ab52661c30f
-  branch: issue-620
-  specs:
-    blacklight (4.4.1)
-      bootstrap-sass (>= 2.2.0, < 2.4)
-      kaminari (~> 0.13)
-      marc (>= 0.4.3, < 1.1)
-      nokogiri (~> 1.6)
-      rails (>= 3.2.6, < 5)
-      rsolr (~> 1.0.6)
-      sass-rails
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -55,6 +41,14 @@ GEM
     addressable (2.3.5)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
+    blacklight (4.5.0.rc1)
+      bootstrap-sass (>= 2.2.0, < 2.4)
+      kaminari (~> 0.13)
+      marc (>= 0.4.3, < 1.1)
+      nokogiri (~> 1.6)
+      rails (>= 3.2.6, < 5)
+      rsolr (~> 1.0.6)
+      sass-rails
     block_helpers (0.3.3)
       activesupport (>= 2.0)
     bootstrap-sass (2.3.2.2)
@@ -295,7 +289,7 @@ PLATFORMS
 
 DEPENDENCIES
   active-fedora (~> 6.6)
-  blacklight!
+  blacklight (= 4.5.0.rc1)
   bootstrap-sass
   capybara (~> 2.0)
   delayed_job_active_record
