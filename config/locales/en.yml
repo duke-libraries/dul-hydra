@@ -34,7 +34,7 @@ en:
       page_titles:
         edit: 'Editing Admin Policy'
   blacklight:
-    application_name: 'DUL Preservation Repository'
+    application_name: 'Duke Digital Repository'
     header_links:
       saved_searches: 'Searches'
       export_sets: 'Exports'
