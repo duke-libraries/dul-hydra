@@ -1,14 +1,4 @@
 GIT
-  remote: git://github.com/dchandekstark/hydra-editor.git
-  revision: 562fddd152d3f2bc6bdd3319499df790a35a9fd8
-  branch: reusable-controller-behavior
-  specs:
-    hydra-editor (0.0.6)
-      active-fedora (>= 6.3.0)
-      bootstrap_forms
-      rails (>= 3.2.13, < 5.0)
-
-GIT
   remote: git://github.com/projectblacklight/blacklight.git
   revision: c2a85b2bd634d3bbce8eed0b56cc5ab52661c30f
   branch: issue-620
@@ -140,6 +130,10 @@ GEM
       hydra-access-controls (= 6.4.0)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
+    hydra-editor (0.1.0)
+      active-fedora (>= 6.3.0)
+      bootstrap_forms
+      rails (>= 3.2.13, < 5.0)
     hydra-head (6.4.0)
       hydra-access-controls (= 6.4.0)
       hydra-core (= 6.4.0)
@@ -310,7 +304,7 @@ DEPENDENCIES
   factory_girl_rails (~> 4.0)
   fcrepo_admin (~> 0.6.1)
   grouper-rest-client
-  hydra-editor!
+  hydra-editor (= 0.1.0)
   hydra-head (~> 6.4)
   jettywrapper
   jquery-rails
