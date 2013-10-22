@@ -25,7 +25,7 @@ module DulHydra::Models
                    :versionable => true, 
                    :label => "Descriptive Metadata for this object", 
                    :control_group => 'X'
-      delegate_to DulHydra::Datastreams::DESC_METADATA, DC11_ELEMENTS
+      delegate_to DulHydra::Datastreams::DESC_METADATA, DC11_ELEMENTS, multiple: true
     end
 
     def descriptive_metadata_terms
