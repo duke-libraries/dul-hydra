@@ -1,12 +1,28 @@
+<div class="navbar">
+  <div class="navbar-inner">
+	<ul class="nav">
+	  <% if can? :edit, @object -%>
+	  <li>
+		<%= link_to "Edit", edit_record_path(@object) %>
+	  </li>
+	  <% end -%>
+	  <% if can? :download, @object.descMetadata -%>
+	  <li>
+		<%= link_to "Download XML", download_datastream_object_path(@object, 'descMetadata') %>
+	  </li>
+	  <% end -%>
+	</ul>
+  </div>
+</div>
 <table class="table">
-  <% @object.descriptive_metadata_terms.each do |term| %>
-    <% label = term.to_s.titleize %>
-    <% if @object.class.delegates[term][:multiple] %>
-      <% @object.send(term).each do |value| %>
+  <% @object.descriptive_metadata_terms.each do |term| -%>
+    <% label = term.to_s.titleize -%>
+    <% if @object.class.delegates[term][:multiple] -%>
+      <% @object.send(term).each do |value| -%>
         <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: value} %>
-      <% end %>
-    <% else %>
+      <% end -%>
+    <% else -%>
       <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: @object.send(term)} %>
-    <% end %>
-  <% end %>
+    <% end -%>
+  <% end -%>
 </table>

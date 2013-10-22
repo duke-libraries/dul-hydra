@@ -4,13 +4,13 @@
 	  Created
 	</li>
 	<li>
-	  <%= render_object_date @object.create_date %>
+	  <%= render_object_date current_object.create_date %>
 	</li>
 	<li class="nav-header">
 	  Modified
 	</li>
 	<li>
-	   <%= render_object_date @object.modified_date %>
+	   <%= render_object_date current_object.modified_date %>
 	</li>
 	<li class="nav-header">
 	  <%= t('dul_hydra.object_nav.headings.fixity') %>

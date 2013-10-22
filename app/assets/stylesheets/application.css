@@ -10,5 +10,6 @@
  *
  *= require_self
  *= require 'google-code-prettify/prettify'
+ *= require 'hydra-editor/hydra-editor'
  *= require_tree .
  */

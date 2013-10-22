@@ -20,6 +20,11 @@ class AdminPolicy < Hydra::AdminPolicy
     [:title, :description]
   end
 
+  # hydra-editor integration
+  def terms_for_editing
+    descriptive_metadata_terms
+  end
+
   def to_solr(solr_doc=Hash.new, opts={})
     solr_doc = super(solr_doc, opts)
     solr_doc.merge!(DulHydra::IndexFields::TITLE => title || pid)

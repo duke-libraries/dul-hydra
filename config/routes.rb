@@ -6,18 +6,21 @@ DulHydra::Application.routes.draw do
 
   devise_for :users
 
-  mount FcrepoAdmin::Engine => '/fcrepo', :as=> 'fcrepo_admin'
+  mount FcrepoAdmin::Engine => '/fcrepo', as: 'fcrepo_admin'
 
-  resources :objects, :only => :show do
+  resources :objects, only: [:show] do
     member do
-      # get 'attachments'
       get 'collection_info'
       get 'download' => 'downloads#show'
       get 'preservation_events'
       get 'thumbnail' => 'thumbnail#show'
+      get 'datastreams/:datastream_id' => 'downloads#show', as: 'download_datastream'
     end
   end
 
+  # hydra-editor for descriptive metadata
+  resources :objects, only: [:edit, :update], as: 'records'
+    
   resources :preservation_events, :only => :show
 
   resources :export_sets do
