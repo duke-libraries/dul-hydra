@@ -13,7 +13,6 @@ gem 'fcrepo_admin', '~> 0.6.1'
 gem 'active-fedora', '~> 6.6'
 gem 'grouper-rest-client'
 gem 'hydra-editor', github: 'dchandekstark/hydra-editor', branch: 'reusable-controller-behavior'
-#gem 'hydra-editor', path: '/Users/dc/github/dchandekstark/hydra-editor'
 
 gem 'log4r'
 
