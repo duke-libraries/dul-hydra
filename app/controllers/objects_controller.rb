@@ -5,8 +5,10 @@ class ObjectsController < ApplicationController
 
   copy_blacklight_config_from(CatalogController)
 
-  before_filter :enforce_show_permissions, only: [:show, :attachments, :collection_info]
-  before_filter :load_document, only: [:show, :new, :edit]
+  before_filter :enforce_show_permissions #, only: [:show, :edit, :update, :attachments, :collection_info]
+  before_filter :load_document, only: [:show, :edit]
+  skip_before_filter :load_and_authorize_record, only: [:edit, :update]
+  before_filter :load_record, only: [:edit, :update]
   before_filter :load_object, only: [:show, :edit, :attachments, :collection_info]
 
   helper_method :get_solr_response_for_field_values
@@ -14,8 +16,6 @@ class ObjectsController < ApplicationController
   helper_method :current_document
 
   def show
-    # load_document
-    # load_object
     configure_blacklight_for_related_objects
     load_children
     load_attachments
@@ -30,14 +30,12 @@ class ObjectsController < ApplicationController
 
   # Intended for tab content loaded via ajax
   def attachments
-    # load_object
     load_attachments
     render layout: false
   end
   
   # HTML format intended for tab content loaded via ajax
   def collection_info
-    # load_object
     respond_to do |format|
       format.html do 
         collection_report
@@ -63,7 +61,8 @@ class ObjectsController < ApplicationController
   end
   
   def load_object
-    if @record # :edit
+    if @record # hydra-editor
+      # XXX We shouldn't need to do this if https://github.com/duke-libraries/dul-hydra/issues/322 gets done right.
       @object = @record
     elsif @document
       @object = ActiveFedora::SolrService.reify_solr_result(@document)
