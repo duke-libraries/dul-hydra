@@ -23,7 +23,7 @@ DulHydra::Application.routes.draw do
   # hydra-editor for descriptive metadata
   resources :objects, only: [:edit, :update], as: 'records', constraints: PID_CONSTRAINT
     
-  resources :preservation_events, :only => :show
+  resources :preservation_events, :only => :show, constraints: { id: /[1-9][0-9]*/ }
 
   resources :export_sets do
     member do
