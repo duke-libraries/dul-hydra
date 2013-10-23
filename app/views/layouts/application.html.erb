@@ -24,11 +24,8 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
   </head>
-  <% onload_text = "$('input#q').focus();" if params[:q].to_s.empty? and params[:f].to_s.empty? and params[:id].nil? %>
-  <body onload="<%= onload_text %>" class="<%= render_body_class %>">
-
+  <body class="<%= render_body_class %>">
 	<!-- Shared header/navbar -->
     <%= render :partial => 'shared/header_navbar' %>
 	<!-- /Shared header/navbar -->
@@ -66,6 +63,5 @@
 	<!-- Shared footer -->
 	<%= render :partial => 'shared/footer' %>
 	<!-- /Shared footer -->
-
   </body>
 </html>

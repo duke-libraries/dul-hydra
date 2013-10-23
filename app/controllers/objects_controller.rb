@@ -5,7 +5,7 @@ class ObjectsController < ApplicationController
 
   copy_blacklight_config_from(CatalogController)
 
-  before_filter :enforce_show_permissions #, only: [:show, :edit, :update, :attachments, :collection_info]
+  before_filter :enforce_show_permissions
   before_filter :load_document, only: [:show, :edit]
   skip_before_filter :load_and_authorize_record, only: [:edit, :update]
   before_filter :load_record, only: [:edit, :update]
