@@ -95,14 +95,6 @@ class ObjectsController < ApplicationController
     end
   end
 
-  def configure_breadcrumbs(document = @document)
-    @breadcrumbs ||= []
-    @breadcrumbs << document
-    if document.has_parent?
-      configure_breadcrumbs(get_solr_response_for_doc_id(document.parent_pid)[1])
-    end
-  end
-
   def collection_report
     components = get_collection_components
     total_file_size = 0
