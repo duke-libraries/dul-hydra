@@ -40,15 +40,30 @@ module DulHydra::Controller
       end
     end
 
-    class Tabs
-      include Enumerable
+    class Tabs < ActiveSupport::OrderedHash
+
+      attr_reader :controller
 
       def initialize(controller, *tab_symbols)
-        @tabs = tab_symbols.collect {|t| controller.send("tab_#{t}") }.reject { |t| t.blank? }
+        super()
+        @controller = controller
+        tab_symbols.each do |t| 
+          tab = controller.send("tab_#{t}")
+          self[tab.id] = tab unless tab.blank?
+        end
+      end
+      
+      def active
+        tab_param = controller.params[:tab]
+        tab_param && self.key?(tab_param) ? self[tab_param] : self.default
       end
 
-      def each
-        @tabs.each { |t| yield t }
+      def default?(tab)
+        tab.id == self.default.id
+      end
+
+      def default
+        self.first[1]
       end
     end
     

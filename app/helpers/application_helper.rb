@@ -80,35 +80,26 @@ module ApplicationHelper
     truncate crumb.title, separator: ' '
   end
 
-  def render_tab(tab, active = false)
-    content_tag(:li, active ? {class: "active"} : {}) do
+  def render_tab(tab)
+    content_tag :li do
       link_to(tab.label, "##{tab.css_id}", "data-toggle" => "tab")
     end
   end
 
   def render_tabs
     return if @tabs.blank?
-    output = ""
-    @tabs.each_with_index do |tab, index|
-      output << render_tab(tab, index == 0 ? true : false)
-    end
-    output.html_safe
+    @tabs.values.inject("") { |output, tab| output << render_tab(tab) }.html_safe
   end
 
-  def render_tab_content(tab, active = false)
-    css_class = active ? "tab-pane active" : "tab-pane"
-    content_tag :div, class: css_class, id: tab.css_id do
+  def render_tab_content(tab)
+    content_tag :div, class: "tab-pane", id: tab.css_id do
       render partial: tab.partial, locals: {tab: tab}
     end
   end
 
   def render_tabs_content
     return if @tabs.blank?
-    output = ""
-    @tabs.each_with_index do |tab, index|
-      output << render_tab_content(tab, index == 0 ? true : false)
-    end
-    output.html_safe
+    @tabs.values.inject("") { |output, tab| output << render_tab_content(tab) }.html_safe
   end
 
   def render_object_state
