@@ -141,13 +141,8 @@ class ObjectsController < ApplicationController
   end
 
   # Override RecordsControllerBehavior
-  def redirect_after_create
-    object_path(current_object)
-  end
-
-  # Override RecordsControllerBehavior
   def redirect_after_update
-    object_path(current_object)
+    descriptive_metadata_path(current_object)
   end
 
   # tabs

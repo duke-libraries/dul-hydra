@@ -1,5 +1,12 @@
 DulHydra::Application.routes.draw do
 
+  # http://railsadventures.wordpress.com/2012/10/07/routing-only-ajax-requests-in-ror/
+  class XhrRequestConstraint
+    def matches?(request)
+      request.xhr?
+    end
+  end
+
   PID_CONSTRAINT = { id: /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/ }
 
   root :to => "catalog#index"
@@ -12,17 +19,21 @@ DulHydra::Application.routes.draw do
 
   resources :objects, only: [:show], constraints: PID_CONSTRAINT do
     member do
-      get 'collection_info'
+      get 'collection_info', constraints: XhrRequestConstraint
       get 'download' => 'downloads#show'
-      get 'preservation_events'
+      get 'preservation_events', constraints: XhrRequestConstraint
       get 'thumbnail' => 'thumbnail#show'
       get 'datastreams/:datastream_id' => 'downloads#show', as: 'download_datastream'
     end
   end
 
   # hydra-editor for descriptive metadata
-  resources :objects, only: [:edit, :update], as: 'records', constraints: PID_CONSTRAINT
-    
+  scope '/objects/:id/descriptive_metadata', constraints: PID_CONSTRAINT, as: 'descriptive_metadata' do
+    get '/' => redirect {|params, req| "/objects/#{CGI::unescape(params[:id])}?tab=descriptive_metadata" }
+    get 'edit' => 'objects#edit'
+    put '/' => 'objects#update'
+  end
+
   resources :preservation_events, :only => :show, constraints: { id: /[1-9][0-9]*/ }
 
   resources :export_sets do

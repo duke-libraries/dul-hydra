@@ -26,7 +26,7 @@ describe ObjectsController do
     it "should redirect to the show page" do
       controller.stub(:authorize!).with(:update, object).and_return(true)
       put :update, :id => object, :test_model => {:title => "Updated"}
-      response.should redirect_to(object_path(object))
+      response.should redirect_to(descriptive_metadata_path(object))
     end
   end
 end

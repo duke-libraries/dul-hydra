@@ -3,7 +3,7 @@
 	<ul class="nav">
 	  <% if can? :edit, @object -%>
 	  <li>
-		<%= link_to "Edit", edit_record_path(@object) %>
+		<%= link_to "Edit", descriptive_metadata_edit_path(@object) %>
 	  </li>
 	  <% end -%>
 	  <% if can? :download, @object.descMetadata -%>
