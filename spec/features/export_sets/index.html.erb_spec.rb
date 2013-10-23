@@ -28,6 +28,8 @@ describe "export_sets/index.html.erb" do
     before do
       export_set.user = user
       export_set.pids = [object.pid]
+      object.read_users = [export_set.user.user_key]
+      object.save
       export_set.create_archive
     end
     after { object.delete }
