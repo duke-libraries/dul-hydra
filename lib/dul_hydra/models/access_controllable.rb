@@ -9,7 +9,7 @@ module DulHydra::Models
     end
 
     # adds methods for managing Hydra rightsMetadata content
-    include Hydra::ModelMixins::RightsMetadata
+    include Hydra::AccessControls::Permissions
 
   end
 end
