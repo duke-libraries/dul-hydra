@@ -6,14 +6,24 @@ class ObjectsController < ApplicationController
   copy_blacklight_config_from(CatalogController)
 
   before_filter :enforce_show_permissions, except: [:edit, :update]
+  before_filter :configure_blacklight_for_related_objects, only: :show
+
   helper_method :get_solr_response_for_field_values
   helper_method :object_children
   helper_method :object_attachments
   helper_method :object_preservation_events
 
+  ObjectsController.tab_methods = [:tab_children, 
+                                   :tab_descriptive_metadata, 
+                                   :tab_default_permissions, 
+                                   :tab_permissions, 
+                                   :tab_preservation_events, 
+                                   :tab_attachments, 
+                                   :tab_collection_info
+                                  ]
+
   def show
-    configure_blacklight_for_related_objects
-    configure_tabs :children, :metadata, :default_permissions, :permissions, :preservation_events, :attachments, :collection_info
+    object_children # lazy loading doesn't seem to work
   end
 
   # Intended for tab content loaded via ajax
@@ -105,7 +115,7 @@ class ObjectsController < ApplicationController
   end
 
   # tabs
-
+  
   def tab_content
     Tab.new("Content", "content") if current_object.has_content?
   end
@@ -117,7 +127,7 @@ class ObjectsController < ApplicationController
     end
   end
 
-  def tab_metadata
+  def tab_descriptive_metadata
     if current_object.respond_to?(:descriptive_metadata_terms)
       Tab.new("Descriptive Metadata", "descriptive_metadata") 
     end
