@@ -11,10 +11,6 @@ FactoryGirl.define do
     trait :has_admin_policy do
       admin_policy { create(:public_read_policy) }
     end
-
-    trait :public_read do
-      permissions [{:access => 'read', :type => 'group', :name => 'public'}]
-    end
     
     trait :has_target do
       target
@@ -27,7 +23,6 @@ FactoryGirl.define do
         c.generate_content_thumbnail!
       end
 
-      factory :component_with_content_public_read,          :traits => [:public_read]
       factory :component_with_content_has_apo,              :traits => [:has_admin_policy]
       factory :component_part_of_item_with_content,         :traits => [:part_of_item]
       factory :component_part_of_item_with_content_has_apo, :traits => [:part_of_item, :has_admin_policy]
@@ -64,10 +59,8 @@ FactoryGirl.define do
       end      
     end
     
-    factory :component_public_read,          :traits => [:public_read]
     factory :component_part_of_item,         :traits => [:part_of_item]
     factory :component_part_of_item_has_apo, :traits => [:part_of_item, :has_admin_policy]
-    factory :component_part_of_item_public_read, :traits => [:part_of_item, :public_read]
     factory :component_has_target,           :traits => [:has_target]
 
   end
