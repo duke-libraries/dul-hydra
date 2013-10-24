@@ -68,23 +68,23 @@ module ApplicationHelper
   end
 
   def render_last_fixity_check_outcome
-    outcome = @document.last_fixity_check_outcome
+    outcome = current_document.last_fixity_check_outcome
     if outcome.present?
       label = outcome == "success" ? "success" : "important"
       render_label outcome.capitalize, label
     end
   end
 
-  def render_content_size(document = @document)
+  def render_content_size(document = current_document)
     number_to_human_size(document.content_size) rescue nil
   end
 
-  def render_content_type_and_size(document = @document)
+  def render_content_type_and_size(document = current_document)
     "#{document.content_mime_type} #{render_content_size(document)}"
   end
 
   def render_download_link(args = {})
-    document = args.fetch(:document, @document)
+    document = args.fetch(:document, current_document)
     label = args.fetch(:label, "Download")
     css_class = args.fetch(:css_class, "")
     css_id = args.fetch(:css_id, "download-#{document.safe_id}")
@@ -97,10 +97,10 @@ module ApplicationHelper
   end
 
   def render_document_title
-    @document.title
+    current_document.title
   end
 
-  def render_document_thumbnail(document = @document, linked = false)
+  def render_document_thumbnail(document = current_document, linked = false)
     src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
     if linked && can?(:read, document)
@@ -110,7 +110,7 @@ module ApplicationHelper
     end
   end
 
-  def render_document_summary(document = @document)
+  def render_document_summary(document = current_document)
     render partial: 'document_summary', locals: {document: document}
   end
 
@@ -182,7 +182,7 @@ module ApplicationHelper
     content_tag :span, pe.event_outcome.capitalize, :class => "label label-#{pe.success? ? 'success' : 'important'}"
   end
 
-  def render_document_model_and_id(document = @document)
+  def render_document_model_and_id(document = current_document)
     "#{document.active_fedora_model} #{document.id}"
   end
 

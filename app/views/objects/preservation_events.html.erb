@@ -8,7 +8,7 @@
 		</tr>
 	</thead>
 	<tbody>
-  		<% @preservation_events.each do |pe| %>
+  		<% object_preservation_events.each do |pe| %>
   		<tr class="summary">
     	 	<td><%= format_date pe.event_date_time %></td>
     	 	<td><%= pe.event_type %></td>

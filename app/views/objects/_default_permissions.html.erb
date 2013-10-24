@@ -1,9 +1,9 @@
 <div class="navbar">
   <div class="navbar-inner">
 	<ul class="nav">
-	  <% if can? :edit, @object -%>
+	  <% if can? :edit, current_object -%>
 	  <li>
-		<%= link_to "Edit", edit_admin_policy_path(@object) %>
+		<%= link_to "Edit", edit_admin_policy_path(current_object) %>
 	  </li>
 	  <% end -%>
 	  <li>
@@ -16,5 +16,5 @@
   These settings are inherited by objects governed by this policy. 
   They do not apply to this admin policy object itself.
 </p>
-<%= render partial: 'access_controls', locals: {permissions: @object.default_permissions} %>
-<%= render partial: 'license', locals: {license: @object.defaultRights.license, inherited: false} %>
+<%= render partial: 'access_controls', locals: {permissions: current_object.default_permissions} %>
+<%= render partial: 'license', locals: {license: current_object.defaultRights.license, inherited: false} %>

@@ -16,8 +16,8 @@
 	  <%= t('dul_hydra.object_nav.headings.fixity') %>
 	</li>
 	<li>
-	  <% if @document.last_fixity_check_outcome.present? %>
-	    <%= format_date @document.last_fixity_check_on %>
+	  <% if current_document.last_fixity_check_outcome.present? %>
+	    <%= format_date current_document.last_fixity_check_on %>
 		<%= render_last_fixity_check_outcome %>
       <% else %>
 	    No fixity checks
@@ -27,7 +27,7 @@
 	  <%= t('dul_hydra.object_nav.headings.more_info') %>
 	</li>
 	<li>
-	  <%= link_to t('dul_hydra.object_nav.items.fcrepo_admin'), fcrepo_admin.object_path(@document.id) %> 
+	  <%= link_to t('dul_hydra.object_nav.items.fcrepo_admin'), fcrepo_admin.object_path(current_document.id) %> 
 	</li>
   </ul>
 </div>
