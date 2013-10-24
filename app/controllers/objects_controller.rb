@@ -1,35 +1,23 @@
 class ObjectsController < ApplicationController
 
-  include Blacklight::Base
+  include DulHydra::Controller::ObjectsControllerBehavior
   include RecordsControllerBehavior
 
   copy_blacklight_config_from(CatalogController)
 
   before_filter :enforce_show_permissions, except: [:edit, :update]
-  before_filter :load_document, only: [:show, :edit]
-  # XXX We should be able to remove :edit on :load_object filter if issue #322 gets done right.
-  before_filter :load_object, only: [:show, :edit, :attachments, :collection_info]
-
   helper_method :get_solr_response_for_field_values
-  helper_method :current_object
-  helper_method :current_document
+  helper_method :object_children
+  helper_method :object_attachments
+  helper_method :object_preservation_events
 
   def show
     configure_blacklight_for_related_objects
-    load_children
-    load_attachments
     configure_tabs :children, :metadata, :default_permissions, :permissions, :preservation_events, :attachments, :collection_info
   end
 
   # Intended for tab content loaded via ajax
   def preservation_events
-    load_preservation_events
-    render layout: false
-  end
-
-  # Intended for tab content loaded via ajax
-  def attachments
-    load_attachments
     render layout: false
   end
   
@@ -46,52 +34,32 @@ class ObjectsController < ApplicationController
 
   protected
 
-  def current_object
-    # Include @record for hydra-editor integration
-    @object || @record
-  end
-
-  def current_document
-    @document
-  end
-
-  def load_document
-    @document = get_solr_response_for_doc_id[1]
-  end
-  
-  def load_object
-    if @record # hydra-editor
-      # XXX We shouldn't need to do this if issue #322 gets done right
-      @object = @record
-    elsif @document
-      @object = ActiveFedora::SolrService.reify_solr_result(@document)
-    else
-      @object = ActiveFedora::Base.find(params[:id], cast: true)
-    end
-  end
-
-  def load_preservation_events
-    @preservation_events = PreservationEvent.events_for(params[:id])
+  def object_preservation_events
+    @object_preservation_events ||= PreservationEvent.events_for(params[:id])
   end
 
   SolrResult = Struct.new(:response, :documents)
 
-  def load_children
-    if @object.has_children?
-      @children = SolrResult.new(*get_search_results(params, {q: @object.children_query}))
+  def object_children
+    return @object_children if @object_children
+    if current_object.has_children?
+      @object_children = SolrResult.new(*get_search_results(params, {q: current_object.children_query}))
       # For compatibility with Blacklight partials and helpers that paginate results
-      @response = @children.response
-      @documents = @children.documents
+      @response = @object_children.response
+      @documents = @object_children.documents
       @partial_path_templates = ["catalog/index_default"]
     end
+    @object_children
   end
 
-  def load_attachments
-    if @object.has_attachments?
-      @attachments = SolrResult.new(*get_search_results(params, {q: @object.attachments.send(:construct_query)}))
+  def object_attachments
+    return @object_attachments if @object_attachment
+    if current_object.has_attachments?
+      @object_attachments = SolrResult.new(*get_search_results(params, {q: current_object.attachments.send(:construct_query)}))
       # For compatibility with Blacklight partials and helpers
       @partial_path_templates = ["catalog/index_default"]
     end
+    @object_attachments
   end
 
   def collection_report
@@ -100,7 +68,7 @@ class ObjectsController < ApplicationController
     components.documents.each { |doc| total_file_size += (doc.content_size || 0) }
     @report = {
       components: components.response.total,
-      items: get_search_results(params, {q: @object.children_query})[0].total,
+      items: get_search_results(params, {q: current_object.children_query})[0].total,
       total_file_size: total_file_size
     }
   end
@@ -115,7 +83,7 @@ class ObjectsController < ApplicationController
   end
 
   def get_collection_components
-    SolrResult.new(*get_search_results(params, @object.components_query))
+    SolrResult.new(*get_search_results(params, current_object.components_query))
   end
 
   def configure_blacklight_for_related_objects
@@ -139,24 +107,24 @@ class ObjectsController < ApplicationController
   # tabs
 
   def tab_content
-    Tab.new("Content", "content") if @object.has_content?
+    Tab.new("Content", "content") if current_object.has_content?
   end
 
   def tab_children
-    if @children && @children.response.total > 0
-      children_label = @object.class.reflect_on_association(:children).class_name.pluralize
+    if object_children && object_children.response.total > 0
+      children_label = current_object.class.reflect_on_association(:children).class_name.pluralize
       Tab.new(children_label, "children")
     end
   end
 
   def tab_metadata
-    if @object.respond_to?(:descriptive_metadata_terms)
+    if current_object.respond_to?(:descriptive_metadata_terms)
       Tab.new("Descriptive Metadata", "descriptive_metadata") 
     end
   end
 
   def tab_default_permissions
-    if @object.respond_to?(:default_permissions)
+    if current_object.respond_to?(:default_permissions)
       Tab.new("Default Permissions", "default_permissions")
     end
   end
@@ -166,20 +134,20 @@ class ObjectsController < ApplicationController
   end
 
   def tab_preservation_events
-    if @object.has_preservation_events?
-      Tab.new("Preservation Events", "preservation_events", preservation_events_object_path(@object))
+    if current_object.has_preservation_events?
+      Tab.new("Preservation Events", "preservation_events", preservation_events_object_path(current_object))
     end
   end
 
   def tab_attachments
-    if @attachments && @attachments.response.total > 0
+    if object_attachments && object_attachments.response.total > 0
       Tab.new("Attachments", "attachments")
     end
   end
 
   def tab_collection_info
-    if @object.is_a?(Collection)
-      Tab.new("Collection Info", "collection_info", collection_info_object_path(@object))
+    if current_object.is_a?(Collection)
+      Tab.new("Collection Info", "collection_info", collection_info_object_path(current_object))
     end
   end
 

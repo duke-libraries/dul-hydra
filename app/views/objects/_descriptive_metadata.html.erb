@@ -1,28 +1,28 @@
 <div class="navbar">
   <div class="navbar-inner">
 	<ul class="nav">
-	  <% if can? :edit, @object -%>
+	  <% if can? :edit, current_object -%>
 	  <li>
-		<%= link_to "Edit", descriptive_metadata_edit_path(@object) %>
+		<%= link_to "Edit", descriptive_metadata_edit_path(current_object) %>
 	  </li>
 	  <% end -%>
-	  <% if can? :download, @object.descMetadata -%>
+	  <% if can? :download, current_object.descMetadata -%>
 	  <li>
-		<%= link_to "Download XML", download_datastream_object_path(@object, 'descMetadata') %>
+		<%= link_to "Download XML", download_datastream_object_path(current_object, 'descMetadata') %>
 	  </li>
 	  <% end -%>
 	</ul>
   </div>
 </div>
 <table class="table">
-  <% @object.descriptive_metadata_terms.each do |term| -%>
+  <% current_object.descriptive_metadata_terms.each do |term| -%>
     <% label = term.to_s.titleize -%>
-    <% if @object.class.delegates[term][:multiple] -%>
-      <% @object.send(term).each do |value| -%>
+    <% if current_object.class.delegates[term][:multiple] -%>
+      <% current_object.send(term).each do |value| -%>
         <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: value} %>
       <% end -%>
     <% else -%>
-      <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: @object.send(term)} %>
+      <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: current_object.send(term)} %>
     <% end -%>
   <% end -%>
 </table>

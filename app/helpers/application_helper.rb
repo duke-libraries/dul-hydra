@@ -68,23 +68,24 @@ module ApplicationHelper
   end
 
   def render_last_fixity_check_outcome
-    outcome = @document.last_fixity_check_outcome
+    outcome = current_document.last_fixity_check_outcome
     if outcome.present?
       label = outcome == "success" ? "success" : "important"
       render_label outcome.capitalize, label
     end
   end
 
-  def render_content_size(document = @document)
+  def render_content_size(document)
     number_to_human_size(document.content_size) rescue nil
   end
 
-  def render_content_type_and_size(document = @document)
+  def render_content_type_and_size(document)
     "#{document.content_mime_type} #{render_content_size(document)}"
   end
 
   def render_download_link(args = {})
-    document = args.fetch(:document, @document)
+    document = args[:document]
+    return unless document
     label = args.fetch(:label, "Download")
     css_class = args.fetch(:css_class, "")
     css_id = args.fetch(:css_id, "download-#{document.safe_id}")
@@ -97,10 +98,10 @@ module ApplicationHelper
   end
 
   def render_document_title
-    @document.title
+    current_document.title
   end
 
-  def render_document_thumbnail(document = @document, linked = false)
+  def render_document_thumbnail(document, linked = false)
     src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
     if linked && can?(:read, document)
@@ -110,7 +111,7 @@ module ApplicationHelper
     end
   end
 
-  def render_document_summary(document = @document)
+  def render_document_summary(document)
     render partial: 'document_summary', locals: {document: document}
   end
 
@@ -154,7 +155,7 @@ module ApplicationHelper
     date.to_formatted_s(:db) if date
   end
 
-  def effective_permissions(object = current_object)
+  def effective_permissions(object)
     results = []
     permissions = current_ability.permissions_doc(object.pid)
     policy_pid = current_ability.policy_pid_for(object.pid)
@@ -174,7 +175,7 @@ module ApplicationHelper
     results
   end
 
-  def inheritable_permissions(object = current_object)
+  def inheritable_permissions(object)
     object.default_permissions
   end
 
@@ -182,7 +183,7 @@ module ApplicationHelper
     content_tag :span, pe.event_outcome.capitalize, :class => "label label-#{pe.success? ? 'success' : 'important'}"
   end
 
-  def render_document_model_and_id(document = @document)
+  def render_document_model_and_id(document)
     "#{document.active_fedora_model} #{document.id}"
   end
 
