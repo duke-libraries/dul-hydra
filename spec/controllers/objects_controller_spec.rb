@@ -28,10 +28,11 @@ describe ObjectsController do
   context "#update" do
     before do
       controller.current_ability.stub(:test_edit).with(object.pid).and_return(true)
+      controller.stub(:current_object).and_return(object)
       put :update, :id => object, :test_model => {:title => "Updated"}
     end
     it "should redirect to the show page" do
-      response.should redirect_to(descriptive_metadata_path(object))
+      response.should redirect_to(record_path(object))
     end
     it "should update the object" do
       object.reload

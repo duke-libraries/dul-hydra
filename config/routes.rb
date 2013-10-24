@@ -28,7 +28,7 @@ DulHydra::Application.routes.draw do
   end
 
   # hydra-editor for descriptive metadata
-  scope '/objects/:id/descriptive_metadata', constraints: PID_CONSTRAINT, as: 'descriptive_metadata' do
+  scope '/objects/:id/descriptive_metadata', constraints: PID_CONSTRAINT, as: 'record' do
     get '/' => redirect {|params, req| "/objects/#{CGI::unescape(params[:id])}?tab=descriptive_metadata" }
     get 'edit' => 'objects#edit'
     put '/' => 'objects#update'

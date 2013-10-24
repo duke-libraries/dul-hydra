@@ -1,7 +1,7 @@
 class ObjectsController < ApplicationController
 
   include DulHydra::Controller::ObjectsControllerBehavior
-  include RecordsControllerBehavior
+  include RecordsControllerBehavior # hydra-editor plugin for descriptive metadata editing
 
   copy_blacklight_config_from(CatalogController)
 
@@ -101,7 +101,7 @@ class ObjectsController < ApplicationController
 
   # Override RecordsControllerBehavior
   def redirect_after_update
-    descriptive_metadata_path(current_object)
+    record_path(current_object)
   end
 
   # tabs

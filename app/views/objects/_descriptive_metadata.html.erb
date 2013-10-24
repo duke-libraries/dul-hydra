@@ -2,14 +2,14 @@
   <div class="navbar-inner">
 	<ul class="nav">
 	  <% if can? :edit, current_object -%>
-	  <li>
-		<%= link_to "Edit", descriptive_metadata_edit_path(current_object) %>
-	  </li>
+	    <li>
+		  <%= descriptive_metadata_edit_link %>
+	    </li>
 	  <% end -%>
 	  <% if can? :download, current_object.descMetadata -%>
-	  <li>
-		<%= link_to "Download XML", download_datastream_object_path(current_object, 'descMetadata') %>
-	  </li>
+	    <li>
+		  <%= download_datastream_xml_link 'descMetadata' %>
+	    </li>
 	  <% end -%>
 	</ul>
   </div>
@@ -17,6 +17,7 @@
 <table class="table">
   <% current_object.descriptive_metadata_terms.each do |term| -%>
     <% label = term.to_s.titleize -%>
+	<%# FIXME - this condition is bad! %>
     <% if current_object.class.delegates[term][:multiple] -%>
       <% current_object.send(term).each do |value| -%>
         <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: value} %>
