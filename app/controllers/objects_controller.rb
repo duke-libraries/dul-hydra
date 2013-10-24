@@ -5,10 +5,9 @@ class ObjectsController < ApplicationController
 
   copy_blacklight_config_from(CatalogController)
 
-  before_filter :enforce_show_permissions
+  before_filter :enforce_show_permissions, except: [:edit, :update]
   before_filter :load_document, only: [:show, :edit]
-  skip_before_filter :load_and_authorize_record, only: [:edit, :update]
-  before_filter :load_record, only: [:edit, :update]
+  # XXX We should be able to remove :edit on :load_object filter if issue #322 gets done right.
   before_filter :load_object, only: [:show, :edit, :attachments, :collection_info]
 
   helper_method :get_solr_response_for_field_values
@@ -62,7 +61,7 @@ class ObjectsController < ApplicationController
   
   def load_object
     if @record # hydra-editor
-      # XXX We shouldn't need to do this if https://github.com/duke-libraries/dul-hydra/issues/322 gets done right.
+      # XXX We shouldn't need to do this if issue #322 gets done right
       @object = @record
     elsif @document
       @object = ActiveFedora::SolrService.reify_solr_result(@document)
