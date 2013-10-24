@@ -6,7 +6,14 @@ module DulHydra::Controller
 
     included do
       protect_from_forgery
+
+      # require authentication by default
       before_filter :authenticate_user!
+
+      # tabs
+      class_attribute :tab_methods
+      helper_method :current_tabs
+
       rescue_from CanCan::AccessDenied do |exception|
         render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
       end
@@ -27,8 +34,15 @@ module DulHydra::Controller
       solr_parameters[:fq] << "(#{unwanted.join(' AND ')})"
     end
 
-    def configure_tabs(*tabs)
-      @tabs = Tabs.new(self, *tabs)
+    #
+    # tabs
+    #
+
+    def current_tabs
+      return @current_tabs if @current_tabs
+      @current_tabs = Tabs.new(self)
+      self.tab_methods.each { |m| @current_tabs << self.send(m) } if self.tab_methods
+      @current_tabs
     end
 
     Tab = Struct.new(:label, :id, :href) do
@@ -42,20 +56,19 @@ module DulHydra::Controller
 
     class Tabs < ActiveSupport::OrderedHash
 
-      attr_reader :controller
+      attr_reader :active_tab
 
-      def initialize(controller, *tab_symbols)
+      def initialize(controller)
         super()
-        @controller = controller
-        tab_symbols.each do |t| 
-          tab = controller.send("tab_#{t}")
-          self[tab.id] = tab unless tab.blank?
-        end
+        @active_tab = controller.params[:tab]
       end
       
+      def << (tab)
+        self[tab.id] = tab if tab
+      end
+
       def active
-        tab_param = controller.params[:tab]
-        tab_param && self.key?(tab_param) ? self[tab_param] : self.default
+        active_tab && self.key?(active_tab) ? self[active_tab] : self.default
       end
 
       def default?(tab)

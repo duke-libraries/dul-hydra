@@ -56,12 +56,12 @@ describe "object routes" do
       it "should have an edit route" do
         @route = {controller: 'objects', action: 'edit', id: 'duke:1'}
         expect(:get => '/objects/duke:1/descriptive_metadata/edit').to route_to(@route)
-        expect(:get => descriptive_metadata_edit_path('duke:1')).to route_to(@route)
+        expect(:get => record_edit_path('duke:1')).to route_to(@route)
       end    
       it "should have an update route" do
         @route = {controller: 'objects', action: 'update', id: 'duke:1'}
         expect(:put => '/objects/duke:1/descriptive_metadata').to route_to(@route)
-        expect(:put => descriptive_metadata_path('duke:1')).to route_to(@route)
+        expect(:put => record_path('duke:1')).to route_to(@route)
       end    
     end
   end

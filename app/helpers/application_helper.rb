@@ -41,8 +41,8 @@ module ApplicationHelper
   end
 
   def render_tabs
-    return if @tabs.blank?
-    @tabs.values.inject("") { |output, tab| output << render_tab(tab) }.html_safe
+    return if current_tabs.blank?
+    current_tabs.values.inject("") { |output, tab| output << render_tab(tab) }.html_safe
   end
 
   def render_tab_content(tab)
@@ -52,8 +52,8 @@ module ApplicationHelper
   end
 
   def render_tabs_content
-    return if @tabs.blank?
-    @tabs.values.inject("") { |output, tab| output << render_tab_content(tab) }.html_safe
+    return if current_tabs.blank?
+    current_tabs.values.inject("") { |output, tab| output << render_tab_content(tab) }.html_safe
   end
 
   def render_object_state
