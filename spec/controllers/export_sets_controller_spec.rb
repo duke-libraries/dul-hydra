@@ -16,11 +16,13 @@ describe ExportSetsController do
     let(:object_read) { FactoryGirl.create(:test_content) }
     let(:object_discover) { FactoryGirl.create(:test_content) }
     before do
-      object_read.read_users = [user.username]
-      object_read.save
-      object_discover.discover_users = [user.username]
-      object_discover.save
       sign_in user      
+      controller.current_ability.can :read, ActiveFedora::Base do |obj|
+        obj.pid == object_read.pid
+      end
+      controller.current_ability.can :discover, ActiveFedora::Base do |obj|
+        obj.pid == object_discover.pid
+      end
     end
     after do
       object_read.delete 
@@ -38,20 +40,26 @@ describe ExportSetsController do
   context "#create" do
     let(:user) { FactoryGirl.create(:user) }
     let(:object) { FactoryGirl.create(:test_content) }
-    before { sign_in user }
+    before do
+      sign_in user
+    end
     after { user.delete; object.delete }
     it "should create an export set and redirect to the show page" do
       user.export_sets.count.should == 0
+      controller.current_ability.can :read, ActiveFedora::Base do |obj|
+        obj.pid == object.pid
+      end
       post :create, :export_set => {:pids => [object.pid]}
       user.export_sets.count.should == 1
       expect(response).to redirect_to(export_set_path(assigns[:export_set]))
-      Zip::ZipFile.open(assigns[:export_set].archive.path) do |arch|
-        arch.find_entry(DulHydra.export_set_manifest_file_name).should_not be_nil
-        arch.find_entry(DulHydra.export_set_manifest_file_name).get_input_stream().read.should \
-            include(object.datastreams[DulHydra::Datastreams::CONTENT].checksum)
-        arch.find_entry(DulHydra.export_set_manifest_file_name).get_input_stream().read.should \
-            include(object.datastreams[DulHydra::Datastreams::CONTENT].checksumType)
-      end
+      # XXX The test below should be in a model spec
+      # Zip::ZipFile.open(assigns[:export_set].archive.path) do |arch|
+      #   arch.find_entry(DulHydra.export_set_manifest_file_name).should_not be_nil
+      #   arch.find_entry(DulHydra.export_set_manifest_file_name).get_input_stream().read.should \
+      #       include(object.datastreams[DulHydra::Datastreams::CONTENT].checksum)
+      #   arch.find_entry(DulHydra.export_set_manifest_file_name).get_input_stream().read.should \
+      #       include(object.datastreams[DulHydra::Datastreams::CONTENT].checksumType)
+      # end
     end
   end
   context "#update" do
@@ -77,6 +85,8 @@ describe ExportSetsController do
     let(:object) { FactoryGirl.create(:test_content) }
     let(:export_set) { FactoryGirl.create(:export_set, :pids => [object.pid]) }
     before do 
+      object.read_users = [export_set.user.user_key]
+      object.save
       sign_in export_set.user
     end
     after do
