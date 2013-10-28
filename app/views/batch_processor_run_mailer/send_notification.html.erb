@@ -11,22 +11,21 @@ td { text-align: right; }
     <h1><%= @title %></h1>
 	<p>
 	  Host: <%= @host %><br />
-	  DulHydra version: <%= @batch_run.version %>
+	  DulHydra version: <%= @batch.version %>
 	</p>
 	<p>
-	  Batch Id: <%= @batch_run.batch.id %><br />
-	  Batch Name: <%= @batch_run.batch.name %><br />
-	  Batch Run Id: <%= @batch_run.id %><br />
-	  Started at: <%= @batch_run.start %><br />
-	  Stopped at: <%= @batch_run.stop %><br />
-	  Status: <%= @batch_run.status %><br />
-	  Outcome: <%= @batch_run.outcome %>
+	  Batch Id: <%= @batch.id %><br />
+	  Batch Name: <%= @batch.name %><br />
+	  Started at: <%= @batch.start %><br />
+	  Stopped at: <%= @batch.stop %><br />
+	  Status: <%= @batch.status %><br />
+	  Outcome: <%= @batch.outcome %>
 	</p>
 	<p>
-	  Objects in batch: <%= @batch_run.total %><br />
-	  Successfully processed: <%= @batch_run.success %><br />
-	  Processing failures: <%= @batch_run.failure %><br />
-	  Unprocessed: <%= @batch_run.total - @batch_run.success - @batch_run.failure %>
+	  Objects in batch: <%= @batch.total %><br />
+	  Successfully processed: <%= @batch.success %><br />
+	  Processing failures: <%= @batch.failure %><br />
+	  Unprocessed: <%= @batch.total - @batch.success - @batch.failure %>
 	</p>
 	<p>
 	  See attachment for details of batch run.

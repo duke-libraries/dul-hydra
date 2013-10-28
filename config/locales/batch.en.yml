@@ -51,8 +51,6 @@ en:
                 name: "Name"
                 description: "Description"
                 objects: "Objects"
-                runs: "Runs"
-                last_run: "Last Run"
                 start: "Start"
                 stop: "Stop"
                 status: "Status"
