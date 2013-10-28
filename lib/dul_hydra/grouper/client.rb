@@ -29,7 +29,7 @@ module DulHydra::Grouper
       result = new.call("subjects", :post, request_body)["WsGetGroupsResults"]["results"].first
       # Have to manually filter results b/c Grouper WS version 1.5 does not support filter parameter
       if result && result["wsGroups"]
-        result["wsGroups"].select { |g| g["name"] =~ DulHydra.grouper_groups_name_filter }
+        result["wsGroups"].select { |g| g["name"] =~ /^#{DulHydra.grouper_groups_name_filter}/ }
       else
         []
       end

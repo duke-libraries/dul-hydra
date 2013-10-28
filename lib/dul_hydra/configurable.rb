@@ -26,9 +26,9 @@ module DulHydra::Configurable
     mattr_accessor :grouper_groups_env_value_sub
     self.grouper_groups_env_value_sub = [/^urn:mace:duke\.edu:groups/, "duke"]
 
-    # Filter for getting list of Grouper groups for the repository
+    # Filter for getting list of Grouper groups for the repository - String, not Regexp
     mattr_accessor :grouper_groups_name_filter
-    self.grouper_groups_name_filter = /^duke:library:repository:ddr:/
+    self.grouper_groups_name_filter = 'duke:library:repository:ddr:'
 
     # Groups authz for downloading Component content
     mattr_accessor :component_download_group
