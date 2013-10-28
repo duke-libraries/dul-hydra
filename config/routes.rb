@@ -48,7 +48,6 @@ DulHydra::Application.routes.draw do
       get 'procezz'
       get 'validate'
     end
-    resources :batch_runs
     resources :batch_objects do
       resources :batch_object_datastreams
       resources :batch_object_relationships

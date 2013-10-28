@@ -63,7 +63,7 @@ class ObjectsController < ApplicationController
   end
 
   def object_attachments
-    return @object_attachments if @object_attachment
+    return @object_attachments if @object_attachments
     if current_object.has_attachments?
       @object_attachments = SolrResult.new(*get_search_results(params, {q: current_object.attachments.send(:construct_query)}))
       # For compatibility with Blacklight partials and helpers

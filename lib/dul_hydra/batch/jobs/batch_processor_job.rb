@@ -10,11 +10,10 @@ module DulHydra::Batch::Jobs
     
     def failure(job)
       batch = DulHydra::Batch::Models::Batch.find(batch_id)
-      batch_run = batch.batch_runs.last
-      batch_run.stop = Time.now
-      batch_run.outcome = DulHydra::Batch::Models::BatchRun::OUTCOME_FAILURE
-      batch_run.status = DulHydra::Batch::Models::BatchRun::STATUS_INTERRUPTED
-      batch_run.save
+      batch.stop = Time.now
+      batch.outcome = DulHydra::Batch::Models::Batch::OUTCOME_FAILURE
+      batch.status = DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED
+      batch.save
     end
     
   end

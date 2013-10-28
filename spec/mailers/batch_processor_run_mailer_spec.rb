@@ -19,6 +19,6 @@ describe BatchProcessorRunMailer do
     email.subject.should include("Batch Processor Run Results")
     email.parts.first.to_s.should include("Ingested TestModelOmnibus")
     email.parts.second.to_s.should include("Objects in batch: #{batch.batch_objects.count}")
-    email.parts.second.to_s.should include(DulHydra::Batch::Models::BatchRun::OUTCOME_SUCCESS)
+    email.parts.second.to_s.should include(DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS)
   end
 end
