@@ -13,7 +13,6 @@ module DulHydra::Batch::Models
       after do
         # The following clean-up steps are needed only to cover the case that the test fails;
         # i.e., that batch.destroy does not successfully destroy itself and all related batch objects
-        DulHydra::Batch::Models::BatchRun.all.each { |obj| obj.destroy }
         DulHydra::Batch::Models::BatchObjectRelationship.all.each { |obj| obj.destroy }
         DulHydra::Batch::Models::BatchObjectDatastream.all.each { |obj| obj.destroy }
         DulHydra::Batch::Models::BatchObject.all.each { |obj| obj.destroy }
@@ -21,7 +20,6 @@ module DulHydra::Batch::Models
       end
       it "should destroy all the associated dependent objects" do
         DulHydra::Batch::Models::Batch.all.should be_empty
-        DulHydra::Batch::Models::BatchRun.all.should be_empty
         DulHydra::Batch::Models::BatchObject.all.should be_empty
         DulHydra::Batch::Models::BatchObjectDatastream.all.should be_empty
         DulHydra::Batch::Models::BatchObjectRelationship.all.should be_empty
