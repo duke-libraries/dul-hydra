@@ -237,6 +237,11 @@ Devise.setup do |config|
 end
 
 # Grouper integration
+if File.exists? "#{Rails.root}/config/grouper.yml"
+  require 'dul_hydra/services/grouper_service'
+  DulHydra::Services::GrouperService.config = YAML.load_file("#{Rails.root}/config/grouper.yml")[Rails.env]
+end
+
 Warden::Manager.after_set_user do |user, auth, opts|
   user.groups = DulHydra::Services::RemoteGroupService.new(auth.env).groups(user)
 end
