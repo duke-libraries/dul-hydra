@@ -1,0 +1,13 @@
+<%= content_tag :h1, I18n.t('batch.web.page_titles.batch', :id => @batch.id) %>
+<div class="tabbable"> <!-- Only required for left/right tabs -->
+  <ul class="nav nav-tabs">
+	<% show_batch_tabs.each do |tab| -%>
+	  <%= render_show_batch_tab tab %>
+	<% end -%>
+  </ul>
+  <div class="tab-content">
+	<% show_batch_tabs.each do |tab| -%>
+	  <%= render_show_tab_batch_content tab %>
+	<% end -%>
+  </div>
+</div>

@@ -4,7 +4,7 @@ en:
       headings:
         object_info: 'About This Object'
         more_info: 'More Information'
-        fixity: 'Fixity'
+        fixity: 'Last Fixity Check'
       items:
         id: 'PID'
         active_fedora_model: 'Type'
@@ -15,8 +15,21 @@ en:
         metadata: 'Metadata'
         preservation_events: 'Preservation Events'
         fcrepo_admin: 'Fcrepo View'
+        collection_report: 'Collection Report'
         last_fixity_check_on: 'Checked'
         last_fixity_check_outcome: 'Outcome'
+    field_labels:
+        description: 'Description'
+        title: 'Title'
+        url: 'URL'
+    admin_policies:
+      headings:
+        inheritable_rights: 'Access restrictions inherited by objects governed by this Admin Policy'
+        license: 'Copyright / license statement inherited by objects governed by this Admin Policy'
+      messages:
+        updated: 'Admin Policy updated'
+      page_titles:
+        edit: 'Editing Admin Policy'
   blacklight:
     application_name: 'DUL Preservation Repository'
     header_links:

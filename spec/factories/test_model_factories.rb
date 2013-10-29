@@ -14,27 +14,12 @@ class TestChild < TestModel
   belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
 end
 
-class TestFileDatastreams < TestContent
-  include DulHydra::Models::HasContentdm
-  include DulHydra::Models::HasDigitizationGuide
-  include DulHydra::Models::HasDPCMetadata
-  include DulHydra::Models::HasFMPExport
-  include DulHydra::Models::HasMarcXML
-  include DulHydra::Models::HasTripodMets
-end
-
 class TestContentMetadata < TestParent
   include DulHydra::Models::HasContentMetadata
 end
 
 class TestModelOmnibus < TestModel
   include DulHydra::Models::Governable
-  include DulHydra::Models::HasContentdm
-  include DulHydra::Models::HasDigitizationGuide
-  include DulHydra::Models::HasDPCMetadata
-  include DulHydra::Models::HasFMPExport
-  include DulHydra::Models::HasMarcXML
-  include DulHydra::Models::HasTripodMets
   include DulHydra::Models::HasContent
   include DulHydra::Models::HasContentMetadata
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true
@@ -86,12 +71,7 @@ FactoryGirl.define do
     end
       
     factory :test_content_with_fixity_check do
-      after(:create) do |c| 
-        p = c.fixity_check
-        # XXX PreservationEvents do not have default permissions
-        p.permissions = [DulHydra::Permissions::PUBLIC_READ_ACCESS]
-        p.save!
-      end 
+      after(:create) { |c| c.fixity_check! }
     end
 
     factory :test_content_thumbnail do

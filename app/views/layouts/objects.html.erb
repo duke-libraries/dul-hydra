@@ -1,0 +1,22 @@
+<% content_for :main_content do %>
+<div class="span9">
+  <div id="document" class="<%= render_document_class %>">
+	<h3><%= render_document_title %></h3>
+	<div class="row" style="margin-bottom:1em">
+	  <div class="span2">
+		<%= render_document_thumbnail %>
+	  </div>
+	  <div class="span7">
+		<%= render_document_summary %>
+	  </div>
+	</div>
+	<div class="document">
+	  <%= yield %>
+	</div>
+  </div>
+</div>
+<div class="span3">
+  <%= render 'sidebar' %>
+</div>
+<% end %>
+<%= render template: "layouts/application" %>

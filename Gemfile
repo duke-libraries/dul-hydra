@@ -1,17 +1,20 @@
-source 'https://rubygems.org'
+source 'http://rubygems.org'
 
 gem 'rails', '~> 3.2.13'
 
 gem 'sqlite3'
-gem 'hydra-head', '~> 6.3.2'
-gem 'blacklight', '~> 4.2.1'
+gem 'hydra-head', '~> 6.4'
+gem 'blacklight', '4.5.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise'
+gem 'devise-remote-user'
 gem 'fcrepo_admin', '~> 0.6.1'
-gem 'active-fedora', '~> 6.4.3'
+gem 'active-fedora', '~> 6.6'
 
 gem 'log4r'
+
+gem 'delayed_job_active_record'
 
 # ExecJS runtime
 gem 'therubyracer', '~> 0.11.3', :require => 'v8'

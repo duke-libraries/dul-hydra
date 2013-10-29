@@ -49,11 +49,11 @@ module DulHydra::Models
     end
 
     def has_datastream?(dsID)
-      !datastreams[dsID].blank?
+      datastreams[dsID].present?
     end
 
     def has_admin_policy?
-      !admin_policy_uri.blank?
+      admin_policy_uri.present?
     end
 
     def admin_policy_uri
@@ -66,30 +66,7 @@ module DulHydra::Models
     end
 
     def has_children?
-      # XXX We should come up with something better
-      ["Collection", "Item"].include?(active_fedora_model)
-    end
-
-    def has_parent?
-      !parent_uri.blank?
-    end
-
-    def parent_uri
-      get(parent_index_field)
-    end
-
-    def parent_pid
-      ActiveFedora::Base.pids_from_uris(parent_uri) if has_parent?
-    end
-
-    # Field name for parent PID on the child index document
-    def parent_index_field
-      case
-      when active_fedora_model == "Component"
-        DulHydra::IndexFields::IS_PART_OF
-      when active_fedora_model == "Item"
-        DulHydra::IndexFields::IS_MEMBER_OF_COLLECTION
-      end
+      ActiveFedora::SolrService.class_from_solr_document(self).reflect_on_association(:children).present?
     end
 
     def label
@@ -97,7 +74,7 @@ module DulHydra::Models
     end
 
     def title
-      get(DulHydra::IndexFields::TITLE) || label || "#{active_fedora_model} #{id}"
+      get(DulHydra::IndexFields::TITLE)
     end
 
     def identifier
@@ -141,25 +118,16 @@ module DulHydra::Models
       targets_count > 0
     end
     
+    def has_default_rights?
+      has_datastream?(DulHydra::Datastreams::DEFAULT_RIGHTS)
+    end
+    
     def parsed_content_metadata
       JSON.parse(self[DulHydra::IndexFields::CONTENT_METADATA_PARSED].first)
     end
 
-    def event_date_time
-      get_date(DulHydra::IndexFields::EVENT_DATE_TIME)
-    end
-
-    def event_outcome
-      get(DulHydra::IndexFields::EVENT_OUTCOME)
-    end
-
-    def event_type
-      get(DulHydra::IndexFields::EVENT_TYPE)
-    end
-
-    def parsed_event_outcome_detail_note
-      field = DulHydra::IndexFields::EVENT_OUTCOME_DETAIL_NOTE
-      event_type == PreservationEvent::FIXITY_CHECK ? get_json(field) : get(field)
+    def association(name)
+      get_pid(ActiveFedora::SolrService.solr_name(name, :symbol))
     end
 
     private
@@ -182,6 +150,10 @@ module DulHydra::Models
 
     def parse_date(date)
       Time.parse(date).localtime if date
+    end
+
+    def get_pid(field)
+      ActiveFedora::Base.pids_from_uris(get(field))
     end
 
   end

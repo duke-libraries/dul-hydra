@@ -6,14 +6,8 @@ module DulHydra::Batch::Models
     
     DATASTREAMS = [ DulHydra::Datastreams::CONTENT,
                     DulHydra::Datastreams::CONTENT_METADATA,
-                    DulHydra::Datastreams::CONTENTDM,
                     DulHydra::Datastreams::DESC_METADATA,
-                    DulHydra::Datastreams::DIGITIZATION_GUIDE,
-                    DulHydra::Datastreams::DPC_METADATA,
-                    DulHydra::Datastreams::FMP_EXPORT,
-                    DulHydra::Datastreams::MARCXML,
-                    DulHydra::Datastreams::RIGHTS_METADATA,
-                    DulHydra::Datastreams::TRIPOD_METS ]
+                    DulHydra::Datastreams::RIGHTS_METADATA ]
     
     OPERATION_ADD = "ADD" # add this datastream to the object -- considered an error if datastream already exists
     OPERATION_ADDUPDATE = "ADDUPDATE" # add this datastream to or update this datastream in the object

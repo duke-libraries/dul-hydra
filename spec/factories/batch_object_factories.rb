@@ -34,7 +34,6 @@ FactoryGirl.define do
   trait :with_add_datastreams do
     after(:create) do |batch_object|
       FactoryGirl.create(:batch_object_add_desc_metadata_datastream_file, :batch_object => batch_object)
-      FactoryGirl.create(:batch_object_add_digitization_guide_datastream, :batch_object => batch_object)
       FactoryGirl.create(:batch_object_add_content_datastream, :batch_object => batch_object)          
     end      
   end
@@ -42,6 +41,10 @@ FactoryGirl.define do
   factory :ingest_batch_object, :class => DulHydra::Batch::Models::IngestBatchObject do
     has_identifier
     has_label
+    
+    factory :basic_ingest_batch_object do
+      has_model
+    end
     
     factory :generic_ingest_batch_object do
       has_model

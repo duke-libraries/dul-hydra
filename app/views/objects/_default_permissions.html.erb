@@ -1,0 +1,20 @@
+<div class="navbar">
+  <div class="navbar-inner">
+	<ul class="nav">
+	  <% if can? :edit, @object -%>
+	  <li>
+		<%= link_to "Edit", edit_admin_policy_path(@object) %>
+	  </li>
+	  <% end -%>
+	  <li>
+		<%= link_to_fcrepo_view "defaultRights" %>
+	  </li>
+	</ul>
+  </div>
+</div>
+<p class="alert">
+  These settings are inherited by objects governed by this policy. 
+  They do not apply to this admin policy object itself.
+</p>
+<%= render partial: 'access_controls', locals: {permissions: @object.default_permissions} %>
+<%= render partial: 'license', locals: {license: @object.defaultRights.license, inherited: false} %>

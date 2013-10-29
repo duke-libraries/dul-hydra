@@ -42,21 +42,21 @@ module DulHydra::Batch::Scripts
         end
         close_batch_run
       end
+      save_logfile
+      send_notification if @batch.user && @batch.user.email
     end
     
     private
     
     def validate_batch
       valid = true
-      @batch.batch_objects.each do |object|
-        errors = object.validate
-        unless errors.empty?
-          valid = false
-          errors.each do |error|
-            message = "#{object.identifier} [Database ID: #{object.id}] Batch Object Validation Error: #{error}"
-            @details << message
-            @log.error(message)
-          end
+      errors = @batch.validate
+      unless errors.empty?
+        valid = false
+        errors.each do |error|
+          message = "Batch Object Validation Error: #{error}"
+          @details << message
+          @log.error(message)
         end
       end
       return valid
@@ -67,6 +67,8 @@ module DulHydra::Batch::Scripts
     end
     
     def initiate_batch_run
+      @log.info "Batch id: #{@batch.id}"
+      @log.info "Batch name: #{@batch.name}" if @batch.name
       @log.info "Batch size: #{@batch.batch_objects.size}"
       @batch_run = DulHydra::Batch::Models::BatchRun.create(:batch => @batch,
                                    :start => DateTime.now,
@@ -109,10 +111,24 @@ module DulHydra::Batch::Scripts
     
     def config_logger
       logconfig = Log4r::YamlConfigurator
-      logconfig['LOG_DIR'] = @log_dir
-      logconfig['LOG_FILE'] = @log_file
+      logconfig['LOG_FILE'] = File.join(@log_dir, @log_file)
       logconfig.load_yaml_file File.join(LOG_CONFIG_FILEPATH)
       @log = Log4r::Logger['batch_processor']
+    end
+    
+    def save_logfile
+      @log.outputters.each do |outputter|
+        @logfilename = outputter.filename if outputter.respond_to?(:filename)
+      end
+      @batch_run.update_attributes({:logfile => File.new(@logfilename)}) if @logfilename
+    end
+    
+    def send_notification
+      begin
+        BatchProcessorRunMailer.send_notification(@batch_run, @batch.user.email).deliver!
+      rescue
+        puts "An error occurred while attempting to send the notification."
+      end
     end
     
   end

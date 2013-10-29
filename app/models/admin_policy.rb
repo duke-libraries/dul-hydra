@@ -16,6 +16,16 @@ class AdminPolicy < Hydra::AdminPolicy
     "#{APO_NAMESPACE}:#{suffix}"
   end
 
+  def descriptive_metadata_terms
+    [:title, :description]
+  end
+
+  def to_solr(solr_doc=Hash.new, opts={})
+    solr_doc = super(solr_doc, opts)
+    solr_doc.merge!(DulHydra::IndexFields::TITLE => title || pid)
+    solr_doc
+  end
+
   #
   # Load admin policy objects from YAML file
   #

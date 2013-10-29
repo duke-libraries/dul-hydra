@@ -3,17 +3,18 @@ module DulHydra::Batch::Models
   class BatchObject < ActiveRecord::Base
     attr_accessible :batch, :batch_id, :identifier, :label, :model, :pid, :verified
     belongs_to :batch, :inverse_of => :batch_objects
-    has_many :batch_object_datastreams, :inverse_of => :batch_object
-    has_many :batch_object_relationships, :inverse_of => :batch_object
+    has_many :batch_object_datastreams, :inverse_of => :batch_object, :dependent => :destroy
+    has_many :batch_object_relationships, :inverse_of => :batch_object, :dependent => :destroy
     
     VERIFICATION_PASS = "PASS"
     VERIFICATION_FAIL = "FAIL"
     
     PRESERVATION_EVENT_DETAIL = <<-EOS
-      DulHydra version #{DulHydra::VERSION}
-      Batch object database id: %{batch_id}
-      Batch object identifier: %{identifier}
-      Model: %{model}
+%{label}
+Batch object database id: %{batch_id}
+Batch object identifier: %{identifier}
+Model: %{model}
+DulHydra version #{DulHydra::VERSION}
     EOS
   
     def self.pid_from_identifier(identifier, batch_id)
@@ -29,6 +30,7 @@ module DulHydra::Batch::Models
     end
   
     def validate
+      @error_prefix = I18n.t('batch.manifest_object.errors.prefix', :identifier => identifier, :id => id)
       errors = []
       errors += validate_required_attributes
       errors += validate_model if model
@@ -44,7 +46,7 @@ module DulHydra::Batch::Models
       begin
         model.constantize
       rescue NameError
-        errs << "Invalid model name: #{model}"
+        errs << "#{@error_prefix} Invalid model name: #{model}"
       end
       return errs
     end
@@ -52,23 +54,27 @@ module DulHydra::Batch::Models
     def validate_datastreams
       errs = []
       batch_object_datastreams.each do |d|
-        unless model.constantize.new.datastreams.keys.include?(d.name)
-          errs << "Invalid datastream name for #{model}: #{d.name}"
+        begin
+          unless model.constantize.new.datastreams.keys.include?(d.name)
+            errs << "#{@error_prefix} Invalid datastream name for #{model}: #{d.name}"
+          end
+        rescue NameError
+          errs << "#{@error_prefix} Unable to validate datastream name due to invalid model name: #{d.name}"
         end
         unless DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPES.include?(d.payload_type)
-          errs << "Invalid payload type for #{d.name} datastream: #{d.payload_type}"
+          errs << "#{@error_prefix} Invalid payload type for #{d.name} datastream: #{d.payload_type}"
         end
         if d.payload_type.eql?(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
           unless File.readable?(d.payload)
-            errs << "Missing or unreadable file for #{d[:name]} datastream: #{d[:payload]}"
+            errs << "#{@error_prefix} Missing or unreadable file for #{d[:name]} datastream: #{d[:payload]}"
           end
         end
         if d.checksum && !d.checksum_type
-          errs << "Must specify checksum type if providing checksum for #{d.name} datastream"
+          errs << "#{@error_prefix} Must specify checksum type if providing checksum for #{d.name} datastream"
         end
         if d.checksum_type
           unless DulHydra::Datastreams::CHECKSUM_TYPES.include?(d.checksum_type)      
-            errs << "Invalid checksum type for #{d.name} datastream: #{d.checksum_type}"
+            errs << "#{@error_prefix} Invalid checksum type for #{d.name} datastream: #{d.checksum_type}"
           end
         end      
       end
@@ -79,22 +85,22 @@ module DulHydra::Batch::Models
       errs = []
       batch_object_relationships.each do |r|
         unless DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPES.include?(r[:object_type])
-          errs << "Invalid object_type for #{r[:name]} relationship: #{r[:object_type]}"
+          errs << "#{@error_prefix} Invalid object_type for #{r[:name]} relationship: #{r[:object_type]}"
         end
         if r[:object_type].eql?(DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID)
           begin
             obj = ActiveFedora::Base.find(r[:object], :cast => true)
           rescue ActiveFedora::ObjectNotFoundError
-            errs << "#{r[:name]} relationship object does not exist: #{r[:object]}"
+            errs << "#{@error_prefix} #{r[:name]} relationship object does not exist: #{r[:object]}"
           else
             relationship_reflection = DulHydra::Utils.relationship_object_reflection(model, r[:name])
             if relationship_reflection
               klass = DulHydra::Utils.reflection_object_class(relationship_reflection)
               if klass
-                errs << "#{r[:name]} relationship object #{r[:object]} exists but is not a(n) #{klass}" unless obj.is_a?(klass)
+                errs << "#{@error_prefix} #{r[:name]} relationship object #{r[:object]} exists but is not a(n) #{klass}" unless obj.is_a?(klass)
               end
             else
-              errs << "#{model} does not define a(n) #{r[:name]} relationship"
+              errs << "#{@error_prefix} #{model} does not define a(n) #{r[:name]} relationship"
             end
           end
         end
@@ -118,10 +124,12 @@ module DulHydra::Batch::Models
         end
       end
       if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
-        if dryrun
-          repo_object.generate_thumbnail(repo_object.datastreams[datastream[:name]])
-        else
-          repo_object.generate_thumbnail!(repo_object.datastreams[datastream[:name]])
+        if DulHydra::Derivatives::Image.derivable?(repo_object.datastreams[datastream[:name]].mimeType)
+          if dryrun
+            repo_object.generate_thumbnail(repo_object.datastreams[datastream[:name]])
+          else
+            repo_object.generate_thumbnail!(repo_object.datastreams[datastream[:name]])
+          end
         end
       end
       return repo_object
@@ -208,26 +216,24 @@ module DulHydra::Batch::Models
     end
     
     def create_preservation_event(event_type, event_outcome, outcome_details, repository_object)
-      event_label = case event_type
-      when PreservationEvent::INGESTION
-        "Object ingestion"
-      when PreservationEvent::VALIDATION
-        "Object ingest validation"
-      end
-      event = PreservationEvent.new(:label => event_label,
-                                    :event_type => event_type,
-                                    :event_date_time => Time.now.utc.strftime(PreservationEvent::DATE_TIME_FORMAT),
-                                    :event_detail => event_detail,
+      event = PreservationEvent.new(:event_type => event_type,
+                                    :event_detail => event_detail(event_type),
                                     :event_outcome => event_outcome,
                                     :event_outcome_detail_note => outcome_details.join("\n"),
-                                    :linking_object_id_type => PreservationEvent::OBJECT,
-                                    :linking_object_id_value => repository_object.internal_uri,
-                                    :for_object => repository_object)
+                                    )
+      event.for_object = repository_object
       event.save
     end
     
-    def event_detail
+    def event_detail(event_type)
+      event_label = case event_type
+              when PreservationEvent::INGESTION
+                "Object ingestion"
+              when PreservationEvent::VALIDATION
+                "Object ingest validation"
+              end
       PRESERVATION_EVENT_DETAIL % {
+        :label => event_label,
         :batch_id => id,
         :identifier => identifier,
         :model => model

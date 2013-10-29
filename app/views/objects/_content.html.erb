@@ -1,0 +1,22 @@
+<% if @document.has_content? %>
+  <div class="row">
+	<div class="well span2 text-center">
+	  <div>
+		<%= render_download_link css_class: "btn btn-primary" %>
+	  </div>
+	  <div class="muted">
+		<small><%= render_content_type_and_size %></small>
+	  </div>
+	</div>
+  </div>
+  <% elsif @document.has_default_rights? %>
+    <% if @current_user && @current_user.can?(:edit, @object) %>
+      <%= link_to "Edit", edit_admin_policy_path, :method => 'get', :class => "btn btn-primary" %>
+    <% end %>
+    <%= render partial: 'show_inheritable_rights' %>
+    <%= render partial: 'show_license' %>
+  <% else %>
+  <div class="alert">
+	This object has no content.
+  </div>
+<% end %>

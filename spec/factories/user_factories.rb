@@ -1,24 +1,28 @@
-READER_EMAIL = 'repositoryreader@nowhere.org'
-EDITOR_EMAIL = 'repositoryeditor@nowhere.org'
-ADMIN_EMAIL = 'repositoryadmin@nowhere.org'
+READER = 'repositoryreader@nowhere.org'
+EDITOR = 'repositoryeditor@nowhere.org'
+ADMIN = 'repositoryadmin@nowhere.org'
 
 FactoryGirl.define do
 
   factory :user do
 
-    sequence(:email) { |n| "person#{n}@example.com" }
-    password 'secret'
+    sequence(:username) { |n| "person#{n}" }
+    email { |u| "#{u.username}@example.com" }
+    password "secret"
 
     factory :reader do
-      email READER_EMAIL
+      username READER
+      email { |u| u.username }
     end
 
     factory :editor do
-      email EDITOR_EMAIL
+      username EDITOR
+      email { |u| u.username }
     end
 
     factory :admin do
-      email ADMIN_EMAIL
+      username ADMIN
+      email { |u| u.username }
     end
 
   end

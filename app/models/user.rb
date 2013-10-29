@@ -3,6 +3,8 @@ class User < ActiveRecord::Base
   has_many :batches, :inverse_of => :user
   has_many :export_sets, :dependent => :destroy
   delegate :can?, :cannot?, :to => :ability
+  validates_uniqueness_of :username, :case_sensitive => false
+  validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/
 
   # Connects this user object to Hydra behaviors. 
   include Hydra::User
@@ -10,27 +12,20 @@ class User < ActiveRecord::Base
   # Connects this user object to Blacklights Bookmarks and Folders. 
   include Blacklight::User
   
-  # Include default devise modules. Others available are:
-  # :token_authenticatable, :confirmable,
-  # :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,
+  devise :remote_user_authenticatable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me
-  # attr_accessible :title, :body
+  attr_accessible :username, :email, :password, :password_confirmation, :remember_me
 
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account. 
   def to_s
-    email
+    username
   end
 
   def ability
     @ability ||= Ability.new(self)
   end
-
-  
 
 end

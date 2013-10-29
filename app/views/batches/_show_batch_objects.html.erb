@@ -1,0 +1,26 @@
+<% unless @batch.batch_objects.empty? %>
+<%= content_tag :table, :class => 'table table-bordered table-striped table-condensed' do %>
+<%= content_tag :thead do %>
+<%= content_tag :tr do %>
+<%= content_tag :th, I18n.t('batch.web.column_names.id'), :scope => 'col' %>
+<%= content_tag :th, I18n.t('batch.web.column_names.identifier'), :scope => 'col' %>
+<%= content_tag :th, I18n.t('batch.web.column_names.model'), :scope => 'col' %>
+<%= content_tag :th, I18n.t('batch.web.column_names.pid'), :scope => 'col' %>
+<%= content_tag :th, I18n.t('batch.web.column_names.verified'), :scope => 'col' %>
+<% end %>
+<% end %>
+<%= content_tag :tbody do %>
+<% @batch.batch_objects.each do |bo| %>
+<%= content_tag :tr do %>
+<%= content_tag :td, bo.id %>
+<%= content_tag :td, bo.identifier %>
+<%= content_tag :td, bo.model %>
+<%= content_tag :td, bo.pid %>
+<%= content_tag :td, bo.verified %>
+<% end %>
+<% end %>
+<% end %>
+<% end %>
+<% else %>
+<%= content_tag :p, I18n.t('batch.web.no_batch_runs') %>
+<% end %>

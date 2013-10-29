@@ -4,6 +4,7 @@ module DulHydra::Models
     include Describable
     include Governable
     include AccessControllable
+    include HasAttachments
     include HasPreservationEvents
     include HasThumbnail
     include ActiveFedora::Auditable
@@ -32,13 +33,13 @@ module DulHydra::Models
     # checksums validate.
     def validate_checksums
       outcome = true
-      detail = {}
+      results = {}
       self.datastreams.each do |dsid, ds|
         next if ds.profile.empty?
         outcome &&= ds.dsChecksumValid
-        detail[dsid] = ds.profile
+        results[dsid] = ds.profile
       end
-      [outcome, detail]
+      [outcome, results]
     end
 
   end

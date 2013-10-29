@@ -1,8 +1,15 @@
 require 'spec_helper'
+require 'helpers/user_helper'
 
 describe "catalog/index.html.erb" do
+  let(:user) { FactoryGirl.create(:user) }
   let(:object) { FactoryGirl.create(:component_with_content) }
-  after { object.delete }
+  before(:each) { login user }
+  after(:each) do
+    logout user
+    object.delete
+  end
+  after(:all) { user.delete }
   context "search options" do
     before do
       object.discover_groups = ["public"]
@@ -26,7 +33,7 @@ describe "catalog/index.html.erb" do
         click_button "search"
       end
       it "should display thumbnail, title, and identifier" do
-        page.should have_xpath("//img[@src = \"#{thumbnail_path(object)}\"]")
+        page.should have_xpath("//img[@src = \"#{thumbnail_object_path(object)}\"]")
         page.should have_content(object.identifier.first)
         page.should have_content(object.title.first)
       end
@@ -40,8 +47,8 @@ describe "catalog/index.html.erb" do
         click_button "search"
       end
       it "should not link to download or show view" do
-        page.should_not have_xpath("//a[@href = \"#{catalog_path(object)}\"]")
-        page.should_not have_xpath("//a[@href = \"#{download_path(object)}\"]")
+        page.should_not have_xpath("//a[@href = \"#{object_path(object)}\"]")
+        page.should_not have_xpath("//a[@href = \"#{download_object_path(object)}\"]")
       end
     end
     context "user has read permission on object" do
@@ -53,8 +60,8 @@ describe "catalog/index.html.erb" do
         click_button "search"
       end
       it "should link to download and show view" do
-        page.should have_xpath("//a[@href = \"#{catalog_path(object)}\"]")
-        page.should have_xpath("//a[@href = \"#{download_path(object)}\"]")
+        page.should have_xpath("//a[@href = \"#{object_path(object)}\"]")
+        page.should have_xpath("//a[@href = \"#{download_object_path(object)}\"]")
       end
     end
   end

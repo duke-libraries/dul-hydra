@@ -55,29 +55,9 @@
 	  <!-- /Flash messages -->
 	
 	  <!-- main content + sidebar -->
-	  <div class="row">
-		<div class="span9">
-		  <%= render_breadcrumbs %>
-		  <div id="document" class="<%= render_document_class %>">
-			<div class="row" style="min-height:100px">
-			  <div class="span7">
-				<h3><%= render_object_title %></h3>
-			  </div>
-			  <div class="span2">
-				<div class="pull-right">
-				  <%= render_thumbnail @object %>
-				</div>
-			  </div>
-			</div>
-			<div class="document">
-			  <%= yield %>
-			</div>
-		  </div>
-		</div>
-		<div class="span3">
-		  <%= render 'show_sidebar' %>
-		</div>
-      </div>
+	  <div class="row" id="main-content">
+		<%= content_for?(:main_content) ? yield(:main_content) : yield %>
+	  </div>
 	  <!-- /main content + sidebar -->
 
 	</div> 

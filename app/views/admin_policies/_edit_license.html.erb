@@ -1,0 +1,9 @@
+  <%= content_tag :h4, I18n.t('dul_hydra.admin_policies.headings.license') %>
+  <%= f.label :default_license_title, I18n.t('dul_hydra.field_labels.title'), :style => "display: inline" %>
+  <%= f.text_field :default_license_title %>
+  <%= content_tag :br %>
+  <%= f.label :default_license_description, I18n.t('dul_hydra.field_labels.description'), :style => "display: inline" %>
+  <%= f.text_area :default_license_description %>
+  <%= content_tag :br %>
+  <%= f.label :default_license_url, I18n.t('dul_hydra.field_labels.url'), :style => "display: inline" %>
+  <%= f.text_field :default_license_url %>

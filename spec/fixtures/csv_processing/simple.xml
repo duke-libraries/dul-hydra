@@ -1,0 +1,12 @@
+<Table>
+	<Row>
+		<ColA>A</ColA>
+		<ColB>3</ColB>
+		<ColC>B</ColC>
+	</Row>
+	<Row>
+		<ColA>C</ColA>
+		<ColB>2</ColB>
+		<ColC>D</ColC>
+	</Row>
+</Table>

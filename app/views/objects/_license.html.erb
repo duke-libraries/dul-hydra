@@ -1,0 +1,13 @@
+<h4>
+  <%= license.title.first || "Copyright" %> <% if inherited %>(inherited)<% end %>
+</h4>
+<% if license.description.present? %> 
+  <p>
+    <%= license.description.first %>
+  </p>
+<% end %>
+<% if license.url.present? %>
+  <p>
+	<a href="<%= license.url.first %>"><%= license.url.first %></a>
+  </p>
+<% end %>

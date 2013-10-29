@@ -77,8 +77,7 @@ module DulHydra::Batch::Scripts
     
     def config_logger
       logconfig = Log4r::YamlConfigurator
-      logconfig['LOG_DIR'] = @log_dir
-      logconfig['LOG_FILE'] = @log_file
+      logconfig['LOG_FILE'] = File.join(@log_dir, @log_file)
       logconfig.load_yaml_file File.join(LOG_CONFIG_FILEPATH)
       @log = Log4r::Logger['batch_processor']
     end

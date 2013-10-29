@@ -1,0 +1,31 @@
+:root_node:
+    :name: dc
+    :namespaces:
+        - :prefix: dcterms
+          :href: "http://purl.org/dc/terms/"
+        - :prefix: xsi
+          :href: "http://www.w3.org/2001/XMLSchema-instance"
+:fields:
+    :namespace: dcterms
+    :unmapped: exclude
+    :field_map:
+        "Title": title
+        "Subject-Name": subject
+        "Subject-Topic": subject
+        "Description": description
+        "Creator": creator
+        "Date": date
+        "Type-DCMI": type
+        "Type-AAT": type
+        "Type-Genre": type
+        "Identifier-DukeID": identifier
+        "Print Number": identifier
+        "Identifier-Other": identifier
+        "Source": source
+        "Digital Collection": isPartOf
+        "Language": language
+        "Rights": rights
+        "Extent": extent
+        "Spatial": spatial
+        "Series": isPartOf
+        "Subseries": isPartOf
