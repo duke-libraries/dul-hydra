@@ -3,8 +3,8 @@ require 'spec_helper'
 module DulHydra::Batch::Scripts
   
   shared_examples "a successful ingest batch" do
-    let(:batch_run) { batch.batch_runs.last }
     before do
+      batch.reload
       @repo_objects = []
       batch.batch_objects.each { |obj| @repo_objects << ActiveFedora::Base.find(obj.pid, :cast => true) }
     end
@@ -37,15 +37,15 @@ module DulHydra::Batch::Scripts
           end
         end
       end
-      expect(batch_run.outcome).to eq(DulHydra::Batch::Models::BatchRun::OUTCOME_SUCCESS)
-      expect(batch_run.total).to eq(batch.batch_objects.size)
-      expect(batch_run.success).to eq(batch_run.total)
-      expect(batch_run.failure).to eq(0)
-      expect(batch_run.status).to eq(DulHydra::Batch::Models::BatchRun::STATUS_FINISHED)
-      expect(batch_run.start).to be < batch_run.stop
-      expect(batch_run.stop).to be_within(3.minutes).of(Time.now)
-      expect(batch_run.version).to eq(DulHydra::VERSION)
-      batch.batch_objects.each { |obj| expect(batch_run.details).to include("Ingested #{obj.model} #{obj.identifier} into #{obj.pid}") }
+      expect(batch.outcome).to eq(DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS)
+      expect(batch.total).to eq(batch.batch_objects.size)
+      expect(batch.success).to eq(batch.total)
+      expect(batch.failure).to eq(0)
+      expect(batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_FINISHED)
+      expect(batch.start).to be < batch.stop
+      expect(batch.stop).to be_within(3.minutes).of(Time.now)
+      expect(batch.version).to eq(DulHydra::VERSION)
+      batch.batch_objects.each { |obj| expect(batch.details).to include("Ingested #{obj.model} #{obj.identifier} into #{obj.pid}") }
     end
   end
   

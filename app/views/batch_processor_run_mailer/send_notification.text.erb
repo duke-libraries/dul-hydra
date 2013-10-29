@@ -3,19 +3,18 @@
 =========================
 
 Host:   <%= @host %>
-DulHydra version: <%= @batch_run.version %>
+DulHydra version: <%= @batch.version %>
 
-Batch Id: <%= @batch_run.batch.id %>
-Batch Name: <%= @batch_run.batch.name %>
-Batch Run Id: <%= @batch_run.id %>
-Started at: <%= @batch_run.start %>
-Stopped at: <%= @batch_run.stop %>
-Status: <%= @batch_run.status %>
-Outcome: <%= @batch_run.outcome %>
+Batch Id: <%= @batch.id %>
+Batch Name: <%= @batch.name %>
+Started at: <%= @batch.start %>
+Stopped at: <%= @batch.stop %>
+Status: <%= @batch.status %>
+Outcome: <%= @batch.outcome %>
 
-Objects in batch: <%= @batch_run.total %>
-Successfully processed: <%= @batch_run.success %>
-Processing failures: <%= @batch_run.failure %>
-Unprocessed: <%= @batch_run.total - @batch_run.success - @batch_run.failure %>
+Objects in batch: <%= @batch.total %>
+Successfully processed: <%= @batch.success %>
+Processing failures: <%= @batch.failure %>
+Unprocessed: <%= @batch.total - @batch.success - @batch.failure %>
 
 See attachment for details of batch run.

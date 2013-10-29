@@ -1,14 +1,14 @@
 module BatchesHelper
 
   def batch_action(batch)
-    if batch.batch_runs.empty?
+    if batch.status.nil?
       link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
-    elsif batch.batch_runs.last.status == DulHydra::Batch::Models::BatchRun::STATUS_FINISHED
+    elsif batch.status == DulHydra::Batch::Models::Batch::STATUS_FINISHED
       link_to(I18n.t('batch.web.action_names.reprocezz'), procezz_batch_path(batch))
-    elsif batch.batch_runs.last.status == DulHydra::Batch::Models::BatchRun::STATUS_INTERRUPTED
+    elsif batch.status == DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED
       link_to(I18n.t('batch.web.action_names.reprocezz'), procezz_batch_path(batch))
     else
-      DulHydra::Batch::Models::BatchRun::STATUS_RUNNING
+      DulHydra::Batch::Models::Batch::STATUS_RUNNING
     end
   end
 
@@ -22,7 +22,6 @@ module BatchesHelper
         :active => true
       }
       @show_tabs << { :label => I18n.t('batch.web.tab_names.batch_objects'), :partial => 'show_batch_objects', :id => 'tab-batch-objects' }
-      @show_tabs << { :label => I18n.t('batch.web.tab_names.batch_runs'), :partial => 'show_batch_runs', :id => 'tab-batch-runs' }
       @show_tabs
   end
   
