@@ -18,7 +18,7 @@ module DulHydra::Grouper
         # munge values to proper Grouper group names, if necessary
         gg = gg.collect { |g| g.sub(*DulHydra.grouper_groups_env_value_sub) } if DulHydra.grouper_groups_env_value_sub
         # filter group list as configured
-        gg = gg.select { |g| g =~ DulHydra.grouper_groups_name_filter } if DulHydra.grouper_groups_name_filter
+        gg = gg.select { |g| g =~ /^#{DulHydra.grouper_groups_name_filter}/ } if DulHydra.grouper_groups_name_filter
         self.grouper_groups = gg
         logger.debug "Grouper groups for user \"#{self}\" set to: #{self.grouper_groups}"
       else
