@@ -4,7 +4,7 @@ gem 'rails', '~> 3.2.13'
 
 gem 'sqlite3'
 gem 'hydra-head', '~> 6.4'
-gem 'blacklight', '4.5.0.rc1'
+gem 'blacklight', '4.5.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise'
