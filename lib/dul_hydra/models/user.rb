@@ -34,7 +34,7 @@ module DulHydra::Models
     end
 
     def groups
-      @groups ||= DulHydra::Services::RemoteGroupService.new.groups(self)
+      @groups ||= DulHydra::Services::GroupService.new.groups(self)
     end
 
   end
