@@ -2,8 +2,8 @@ require 'dul_hydra'
 require 'yaml'
 require 'grouper-rest-client'
 
-module DulHydra::Grouper
-  class Client < Grouper::Rest::Client::Resource
+module DulHydra::Services
+  class GrouperService < Grouper::Rest::Client::Resource
 
     def initialize
       @@config ||= YAML.load_file("#{Rails.root}/config/grouper.yml")[Rails.env]
@@ -12,7 +12,7 @@ module DulHydra::Grouper
 
     # List of all grouper groups for the repository
     def self.repository_groups
-      new.groups(DulHydra.grouper_groups_name_filter)
+      new.groups(DulHydra.remote_groups_name_filter)
     end
 
     def self.repository_group_names
@@ -29,7 +29,7 @@ module DulHydra::Grouper
       result = new.call("subjects", :post, request_body)["WsGetGroupsResults"]["results"].first
       # Have to manually filter results b/c Grouper WS version 1.5 does not support filter parameter
       if result && result["wsGroups"]
-        result["wsGroups"].select { |g| g["name"] =~ /^#{DulHydra.grouper_groups_name_filter}/ }
+        result["wsGroups"].select { |g| g["name"] =~ /^#{DulHydra.remote_groups_name_filter}/ }
       else
         []
       end

@@ -238,5 +238,5 @@ end
 
 # Grouper integration
 Warden::Manager.after_set_user do |user, auth, opts|
-  user.set_grouper_groups(auth.env)
+  user.groups = DulHydra::Services::RemoteGroupService.new(auth.env).groups(user)
 end
