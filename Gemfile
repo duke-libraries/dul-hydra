@@ -25,7 +25,7 @@ gem 'therubyracer', '~> 0.11.3', :require => 'v8'
 gem 'mime-types', '~> 1.19'
 
 # Export sets
-gem 'rubyzip'
+gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 3.0'
 
 # Image manipulation
