@@ -19,12 +19,19 @@ describe ApplicationController do
   describe "#login_remote_user" do
     context "login existing user" do
       let(:user) { FactoryGirl.create(:user) }
+      before { controller.remote_user_name = user.username }
       after { user.delete }
       it "should login the remote user" do
-        controller.remote_user_name = user.username
         get :index
         controller.user_signed_in?.should be_true
         controller.current_user.should eq(user)
+      end
+      it "should update the user's attributes" do
+        controller.remote_user_email = "scrabble@games.example.com"
+        user.email.should_not == "scrabble@games.example.com"
+        get :index
+        user.reload
+        user.email.should == "scrabble@games.example.com"
       end
     end
     context "remote user not present" do

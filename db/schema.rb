@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131028084900) do
+ActiveRecord::Schema.define(:version => 20131030193939) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -147,6 +147,11 @@ ActiveRecord::Schema.define(:version => 20131028084900) do
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
     t.string   "username",               :default => "", :null => false
+    t.string   "first_name"
+    t.string   "middle_name"
+    t.string   "nickname"
+    t.string   "last_name"
+    t.string   "display_name"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"
