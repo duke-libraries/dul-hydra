@@ -7,7 +7,7 @@ gem 'hydra-head', '~> 6.4'
 gem 'blacklight', '4.5.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
-gem 'devise'
+gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user'
 gem 'fcrepo_admin', '~> 0.6.1'
 gem 'active-fedora', '~> 6.6'
