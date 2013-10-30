@@ -12,7 +12,7 @@ module DulHydra::Models
       validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/
 
       devise :remote_user_authenticatable, :database_authenticatable, :registerable,
-             :recoverable, :rememberable, :trackable, :validatable
+             :rememberable, :trackable, :validatable
 
       attr_accessible :username, :email, :password, :password_confirmation, :remember_me
       attr_writer :groups
