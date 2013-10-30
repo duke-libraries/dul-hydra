@@ -34,7 +34,7 @@ gem 'mini_magick'
 group :development, :test do
   gem 'rspec-rails' #, '~> 2.12.0'
   gem 'capybara', '~> 2.0'
-  gem 'jettywrapper'
+  gem 'jettywrapper', '~> 1.5'
   gem 'factory_girl_rails', '~> 4.0'
   gem 'orderly'
   gem 'launchy'

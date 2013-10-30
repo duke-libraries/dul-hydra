@@ -15,6 +15,7 @@ module DulHydra::Models
              :recoverable, :rememberable, :trackable, :validatable
 
       attr_accessible :username, :email, :password, :password_confirmation, :remember_me
+      attr_writer :groups
     end
 
     # Method added by Blacklight; Blacklight uses #to_s on your
@@ -30,6 +31,10 @@ module DulHydra::Models
 
     def member_of?(group)
       self.groups.include? group
+    end
+
+    def groups
+      @groups ||= DulHydra::Services::GroupService.new.groups(self)
     end
 
   end

@@ -11,7 +11,7 @@ describe "Grouper integration" do
     object.read_groups = ["duke:library:repository:ddr:foo:bar"]
     object.save!
     Warden.on_next_request do |proxy|
-      proxy.env[DulHydra.grouper_groups_env_key] = "urn:mace:duke.edu:groups:library:repository:ddr:foo:bar"
+      proxy.env[DulHydra.remote_groups_env_key] = "urn:mace:duke.edu:groups:library:repository:ddr:foo:bar"
       proxy.set_user user
     end
   end
