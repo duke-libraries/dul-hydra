@@ -8,11 +8,11 @@ describe ApplicationController do
     end
 
     def remote_user_name=(user_name)
-      request.env[Devise.remote_user_env_key] = user_name
+      request.env[DeviseRemoteUser.env_key] = user_name
     end
 
     def remote_user_email=(email)
-      request.env[Devise.remote_user_attribute_map[:email]] = email
+      request.env[DeviseRemoteUser.attribute_map[:email]] = email
     end
   end
 
@@ -46,8 +46,8 @@ describe ApplicationController do
       let(:email) { "foo@bar.com" }
       context "autocreation enabled" do
         before do
-          Devise.remote_user_autocreate = true
-          Devise.remote_user_attribute_map = {:email => 'mail'}
+          DeviseRemoteUser.auto_create = true
+          DeviseRemoteUser.attribute_map = {:email => 'mail'}
         end
         after { @user.delete }
         it "should create a user for the remote user, if one doesn't exist" do
@@ -63,7 +63,7 @@ describe ApplicationController do
         end
       end
       context "autocreation disabled" do
-        before { Devise.remote_user_autocreate = false }
+        before { DeviseRemoteUser.auto_create = false }
         it "should not create a user for the remote use" do
           User.find_by_username(username).should be_nil
           controller.remote_user_name = username

@@ -234,18 +234,6 @@ Devise.setup do |config|
   # When using omniauth, Devise cannot automatically set Omniauth path,
   # so you need to do it manually. For the users scope, it would be:
   # config.omniauth_path_prefix = "/my_engine/users/auth"
-
-  # ==> Remote user authenticatable config
-  require 'devise_remote_user'
-  config.remote_user_autocreate = true
-  config.remote_user_attribute_map = {
-    email: 'mail', 
-    first_name: 'givenName',
-    middle_name: 'duMiddleName1',
-    nickname: 'eduPersonNickname',
-    last_name: 'sn',
-    display_name: 'displayName'
-  }
 end
 
 # Load configurion for Grouper service, if present
@@ -254,11 +242,21 @@ if File.exists? "#{Rails.root}/config/grouper.yml"
   DulHydra::Services::GrouperService.config = YAML.load_file("#{Rails.root}/config/grouper.yml")[Rails.env]
 end
 
-# Remote user auto-updating
-Warden::Manager.after_authentication do |user, auth, opts|
-  user_manager = DeviseRemoteUser::UserManager.new(auth.env)
-  user_manager.update_user(user)
+# Load and configure devise-remote-user plugin
+require 'devise_remote_user'
+DeviseRemoteUser.configure do |config|
+  config.auto_create = true
+  config.attribute_map = {
+    email: 'mail', 
+    first_name: 'givenName',
+    middle_name: 'duMiddleName1',
+    nickname: 'eduPersonNickname',
+    last_name: 'sn',
+    display_name: 'displayName'
+  }
+  config.auto_update = true
 end
+DeviseRemoteUser.add_warden_callbacks
 
 # Integration of remote (Grouper) groups via Shibboleth
 Warden::Manager.after_set_user do |user, auth, opts|
