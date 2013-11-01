@@ -256,7 +256,6 @@ DeviseRemoteUser.configure do |config|
   }
   config.auto_update = true
 end
-DeviseRemoteUser.add_warden_callbacks
 
 # Integration of remote (Grouper) groups via Shibboleth
 Warden::Manager.after_set_user do |user, auth, opts|
