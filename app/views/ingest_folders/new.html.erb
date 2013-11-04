@@ -1,0 +1,13 @@
+<h1>Ingest Folder</h1>
+
+<%= form_for @ingest_folder do |f| %>
+	
+<%= f.label :folder, :style => "display: inline" %>
+<%= f.text_field :dirpath %>
+
+<div>
+  <%= f.submit :id => 'ingest_folder_submit_button', :class => "btn btn-primary" %>
+</div>
+	
+	
+<% end %>

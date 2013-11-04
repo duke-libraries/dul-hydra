@@ -66,6 +66,10 @@ DulHydra::Application.routes.draw do
     end
   end
 
+  resources :ingest_folders
+  
+  get '/ingest_folders/show', to: 'ingest_folders#show'
+
   resources :admin_policies, :only => [:edit, :update], constraints: PID_CONSTRAINT
   
 end
