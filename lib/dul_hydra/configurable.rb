@@ -40,6 +40,7 @@ module DulHydra::Configurable
                                 :export_sets_permissions, 
                                 :preservation_events_permissions,
                                 :batches_permissions,
+                                :ingest_folders_permissions,
                                 :download_permissions
                                ]
   end

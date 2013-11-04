@@ -39,3 +39,8 @@ table.access-controls .access-level {
 table.access-controls td ul {
 	margin: 0;
 }
+.field_with_errors {
+  padding: 2px;
+  background-color: red;
+  display: table;
+}

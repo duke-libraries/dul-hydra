@@ -1,5 +1,26 @@
 en:
+    activerecord:
+        attributes:
+            ingest_folder:
+                admin_policy_pid: Admin Policy
+                base_path: Base Path
+                checksum_file: Checksum File Sub-Path
+                checksum_type: Checksum Type
+                collection_pid: Collection
+                file_creator: File Creator
+                parent_id_length: Length of Parent Identifier
+                sub_path: Folder Sub-Path
     batch:
+        ingest_folder:
+            create: New Ingest Folder
+            base_path:
+                forbidden: "%{path} is not permitted for folder ingest"
+            create_batch: Create Ingest Batch
+            excluded_files: Excluded Files
+            folder: Folder
+            not_readable: "%{path} does not exist or is not readable" 
+            objects_to_ingest: Objects to be Ingested
+            scan_folder: Scan Folder
         manifest:
             validation_failed: "Did not process manifest due to manifest validation errors"
             validation_skipped: "Skipped validation"

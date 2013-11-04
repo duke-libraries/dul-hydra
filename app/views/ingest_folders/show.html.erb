@@ -1,0 +1,56 @@
+<h1>Ingest Folder</h1>
+
+<%= content_tag(:table) do %>
+
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('batch.ingest_folder.folder')) %>
+		<%= content_tag(:td, @ingest_folder.abbreviated_path) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.file_creator')) %>
+		<%= content_tag(:td, file_creator) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('batch.ingest_folder.objects_to_ingest')) %>
+		<%= content_tag(:td) do %>
+			<%= content_tag(:ul) do %>
+				<%= content_tag(:li, file_count) %>
+				<%= content_tag(:li, parent_count) %>
+				<%= content_tag(:li, target_count) %>
+			<% end %>
+		<% end %>
+	<% end %>	
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('batch.ingest_folder.excluded_files')) %>
+		<%= content_tag(:td) do %>
+			<%= content_tag(:ul) do %>
+				<%= excluded_file_list %>
+			<% end %>
+		<% end %>
+	<% end %>	
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.checksum_file')) %>
+		<%= content_tag(:td, @ingest_folder.checksum_file) %>
+	<% end %>
+	<% if @ingest_folder.checksum_file.present? %>
+		<%= content_tag(:tr) do %>
+			<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.checksum_type')) %>
+			<%= content_tag(:td, @ingest_folder.checksum_type) %>
+		<% end %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.collection_pid')) %>
+		<%= content_tag(:td, @collection_title) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.admin_policy_pid')) %>
+		<%= content_tag(:td, @ingest_folder.admin_policy_pid) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.parent_id_length')) %>
+		<%= content_tag(:td, @ingest_folder.parent_id_length) %>
+	<% end %>
+	
+<% end %>
+
+<%= link_to I18n.t('batch.ingest_folder.create_batch'), procezz_ingest_folder_path(@ingest_folder), :class => "btn btn-primary" %>
