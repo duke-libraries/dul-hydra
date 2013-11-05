@@ -1,26 +1,9 @@
 module DulHydra::Batch::Models
+
+  class IngestFolder < ActiveRecord::Base
   
-  class IngestFolder
-    extend ActiveModel::Naming
-    include ActiveModel::Model
-    include ActiveModel::Conversion
-    
-    def initialize(opts={})
-      
-    end
-    
-    def persisted?
-      false
-    end
-    
-    def dirpath=(dirpath)
-      @dirpath = dirpath
-    end
-    
-    def dirpath
-      @dirpath
-    end
-    
+    attr_accessible :dirpath, :username, :admin_policy_pid, :collection_pid
+  
   end
-  
+
 end

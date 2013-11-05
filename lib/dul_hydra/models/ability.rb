@@ -34,6 +34,10 @@ module DulHydra::Models
       can :manage, DulHydra::Batch::Models::Batch, :user_id => current_user.id
     end
 
+    def ingest_folders_permissions
+      can :manage, DulHydra::Batch::Models::IngestFolder
+    end
+    
     def download_permissions
       can :download, ActiveFedora::Datastream do |ds|
         # The "content" datastream of a Component object
