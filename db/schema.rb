@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131030193939) do
+ActiveRecord::Schema.define(:version => 20131105161651) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -103,6 +103,18 @@ ActiveRecord::Schema.define(:version => 20131030193939) do
     t.datetime "archive_updated_at"
     t.text     "pids"
     t.string   "title"
+  end
+
+  create_table "ingest_folders", :force => true do |t|
+    t.string   "dirpath"
+    t.string   "username"
+    t.string   "admin_policy_pid"
+    t.string   "collection_pid"
+    t.string   "model"
+    t.boolean  "add_parents"
+    t.integer  "parent_id_length"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
   end
 
   create_table "preservation_events", :force => true do |t|
