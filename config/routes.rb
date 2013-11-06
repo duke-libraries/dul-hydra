@@ -66,7 +66,11 @@ DulHydra::Application.routes.draw do
     end
   end
 
-  resources :ingest_folders, :only => [:new, :create, :show]
+  resources :ingest_folders, :only => [:new, :create, :show] do
+    member do
+      get 'procezz'
+    end
+  end
   
   resources :admin_policies, :only => [:edit, :update], constraints: PID_CONSTRAINT
   

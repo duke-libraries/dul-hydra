@@ -1,9 +1,34 @@
 <h1>Ingest Folder</h1>
 
-<%= @ingest_folder.dirpath %>
+<%= content_tag(:table) do %>
+
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Folder") %>
+		<%= content_tag(:td, @ingest_folder.dirpath) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "File Creator") %>
+		<%= content_tag(:td, IngestFolder::FILE_CREATORS.fetch(@ingest_folder.file_creator, nil)) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Files Found") %>
+		<%= content_tag(:td, @included) %>
+	<% end %>	
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Excluded Files") %>
+		<%= content_tag(:td) do %>
+			<%= content_tag(:ul) do %>
+				<% @excluded.each do |exc| %>
+					<%= content_tag(:li, exc) %>
+				<% end %>
+			<% end %>
+		<% end %>
+	<% end %>	
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Admin Policy") %>
+		<%= content_tag(:td, @ingest_folder.admin_policy_pid) %>
+	<% end %>
 	
-<%= @ingest_folder.username %>
+<% end %>
 
-<%= @ingest_folder.admin_policy_pid %>
-
-<%= @ingest_folder.collection_pid %>
+<%= link_to "Create Ingest Batch", procezz_ingest_folder_path(@ingest_folder), :class => "btn btn-primary" %>
