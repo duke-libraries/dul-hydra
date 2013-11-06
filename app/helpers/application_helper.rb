@@ -18,6 +18,34 @@ module ApplicationHelper
     current_object.title_display rescue "#{current_object.class.to_s} #{current_object.pid}"
   end
 
+  def bootstrap_icon(icon)
+    content_tag :i, "", class: "icon-#{icon}"
+  end
+
+  def permission_icon(perm)
+    case
+    when perm[:name] == Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+      bootstrap_icon("globe")
+    # when perm[:name] == Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
+      # Duke icon
+    when perm[:type] == :group
+      (bootstrap_icon("user")*2).html_safe
+    when perm[:type] == :user
+      bootstrap_icon("user")
+    end
+  end
+
+  def permission_name(perm)
+    case
+    when perm[:name] == Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+      "Public"
+    when perm[:name] == Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
+      "Duke Community"
+    else
+      perm[:name]
+    end
+  end
+
   def render_object_identifier
     if current_object.identifier.respond_to?(:join)
       current_object.identifier.join("<br />")
@@ -173,6 +201,21 @@ module ApplicationHelper
       end
     end
     results
+  end
+
+  def display_permissions(type)
+    groups = current_object.send("#{type}_groups")
+    return :public if groups.include?("public")
+    return :registered if groups.include?("registered")
+    {groups: groups, users: current_object.send("#{type}_users")}
+  end
+
+  def display_inherited_permissions(type)
+    policy_pid = current_ability.policy_pid_for(current_object.pid)    
+    groups = current_ability.send("#{type}_groups_from_policy", policy_pid)
+    return :public if groups.include?("public")
+    return :registered if groups.include?("registered")
+    {groups: groups, users: current_ability.send("#{type}_persons_from_policy", policy_pid)}
   end
 
   def inheritable_permissions(object)

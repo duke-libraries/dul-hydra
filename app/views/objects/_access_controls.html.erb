@@ -10,11 +10,12 @@
 	<% permissions.each do |perm| %>
 	<tr>
 	  <td>
-		<i class="icon-user"></i><% if perm[:type] == :group %><i class="icon-user"></i><% end %>
-		<%= perm[:name] %>
+		<%= permission_icon perm %>
+		<%= permission_name perm %>
 	  </td>
 	  <td>
-		<%= perm[:access] %> <% if perm[:inherited] %>(inherited)<% end %>
+		<%= perm[:access] %>
+		<% if perm[:inherited] %><span class="muted">(inherited)</span><% end %>
 	  </td>
 	</tr>
 	<% end %>
