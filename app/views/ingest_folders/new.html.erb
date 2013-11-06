@@ -1,5 +1,24 @@
 <h1>Ingest Folder</h1>
 
 <%= form_for @ingest_folder do |f| %>
+
+<div>
+	<%= f.label :folder, :style => "display: inline" %>
+	<%= f.text_field :dirpath %>
+</div>
+
+<div>
+	<%= f.label :file_creator, :style => "display: inline" %>
+	<%= f.select :file_creator, options_for_select(IngestFolder::FILE_CREATORS.invert), :include_blank => true %>
+</div>
+
+<div>
+	<%= f.label :admin_policy, :style => "display: inline" %>
+	<%= f.text_field :admin_policy_pid %>
+</div>
+
+<div>
+  <%= f.submit "Scan Folder", :id => 'ingest_folders_submit_button', :class => "btn btn-primary" %>
+</div>
 	
 <% end%>
