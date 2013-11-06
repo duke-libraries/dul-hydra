@@ -12,7 +12,7 @@ gem 'devise-remote-user', '0.2.0'
 gem 'fcrepo_admin', '~> 0.6.1'
 gem 'active-fedora', '~> 6.6'
 gem 'grouper-rest-client'
-gem 'hydra-editor', '0.1.0'
+gem 'hydra-editor', '0.1.1'
 
 gem 'log4r'
 

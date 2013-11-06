@@ -126,7 +126,7 @@ GEM
       hydra-access-controls (= 6.4.0)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
-    hydra-editor (0.1.0)
+    hydra-editor (0.1.1)
       active-fedora (>= 6.3.0)
       bootstrap_forms
       rails (>= 3.2.13, < 5.0)
@@ -302,7 +302,7 @@ DEPENDENCIES
   factory_girl_rails (~> 4.0)
   fcrepo_admin (~> 0.6.1)
   grouper-rest-client
-  hydra-editor (= 0.1.0)
+  hydra-editor (= 0.1.1)
   hydra-head (~> 6.4)
   jettywrapper (~> 1.5)
   jquery-rails
