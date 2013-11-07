@@ -1,10 +1,10 @@
-<% if current_object.governable? && current_object.admin_policy.present? %>
+<% if current_object.has_admin_policy? %>
   <p class="alert">
-	This object is governed by the admin policy <strong><%= link_to current_object.admin_policy.pid, object_path(current_object.admin_policy) %></strong>. 
+	This object is governed by the admin policy <strong><%= link_to current_object.admin_policy.pid, object_path(current_object.admin_policy.pid) %></strong>. 
   </p>
 <% end %>
-<%= render partial: 'access_controls', locals: {permissions: effective_permissions(current_object)} %>
+<%= render partial: 'access_controls', locals: {grants: display_grants} %>
 <%= render partial: 'license', locals: {license: current_object.rightsMetadata.license, inherited: false} %>
-<% if current_object.governable? && current_object.admin_policy.present? %>
+<% if current_object.has_admin_policy? %>
   <%= render partial: 'license', locals: {license: current_object.admin_policy.datastreams["defaultRights"].license, inherited: true} %>
 <% end %>
