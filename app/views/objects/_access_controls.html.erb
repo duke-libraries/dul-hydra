@@ -2,20 +2,29 @@
 <table class="table" style="width:auto">
   <thead>
 	<tr>
-	  <th scope="col">User/Group</th>
 	  <th scope="col">Permission</th>
+	  <th scope="col">Granted To</th>
 	</tr>
   </thead>
   <tbody>
-	<% permissions.each do |perm| %>
+	<% grants.keys.each do |perm| %>
 	<tr>
 	  <td>
-		<i class="icon-user"></i><% if perm[:type] == :group %><i class="icon-user"></i><% end %>
-		<%= perm[:name] %>
+		<%= perm.to_s.capitalize %>
 	  </td>
 	  <td>
-		<%= perm[:access] %> <% if perm[:inherited] %>(inherited)<% end %>
-	  </td>
+		<% if grants[perm].empty? -%>
+		-
+		<% else %>
+		<ul class="unstyled" style="margin:0">
+		  <% grants[perm].each do |g| %>
+		  <li>
+			<%= permission_icon g %> <%= permission_name g %>
+		  </li>
+		  <% end %>
+		</ul>
+		<% end %>
+	  <td>
 	</tr>
 	<% end %>
   </tbody>
