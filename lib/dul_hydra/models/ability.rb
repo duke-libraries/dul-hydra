@@ -1,3 +1,5 @@
+require 'dul_hydra'
+
 module DulHydra::Models
   module Ability
     extend ActiveSupport::Concern
@@ -34,6 +36,10 @@ module DulHydra::Models
       can :manage, DulHydra::Batch::Models::Batch, :user_id => current_user.id
     end
 
+    def ingest_folders_permissions
+      cannot :create, IngestFolder unless IngestFolder.permitted_folders(current_user).present?
+    end
+    
     def download_permissions
       can :download, ActiveFedora::Datastream do |ds|
         # The "content" datastream of a Component object

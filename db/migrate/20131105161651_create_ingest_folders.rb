@@ -1,7 +1,8 @@
 class CreateIngestFolders < ActiveRecord::Migration
   def change
     create_table :ingest_folders do |t|
-      t.string :dirpath
+      t.string :base_path
+      t.string :sub_path
       t.string :username
       t.string :admin_policy_pid
       t.string :collection_pid

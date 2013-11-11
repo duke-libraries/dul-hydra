@@ -1,8 +1,10 @@
 class IngestFoldersController < ApplicationController
   
-  load_resource
+  load_and_authorize_resource
 
   def new
+    @admin_policies = AdminPolicy.all
+    @permitted_folder_bases = IngestFolder.permitted_folders(current_user)
   end
   
   def create
@@ -13,9 +15,7 @@ class IngestFoldersController < ApplicationController
   end
   
   def show
-    results = @ingest_folder.scan
-    @included = results[0]
-    @excluded = results[1]
+    @included, @excluded = @ingest_folder.scan
   end
   
   def procezz

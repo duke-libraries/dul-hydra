@@ -106,7 +106,8 @@ ActiveRecord::Schema.define(:version => 20131105161651) do
   end
 
   create_table "ingest_folders", :force => true do |t|
-    t.string   "dirpath"
+    t.string   "base_path"
+    t.string   "sub_path"
     t.string   "username"
     t.string   "admin_policy_pid"
     t.string   "collection_pid"

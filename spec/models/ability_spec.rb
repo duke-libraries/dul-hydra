@@ -63,5 +63,25 @@ describe Ability do
 
   describe "#export_sets_permissions" do
   end
+  
+  describe "#ingest_folders_permissions" do
+    let(:user) { FactoryGirl.create(:user) }
+    let(:ability) { described_class.new(user) }
+    after do
+      user.delete 
+    end
+    context "user has no permitted ingest folders" do
+      before { IngestFolder.stub(:permitted_folders).with(user).and_return([]) }
+      it "should deny create permission to the user" do
+        ability.can?(:create, IngestFolder).should be_false
+      end      
+    end
+    context "user has at least one permitted ingest folder" do
+      before { IngestFolder.stub(:permitted_folders).with(user).and_return(['dir']) }
+      it "should allow create permission to the user" do
+        ability.can?(:create, IngestFolder).should be_true
+      end      
+    end
+  end
 
 end
