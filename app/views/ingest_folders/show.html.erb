@@ -4,11 +4,11 @@
 
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, "Folder") %>
-		<%= content_tag(:td, @ingest_folder.dirpath) %>
+		<%= content_tag(:td, File.join(@ingest_folder.abbreviated_path)) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, "File Creator") %>
-		<%= content_tag(:td, IngestFolder::FILE_CREATORS.fetch(@ingest_folder.file_creator, nil)) %>
+		<%= content_tag(:td, IngestFolder.file_creators.fetch(@ingest_folder.file_creator, nil)) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, "Files Found") %>

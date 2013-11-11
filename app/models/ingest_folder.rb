@@ -1,22 +1,52 @@
 class IngestFolder < ActiveRecord::Base
   
-  attr_accessible :dirpath, :username, :admin_policy_pid, :collection_pid, :model, :file_creator
+  attr_accessible :username, :admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path
+
+  CONFIG_FILE = File.join(Rails.root, 'config', 'folder_ingest.yml')
   
   DEFAULT_INCLUDED_FILE_EXTENSIONS = ['.tif', '.tiff']
-  DEFAULT_FILE_MODEL = "Component"
   
-  FILE_CREATORS = { "DPC" => "Digital Production Center" }
+  def self.load_configuration
+    @@configuration ||= YAML::load(File.read(CONFIG_FILE)).with_indifferent_access
+  end
+  
+  def self.default_file_model
+    self.load_configuration.fetch(:config).fetch(:file_model)
+  end
+  
+  def self.file_creators
+    self.load_configuration.fetch(:config).fetch(:file_creators)
+  end
+  
+  def self.permitted_folders(user)
+    user ||= User.new
+    self.load_configuration.fetch(:files).fetch(:permissions).fetch(user.user_key, [])
+  end
+  
+  def mount_point
+    base_key = base_path.split(File::Separator).first
+    IngestFolder.load_configuration.fetch(:files).fetch(:mount_points).fetch(base_key, nil)
+  end
+
+  def full_path
+    path = File.join(mount_point || '', abbreviated_path)
+    path.eql?(File::SEPARATOR) ? nil : path
+  end
+  
+  def abbreviated_path
+    File.join(base_path || '', sub_path || '')
+  end
   
   def scan
     @included = 0
     @excluded = []
-    scan_files(dirpath, false)
-    return [@included, @excluded]
+    scan_files(full_path, false)
+    return @included, @excluded
   end
   
   def procezz
     @batch = DulHydra::Batch::Models::Batch.create(:user => User.find_by_username(username))
-    scan_files(dirpath, true)
+    scan_files(full_path, true)
   end
   
   def scan_files(dirpath, create_batch_objects)
@@ -29,7 +59,10 @@ class IngestFolder < ActiveRecord::Base
             @included += 1 if !create_batch_objects
             create_batch_object_for_file(dirpath, entry) if create_batch_objects
           else
-            @excluded << File.join(dirpath, entry) if !create_batch_objects
+            bar = File.join(dirpath, entry)
+            bar.slice! full_path
+            bar.slice!(0) if bar.starts_with?(File::SEPARATOR)
+            @excluded << bar if !create_batch_objects
           end
         end
       end
@@ -40,7 +73,7 @@ class IngestFolder < ActiveRecord::Base
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
             :batch => @batch,
             :identifier => extract_identifier_from_filename(file_entry),
-            :model => DEFAULT_FILE_MODEL
+            :model => IngestFolder.default_file_model
             )
     add_datastream(
             obj,
@@ -84,7 +117,7 @@ class IngestFolder < ActiveRecord::Base
   
   def desc_metadata_for_file(file_entry)
     identifier = extract_identifier_from_filename(file_entry)
-    component = Component.new
+    component = IngestFolder.default_file_model.constantize.new
     component.identifier = identifier
     component.source = file_entry
     component.creator = "DPC"
