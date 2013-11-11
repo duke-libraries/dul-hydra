@@ -1,0 +1,10 @@
+config:
+    file_model: Model
+    file_creators:
+        ABC: Alpha Bravo Charlie
+files:
+    mount_points:
+        base_folder: /mnt/point/
+    permissions:
+        user_user_key:
+            - base_folder/base_subfolder/
