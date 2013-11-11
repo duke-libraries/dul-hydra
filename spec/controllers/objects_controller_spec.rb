@@ -13,21 +13,27 @@ describe ObjectsController do
   end
   context "#show" do
     it "should render the show template" do
-      controller.current_ability.stub(:test_read).with(object.pid).and_return(true)
+      controller.current_ability.can(:read, SolrDocument) do |obj|
+        obj.id == object.pid
+      end
       get :show, :id => object
       response.should render_template(:show)
     end
   end
   context "#edit" do
     it "should render the hydra-editor edit template" do
-      controller.current_ability.stub(:test_edit).with(object.pid).and_return(true)
+      controller.current_ability.can(:edit, ActiveFedora::Base) do |obj|
+        obj.pid == object.pid
+      end
       get :edit, :id => object
       response.should render_template('records/edit')
     end
   end
   context "#update" do
     before do
-      controller.current_ability.stub(:test_edit).with(object.pid).and_return(true)
+      controller.current_ability.can(:update, ActiveFedora::Base) do |obj|
+        obj.pid == object.pid
+      end
       controller.stub(:current_object).and_return(object)
       put :update, :id => object, :test_model => {:title => "Updated"}
     end

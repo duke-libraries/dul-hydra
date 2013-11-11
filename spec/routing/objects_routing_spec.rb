@@ -64,5 +64,17 @@ describe "object routes" do
         expect(:put => record_path('duke:1')).to route_to(@route)
       end    
     end
+    describe "permissions editing routes" do
+      it "should have an edit route" do
+        @route = {controller: 'permissions', action: 'edit', id: 'duke:1'}
+        expect(:get => '/objects/duke:1/permissions/edit').to route_to(@route)
+        expect(:get => permissions_edit_path('duke:1')).to route_to(@route)
+      end
+      it "should have an update route" do
+        @route = {controller: 'permissions', action: 'update', id: 'duke:1'}
+        expect(:put => '/objects/duke:1/permissions').to route_to(@route)
+        expect(:put => permissions_path('duke:1')).to route_to(@route)
+      end
+    end
   end
 end

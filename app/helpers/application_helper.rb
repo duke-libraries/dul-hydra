@@ -26,25 +26,36 @@ module ApplicationHelper
     end
   end
 
-  def permission_icon(perm)
-    if perm.name == Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
-      image_tag("silk/world.png", size: "16x16", alt: "world")
+  def entity_icon(type)
+    send "#{type}_icon"
+  end
+  
+  def user_icon
+    image_tag("silk/user.png", size: "16x16", alt: "user")
+  end
+
+  def group_icon(group = nil)
+    case group
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+      public_icon
     else
-      image_tag("silk/#{perm.type}.png", size: "16x16", alt: perm.type)
+      image_tag("silk/group.png", size: "16x16", alt: "group")
     end
   end
 
-  def permission_name(perm)
-    perm_name = case
-                when perm.name == Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
-                  "Public"
-                when perm.name == Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
-                  "Duke Community"
-                else
-                  perm.name
-                end
-    perm_name << " (inherited)" if perm.inherited
-    perm_name
+  def public_icon
+    image_tag("silk/world.png", size: "16x16", alt: "world")
+  end
+
+  def group_display_name(group)
+    case group
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+      "Public"
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
+      "Duke Community"
+    else
+      group
+    end
   end
 
   def render_object_identifier
@@ -184,62 +195,44 @@ module ApplicationHelper
     date.to_formatted_s(:db) if date
   end
 
-  Grant = Struct.new(:type, :name, :inherited)
-
-  def display_grants
-    grants = {}
-    [:discover, :read, :edit].each do |permission|
-      grants[permission] = display_grants_for_permission(permission)
+  def permissions_access_map
+    access_map = {}
+    [:discover, :read, :edit].each do |access|
+      access_map[access] = {
+        users: current_object.send("#{access}_users"),
+        groups: current_object.send("#{access}_groups")
+        }
     end
-    grants
+    access_map
   end
 
-  def display_default_grants
-    grants = {}
-    [:discover, :read, :edit].each do |permission|
-      grants[permission] = current_object.default_permissions.select { |p| p[:access] == permission.to_s }
-        .collect { |p| Grant.new(p[:type].to_sym, p[:name]) }
+  def default_permissions_access_map
+    access_map = {}
+    [:discover, :read, :edit].each do |access|
+      access_map[access] = {
+        users: current_object.datastreams["defaultRights"].individuals
+          .collect { |u, perms| u if perms.include?(access.to_s) }
+          .compact,
+        groups: current_object.datastreams["defaultRights"].groups
+          .collect { |g, perms| g if perms.include?(access.to_s) }
+          .compact
+        }
     end
-    grants
+    access_map
   end
 
-  def display_grants_for_permission(permission)
-    grants = []
-    direct_groups = current_object.send("#{permission}_groups")
-    if direct_groups.include?(Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC)
-      return grants << Grant.new(:group, Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC)
-    end
-    if current_object.has_admin_policy?
-      inherited_groups = current_ability.send("#{permission}_groups_from_policy", current_object.admin_policy.pid) - direct_groups
-      if inherited_groups.include?(Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC)
-        return grants << Grant.new(:group, Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC, true)
+  def render_inherited_entities(type, permission)
+    if current_object.governable?
+      inherited_entities = current_object.inherited_entities_for_permission(type, permission)
+      if inherited_entities.present?
+        # if type == "group"
+        #   inherited_entities = inherited_entities.collect { |g| group_display_name(g) }
+        # end
+        render partial: 'inherited_permissions', locals: {inherited_entities: inherited_entities, type: type}
+      else
+        nil
       end
-      if direct_groups.include?(Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED)
-        return grants << Grant.new(:group, Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED)
-      end
-      if inherited_groups.include?(Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED)
-        return grants << Grant.new(:group, Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED, true)
-      end
-    else
-      inherited_groups = []
     end
-    direct_groups.each { |g| grants << Grant.new(:group, g) }
-    inherited_groups.each { |g| grants << Grant.new(:group, g, true) }
-    direct_users = current_object.send("#{permission}_users")
-    direct_users.each { |u| grants << Grant.new(:user, u) }
-    if current_object.has_admin_policy?
-      inherited_users = current_ability.send("#{permission}_persons_from_policy", current_object.admin_policy.pid) - direct_users
-      inherited_users.each { |u| grants << Grant.new(:user, u, true) }
-    end
-    grants
-  end
-
-  def default_permission_grants(permission)
-    current_object.default_permissions.select { |p| p[:type] == permission }.collect { |p| Grant.new(p[:type], p[:name]) }
-  end
-
-  def inheritable_permissions(object)
-    object.default_permissions
   end
 
   def event_outcome_label(pe)

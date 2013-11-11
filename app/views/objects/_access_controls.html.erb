@@ -7,19 +7,24 @@
 	</tr>
   </thead>
   <tbody>
-	<% grants.keys.each do |perm| %>
+	<% access_map.each do |access, grantees| %>
 	<tr>
 	  <td>
-		<%= perm.to_s.capitalize %>
+		<%= access.to_s.capitalize %>
 	  </td>
 	  <td>
-		<% if grants[perm].empty? -%>
+		<% if grantees[:users].empty? and grantees[:groups].empty? -%>
 		-
 		<% else %>
 		<ul class="unstyled" style="margin:0">
-		  <% grants[perm].each do |g| %>
+		  <% grantees[:groups].each do |group| %>
 		  <li>
-			<%= permission_icon g %> <%= permission_name g %>
+			<%= group_icon group %> <%= group_display_name group %>
+		  </li>
+		  <% end %>
+		  <% grantees[:users].each do |user| %>
+		  <li>
+			<%= user_icon %> <%= user %>
 		  </li>
 		  <% end %>
 		</ul>

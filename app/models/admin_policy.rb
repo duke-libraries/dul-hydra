@@ -5,15 +5,22 @@
 class AdminPolicy < Hydra::AdminPolicy
 
   include ActiveFedora::Auditable
+  include DulHydra::Models::Licensable
 
-  delegate :default_license_title, :to => 'defaultRights', :at => [:license, :title], :multiple => false
-  delegate :default_license_description, :to => 'defaultRights', :at => [:license, :description], :multiple => false
-  delegate :default_license_url, :to => 'defaultRights', :at => [:license, :url], :multiple => false
+  delegate :default_license_title, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
+  delegate :default_license_description, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
+  delegate :default_license_url, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :url], multiple: false
 
   APO_NAMESPACE = "duke-apo"
 
   def self.create_pid(suffix)
     "#{APO_NAMESPACE}:#{suffix}"
+  end
+
+  def default_license
+    if default_license_title or default_license_description or default_license_url
+      {title: default_license_title, description: default_license_description, url: default_license_url}
+    end
   end
 
   def descriptive_metadata_terms

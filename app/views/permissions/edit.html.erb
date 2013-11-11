@@ -1,0 +1,57 @@
+<h4>Edit Permissions</h4>
+<% if current_object.has_admin_policy? %>
+  <div class="alert alert">
+	<p>
+	  <strong>Important</strong><br />
+	  Permissions inherited from the admin policy <%= link_to current_object.admin_policy_id, object_path(current_object.admin_policy_id) %> are listed beneath the access control select boxes. Permissions granted on this page are <strong>added to</strong> the inherited permissions when authorizing access.
+	  </p>
+  </div>
+<% end %>
+<%= form_tag permissions_path(current_object), method: :put, class: "object-permissions-form" do %>
+  <% all_permissions.each do |permission| %>
+    <fieldset>
+	  <legend>
+		<strong><%= permission.upcase %></strong>
+		<small><span class="muted">- <%= t("dul_hydra.permissions.descriptions.#{permission}") %></span></small>
+	  </legend>
+	  <div class="row">
+		<% ["user", "group"].each do |entity| %>
+		  <div class="span<% entity == 'user' ? 3 : 6 %> <%= "#{permission}-#{entity}s" %>">
+		    <fieldset>
+			  <legend>
+			    <%= entity_icon entity %> <%= entity.capitalize %>s granted <%= permission.capitalize %>
+			  </legend>
+			  <%= select_tag "permissions[#{permission}_#{entity}s]", entity_options_for_select(entity, permission), multiple: true %>
+			  <%= render_inherited_entities(entity, permission) %>
+		    </fieldset>
+		  </div>
+		<% end %>
+	</fieldset>
+  <% end %>
+  <p>
+	<%= submit_tag "Save", data: { confirm: "The permissions on this object will be overwritten with your selections. Continue?" }, class: "btn btn-primary" %>
+	<%= link_to "Cancel", :back, data: { confirm: "All changes will be lost! Are you sure?" }, class: "btn btn-danger" %>
+  </p>
+<% end %>
+<script type="text/javascript">
+  $(function() {
+    $(".discover-users select").chosen(
+      {placeholder_text_multiple: "Select USERS to grant DISCOVER"}
+    );
+    $(".read-users select").chosen(
+      {placeholder_text_multiple: "Select USERS to grant READ"}
+    );
+    $(".edit-users select").chosen(
+      {placeholder_text_multiple: "Select USERS to grant EDIT"}
+    );
+    $(".discover-groups select").chosen(
+      {placeholder_text_multiple: "Select GROUPS to grant DISCOVER"}
+    );
+    $(".read-groups select").chosen(
+      {placeholder_text_multiple: "Select GROUPS to grant READ"}
+    );
+    $(".edit-groups select").chosen(
+      {placeholder_text_multiple: "Select GROUPS to grant EDIT"}
+    );
+  });
+</script>

@@ -1,10 +1,23 @@
+<div class="navbar">
+  <div class="navbar-inner">
+	<ul class="nav">
+	  <% if can? :edit, current_object -%>
+	    <li>
+		  <%= link_to "Edit Permissions", permissions_edit_path(current_object) %>
+	    </li>
+	  <% end -%>
+	  <% if current_object.has_rights_metadata? and can?(:download, current_object.rightsMetadata) -%>
+	    <li>
+		  <%= download_datastream_xml_link 'rightsMetadata' %>
+	    </li>
+	  <% end -%>
+	</ul>
+  </div>
+</div>
 <% if current_object.has_admin_policy? %>
   <p class="alert">
-	This object is governed by the admin policy <strong><%= link_to current_object.admin_policy.pid, object_path(current_object.admin_policy.pid) %></strong>. 
+	This object is governed by the admin policy <strong><%= link_to current_object.admin_policy_id, object_path(current_object.admin_policy_id) %></strong>. 
   </p>
 <% end %>
-<%= render partial: 'access_controls', locals: {grants: display_grants} %>
-<%= render partial: 'license', locals: {license: current_object.rightsMetadata.license, inherited: false} %>
-<% if current_object.has_admin_policy? %>
-  <%= render partial: 'license', locals: {license: current_object.admin_policy.datastreams["defaultRights"].license, inherited: true} %>
-<% end %>
+<%= render partial: 'access_controls', locals: {access_map: permissions_access_map} %>
+<%= render partial: 'license', locals: {license: current_object.license} %>
