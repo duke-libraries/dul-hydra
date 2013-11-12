@@ -4,6 +4,7 @@ module DulHydra::Models
 
     included do
       has_many :batches, :inverse_of => :user
+      has_many :ingest_folders, :inverse_of => :user
       has_many :export_sets, :dependent => :destroy
 
       delegate :can?, :cannot?, :to => :ability

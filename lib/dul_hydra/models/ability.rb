@@ -38,6 +38,7 @@ module DulHydra::Models
 
     def ingest_folders_permissions
       cannot :create, IngestFolder unless IngestFolder.permitted_folders(current_user).present?
+      can [:show, :procezz], IngestFolder, :user => current_user
     end
     
     def download_permissions

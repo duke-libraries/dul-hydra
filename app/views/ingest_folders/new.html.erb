@@ -1,7 +1,5 @@
 <h1>Ingest Folder</h1>
 
-<% if can? :create, IngestFolder %>
-
 <%= form_for @ingest_folder do |f| %>
 
 <div>
@@ -16,6 +14,16 @@
 </div>
 
 <div>
+	<%= f.label :checksum_file, :style => "display: inline" %>
+	<%= f.text_field :checksum_file %>
+</div>
+
+<div>
+	<%= f.label :checksum_type, :style => "display: inline" %>
+	<%= f.select :checksum_type, DulHydra::Datastreams::CHECKSUM_TYPES %>
+</div>
+
+<div>
 	<%= f.label :admin_policy, :style => "display: inline" %>
 	<%= f.select :admin_policy_pid, @admin_policies.collect { |apo| apo.pid }, :include_blank => true %>
 </div>
@@ -24,10 +32,4 @@
   <%= f.submit "Scan Folder", :id => 'ingest_folders_submit_button', :class => "btn btn-primary" %>
 </div>
 	
-<% end %>
-
-<% else %>
-
-	Sorry, Charlie!
-
 <% end %>
