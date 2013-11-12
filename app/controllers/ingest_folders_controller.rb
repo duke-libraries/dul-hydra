@@ -4,6 +4,7 @@ class IngestFoldersController < ApplicationController
 
   def new
     @admin_policies = AdminPolicy.all
+    @models = IngestFolder.default_models
     @permitted_folder_bases = IngestFolder.permitted_folders(current_user)
   end
   

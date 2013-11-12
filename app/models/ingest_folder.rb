@@ -12,8 +12,16 @@ class IngestFolder < ActiveRecord::Base
     @@configuration ||= YAML::load(File.read(CONFIG_FILE)).with_indifferent_access
   end
   
+  def self.default_models
+    [self.default_file_model, self.default_target_model]
+  end
+  
   def self.default_file_model
     self.load_configuration.fetch(:config).fetch(:file_model)
+  end
+  
+  def self.default_target_model
+    self.load_configuration.fetch(:config).fetch(:target_model)
   end
   
   def self.file_creators
@@ -39,6 +47,11 @@ class IngestFolder < ActiveRecord::Base
     File.join(base_path || '', sub_path || '')
   end
   
+  def full_checksum_path
+    path = File.join(mount_point || '', base_path)
+    path.eql?(File::SEPARATOR) ? nil : path
+  end
+  
   def scan
     @included = 0
     @excluded = []
@@ -48,8 +61,7 @@ class IngestFolder < ActiveRecord::Base
   
   def procezz
     @batch = DulHydra::Batch::Models::Batch.create(:user => user)
-    @checksum_hash = checksums if checksum_file
-    puts @checksum_hash
+    @checksum_hash = checksums if checksum_file.present?
     scan_files(full_path, true)
   end
   
@@ -58,7 +70,7 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def checksums
-    checksum_file_location = File.join(full_path, checksum_file)
+    checksum_file_location = File.join(full_checksum_path, checksum_file)
     checksum_file_path = File.dirname(checksum_file_location)
     @checksum_file_directory = checksum_file_path.split(File::SEPARATOR).last
     checksum_hash = {}
@@ -83,14 +95,16 @@ class IngestFolder < ActiveRecord::Base
   def scan_files(dirpath, create_batch_objects)
     Dir.foreach(dirpath) do |entry|
       unless [".", ".."].include?(entry)
-        if File.directory?(File.join(dirpath, entry))
-          scan_files(File.join(dirpath, entry), create_batch_objects)
+        file_loc = File.join(dirpath, entry)
+        if File.directory?(file_loc)
+          scan_files(file_loc, create_batch_objects)
         else
-          if DEFAULT_INCLUDED_FILE_EXTENSIONS.include?(File.extname(entry))
+          if DEFAULT_INCLUDED_FILE_EXTENSIONS.include?(File.extname(entry)) &&
+                (model.eql?(IngestFolder.default_target_model) || dirpath.index("targets").nil?)
             @included += 1 if !create_batch_objects
             create_batch_object_for_file(dirpath, entry) if create_batch_objects
           else
-            exc = File.join(dirpath, entry)
+            exc = file_loc
             exc.slice! full_path
             exc.slice!(0) if exc.starts_with?(File::SEPARATOR)
             @excluded << exc if !create_batch_objects
@@ -104,7 +118,7 @@ class IngestFolder < ActiveRecord::Base
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
             :batch => @batch,
             :identifier => extract_identifier_from_filename(file_entry),
-            :model => IngestFolder.default_file_model
+            :model => model
             )
     add_datastream(
             obj,
@@ -117,8 +131,8 @@ class IngestFolder < ActiveRecord::Base
             DulHydra::Datastreams::CONTENT,
             File.join(dirpath, file_entry),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
-            file_checksum(File.join(dirpath, file_entry)),
-            checksum_type
+            checksum_file.present? ? file_checksum(File.join(dirpath, file_entry)) : nil,
+            checksum_file.present? ? checksum_type : nil
             )
     add_relationship(
             obj,

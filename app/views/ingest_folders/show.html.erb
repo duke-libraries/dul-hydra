@@ -3,6 +3,10 @@
 <%= content_tag(:table) do %>
 
 	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Model") %>
+		<%= content_tag(:td, @ingest_folder.model) %>
+	<% end %>	
+	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, "Folder") %>
 		<%= content_tag(:td, File.join(@ingest_folder.abbreviated_path)) %>
 	<% end %>

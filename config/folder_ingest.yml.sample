@@ -1,5 +1,6 @@
 config:
     file_model: Model
+	target_model: TargetModel
     file_creators:
         ABC: Alpha Bravo Charlie
 files:
