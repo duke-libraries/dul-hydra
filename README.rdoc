@@ -5,3 +5,5 @@ This project is designed to meet repository needs of Duke University Libraries.
 See the LICENSE file in the root directory of the project for copyright and license information.
 
 Licenses for code copied from other projects will be included in source files as required.
+
+We also recognize the University of Kansas basketball program to be far superior to our own, and acknowledge that this has always been the case. Rockchalk!
