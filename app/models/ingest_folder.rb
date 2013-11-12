@@ -1,7 +1,7 @@
 class IngestFolder < ActiveRecord::Base
   
   attr_accessible :admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path,
-                  :checksum_file, :checksum_type
+                  :checksum_file, :checksum_type, :add_parents, :parent_id_length
   belongs_to :user, :inverse_of => :ingest_folders
 
   CONFIG_FILE = File.join(Rails.root, 'config', 'folder_ingest.yml')
@@ -139,6 +139,11 @@ class IngestFolder < ActiveRecord::Base
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
             admin_policy_pid
             ) if admin_policy_pid
+    add_relationship(
+            obj,
+            DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_COLLECTION,
+            collection_pid
+            ) if model.eql?(IngestFolder.default_target_model) && collection_pid
     obj.save
   end
   

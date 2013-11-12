@@ -4,8 +4,13 @@ class IngestFoldersController < ApplicationController
 
   def new
     @admin_policies = AdminPolicy.all
+    collections = Collection.all
+    collection_hash = {}
+    collections.each { |coll| collection_hash[coll.title.first] = coll.pid }
+    @collection_options = Hash[collection_hash.sort]
     @models = IngestFolder.default_models
     @permitted_folder_bases = IngestFolder.permitted_folders(current_user)
+    @ingest_folder.add_parents = true
   end
   
   def create
@@ -16,6 +21,7 @@ class IngestFoldersController < ApplicationController
   end
   
   def show
+    @collection_title = Collection.find(@ingest_folder.collection_pid).title.first if @ingest_folder.collection_pid.present?
     @included, @excluded = @ingest_folder.scan
   end
   

@@ -24,7 +24,7 @@
 
 <div>
 	<%= f.label :checksum_type, :style => "display: inline" %>
-	<%= f.select :checksum_type, DulHydra::Datastreams::CHECKSUM_TYPES %>
+	<%= f.select :checksum_type, DulHydra::Datastreams::CHECKSUM_TYPES, :include_blank => true %>
 </div>
 
 <div>
@@ -33,8 +33,28 @@
 </div>
 
 <div>
+	<%= f.label :collection, :style => "display: inline" %>
+	<%= f.select :collection_pid, options_for_select(@collection_options), :include_blank => true %>
+</div>
+
+<div>
 	<%= f.label :admin_policy, :style => "display: inline" %>
 	<%= f.select :admin_policy_pid, @admin_policies.collect { |apo| apo.pid }, :include_blank => true %>
+</div>
+
+<div>
+	<%= f.label :auto_create_parents, :style => "display: inline" %>
+	<%= f.radio_button :add_parents, true %>
+	<%= f.label :yes, :style => "display: inline" %>	
+	<%= f.radio_button :add_parents, false %>
+	<%= f.label :no, :style => "display: inline" %>	
+</div>
+
+<div>
+	<div>
+		<%= f.label :parent_identifier_length, :style => "display: inline" %>
+		<%= f.text_field :parent_id_length %>
+	</div>	
 </div>
 
 <div>

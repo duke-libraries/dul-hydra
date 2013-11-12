@@ -37,8 +37,20 @@
 		<%= content_tag(:td, @ingest_folder.checksum_type) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Collection") %>
+		<%= content_tag(:td, @collection_title) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, "Admin Policy") %>
 		<%= content_tag(:td, @ingest_folder.admin_policy_pid) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Auto Create Parents") %>
+		<%= content_tag(:td, @ingest_folder.add_parents) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Parent Identifier Length") %>
+		<%= content_tag(:td, @ingest_folder.parent_id_length) %>
 	<% end %>
 	
 <% end %>
