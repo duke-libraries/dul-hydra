@@ -1,10 +1,12 @@
 class IngestFolder < ActiveRecord::Base
   
-  attr_accessible :username, :admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path
+  attr_accessible :admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path,
+                  :checksum_file, :checksum_type
+  belongs_to :user, :inverse_of => :ingest_folders
 
   CONFIG_FILE = File.join(Rails.root, 'config', 'folder_ingest.yml')
   
-  DEFAULT_INCLUDED_FILE_EXTENSIONS = ['.tif', '.tiff']
+  DEFAULT_INCLUDED_FILE_EXTENSIONS = ['.pdf', '.tif', '.tiff']
   
   def self.load_configuration
     @@configuration ||= YAML::load(File.read(CONFIG_FILE)).with_indifferent_access
@@ -45,24 +47,53 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def procezz
-    @batch = DulHydra::Batch::Models::Batch.create(:user => User.find_by_username(username))
+    @batch = DulHydra::Batch::Models::Batch.create(:user => user)
+    @checksum_hash = checksums if checksum_file
+    puts @checksum_hash
     scan_files(full_path, true)
   end
   
+  def file_checksum(file_entry)
+    @checksum_hash.fetch(checksum_hash_key(file_entry))
+  end
+  
+  def checksums
+    checksum_file_location = File.join(full_path, checksum_file)
+    checksum_file_path = File.dirname(checksum_file_location)
+    @checksum_file_directory = checksum_file_path.split(File::SEPARATOR).last
+    checksum_hash = {}
+    begin
+      File.open(checksum_file_location, 'r') do |file|
+        file.each_line do |line|
+          sum, path = line.split
+          checksum_hash[checksum_hash_key(path)] = sum
+        end
+      end
+    end
+    checksum_hash
+  end
+  
+  def checksum_hash_key(file_path)
+    normalized_path = file_path.gsub('\\', File::SEPARATOR)
+    idx = normalized_path.index(@checksum_file_directory)
+    len = normalized_path.length
+    key = normalized_path[idx, len]
+  end
+
   def scan_files(dirpath, create_batch_objects)
     Dir.foreach(dirpath) do |entry|
       unless [".", ".."].include?(entry)
         if File.directory?(File.join(dirpath, entry))
-          scan_files(File.join(dirpath, entry))
+          scan_files(File.join(dirpath, entry), create_batch_objects)
         else
           if DEFAULT_INCLUDED_FILE_EXTENSIONS.include?(File.extname(entry))
             @included += 1 if !create_batch_objects
             create_batch_object_for_file(dirpath, entry) if create_batch_objects
           else
-            bar = File.join(dirpath, entry)
-            bar.slice! full_path
-            bar.slice!(0) if bar.starts_with?(File::SEPARATOR)
-            @excluded << bar if !create_batch_objects
+            exc = File.join(dirpath, entry)
+            exc.slice! full_path
+            exc.slice!(0) if exc.starts_with?(File::SEPARATOR)
+            @excluded << exc if !create_batch_objects
           end
         end
       end
@@ -85,7 +116,9 @@ class IngestFolder < ActiveRecord::Base
             obj,
             DulHydra::Datastreams::CONTENT,
             File.join(dirpath, file_entry),
-            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
+            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
+            file_checksum(File.join(dirpath, file_entry)),
+            checksum_type
             )
     add_relationship(
             obj,
@@ -95,13 +128,15 @@ class IngestFolder < ActiveRecord::Base
     obj.save
   end
   
-  def add_datastream(batch_object, datastream, payload, payload_type)
+  def add_datastream(batch_object, datastream, payload, payload_type, checksum=nil, checksum_type=nil)
     DulHydra::Batch::Models::BatchObjectDatastream.create(
       :batch_object => batch_object,
       :name => datastream,
       :operation => DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADD,
       :payload => payload,
-      :payload_type => payload_type
+      :payload_type => payload_type,
+      :checksum => checksum,
+      :checksum_type => checksum_type
       )    
   end
   
@@ -126,6 +161,6 @@ class IngestFolder < ActiveRecord::Base
   
   def extract_identifier_from_filename(file_entry)
     File.basename(file_entry, File.extname(file_entry))
-  end
+  end  
   
 end

@@ -25,6 +25,14 @@
 		<% end %>
 	<% end %>	
 	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Checksum File") %>
+		<%= content_tag(:td, @ingest_folder.checksum_file) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, "Checksum Type") %>
+		<%= content_tag(:td, @ingest_folder.checksum_type) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, "Admin Policy") %>
 		<%= content_tag(:td, @ingest_folder.admin_policy_pid) %>
 	<% end %>

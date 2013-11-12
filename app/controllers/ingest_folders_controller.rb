@@ -9,7 +9,7 @@ class IngestFoldersController < ApplicationController
   
   def create
     @ingest_folder = IngestFolder.new(params[:ingest_folder])
-    @ingest_folder.username = current_user.username
+    @ingest_folder.user = current_user
     @ingest_folder.save
     redirect_to :action => :show, :id => @ingest_folder
   end
