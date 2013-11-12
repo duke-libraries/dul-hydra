@@ -3,24 +3,33 @@
 <%= form_for @ingest_folder do |f| %>
 
 <div>
-	<%= f.label :folder, :style => "display: inline" %>
+	<%= f.label :model, :style => "display: inline" %>
+	<%= f.select :model, @models %>
+</div>
+
+<div>
+	<%= f.label :base_path, :style => "display: inline" %>
 	<%= f.select :base_path, options_for_select(@permitted_folder_bases), {}, {:style => 'width: auto;'} %>
+</div>
+
+<div>
+	<%= f.label :folder_sub_path, :style => "display: inline" %>
 	<%= f.text_field :sub_path %>
 </div>
 
 <div>
-	<%= f.label :file_creator, :style => "display: inline" %>
-	<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), :include_blank => true %>
-</div>
-
-<div>
-	<%= f.label :checksum_file, :style => "display: inline" %>
+	<%= f.label :checksum_file_sub_path, :style => "display: inline" %>
 	<%= f.text_field :checksum_file %>
 </div>
 
 <div>
 	<%= f.label :checksum_type, :style => "display: inline" %>
 	<%= f.select :checksum_type, DulHydra::Datastreams::CHECKSUM_TYPES %>
+</div>
+
+<div>
+	<%= f.label :file_creator, :style => "display: inline" %>
+	<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), :include_blank => true %>
 </div>
 
 <div>
