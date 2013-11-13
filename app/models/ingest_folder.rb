@@ -61,6 +61,8 @@ class IngestFolder < ActiveRecord::Base
   
   def procezz
     @batch = DulHydra::Batch::Models::Batch.create(:user => user)
+    @parent_batch = DulHydra::Batch::Models::Batch.create(:user => user) if add_parents
+    @parent_hash = {} if add_parents
     @checksum_hash = checksums if checksum_file.present?
     scan_files(full_path, true)
   end
@@ -114,7 +116,34 @@ class IngestFolder < ActiveRecord::Base
     end
   end
   
+  def create_batch_object_for_parent(parent_identifier)
+    parent_model = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, "parent")).name
+    parent_pid = ActiveFedora::Base.connection_for_pid('0').mint
+    obj = DulHydra::Batch::Models::IngestBatchObject.create(
+            :batch => @parent_batch,
+            :identifier => parent_identifier,
+            :model => parent_model,
+            :pid => parent_pid
+            )
+    parent_pid
+  end
+  
+  def parent_identifier(child_identifier)
+    case parent_id_length
+    when 0 then child_identifier
+    else child_identifier[0, parent_id_length]
+    end
+  end
+  
   def create_batch_object_for_file(dirpath, file_entry)
+    if add_parents
+      parent_id = parent_identifier(extract_identifier_from_filename(file_entry))
+      parent_pid = @parent_hash.fetch(parent_id, nil)
+      if parent_pid.blank?
+        parent_pid = create_batch_object_for_parent(parent_id)
+        @parent_hash[parent_id] = parent_pid
+      end
+    end
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
             :batch => @batch,
             :identifier => extract_identifier_from_filename(file_entry),
