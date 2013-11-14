@@ -9,7 +9,6 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
- *= require 'google-code-prettify/prettify'
  *= require 'hydra-editor/hydra-editor'
  *= require_tree .
  */
