@@ -46,7 +46,8 @@ module DulHydra::Batch::Models
     end
     
     def create_repository_object(dryrun)
-      repo_object = model.constantize.new
+      repo_pid = pid if pid.present?
+      repo_object = model.constantize.new(:pid => repo_pid)
       repo_object.label = label if label
       repo_object.save unless dryrun
       batch_object_datastreams.each {|d| repo_object = add_datastream(repo_object, d, dryrun)} if batch_object_datastreams

@@ -22,6 +22,7 @@ module DulHydra::Batch::Models
       results.verifications.each { |condition, result| expect(result).to eq(BatchObject::VERIFICATION_PASS) }
       expect(object.pid).to eq(results.repository_object.pid)
       expect(object.verified).to be_true
+      expect(object.pid).to eq(assigned_pid) if assigned_pid.present?
     end
   end
   
@@ -189,6 +190,7 @@ module DulHydra::Batch::Models
     context "ingest" do
       
       context "successful ingest" do
+        let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
         after do
           object.batch_object_relationships.each do |r|
             ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
@@ -197,8 +199,16 @@ module DulHydra::Batch::Models
           end
           ActiveFedora::Base.find(object.pid, :cast => true).destroy
         end
-        context "generic object" do
-          let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
+        context "object without a pre-assigned PID" do
+          let(:assigned_pid) { nil }
+          it_behaves_like "a successful ingest"
+        end
+        context "object with a pre-assigned PID" do
+          let(:assigned_pid) { 'test:6543' }
+          before do
+            object.pid = assigned_pid
+            object.save
+          end
           it_behaves_like "a successful ingest"
         end
       end
