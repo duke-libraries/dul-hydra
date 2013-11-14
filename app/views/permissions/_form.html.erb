@@ -1,0 +1,30 @@
+<%= form_tag (default_permissions ? default_permissions_path(current_object) : permissions_path(current_object)), method: :put, class: "permissions-form" do %>
+  <% all_permissions.each do |permission| %>
+    <fieldset class="permission-entity-selector">
+	  <legend style="border-bottom:none">
+		<strong><%= permission.upcase %></strong>
+		<small><span class="muted">- <%= t("dul_hydra.permissions.descriptions.#{permission}") %></span></small>
+	  </legend>
+	  <select name="permissions[<%= permission %>][]" id="permissions_<%= permission %>" multiple="multiple" data-placeholder="Select users/groups to grant <%= permission.upcase %>" style="width:auto">
+		<optgroup label="GROUPS">
+		  <%= group_options_for_select permission, default_permissions %>
+		</optgroup>
+		<optgroup label="USERS">
+		  <%= user_options_for_select permission, default_permissions %>
+		</optgroup>
+	  </select>
+	</fieldset>
+  <% end %>
+  <p>
+	<%= submit_tag "Save", data: { confirm: default_permissions ? "The default permissions will be overwritten with your selections. Continue?" : "The permissions on this object will be overwritten with your selections. Continue?" }, class: "btn btn-primary" %>
+	<%= link_to "Cancel", permissions_path(current_object), data: { confirm: "All changes will be lost! Are you sure?" }, class: "btn btn-danger" %>
+  </p>
+<% end %>
+
+<script type="text/javascript">
+  $(function() {
+    $(".permission-entity-selector select").chosen({
+      placeholder_text_multiple: $(this).attr("data-placeholder")
+    });
+  });
+</script>

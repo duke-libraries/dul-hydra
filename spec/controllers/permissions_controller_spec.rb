@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 describe PermissionsController do
-  let(:object) { FactoryGirl.create(:test_model) }
   let(:user) { FactoryGirl.create(:user) }
   before do 
+    object.edit_users = [user.user_key]
+    object.save
     sign_in user 
   end
   after(:all) { user.delete }
@@ -12,33 +13,55 @@ describe PermissionsController do
     sign_out user
   end
   describe "#edit" do
-    it "should render the edit template" do
-      controller.current_ability.can(:edit, String) do |obj|
-        obj == object.pid
+    context "permissions" do
+      let(:object) { FactoryGirl.create(:test_model) }
+      it "should render the edit template" do
+        get :edit, id: object
+        response.should render_template("edit")      
       end
-      get :edit, id: object
-      response.should render_template(:edit)      
+    end
+    context "default permissions" do
+      let(:object) { AdminPolicy.create }
+      it "should render the edit_default_permissions template" do
+        get :edit, id: object, default_permissions: true
+        response.should render_template("edit_default_permissions")      
+      end
     end
   end
   describe "#update" do
-    before do
-      controller.current_ability.can(:update, String) do |obj|
-        obj == object.pid
+    context "permissions" do
+      let(:object) { FactoryGirl.create(:test_model) }
+      it "should update the permissions" do
+        put :update, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}
+        object.reload
+        object.discover_groups.should == ["public"]
+        object.read_groups.should == ["registered"]
+        object.edit_groups.should == ["editors", "managers"]
+        object.discover_users.should == ["Sally", "Mitch"]
+        object.read_users.should == ["Gil", "Ben"]
+        object.edit_users.should == ["Rocky", "Gwen", "Teresa"]
+      end
+      it "should redirect to the show view" do
+        put :update, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}
+        response.should redirect_to(permissions_path(object))
       end
     end
-    it "should update the permissions" do
-      put :update, id: object, permissions: {discover_groups: ["public"], read_groups: ["registered"], edit_groups: ["editors", "managers"], discover_users: ["Sally", "Mitch"], read_users: ["Gil", "Ben"], edit_users: ["Rocky", "Gwen", "Teresa"]}
-      object.reload
-      object.discover_groups.should == ["public"]
-      object.read_groups.should == ["registered"]
-      object.edit_groups.should == ["editors", "managers"]
-      object.discover_users.should == ["Sally", "Mitch"]
-      object.read_users.should == ["Gil", "Ben"]
-      object.edit_users.should == ["Rocky", "Gwen", "Teresa"]
-    end
-    it "should redirect to the show view" do
-      put :update, id: object
-      response.should redirect_to(permissions_path(object))
+    context "default permissions" do
+      let(:object) { AdminPolicy.create }
+      it "should update the default permissions" do
+        put :update, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, default_permissions: true
+        object.reload
+        object.default_discover_groups.should == ["public"]
+        object.default_read_groups.should == ["registered"]
+        object.default_edit_groups.should == ["editors", "managers"]
+        object.default_discover_users.should == ["Sally", "Mitch"]
+        object.default_read_users.should == ["Gil", "Ben"]
+        object.default_edit_users.should == ["Rocky", "Gwen", "Teresa"]
+      end
+      it "should redirect to the show view" do
+        put :update, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, default_permissions: true
+        response.should redirect_to(default_permissions_path(object))
+      end
     end
   end
 end

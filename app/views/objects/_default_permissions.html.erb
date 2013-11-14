@@ -3,18 +3,20 @@
 	<ul class="nav">
 	  <% if can? :edit, current_object -%>
 	  <li>
-		<%= link_to "Edit", edit_admin_policy_path(current_object) %>
+		<%= link_to "Edit Default Permissions", default_permissions_edit_path(current_object) %>
 	  </li>
 	  <% end -%>
-	  <li>
-		<%= link_to_fcrepo_view "defaultRights" %>
-	  </li>
+	  <% if can? :download, current_object.defaultRights -%>
+	    <li>
+		  <%= download_datastream_xml_link 'defaultRights' %>
+	    </li>
+	  <% end -%>
 	</ul>
   </div>
 </div>
-<p class="alert">
-  These settings are inherited by objects governed by this policy. 
-  They do not apply to this admin policy object itself.
-</p>
+
+<%= render 'permissions/default_permissions_alert' %>
+
 <%= render partial: 'access_controls', locals: {access_map: default_permissions_access_map} %>
+
 <%= render partial: 'license', locals: {license: current_object.default_license} %>

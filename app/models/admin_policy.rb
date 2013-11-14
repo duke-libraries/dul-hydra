@@ -38,6 +38,16 @@ class AdminPolicy < Hydra::AdminPolicy
     solr_doc
   end
 
+  def default_entities_for_permission(type, access)
+    default_permissions.collect { |p| p[:name] if p[:type] == type and p[:access] == access }.compact
+  end
+
+  ["discover", "read", "edit"].each do |access|
+    ["user", "group"].each do |type|
+      define_method("default_#{access}_#{type}s") { default_entities_for_permission(type, access) }
+    end
+  end
+
   #
   # Load admin policy objects from YAML file
   #

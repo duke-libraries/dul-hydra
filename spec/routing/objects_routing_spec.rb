@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe "object routes" do
+
   describe "RESTful routes" do
     it "should not have an index route" do
       expect(:get => '/objects').not_to be_routable
@@ -26,6 +27,7 @@ describe "object routes" do
       expect(:delete => '/objects/duke:1').not_to be_routable
     end
   end
+
   describe "non-RESTful routes" do
     it "should have a 'collection_info' route" do
       @route = {controller: 'objects', action: 'collection_info', id: 'duke:1'}
@@ -52,6 +54,7 @@ describe "object routes" do
       expect(:get => '/objects/duke:1/datastreams/content').to route_to(@route)
       expect(:get => download_datastream_object_path('duke:1', 'content')).to route_to(@route)
     end
+
     describe "descriptive metadata editing routes" do
       it "should have an edit route" do
         @route = {controller: 'objects', action: 'edit', id: 'duke:1'}
@@ -64,7 +67,8 @@ describe "object routes" do
         expect(:put => record_path('duke:1')).to route_to(@route)
       end    
     end
-    describe "permissions editing routes" do
+
+    describe "permissions routes" do
       it "should have an edit route" do
         @route = {controller: 'permissions', action: 'edit', id: 'duke:1'}
         expect(:get => '/objects/duke:1/permissions/edit').to route_to(@route)
@@ -76,5 +80,19 @@ describe "object routes" do
         expect(:put => permissions_path('duke:1')).to route_to(@route)
       end
     end
+
+    describe "default permissions routes" do
+      it "should have an edit route" do
+        @route = {controller: 'permissions', action: 'edit', default_permissions: true, id: 'duke:1'}
+        expect(:get => '/objects/duke:1/default_permissions/edit').to route_to(@route)
+        expect(:get => default_permissions_edit_path('duke:1')).to route_to(@route)
+      end
+      it "should have an update route" do
+        @route = {controller: 'permissions', action: 'update', default_permissions: true, id: 'duke:1'}
+        expect(:put => '/objects/duke:1/default_permissions').to route_to(@route)
+        expect(:put => default_permissions_path('duke:1')).to route_to(@route)
+      end
+    end
+
   end
 end

@@ -27,14 +27,14 @@ describe "permissions editing" do
   end
   it "should be able to remove a permission" do
     visit permissions_edit_path(object)
-    page.unselect "Public", from: "permissions_discover_groups"
+    page.unselect "Public", from: "permissions_discover"
     click_button "Save"
     object.reload
     object.discover_groups.should be_empty
   end
   it "should be able to add a permission" do
     visit permissions_edit_path(object)
-    page.select "Duke Community", from: "permissions_edit_groups"
+    page.select "Duke Community", from: "permissions_edit"
     click_button "Save"
     object.reload
     object.edit_groups.should == ["registered"]
