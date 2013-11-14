@@ -61,7 +61,6 @@ class IngestFolder < ActiveRecord::Base
   
   def procezz
     @batch = DulHydra::Batch::Models::Batch.create(:user => user)
-    @parent_batch = DulHydra::Batch::Models::Batch.create(:user => user) if add_parents
     @parent_hash = {} if add_parents
     @checksum_hash = checksums if checksum_file.present?
     scan_files(full_path, true)
@@ -120,11 +119,16 @@ class IngestFolder < ActiveRecord::Base
     parent_model = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, "parent")).name
     parent_pid = ActiveFedora::Base.connection_for_pid('0').mint
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
-            :batch => @parent_batch,
+            :batch => @batch,
             :identifier => parent_identifier,
             :model => parent_model,
             :pid => parent_pid
             )
+    add_relationship(
+            obj,
+            DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
+            admin_policy_pid
+            ) if admin_policy_pid
     parent_pid
   end
   
@@ -168,6 +172,11 @@ class IngestFolder < ActiveRecord::Base
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
             admin_policy_pid
             ) if admin_policy_pid
+    add_relationship(
+            obj,
+            DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
+            parent_pid
+            ) if add_parents && parent_pid
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_COLLECTION,
