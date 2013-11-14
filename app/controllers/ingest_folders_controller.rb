@@ -10,11 +10,11 @@ class IngestFoldersController < ApplicationController
     @collection_options = Hash[collection_hash.sort]
     @models = IngestFolder.default_models
     @permitted_folder_bases = IngestFolder.permitted_folders(current_user)
-    @ingest_folder.add_parents = true
   end
   
   def create
     @ingest_folder = IngestFolder.new(params[:ingest_folder])
+    @ingest_folder.add_parents = true
     @ingest_folder.user = current_user
     @ingest_folder.save
     redirect_to :action => :show, :id => @ingest_folder
