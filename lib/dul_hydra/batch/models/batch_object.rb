@@ -91,7 +91,15 @@ DulHydra version #{DulHydra::VERSION}
           begin
             obj = ActiveFedora::Base.find(r[:object], :cast => true)
           rescue ActiveFedora::ObjectNotFoundError
-            errs << "#{@error_prefix} #{r[:name]} relationship object does not exist: #{r[:object]}"
+            pid_in_batch = false
+            if batch.present?
+              if batch.pre_assigned_pids.include?(r[:object]) 
+                pid_in_batch = true
+              end
+            end
+            unless pid_in_batch
+              errs << "#{@error_prefix} #{r[:name]} relationship object does not exist: #{r[:object]}"
+            end
           else
             relationship_reflection = DulHydra::Utils.relationship_object_reflection(model, r[:name])
             if relationship_reflection
