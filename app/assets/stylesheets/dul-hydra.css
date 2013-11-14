@@ -14,11 +14,7 @@ form.bookmark_toggle {
 .object-permissions-form fieldset {
 	margin-bottom: 1em;
 }
-.group-permissions legend,
-.user-permissions legend {
+.permissions-entity-selector legend,
 	font-size: small;
 	margin: 0;
-}
-.group-permissions select {
-	width: auto;
 }

@@ -16,12 +16,12 @@
 	  </legend>
 	  <div class="row">
 		<% ["user", "group"].each do |entity| %>
-		  <div class="span<% entity == 'user' ? 3 : 6 %> <%= "#{permission}-#{entity}s" %>">
+		  <div class="span<%= entity == 'user' ? 3 : 6 %> <%= entity %>-permissions permission-entity-selector">
 		    <fieldset>
 			  <legend>
 			    <%= entity_icon entity %> <%= entity.capitalize %>s granted <%= permission.capitalize %>
 			  </legend>
-			  <%= select_tag "permissions[#{permission}_#{entity}s]", entity_options_for_select(entity, permission), multiple: true %>
+			  <%= select_tag "permissions[#{permission}_#{entity}s]", entity_options_for_select(entity, permission), :multiple => true, "data-placeholder" => "Select #{entity.upcase}S to grant #{permission.upcase}", :style => (entity == "group" ? "width:auto": nil) %>
 			  <%= render_inherited_entities(entity, permission) %>
 		    </fieldset>
 		  </div>
@@ -30,28 +30,13 @@
   <% end %>
   <p>
 	<%= submit_tag "Save", data: { confirm: "The permissions on this object will be overwritten with your selections. Continue?" }, class: "btn btn-primary" %>
-	<%= link_to "Cancel", :back, data: { confirm: "All changes will be lost! Are you sure?" }, class: "btn btn-danger" %>
+	<%= link_to "Cancel", permissions_path(current_object), data: { confirm: "All changes will be lost! Are you sure?" }, class: "btn btn-danger" %>
   </p>
 <% end %>
 <script type="text/javascript">
   $(function() {
-    $(".discover-users select").chosen(
-      {placeholder_text_multiple: "Select USERS to grant DISCOVER"}
-    );
-    $(".read-users select").chosen(
-      {placeholder_text_multiple: "Select USERS to grant READ"}
-    );
-    $(".edit-users select").chosen(
-      {placeholder_text_multiple: "Select USERS to grant EDIT"}
-    );
-    $(".discover-groups select").chosen(
-      {placeholder_text_multiple: "Select GROUPS to grant DISCOVER"}
-    );
-    $(".read-groups select").chosen(
-      {placeholder_text_multiple: "Select GROUPS to grant READ"}
-    );
-    $(".edit-groups select").chosen(
-      {placeholder_text_multiple: "Select GROUPS to grant EDIT"}
-    );
+    $(".permission-entity-selector select").chosen({
+      placeholder_text_multiple: $(this).attr("data-placeholder")
+    });
   });
 </script>
