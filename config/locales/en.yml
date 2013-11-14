@@ -33,6 +33,11 @@ en:
         updated: 'Admin Policy updated'
       page_titles:
         edit: 'Editing Admin Policy'
+    permissions:
+      descriptions:
+        discover: 'Find object via search and view summary data'
+        read: 'View object and download content (includes Discover)'
+        edit: 'Modify object (includes Discover + Read)'
   blacklight:
     application_name: 'Duke Digital Repository'
     header_links:

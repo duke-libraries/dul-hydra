@@ -5,7 +5,10 @@ class ObjectsController < ApplicationController
 
   copy_blacklight_config_from(CatalogController)
 
-  before_filter :enforce_show_permissions, except: [:edit, :update]
+  SHOW_VIEWS = [:show, :preservation_events, :collection_info]
+
+  before_filter :enforce_show_permissions, only: SHOW_VIEWS
+
   before_filter :configure_blacklight_for_related_objects, only: :show
 
   helper_method :get_solr_response_for_field_values

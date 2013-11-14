@@ -7,3 +7,18 @@
 form.bookmark_toggle {
 	display: inline;
 }
+.object-permissions-form legend {
+	margin: 1em 0 0 0;
+	font-size: medium;
+}
+.object-permissions-form fieldset {
+	margin-bottom: 1em;
+}
+.group-permissions legend,
+.user-permissions legend {
+	font-size: small;
+	margin: 0;
+}
+.group-permissions select {
+	width: auto;
+}

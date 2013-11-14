@@ -16,5 +16,5 @@
   These settings are inherited by objects governed by this policy. 
   They do not apply to this admin policy object itself.
 </p>
-<%= render partial: 'access_controls', locals: {grants: display_default_grants} %>
-<%= render partial: 'license', locals: {license: current_object.defaultRights.license, inherited: false} %>
+<%= render partial: 'access_controls', locals: {access_map: default_permissions_access_map} %>
+<%= render partial: 'license', locals: {license: current_object.default_license} %>
