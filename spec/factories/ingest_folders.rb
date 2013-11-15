@@ -2,12 +2,12 @@
 
 FactoryGirl.define do
   factory :ingest_folder do
-    dirpath "MyString"
-    username "MyString"
-    admin_policy_pid "MyString"
-    collection_pid "MyString"
-    model "MyString"
-    add_parents false
+    base_path "/base/path/"
+    sub_path "/subpath/"
+    user { FactoryGirl.create(:user) }
+    admin_policy_pid "apo:123"
+    collection_pid "test:456"
+    add_parents true
     parent_id_length 1
   end
 end
