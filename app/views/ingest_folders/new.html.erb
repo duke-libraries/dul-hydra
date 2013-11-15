@@ -1,5 +1,17 @@
 <h1>Ingest Folder</h1>
 
+<% if @ingest_folder.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@ingest_folder.errors.count, "error") %> prohibited this ingest folder from being scanned:</h2>
+ 
+    <ul>
+    <% @ingest_folder.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <%= form_for @ingest_folder do |f| %>
 
 <div>
@@ -8,12 +20,12 @@
 </div>
 
 <div>
-	<%= f.label :folder_sub_path, :style => "display: inline" %>
+	<%= f.label :sub_path, :style => "display: inline" %>
 	<%= f.text_field :sub_path %>
 </div>
 
 <div>
-	<%= f.label :checksum_file_sub_path, :style => "display: inline" %>
+	<%= f.label :checksum_file, :style => "display: inline" %>
 	<%= f.text_field :checksum_file %>
 </div>
 
@@ -28,24 +40,24 @@
 </div>
 
 <div>
-	<%= f.label :collection, :style => "display: inline" %>
+	<%= f.label :collection_pid, :style => "display: inline" %>
 	<%= f.select :collection_pid, options_for_select(@collection_options), :include_blank => true %>
 </div>
 
 <div>
-	<%= f.label :admin_policy, :style => "display: inline" %>
+	<%= f.label :admin_policy_pid, :style => "display: inline" %>
 	<%= f.select :admin_policy_pid, @admin_policies.collect { |apo| apo.pid }, :include_blank => true %>
 </div>
 
 <div>
 	<div>
-		<%= f.label :parent_identifier_length, :style => "display: inline" %>
+		<%= f.label :parent_id_length, :style => "display: inline" %>
 		<%= f.text_field :parent_id_length %>
 	</div>	
 </div>
 
 <div>
-  <%= f.submit "Scan Folder", :id => 'ingest_folders_submit_button', :class => "btn btn-primary" %>
+  <%= f.submit I18n.t('batch.ingest_folder.scan_folder'), :id => 'ingest_folders_submit_button', :class => "btn btn-primary" %>
 </div>
 	
 <% end %>

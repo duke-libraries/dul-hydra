@@ -1,9 +1,14 @@
 class IngestFolder < ActiveRecord::Base
   
+  include ActiveModel::Validations
+  
   attr_accessible :admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path,
                   :checksum_file, :checksum_type, :add_parents, :parent_id_length
   belongs_to :user, :inverse_of => :ingest_folders
-
+  
+  validates_presence_of :admin_policy_pid, :collection_pid, :sub_path
+  validate :sub_path_must_be_readable
+  
   CONFIG_FILE = File.join(Rails.root, 'config', 'folder_ingest.yml')
   
   DEFAULT_INCLUDED_FILE_EXTENSIONS = ['.pdf', '.tif', '.tiff']
@@ -52,6 +57,10 @@ class IngestFolder < ActiveRecord::Base
     path.eql?(File::SEPARATOR) ? nil : path
   end
   
+  def checksum_file_location
+    File.join(full_checksum_path, checksum_file)
+  end
+  
   def scan
     @parent_hash = {} if add_parents
     @included_files = 0
@@ -78,7 +87,6 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def checksums
-    checksum_file_location = File.join(full_checksum_path, checksum_file)
     checksum_file_path = File.dirname(checksum_file_location)
     @checksum_file_directory = checksum_file_path.split(File::SEPARATOR).last
     checksum_hash = {}
@@ -250,23 +258,15 @@ class IngestFolder < ActiveRecord::Base
     base.descMetadata.content
   end
   
-  # def desc_metadata_for_file(file_entry)
-  #   identifier = extract_identifier_from_filename(file_entry)
-  #   component = IngestFolder.default_file_model.constantize.new
-  #   component.identifier = identifier
-  #   component.source = file_entry
-  #   component.creator = file_creator
-  #   component.descMetadata.content
-  # end
-  # 
-  # def desc_metadata_for_parent(parent_identifier)
-  #   item = IngestFolder.default_file_model.constantize.new
-  #   item.identifier = identifier
-  #   item.descMetadata.content
-  # end
-  
   def extract_identifier_from_filename(file_entry)
     File.basename(file_entry, File.extname(file_entry))
   end  
+
+  def sub_path_must_be_readable
+    errors.add(:sub_path, I18n.t('batch.ingest_folder.not_readable', :path => sub_path)) unless File.exists?(full_path)
+    if checksum_file
+      errors.add(:checksum_file, I18n.t('batch.ingest_folder.not_readable', :path => checksum_file)) unless File.exists?(checksum_file_location)
+    end
+  end
   
 end
