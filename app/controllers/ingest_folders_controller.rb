@@ -8,12 +8,12 @@ class IngestFoldersController < ApplicationController
     collection_hash = {}
     collections.each { |coll| collection_hash[coll.title.first] = coll.pid }
     @collection_options = Hash[collection_hash.sort]
-    @models = IngestFolder.default_models
     @permitted_folder_bases = IngestFolder.permitted_folders(current_user)
   end
   
   def create
     @ingest_folder = IngestFolder.new(params[:ingest_folder])
+    @ingest_folder.model = IngestFolder.default_file_model
     @ingest_folder.add_parents = true
     @ingest_folder.user = current_user
     @ingest_folder.save
@@ -22,7 +22,7 @@ class IngestFoldersController < ApplicationController
   
   def show
     @collection_title = Collection.find(@ingest_folder.collection_pid).title.first if @ingest_folder.collection_pid.present?
-    @included, @excluded = @ingest_folder.scan
+    @included_files, @included_parents, @included_targets, @excluded = @ingest_folder.scan
   end
   
   def procezz

@@ -3,11 +3,6 @@
 <%= form_for @ingest_folder do |f| %>
 
 <div>
-	<%= f.label :model, :style => "display: inline" %>
-	<%= f.select :model, @models %>
-</div>
-
-<div>
 	<%= f.label :base_path, :style => "display: inline" %>
 	<%= f.select :base_path, options_for_select(@permitted_folder_bases), {}, {:style => 'width: auto;'} %>
 </div>

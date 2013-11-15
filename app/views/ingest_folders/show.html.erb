@@ -3,10 +3,6 @@
 <%= content_tag(:table) do %>
 
 	<%= content_tag(:tr) do %>
-		<%= content_tag(:td, "Model") %>
-		<%= content_tag(:td, @ingest_folder.model) %>
-	<% end %>	
-	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, "Folder") %>
 		<%= content_tag(:td, File.join(@ingest_folder.abbreviated_path)) %>
 	<% end %>
@@ -15,8 +11,18 @@
 		<%= content_tag(:td, IngestFolder.file_creators.fetch(@ingest_folder.file_creator, nil)) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
-		<%= content_tag(:td, "Files Found") %>
-		<%= content_tag(:td, @included) %>
+		<%= content_tag(:td, "Objects to be Ingested") %>
+		<%= content_tag(:td) do %>
+			<%= content_tag(:ul) do %>
+				<%= content_tag(:li, "#{@included_files} #{@ingest_folder.model.pluralize}") %>
+			<% end %>
+			<%= content_tag(:ul) do %>
+				<%= content_tag(:li, "#{@included_parents} #{DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(@ingest_folder.model, "parent")).name.pluralize}") %>
+			<% end %>
+			<%= content_tag(:ul) do %>
+				<%= content_tag(:li, "#{@included_targets} #{IngestFolder.default_target_model.pluralize}") %>
+			<% end %>
+		<% end %>
 	<% end %>	
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, "Excluded Files") %>
