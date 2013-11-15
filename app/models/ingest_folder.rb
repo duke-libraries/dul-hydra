@@ -12,16 +12,16 @@ class IngestFolder < ActiveRecord::Base
     @@configuration ||= YAML::load(File.read(CONFIG_FILE)).with_indifferent_access
   end
   
-  def self.default_models
-    [self.default_file_model, self.default_target_model]
-  end
-  
   def self.default_file_model
     self.load_configuration.fetch(:config).fetch(:file_model)
   end
   
   def self.default_target_model
     self.load_configuration.fetch(:config).fetch(:target_model)
+  end
+  
+  def self.default_target_folder
+    self.load_configuration.fetch(:config).fetch(:target_folder)
   end
   
   def self.file_creators
@@ -53,14 +53,21 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def scan
-    @included = 0
+    @parent_hash = {} if add_parents
+    @included_files = 0
+    @included_parents = 0
+    @included_targets = 0
     @excluded = []
     scan_files(full_path, false)
-    return @included, @excluded
+    return @included_files, @included_parents, @included_targets, @excluded
   end
   
   def procezz
     @batch = DulHydra::Batch::Models::Batch.create(:user => user)
+    @included_files = 0
+    @included_parents = 0
+    @included_targets = 0
+    @excluded = []
     @parent_hash = {} if add_parents
     @checksum_hash = checksums if checksum_file.present?
     scan_files(full_path, true)
@@ -100,9 +107,20 @@ class IngestFolder < ActiveRecord::Base
         if File.directory?(file_loc)
           scan_files(file_loc, create_batch_objects)
         else
-          if DEFAULT_INCLUDED_FILE_EXTENSIONS.include?(File.extname(entry)) &&
-                (model.eql?(IngestFolder.default_target_model) || dirpath.index("targets").nil?)
-            @included += 1 if !create_batch_objects
+          if DEFAULT_INCLUDED_FILE_EXTENSIONS.include?(File.extname(entry))
+            case target?(dirpath)
+            when true
+              @included_targets += 1
+            else
+              @included_files += 1
+              if add_parents && !target?(dirpath)
+                parent_id = parent_identifier(extract_identifier_from_filename(entry))
+                unless @parent_hash.has_key?(parent_id)
+                  @included_parents += 1
+                  @parent_hash[parent_id] = nil
+                end
+              end
+            end
             create_batch_object_for_file(dirpath, entry) if create_batch_objects
           else
             exc = file_loc
@@ -124,11 +142,22 @@ class IngestFolder < ActiveRecord::Base
             :model => parent_model,
             :pid => parent_pid
             )
+    add_datastream(
+            obj,
+            DulHydra::Datastreams::DESC_METADATA,
+            desc_metadata(parent_identifier),
+            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
+            )
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
             admin_policy_pid
             ) if admin_policy_pid
+    add_relationship(
+            obj,
+            DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
+            collection_pid
+            ) if collection_pid
     parent_pid
   end
   
@@ -139,9 +168,15 @@ class IngestFolder < ActiveRecord::Base
     end
   end
   
+  def target?(dirpath)
+    dirpath.index(IngestFolder.default_target_folder).present?
+  end
+  
   def create_batch_object_for_file(dirpath, file_entry)
-    if add_parents
-      parent_id = parent_identifier(extract_identifier_from_filename(file_entry))
+    file_identifier = extract_identifier_from_filename(file_entry)
+    file_model = target?(dirpath) ? IngestFolder.default_target_model : model
+    if add_parents && !target?(dirpath)
+      parent_id = parent_identifier(file_identifier)
       parent_pid = @parent_hash.fetch(parent_id, nil)
       if parent_pid.blank?
         parent_pid = create_batch_object_for_parent(parent_id)
@@ -150,13 +185,13 @@ class IngestFolder < ActiveRecord::Base
     end
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
             :batch => @batch,
-            :identifier => extract_identifier_from_filename(file_entry),
-            :model => model
+            :identifier => file_identifier,
+            :model => file_model
             )
     add_datastream(
             obj,
             DulHydra::Datastreams::DESC_METADATA,
-            desc_metadata_for_file(file_entry),
+            desc_metadata(file_identifier, file_entry, file_creator),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
     add_datastream(
@@ -181,7 +216,7 @@ class IngestFolder < ActiveRecord::Base
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_COLLECTION,
             collection_pid
-            ) if model.eql?(IngestFolder.default_target_model) && collection_pid
+            ) if target?(dirpath) && collection_pid
     obj.save
   end
   
@@ -207,14 +242,28 @@ class IngestFolder < ActiveRecord::Base
     )    
   end
   
-  def desc_metadata_for_file(file_entry)
-    identifier = extract_identifier_from_filename(file_entry)
-    component = IngestFolder.default_file_model.constantize.new
-    component.identifier = identifier
-    component.source = file_entry
-    component.creator = "DPC"
-    component.descMetadata.content
+  def desc_metadata(identifier, source=nil, creator=nil)
+    base = DulHydra::Models::Base.new
+    base.identifier = identifier if identifier.present?
+    base.source = source if source.present?
+    base.creator = creator if creator.present?
+    base.descMetadata.content
   end
+  
+  # def desc_metadata_for_file(file_entry)
+  #   identifier = extract_identifier_from_filename(file_entry)
+  #   component = IngestFolder.default_file_model.constantize.new
+  #   component.identifier = identifier
+  #   component.source = file_entry
+  #   component.creator = file_creator
+  #   component.descMetadata.content
+  # end
+  # 
+  # def desc_metadata_for_parent(parent_identifier)
+  #   item = IngestFolder.default_file_model.constantize.new
+  #   item.identifier = identifier
+  #   item.descMetadata.content
+  # end
   
   def extract_identifier_from_filename(file_entry)
     File.basename(file_entry, File.extname(file_entry))
