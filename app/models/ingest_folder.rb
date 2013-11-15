@@ -7,12 +7,13 @@ class IngestFolder < ActiveRecord::Base
   belongs_to :user, :inverse_of => :ingest_folders
   
   validates_presence_of :admin_policy_pid, :collection_pid, :sub_path
-  validate :sub_path_must_be_readable
+  validate :path_must_be_permitted
+  validate :path_must_be_readable
   
   CONFIG_FILE = File.join(Rails.root, 'config', 'folder_ingest.yml')
   
   DEFAULT_INCLUDED_FILE_EXTENSIONS = ['.pdf', '.tif', '.tiff']
-  
+    
   def self.load_configuration
     @@configuration ||= YAML::load(File.read(CONFIG_FILE)).with_indifferent_access
   end
@@ -262,10 +263,14 @@ class IngestFolder < ActiveRecord::Base
     File.basename(file_entry, File.extname(file_entry))
   end  
 
-  def sub_path_must_be_readable
-    errors.add(:sub_path, I18n.t('batch.ingest_folder.not_readable', :path => sub_path)) unless File.exists?(full_path)
-    if checksum_file
-      errors.add(:checksum_file, I18n.t('batch.ingest_folder.not_readable', :path => checksum_file)) unless File.exists?(checksum_file_location)
+  def path_must_be_permitted
+    errors.add(:base_path, I18n.t('batch.ingest_folder.base_path.forbidden', :path => base_path)) unless IngestFolder.permitted_folders(user).include?(base_path)
+  end
+
+  def path_must_be_readable
+    errors.add(:sub_path, I18n.t('batch.ingest_folder.not_readable', :path => sub_path)) unless File.readable?(full_path)
+    if checksum_file.present?
+      errors.add(:checksum_file, I18n.t('batch.ingest_folder.not_readable', :path => checksum_file)) unless File.readable?(checksum_file_location)
     end
   end
   
