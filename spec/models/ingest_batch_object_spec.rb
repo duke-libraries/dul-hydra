@@ -33,7 +33,11 @@ module DulHydra::Batch::Models
       context "valid object" do
         after do
           object.batch_object_relationships.each do |r|
-            ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
+            begin
+              ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
+            rescue ActiveFedora::ObjectNotFoundError
+              nil
+            end
             AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
             Collection.find(r.object).destroy if r.name.eql?("collection")
           end
@@ -44,6 +48,36 @@ module DulHydra::Batch::Models
         end
         context "target object" do
           let(:object) { FactoryGirl.create(:target_ingest_batch_object) }
+          it_behaves_like "a valid object"
+        end
+        context "object related to an uncreated object with pre-assigned PID" do
+          let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
+          let(:parent) { FactoryGirl.create(:generic_ingest_batch_object) }
+          let(:parent_pid) { 'test:4321' }
+          let(:batch) { FactoryGirl.create(:batch) }
+          let(:relationship) do
+            DulHydra::Batch::Models::BatchObjectRelationship.create(
+              :name => DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
+              :object => parent_pid,
+              :object_type => DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID,
+              :operation => DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD
+              )
+          end
+          before do
+            object.batch = batch
+            object.batch_object_relationships << relationship
+            object.save
+            parent.batch = batch
+            parent.pid = parent_pid
+            parent.save
+          end
+          after do
+            parent.batch_object_relationships.each do |r|
+              ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
+              AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
+              Collection.find(r.object).destroy if r.name.eql?("collection")
+            end            
+          end
           it_behaves_like "a valid object"
         end
       end

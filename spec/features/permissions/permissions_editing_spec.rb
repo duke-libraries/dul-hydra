@@ -11,6 +11,8 @@ describe "permissions editing" do
     login_as user
   end
   after do
+    object.destroy
+    user.delete
     Warden.test_reset!
   end
   it "should be idempotent" do
