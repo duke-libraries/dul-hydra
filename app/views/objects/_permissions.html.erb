@@ -19,5 +19,11 @@
 	This object is governed by the admin policy <strong><%= link_to current_object.admin_policy_id, object_path(current_object.admin_policy_id) %></strong>. 
   </p>
 <% end %>
+
+<% if current_object.is_a?(AdminPolicy) %>
+  <%= render 'admin_policies/permissions_alert' %>
+<% end %>
+
 <%= render partial: 'access_controls', locals: {access_map: permissions_access_map} %>
+
 <%= render partial: 'license', locals: {license: current_object.license} %>

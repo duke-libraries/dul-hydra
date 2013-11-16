@@ -40,6 +40,12 @@ DulHydra::Application.routes.draw do
     put '/' => 'permissions#update'
   end
 
+  scope '/objects/:id/default_permissions', constraints: PID_CONSTRAINT, as: 'default_permissions' do
+    get '/' => redirect {|params, req| "/objects/#{CGI::unescape(params[:id])}?tab=default_permissions" }
+    get 'edit' => 'permissions#edit', defaults: {default_permissions: true}
+    put '/' => 'permissions#update', defaults: {default_permissions: true}
+  end
+
   resources :preservation_events, :only => :show, constraints: { id: /[1-9][0-9]*/ }
 
   resources :export_sets do

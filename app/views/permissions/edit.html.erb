@@ -1,4 +1,5 @@
 <h4>Edit Permissions</h4>
+
 <% if current_object.has_admin_policy? %>
   <div class="alert alert">
 	<p>
@@ -7,36 +8,9 @@
 	  </p>
   </div>
 <% end %>
-<%= form_tag permissions_path(current_object), method: :put, class: "object-permissions-form" do %>
-  <% all_permissions.each do |permission| %>
-    <fieldset>
-	  <legend>
-		<strong><%= permission.upcase %></strong>
-		<small><span class="muted">- <%= t("dul_hydra.permissions.descriptions.#{permission}") %></span></small>
-	  </legend>
-	  <div class="row">
-		<% ["user", "group"].each do |entity| %>
-		  <div class="span<%= entity == 'user' ? 3 : 6 %> <%= entity %>-permissions permission-entity-selector">
-		    <fieldset>
-			  <legend>
-			    <%= entity_icon entity %> <%= entity.capitalize %>s granted <%= permission.capitalize %>
-			  </legend>
-			  <%= select_tag "permissions[#{permission}_#{entity}s]", entity_options_for_select(entity, permission), :multiple => true, "data-placeholder" => "Select #{entity.upcase}S to grant #{permission.upcase}", :style => (entity == "group" ? "width:auto": nil) %>
-			  <%= render_inherited_entities(entity, permission) %>
-		    </fieldset>
-		  </div>
-		<% end %>
-	</fieldset>
-  <% end %>
-  <p>
-	<%= submit_tag "Save", data: { confirm: "The permissions on this object will be overwritten with your selections. Continue?" }, class: "btn btn-primary" %>
-	<%= link_to "Cancel", permissions_path(current_object), data: { confirm: "All changes will be lost! Are you sure?" }, class: "btn btn-danger" %>
-  </p>
+
+<% if current_object.is_a?(AdminPolicy) %>
+  <%= render 'admin_policies/permissions_alert' %>
 <% end %>
-<script type="text/javascript">
-  $(function() {
-    $(".permission-entity-selector select").chosen({
-      placeholder_text_multiple: $(this).attr("data-placeholder")
-    });
-  });
-</script>
+
+<%= render partial: 'form', locals: {default_permissions: false} %>

@@ -7,14 +7,14 @@
 form.bookmark_toggle {
 	display: inline;
 }
-.object-permissions-form legend {
+.permissions-form legend {
 	margin: 1em 0 0 0;
 	font-size: medium;
 }
-.object-permissions-form fieldset {
+.permissions-form fieldset {
 	margin-bottom: 1em;
 }
-.permissions-entity-selector legend,
+.permission-entity-selector legend,
 	font-size: small;
 	margin: 0;
 }
