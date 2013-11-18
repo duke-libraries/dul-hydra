@@ -31,7 +31,8 @@ class IngestFoldersController < ApplicationController
   
   def show
     @collection_title = Collection.find(@ingest_folder.collection_pid).title.first if @ingest_folder.collection_pid.present?
-    @included_files, @included_parents, @included_targets, @excluded = @ingest_folder.scan
+#    @included_files, @included_parents, @included_targets, @excluded = @ingest_folder.scan
+    @scan_results = @ingest_folder.scan
   end
   
   def procezz

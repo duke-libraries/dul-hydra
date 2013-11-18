@@ -13,6 +13,8 @@ class IngestFolder < ActiveRecord::Base
   CONFIG_FILE = File.join(Rails.root, 'config', 'folder_ingest.yml')
   
   DEFAULT_INCLUDED_FILE_EXTENSIONS = ['.pdf', '.tif', '.tiff']
+  
+  ScanResults = Struct.new(:file_count, :parent_count, :target_count, :excluded_files)
     
   def self.load_configuration
     @@configuration ||= YAML::load(File.read(CONFIG_FILE)).with_indifferent_access
@@ -64,20 +66,20 @@ class IngestFolder < ActiveRecord::Base
   
   def scan
     @parent_hash = {} if add_parents
-    @included_files = 0
-    @included_parents = 0
-    @included_targets = 0
-    @excluded = []
+    @file_count = 0
+    @parent_count = 0
+    @target_count = 0
+    @excluded_files = []
     scan_files(full_path, false)
-    return @included_files, @included_parents, @included_targets, @excluded
+    return ScanResults.new(@file_count, @parent_count, @target_count, @excluded_files)
   end
   
   def procezz
     @batch = DulHydra::Batch::Models::Batch.create(:user => user)
-    @included_files = 0
-    @included_parents = 0
-    @included_targets = 0
-    @excluded = []
+    @file_count = 0
+    @parent_count = 0
+    @target_count = 0
+    @excluded_files = []
     @parent_hash = {} if add_parents
     @checksum_hash = checksums if checksum_file.present?
     scan_files(full_path, true)
@@ -110,7 +112,8 @@ class IngestFolder < ActiveRecord::Base
   end
 
   def scan_files(dirpath, create_batch_objects)
-    Dir.foreach(dirpath) do |entry|
+    enumerator = Dir.foreach(dirpath)
+    enumerator.each do |entry|
       unless [".", ".."].include?(entry)
         file_loc = File.join(dirpath, entry)
         if File.directory?(file_loc)
@@ -119,13 +122,13 @@ class IngestFolder < ActiveRecord::Base
           if DEFAULT_INCLUDED_FILE_EXTENSIONS.include?(File.extname(entry))
             case target?(dirpath)
             when true
-              @included_targets += 1
+              @target_count += 1
             else
-              @included_files += 1
+              @file_count += 1
               if add_parents && !target?(dirpath)
                 parent_id = parent_identifier(extract_identifier_from_filename(entry))
                 unless @parent_hash.has_key?(parent_id)
-                  @included_parents += 1
+                  @parent_count += 1
                   @parent_hash[parent_id] = nil
                 end
               end
@@ -135,7 +138,7 @@ class IngestFolder < ActiveRecord::Base
             exc = file_loc
             exc.slice! full_path
             exc.slice!(0) if exc.starts_with?(File::SEPARATOR)
-            @excluded << exc if !create_batch_objects
+            @excluded_files << exc if !create_batch_objects
           end
         end
       end

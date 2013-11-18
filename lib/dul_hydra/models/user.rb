@@ -3,7 +3,7 @@ module DulHydra::Models
     extend ActiveSupport::Concern
 
     included do
-      has_many :batches, :inverse_of => :user
+      has_many :batches, :inverse_of => :user, :class_name => DulHydra::Batch::Models::Batch
       has_many :ingest_folders, :inverse_of => :user
       has_many :export_sets, :dependent => :destroy
 
