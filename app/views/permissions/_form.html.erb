@@ -1,9 +1,9 @@
 <%= form_tag (default_permissions ? default_permissions_path(current_object) : permissions_path(current_object)), method: :put, class: "permissions-form" do %>
   <% all_permissions.each do |permission| %>
-    <fieldset class="permission-entity-selector">
-	  <legend style="border-bottom:none">
-		<strong><%= permission.upcase %></strong>
-		<small><span class="muted">- <%= t("dul_hydra.permissions.descriptions.#{permission}") %></span></small>
+    <fieldset>
+	  <legend>
+		<span class="access-level"><%= permission %></span>
+		<span class="access-level-description"><%= t("dul_hydra.permissions.descriptions.#{permission}") %></span>
 	  </legend>
 	  <select name="permissions[<%= permission %>][]" id="permissions_<%= permission %>" multiple="multiple" data-placeholder="Select users/groups to grant <%= permission.upcase %>" style="width:auto">
 		<optgroup label="GROUPS">
@@ -13,6 +13,10 @@
 		  <%= user_options_for_select permission, default_permissions %>
 		</optgroup>
 	  </select>
+	  <% unless default_permissions -%>
+	    <%= render_inherited_groups permission %>
+	    <%= render_inherited_users permission %>
+	  <% end -%>
 	</fieldset>
   <% end %>
   <p>
@@ -23,7 +27,7 @@
 
 <script type="text/javascript">
   $(function() {
-    $(".permission-entity-selector select").chosen({
+    $(".permissions-form select").chosen({
       placeholder_text_multiple: $(this).attr("data-placeholder")
     });
   });
