@@ -195,30 +195,28 @@ module ApplicationHelper
     date.to_formatted_s(:db) if date
   end
 
-  def permissions_access_map
-    access_map = {}
-    [:discover, :read, :edit].each do |access|
-      access_map[access] = {
-        users: current_object.send("#{access}_users"),
-        groups: current_object.send("#{access}_groups")
-        }
-    end
-    access_map
+  def render_permission_grantees(access)
+    grantees = {
+      users: current_object.send("#{access}_users"),
+      groups: current_object.send("#{access}_groups")
+    }
+    render partial: 'permission_grantees', locals: {grantees: grantees}
   end
 
-  def default_permissions_access_map
-    access_map = {}
-    [:discover, :read, :edit].each do |access|
-      access_map[access] = {
-        users: current_object.datastreams["defaultRights"].individuals
-          .collect { |u, perms| u if perms.include?(access.to_s) }
-          .compact,
-        groups: current_object.datastreams["defaultRights"].groups
-          .collect { |g, perms| g if perms.include?(access.to_s) }
-          .compact
-        }
-    end
-    access_map
+  def render_inherited_permission_grantees(access)
+    grantees = {
+      users: current_object.send("inherited_#{access}_users"),
+      groups: current_object.send("inherited_#{access}_groups")
+    }
+    render partial: 'permission_grantees', locals: {grantees: grantees}
+  end
+
+  def render_default_permission_grantees(access)
+    grantees = {
+      users: current_object.send("default_#{access}_users"),
+      groups: current_object.send("default_#{access}_groups")
+    }
+    render partial: 'permission_grantees', locals: {grantees: grantees}
   end
 
   def render_inherited_entities(type, access)

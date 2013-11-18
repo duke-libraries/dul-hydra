@@ -14,6 +14,7 @@ module DulHydra::Controller
       class_attribute :tab_methods
       helper_method :current_tabs
       helper_method :group_service
+      helper_method :all_permissions
 
       rescue_from CanCan::AccessDenied do |exception|
         render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
@@ -28,6 +29,10 @@ module DulHydra::Controller
 
     def group_service
       @group_service ||= DulHydra::Services::RemoteGroupService.new(request.env)
+    end
+
+    def all_permissions
+      ["discover", "read", "edit"]
     end
 
     def exclude_unwanted_models(solr_parameters, user_parameters)

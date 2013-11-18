@@ -5,7 +5,6 @@ class PermissionsController < ApplicationController
   layout 'objects'
 
   before_filter :authorize_action!
-  helper_method :all_permissions
 
   def edit
     render(params[:default_permissions] ? 'edit_default_permissions' : 'edit')
@@ -38,10 +37,6 @@ class PermissionsController < ApplicationController
   end
 
   protected
-
-  def all_permissions
-    ["discover", "read", "edit"]
-  end
 
   def authorize_action!
     authorize! params[:action].to_sym, params[:id]
