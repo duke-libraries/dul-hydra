@@ -2,6 +2,7 @@
 
 FactoryGirl.define do
   factory :ingest_folder do
+    model IngestFolder.default_file_model
     base_path "/base/path/"
     sub_path "/subpath/"
     user { FactoryGirl.create(:user) }

@@ -14,9 +14,9 @@
 		<%= content_tag(:td, I18n.t('batch.ingest_folder.objects_to_ingest')) %>
 		<%= content_tag(:td) do %>
 			<%= content_tag(:ul) do %>
-				<%= content_tag(:li, "#{pluralize(@included_files, @ingest_folder.model)}") %>
-				<%= content_tag(:li, "#{pluralize(@included_parents, DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(@ingest_folder.model, "parent")).name)}") %>
-				<%= content_tag(:li, "#{pluralize(@included_targets, IngestFolder.default_target_model)}") %>
+				<%= content_tag(:li, "#{pluralize(@scan_results.file_count, @ingest_folder.model)}") %>
+				<%= content_tag(:li, "#{pluralize(@scan_results.parent_count, DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(@ingest_folder.model, "parent")).name)}") %>
+				<%= content_tag(:li, "#{pluralize(@scan_results.target_count, IngestFolder.default_target_model)}") %>
 			<% end %>
 		<% end %>
 	<% end %>	
@@ -24,7 +24,7 @@
 		<%= content_tag(:td, I18n.t('batch.ingest_folder.excluded_files')) %>
 		<%= content_tag(:td) do %>
 			<%= content_tag(:ul) do %>
-				<% @excluded.each do |exc| %>
+				<% @scan_results.excluded_files.each do |exc| %>
 					<%= content_tag(:li, exc) %>
 				<% end %>
 			<% end %>
