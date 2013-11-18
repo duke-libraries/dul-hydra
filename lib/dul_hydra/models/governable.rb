@@ -11,15 +11,18 @@ module DulHydra::Models
     end
 
     def inherited_rights
-      admin_policy.datastreams[DulHydra::Datastreams::RIGHTS_METADATA] if admin_policy
+      admin_policy.datastreams[DulHydra::Datastreams::DEFAULT_RIGHTS] if admin_policy
     end
 
-    def inherited_entities_for_permission(type, permission)
-      if inherited_rights
-        type = "individual" if type == "user" # Hydra < 7.0 hack
-        inherited_rights.send(type.pluralize).collect { |e, perms| e if perms.include?(permission) }.compact
-      else
-        []
+    # Creates convenience methods: 
+    # inherited_discover_users, inherited_discover_groups, 
+    # inherited_read_users, inherited_read_groups,
+    # inherited_edit_user, inherited_edit_groups
+    ["discover", "read", "edit"].each do |access|
+      ["user", "group"].each do |type|
+        define_method("inherited_#{access}_#{type}s") do
+          admin_policy ? admin_policy.send("default_#{access}_#{type}s") : []
+        end
       end
     end
 

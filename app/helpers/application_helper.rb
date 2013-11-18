@@ -221,18 +221,21 @@ module ApplicationHelper
     access_map
   end
 
-  def render_inherited_entities(type, permission)
-    if current_object.governable?
-      inherited_entities = current_object.inherited_entities_for_permission(type, permission)
-      if inherited_entities.present?
-        # if type == "group"
-        #   inherited_entities = inherited_entities.collect { |g| group_display_name(g) }
-        # end
-        render partial: 'inherited_permissions', locals: {inherited_entities: inherited_entities, type: type}
-      else
-        nil
-      end
+  def render_inherited_entities(type, access)
+    inherited_entities = current_object.send("inherited_#{access}_#{type}s")
+    if inherited_entities.present?
+      render partial: 'inherited_permissions', locals: {inherited_entities: inherited_entities, type: type}
+    else
+      nil
     end
+  end
+
+  def render_inherited_groups(access)
+    render_inherited_entities("group", access)
+  end
+
+  def render_inherited_users(access)
+    render_inherited_entities("user", access)
   end
 
   def event_outcome_label(pe)

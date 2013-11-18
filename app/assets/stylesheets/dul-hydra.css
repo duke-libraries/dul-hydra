@@ -10,11 +10,22 @@ form.bookmark_toggle {
 .permissions-form legend {
 	margin: 1em 0 0 0;
 	font-size: medium;
+	border-bottom: none;
 }
 .permissions-form fieldset {
 	margin-bottom: 1em;
 }
-.permission-entity-selector legend,
+.permissions-form legend {
 	font-size: small;
 	margin: 0;
+}
+.permissions-form .access-level {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+.permissions-form .access-level-description {
+	font-weight: normal;
+}
+.permissions-form .access-level-description:before {
+	content: " - "
 }
