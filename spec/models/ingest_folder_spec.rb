@@ -97,6 +97,8 @@ describe IngestFolder do
       end
       it "should create the correct batch objects" do
         expect(user.batches.count).to eql(1)
+        expect(user.batches.first.name).to eql(I18n.t('batch.ingest_folder.batch_name'))
+        expect(user.batches.first.description).to eql(ingest_folder.abbreviated_path)
         expect(objects.fetch('f').model).to eql(parent_model)
         expect(objects.fetch('file01001').model).to eql(IngestFolder.default_file_model)
         expect(objects.fetch('file01002').model).to eql(IngestFolder.default_file_model)

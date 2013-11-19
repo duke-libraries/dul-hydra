@@ -13,6 +13,7 @@ en:
     batch:
         ingest_folder:
             create: New Ingest Folder
+            batch_name: Folder Ingest
             base_path:
                 forbidden: "%{path} is not permitted for folder ingest"
             create_batch: Create Ingest Batch
