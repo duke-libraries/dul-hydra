@@ -1,4 +1,7 @@
 <%= content_tag :h1, I18n.t('batch.web.page_titles.batches') %>
+<% if can? :create, IngestFolder %>
+	<div><%= ingest_folder_create_link %>
+<% end %>
 <% unless @batches.empty? %>
 <%= content_tag :table, :class => 'table table-bordered table-striped table-condensed' do %>
 	<%= content_tag :thead do %>

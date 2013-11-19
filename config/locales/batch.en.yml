@@ -12,6 +12,7 @@ en:
                 sub_path: Folder Sub-Path
     batch:
         ingest_folder:
+            create: New Ingest Folder
             base_path:
                 forbidden: "%{path} is not permitted for folder ingest"
             create_batch: Create Ingest Batch
