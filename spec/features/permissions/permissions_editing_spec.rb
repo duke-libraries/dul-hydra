@@ -7,6 +7,8 @@ describe "permissions editing" do
     object.edit_users = [user.user_key]
     object.read_groups = ["registered"]
     object.discover_groups = ["public"]
+    object.license_title = "Wide Open"
+    object.license_description = "Anyone can do anything"
     object.save
     login_as user
   end
@@ -24,6 +26,8 @@ describe "permissions editing" do
     object.edit_users.should == [user.user_key]
     object.read_groups.should == ["registered"]
     object.discover_groups.should == ["public"]
+    object.license_title.should == "Wide Open"
+    object.license_description.should == "Anyone can do anything"
   end
   it "should be able to remove a permission" do
     visit permissions_edit_path(object)
@@ -38,5 +42,14 @@ describe "permissions editing" do
     click_button "Save"
     object.reload
     object.edit_groups.should == ["registered"]
+  end
+  it "should be able to modify the license" do
+    visit permissions_edit_path(object)
+    fill_in "license_title", with: "No Access"
+    fill_in "license_description", with: "No one can get to it"
+    click_button "Save"
+    object.reload
+    object.license_title.should == "No Access"
+    object.license_description.should == "No one can get to it"
   end
 end

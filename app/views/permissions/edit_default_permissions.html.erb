@@ -1,5 +1,5 @@
-<h4>Edit Default Permissions</h4>
-
-<%= render 'default_permissions_alert' %>
-
-<%= render partial: 'form', locals: {default_permissions: true} %>
+<h4><%= t('dul_hydra.permissions.page_titles.edit_default_permissions') %></h4>
+<p class="alert">
+  <%= t('dul_hydra.permissions.alerts.default_permissions').html_safe %>
+</p>
+<%= render 'form' %>

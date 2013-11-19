@@ -1,16 +1,3 @@
-<h4>Edit Permissions</h4>
-
-<% if current_object.has_admin_policy? %>
-  <div class="alert alert">
-	<p>
-	  <strong>Important</strong><br />
-	  <%= inherited_permissions_alert %>
-	</p>
-  </div>
-<% end %>
-
-<% if current_object.is_a?(AdminPolicy) %>
-  <%= render 'admin_policies/permissions_alert' %>
-<% end %>
-
-<%= render partial: 'form', locals: {default_permissions: false} %>
+<h4><%= t('dul_hydra.permissions.page_titles.edit') %></h4>
+<%= render 'objects/permissions_alerts' %>
+<%= render 'form' %>

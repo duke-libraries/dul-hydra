@@ -220,11 +220,9 @@ module ApplicationHelper
   end
 
   def render_inherited_entities(type, access)
-    inherited_entities = current_object.send("inherited_#{access}_#{type}s")
-    if inherited_entities.present?
+    if current_object.governable?
+      inherited_entities = current_object.send("inherited_#{access}_#{type}s")
       render partial: 'inherited_permissions', locals: {inherited_entities: inherited_entities, type: type}
-    else
-      nil
     end
   end
 

@@ -23,11 +23,13 @@ class PermissionsController < ApplicationController
     if params[:default_permissions]
       object.defaultRights.clear_permissions!
       object.defaultRights.permissions = new_permissions
+      object.default_license = params[:license]
       notice = "Default permissions updated."
       redirect_after_update = default_permissions_path(object)
     else
       object.rightsMetadata.clear_permissions!
       object.rightsMetadata.permissions = new_permissions
+      object.license = params[:license]
       notice = "Permissions updated."
       redirect_after_update = permissions_path(object)
     end

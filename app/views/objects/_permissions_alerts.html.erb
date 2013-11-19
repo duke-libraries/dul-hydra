@@ -1,0 +1,11 @@
+<% if current_object.has_admin_policy? %>
+  <p class="alert">
+	<%= (t('dul_hydra.tabs.permissions.alerts.has_admin_policy') % link_to(current_object.admin_policy_id, object_path(current_object.admin_policy_id))).html_safe %>
+  </p>
+<% end %>
+
+<% if current_object.is_a?(AdminPolicy) %>
+  <p class="alert">
+    <%= t('dul_hydra.tabs.permissions.alerts.is_admin_policy').html_safe %>  
+  </p>
+<% end %>

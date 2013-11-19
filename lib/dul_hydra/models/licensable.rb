@@ -9,11 +9,18 @@ module DulHydra::Models
     end
 
     def license
-      if license_title or license_description or license_url
-        {title: license_title, description: license_description, url: license_url}
+      if license_title.present? or license_description.present? or license_url.present?
+        {title: license_title, description: license_description, url: license_url}.with_indifferent_access
       end
     end
-
+    
+    def license=(new_license)
+      raise ArgumentError unless new_license.is_a?(Hash)
+      l = new_license.with_indifferent_access
+      self.license_title = l[:title]
+      self.license_description = l[:description]
+      self.license_url = l[:url]
+    end
 
   end
 end

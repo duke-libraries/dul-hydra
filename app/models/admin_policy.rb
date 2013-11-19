@@ -18,9 +18,17 @@ class AdminPolicy < Hydra::AdminPolicy
   end
 
   def default_license
-    if default_license_title or default_license_description or default_license_url
+    if default_license_title.present? or default_license_description.present? or default_license_url.present?
       {title: default_license_title, description: default_license_description, url: default_license_url}
     end
+  end
+
+  def default_license=(new_license)
+    raise ArgumentError unless new_license.is_a?(Hash)
+    l = new_license.with_indifferent_access
+    self.default_license_title = l[:title]
+    self.default_license_description = l[:description]
+    self.default_license_url = l[:url]
   end
 
   def descriptive_metadata_terms

@@ -1,5 +1,22 @@
 module PermissionsHelper
 
+  def permissions_form_action
+    params[:default_permissions] ? default_permissions_path(current_object) : permissions_path(current_object)
+  end
+
+  def permissions_form_license
+    license = params[:default_permissions] ? current_object.default_license : current_object.license
+    license || {}
+  end
+
+  def permissions_form_confirmation
+    if params[:default_permissions]
+      "The default permissions on this Admin Policy will be overwritten with your selections and be applied to all objects governed by this policy. Continue?"
+    else
+      "The permissions on this object will be overwritten with your selections. Continue?"
+    end
+  end
+
   def user_options_for_select(permission, default_permissions=false)
     options_for_select(all_user_options, selected_user_options(permission, default_permissions))
   end
