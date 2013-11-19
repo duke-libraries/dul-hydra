@@ -19,9 +19,10 @@ class IngestFoldersController < ApplicationController
     @collection_options = Hash[collection_hash.sort]
     @permitted_folder_bases = IngestFolder.permitted_folders(current_user)
     @ingest_folder = IngestFolder.new(params[:ingest_folder])
+    @ingest_folder.user = current_user
     @ingest_folder.model = IngestFolder.default_file_model
     @ingest_folder.add_parents = true
-    @ingest_folder.user = current_user
+    @ingest_folder.checksum_type = DulHydra::Datastreams::CHECKSUM_TYPE_SHA256
     if @ingest_folder.save
       redirect_to :action => :show, :id => @ingest_folder
     else

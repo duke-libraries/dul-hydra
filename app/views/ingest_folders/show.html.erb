@@ -4,19 +4,19 @@
 
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('batch.ingest_folder.folder')) %>
-		<%= content_tag(:td, File.join(@ingest_folder.abbreviated_path)) %>
+		<%= content_tag(:td, @ingest_folder.abbreviated_path) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.file_creator')) %>
-		<%= content_tag(:td, IngestFolder.file_creators.fetch(@ingest_folder.file_creator, nil)) %>
+		<%= content_tag(:td, file_creator) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('batch.ingest_folder.objects_to_ingest')) %>
 		<%= content_tag(:td) do %>
 			<%= content_tag(:ul) do %>
-				<%= content_tag(:li, "#{pluralize(@scan_results.file_count, @ingest_folder.model)}") %>
-				<%= content_tag(:li, "#{pluralize(@scan_results.parent_count, DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(@ingest_folder.model, "parent")).name)}") %>
-				<%= content_tag(:li, "#{pluralize(@scan_results.target_count, IngestFolder.default_target_model)}") %>
+				<%= content_tag(:li, file_count) %>
+				<%= content_tag(:li, parent_count) %>
+				<%= content_tag(:li, target_count) %>
 			<% end %>
 		<% end %>
 	<% end %>	
@@ -24,9 +24,7 @@
 		<%= content_tag(:td, I18n.t('batch.ingest_folder.excluded_files')) %>
 		<%= content_tag(:td) do %>
 			<%= content_tag(:ul) do %>
-				<% @scan_results.excluded_files.each do |exc| %>
-					<%= content_tag(:li, exc) %>
-				<% end %>
+				<%= excluded_file_list %>
 			<% end %>
 		<% end %>
 	<% end %>	
@@ -34,9 +32,11 @@
 		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.checksum_file')) %>
 		<%= content_tag(:td, @ingest_folder.checksum_file) %>
 	<% end %>
-	<%= content_tag(:tr) do %>
-		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.checksum_type')) %>
-		<%= content_tag(:td, @ingest_folder.checksum_type) %>
+	<% if @ingest_folder.checksum_file.present? %>
+		<%= content_tag(:tr) do %>
+			<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.checksum_type')) %>
+			<%= content_tag(:td, @ingest_folder.checksum_type) %>
+		<% end %>
 	<% end %>
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.collection_pid')) %>
