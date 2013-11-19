@@ -86,6 +86,7 @@ describe IngestFolder do
       let(:objects) { {} }
       let(:dss) { {} }
       let(:rels) { {} }
+      let(:parent_model) { DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
       before do 
         ingest_folder.procezz
         user.batches.first.batch_objects.each do |obj|
@@ -96,7 +97,7 @@ describe IngestFolder do
       end
       it "should create the correct batch objects" do
         expect(user.batches.count).to eql(1)
-        expect(objects.fetch('f').model).to eql("Item")
+        expect(objects.fetch('f').model).to eql(parent_model)
         expect(objects.fetch('file01001').model).to eql(IngestFolder.default_file_model)
         expect(objects.fetch('file01002').model).to eql(IngestFolder.default_file_model)
         expect(objects.fetch('file01').model).to eql(IngestFolder.default_file_model)
