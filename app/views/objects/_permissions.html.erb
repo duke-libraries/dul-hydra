@@ -24,6 +24,6 @@
   <%= render 'admin_policies/permissions_alert' %>
 <% end %>
 
-<%= render partial: 'access_controls', locals: {access_map: permissions_access_map} %>
+<%= render 'access_controls' %>
 
 <%= render partial: 'license', locals: {license: current_object.license} %>

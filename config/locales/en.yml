@@ -34,6 +34,8 @@ en:
       page_titles:
         edit: 'Editing Admin Policy'
     permissions:
+      alerts:
+        inherited: 'This object is governed by the Admin Policy %s from which it inherits the permissions listed beneath the access control select boxes. Permissions granted on this page are <strong>added to</strong> the inherited permissions when authorizing access.'
       descriptions:
         discover: 'Find object via search and view summary data'
         read: 'View object and download content (includes Discover)'

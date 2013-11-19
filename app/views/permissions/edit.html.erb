@@ -4,8 +4,8 @@
   <div class="alert alert">
 	<p>
 	  <strong>Important</strong><br />
-	  Permissions inherited from the admin policy <%= link_to current_object.admin_policy_id, object_path(current_object.admin_policy_id) %> are listed beneath the access control select boxes. Permissions granted on this page are <strong>added to</strong> the inherited permissions when authorizing access.
-	  </p>
+	  <%= inherited_permissions_alert %>
+	</p>
   </div>
 <% end %>
 

@@ -29,3 +29,13 @@ form.bookmark_toggle {
 .permissions-form .access-level-description:before {
 	content: " - "
 }
+table.access-controls {
+	width: auto;
+}
+table.access-controls .access-level {
+	text-transform: uppercase;
+	font-weight: bold;
+}
+table.access-controls td ul {
+	margin: 0;
+}

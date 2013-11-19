@@ -1,13 +1,10 @@
-<h4>Access Controls</h4>
+<h4>Default Access Controls</h4>
 
 <table class="table access-controls">
   <thead>
 	<tr>
 	  <th scope="col">Permission</th>
 	  <th scope="col">Granted To</th>
-	  <% if current_object.governable? -%>
-	    <th scope="col">Inherited</th>
-	  <% end -%>
 	</tr>
   </thead>
   <tbody>
@@ -17,13 +14,8 @@
 		<%= access %>
 	  </td>
 	  <td>
-		<%= render_permission_grantees access %>
+		<%= render_default_permission_grantees access %>
 	  </td>
-	  <% if current_object.governable? %>
-	  <td>
-		<%= render_inherited_permission_grantees access %>
-	  </td>
-	  <% end %>
 	</tr>
 	<% end %>
   </tbody>

@@ -17,6 +17,6 @@
 
 <%= render 'permissions/default_permissions_alert' %>
 
-<%= render partial: 'access_controls', locals: {access_map: default_permissions_access_map} %>
+<%= render 'default_access_controls' %>
 
 <%= render partial: 'license', locals: {license: current_object.default_license} %>
