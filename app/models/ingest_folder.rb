@@ -75,7 +75,11 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def procezz
-    @batch = DulHydra::Batch::Models::Batch.create(:user => user)
+    @batch = DulHydra::Batch::Models::Batch.create(
+                :user => user,
+                :name => I18n.t('batch.ingest_folder.batch_name'),
+                :description => abbreviated_path
+                )
     @file_count = 0
     @parent_count = 0
     @target_count = 0
