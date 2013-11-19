@@ -1,0 +1,58 @@
+<h1>Ingest Folder</h1>
+
+<% if @ingest_folder.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@ingest_folder.errors.count, "error") %> prohibited this ingest folder from being scanned:</h2>
+ 
+    <ul>
+    <% @ingest_folder.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_for @ingest_folder do |f| %>
+
+<div>
+	<%= f.label :base_path, :style => "display: inline" %>
+	<%= f.select :base_path, options_for_select(@permitted_folder_bases), {}, {:style => 'width: auto;'} %>
+</div>
+
+<div>
+	<%= f.label :sub_path, :style => "display: inline" %>
+	<%= f.text_field :sub_path %>
+</div>
+
+<div>
+	<%= f.label :checksum_file, :style => "display: inline" %>
+	<%= f.text_field :checksum_file %>
+</div>
+
+<div>
+	<%= f.label :file_creator, :style => "display: inline" %>
+	<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), :include_blank => true %>
+</div>
+
+<div>
+	<%= f.label :collection_pid, :style => "display: inline" %>
+	<%= f.select :collection_pid, options_for_select(@collection_options), :include_blank => true %>
+</div>
+
+<div>
+	<%= f.label :admin_policy_pid, :style => "display: inline" %>
+	<%= f.select :admin_policy_pid, @admin_policies.collect { |apo| apo.pid }, :include_blank => true %>
+</div>
+
+<div>
+	<div>
+		<%= f.label :parent_id_length, :style => "display: inline" %>
+		<%= f.text_field :parent_id_length %>
+	</div>	
+</div>
+
+<div>
+  <%= f.submit I18n.t('batch.ingest_folder.scan_folder'), :id => 'ingest_folders_submit_button', :class => "btn btn-primary" %>
+</div>
+	
+<% end %>
