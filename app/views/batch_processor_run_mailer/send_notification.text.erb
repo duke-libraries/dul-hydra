@@ -12,9 +12,9 @@ Stopped at: <%= @batch.stop %>
 Status: <%= @batch.status %>
 Outcome: <%= @batch.outcome %>
 
-Objects in batch: <%= @batch.total %>
+Objects in batch: <%= @batch.batch_objects.size %>
 Successfully processed: <%= @batch.success %>
 Processing failures: <%= @batch.failure %>
-Unprocessed: <%= @batch.total - @batch.success - @batch.failure %>
+Unprocessed: <%= @batch.batch_objects.size - @batch.success - @batch.failure %>
 
 See attachment for details of batch run.
