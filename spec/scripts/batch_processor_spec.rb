@@ -38,8 +38,7 @@ module DulHydra::Batch::Scripts
         end
       end
       expect(batch.outcome).to eq(DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS)
-      expect(batch.total).to eq(batch.batch_objects.size)
-      expect(batch.success).to eq(batch.total)
+      expect(batch.success).to eq(batch.batch_objects.size)
       expect(batch.failure).to eq(0)
       expect(batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_FINISHED)
       expect(batch.start).to be < batch.stop

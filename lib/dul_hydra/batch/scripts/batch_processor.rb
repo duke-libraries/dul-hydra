@@ -72,7 +72,6 @@ module DulHydra::Batch::Scripts
       @log.info "Batch size: #{@batch.batch_objects.size}"
       @batch.start = DateTime.now
       @batch.status = DulHydra::Batch::Models::Batch::STATUS_RUNNING
-      @batch.total = @batch.batch_objects.size
       @batch.version = DulHydra::VERSION
       @failures = 0
       @successes = 0
@@ -82,11 +81,11 @@ module DulHydra::Batch::Scripts
     def close_batch_run
       @batch.update_attributes(:details => @details.join("\n"),
                                :failure => @failures,
-                               :outcome => @successes.eql?(@batch.total) ? DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS : DulHydra::Batch::Models::Batch::OUTCOME_FAILURE,
+                               :outcome => @successes.eql?(@batch.batch_objects.size) ? DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS : DulHydra::Batch::Models::Batch::OUTCOME_FAILURE,
                                :status => DulHydra::Batch::Models::Batch::STATUS_FINISHED,
                                :stop => DateTime.now,
                                :success => @successes)
-      @log.info "Ingested #{@batch.success} of #{@batch.total} objects"
+      @log.info "Ingested #{@batch.success} of #{@batch.batch_objects.size} objects"
     end
     
     def process_object(object)

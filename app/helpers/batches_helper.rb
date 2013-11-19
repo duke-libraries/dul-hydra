@@ -1,15 +1,7 @@
 module BatchesHelper
 
   def batch_action(batch)
-    if batch.status.nil?
-      link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
-    elsif batch.status == DulHydra::Batch::Models::Batch::STATUS_FINISHED
-      link_to(I18n.t('batch.web.action_names.reprocezz'), procezz_batch_path(batch))
-    elsif batch.status == DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED
-      link_to(I18n.t('batch.web.action_names.reprocezz'), procezz_batch_path(batch))
-    else
-      DulHydra::Batch::Models::Batch::STATUS_RUNNING
-    end
+    batch.status.nil? ? link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch)) : batch.status
   end
 
   def show_batch_tabs
