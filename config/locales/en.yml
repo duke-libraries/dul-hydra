@@ -34,12 +34,47 @@ en:
       page_titles:
         edit: 'Editing Admin Policy'
     permissions:
+      page_titles:
+        edit_default_permissions: "Modify Default Permissions"
+        edit: "Modify Permissions"
       alerts:
-        inherited: 'This object is governed by the Admin Policy %s from which it inherits the permissions listed beneath the access control select boxes. Permissions granted on this page are <strong>added to</strong> the inherited permissions when authorizing access.'
+        inherited: 'This object is governed by the Admin Policy %s. Permissions granted on this page are <strong>added to</strong> the inherited permissions (if any) shown below the select boxes.'
+        default_permissions: "These settings are <strong>inherited</strong> by objects governed by this policy. They do <strong>not</strong> apply to this Admin Policy object itself."
       descriptions:
         discover: 'Find object via search and view summary data'
         read: 'View object and download content (includes Discover)'
         edit: 'Modify object (includes Discover + Read)'
+    tabs:
+      items:
+        label: Items
+      components:
+        label: Components
+      descriptive_metadata:
+        label: "Descriptive Metadata"
+        actions:
+          edit: Edit
+          download: "Download XML"
+      permissions:
+        label: Permissions
+        actions:
+          edit: Modify
+          download: "Download XML"
+        alerts:
+          is_admin_policy: "These settings apply to this Admin Policy object itself. They are <strong>not inherited</strong> by objects governed by this policy."
+          has_admin_policy: "This object is governed by the Admin Policy %s. Permissions inherited from the policy are shown below."
+      default_permissions:
+        label: "Default Permissions"
+        actions:
+          edit: Modify
+          download: "Download XML"
+      collection_info:
+        label: "Collection Info"
+        actions:
+          download: "Download CSV Report"
+      preservation_events:
+        label: "Preservation Events"
+      attachments:
+        label: Attachments
   blacklight:
     application_name: 'Duke Digital Repository'
     header_links:

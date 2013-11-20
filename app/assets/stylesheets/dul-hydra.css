@@ -8,18 +8,21 @@ form.bookmark_toggle {
 	display: inline;
 }
 .permissions-form legend {
-	margin: 1em 0 0 0;
 	font-size: medium;
-	border-bottom: none;
+	font-weight: bold;
 }
 .permissions-form fieldset {
 	margin-bottom: 1em;
 }
-.permissions-form legend {
-	font-size: small;
-	margin: 0;
+.permissions-form textarea,
+.permissions-form input[type="text"],
+.permissions-form select {
+	width: auto;
 }
 .permissions-form .access-level {
+	margin-bottom: 1.5em;
+}
+.permissions-form .access-level-label {
 	font-weight: bold;
 	text-transform: uppercase;
 }
@@ -32,7 +35,7 @@ form.bookmark_toggle {
 table.access-controls {
 	width: auto;
 }
-table.access-controls .access-level {
+table.access-controls .access-level-label {
 	text-transform: uppercase;
 	font-weight: bold;
 }

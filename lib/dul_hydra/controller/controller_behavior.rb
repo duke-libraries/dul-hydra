@@ -11,7 +11,6 @@ module DulHydra::Controller
       before_filter :authenticate_user!
 
       # tabs
-      class_attribute :tab_methods
       helper_method :current_tabs
       helper_method :group_service
       helper_method :all_permissions
@@ -49,32 +48,63 @@ module DulHydra::Controller
     #
 
     def current_tabs
-      return @current_tabs if @current_tabs
-      @current_tabs = Tabs.new(self)
-      self.tab_methods.each { |m| @current_tabs << self.send(m) } if self.tab_methods
-      @current_tabs
+      return Tabs.new(self) unless self.respond_to?(:tabs)
+      @current_tabs ||= self.tabs
     end
 
-    Tab = Struct.new(:label, :id, :href) do
+    class Tab
+      attr_reader :id, :href, :guard, :actions
+
+      def initialize(id, opts={})
+        @id = id
+        @href = opts[:href]
+        @guard = opts.fetch(:guard, true)
+        @actions = opts.fetch(:actions, [])
+      end
+
+      def authorized_actions
+        @authorized_actions ||= actions.select {|a| a.guard}
+      end
+
       def css_id
         "tab_#{id}"
       end
-      def partial      
-        href ? 'tab_ajax_content' : id
+
+      def partial
+        return 'tab_ajax_content' if href
+        if ["items", "components"].include?(id)
+          'children'
+        else
+          id
+        end
+      end
+
+      def label
+        I18n.t("dul_hydra.tabs.#{id}.label")
+      end
+    end # Tab
+
+    class TabAction
+      attr_reader :id, :href, :guard
+
+      def initialize(id, href, guard=true)
+        @id = id
+        @href = href
+        @guard = guard
       end
     end
 
     class Tabs < ActiveSupport::OrderedHash
-
       attr_reader :active_tab
 
-      def initialize(controller)
+      def initialize(controller, *methods)
         super()
         @active_tab = controller.params[:tab]
+        methods.each {|m| self << controller.send(m)}
       end
       
       def << (tab)
-        self[tab.id] = tab if tab
+        self[tab.id] = tab if tab.guard
       end
 
       def active
@@ -82,11 +112,11 @@ module DulHydra::Controller
       end
 
       def default?(tab)
-        tab.id == self.default.id
+        self.default ? tab.id == self.default.id : false
       end
 
       def default
-        self.first[1]
+        self.first[1] unless self.empty?
       end
     end
     

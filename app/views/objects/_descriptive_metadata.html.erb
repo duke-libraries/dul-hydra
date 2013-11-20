@@ -1,19 +1,5 @@
-<div class="navbar">
-  <div class="navbar-inner">
-	<ul class="nav">
-	  <% if can? :edit, current_object -%>
-	    <li>
-		  <%= descriptive_metadata_edit_link %>
-	    </li>
-	  <% end -%>
-	  <% if can? :download, current_object.descMetadata -%>
-	    <li>
-		  <%= download_datastream_xml_link 'descMetadata' %>
-	    </li>
-	  <% end -%>
-	</ul>
-  </div>
-</div>
+<%= render partial: 'tab_actions', locals: {tab: tab} %>
+
 <table class="table">
   <% current_object.descriptive_metadata_terms.each do |term| -%>
     <% label = term.to_s.titleize -%>

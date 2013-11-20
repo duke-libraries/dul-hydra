@@ -16,15 +16,6 @@ class ObjectsController < ApplicationController
   helper_method :object_attachments
   helper_method :object_preservation_events
 
-  ObjectsController.tab_methods = [:tab_children, 
-                                   :tab_descriptive_metadata, 
-                                   :tab_default_permissions, 
-                                   :tab_permissions, 
-                                   :tab_preservation_events, 
-                                   :tab_attachments, 
-                                   :tab_collection_info
-                                  ]
-
   def show
     object_children # lazy loading doesn't seem to work
   end
@@ -43,6 +34,38 @@ class ObjectsController < ApplicationController
       end
       format.csv { send_data(collection_csv_report, type: "text/csv") }
     end
+  end
+
+  def tabs
+    methods = case current_object.class.to_s
+              when "AdminPolicy"
+                [:tab_descriptive_metadata, 
+                 :tab_default_permissions, 
+                 :tab_permissions]
+              when "Collection"
+                [:tab_items,
+                 :tab_descriptive_metadata, 
+                 :tab_permissions, 
+                 :tab_preservation_events, 
+                 :tab_attachments, 
+                 :tab_collection_info]
+              when "Item"
+                [:tab_components, 
+                 :tab_descriptive_metadata, 
+                 :tab_permissions, 
+                 :tab_preservation_events, 
+                 :tab_attachments]
+              when "Component"
+                [:tab_descriptive_metadata, 
+                 :tab_permissions, 
+                 :tab_preservation_events, 
+                 :tab_attachments]      
+              when "Attachment", "Target"
+                [:tab_descriptive_metadata, 
+                 :tab_permissions, 
+                 :tab_preservation_events]
+              end
+    Tabs.new(self, *methods)
   end
 
   protected
@@ -119,49 +142,71 @@ class ObjectsController < ApplicationController
 
   # tabs
   
-  def tab_content
-    Tab.new("Content", "content") if current_object.has_content?
+  def tab_children(id)
+    Tab.new(id, guard: object_children && object_children.response.total > 0)
   end
 
-  def tab_children
-    if object_children && object_children.response.total > 0
-      children_label = current_object.class.reflect_on_association(:children).class_name.pluralize
-      Tab.new(children_label, "children")
-    end
+  def tab_items
+    tab_children("items")
+  end
+
+  def tab_components
+    tab_children("components")
   end
 
   def tab_descriptive_metadata
-    if current_object.respond_to?(:descriptive_metadata_terms)
-      Tab.new("Descriptive Metadata", "descriptive_metadata") 
-    end
+    Tab.new("descriptive_metadata",
+            actions: [
+                      TabAction.new("edit",
+                                    record_edit_path(current_object),
+                                    can?(:edit, current_object)),
+                      TabAction.new("download",
+                                    download_datastream_object_path(current_object, "descMetadata"),
+                                    can?(:download, current_object.descMetadata))
+                      ]
+            )
   end
 
   def tab_default_permissions
-    if current_object.respond_to?(:default_permissions)
-      Tab.new("Default Permissions", "default_permissions")
-    end
+    Tab.new("default_permissions",
+            actions: [
+                      TabAction.new("edit", 
+                                    default_permissions_edit_path(current_object),
+                                    can?(:edit, current_object)),
+                      TabAction.new("download",
+                                    download_datastream_object_path(current_object, "defaultRights"),
+                                    can?(:download, current_object.defaultRights))
+                     ]
+            )
   end
 
   def tab_permissions
-    Tab.new("Permissions", "permissions")
+    Tab.new("permissions",
+            actions: [
+                      TabAction.new("edit", 
+                                    permissions_edit_path(current_object),
+                                    can?(:edit, current_object)),
+                      TabAction.new("download",
+                                    download_datastream_object_path(current_object, "rightsMetadata"),
+                                    can?(:download, current_object.rightsMetadata))
+                     ]
+            )
   end
 
   def tab_preservation_events
-    if current_object.has_preservation_events?
-      Tab.new("Preservation Events", "preservation_events", preservation_events_object_path(current_object))
-    end
+    Tab.new("preservation_events", 
+            href: preservation_events_object_path(current_object),
+            guard: current_object.has_preservation_events?)
   end
 
   def tab_attachments
-    if object_attachments && object_attachments.response.total > 0
-      Tab.new("Attachments", "attachments")
-    end
+    Tab.new("attachments", guard: object_attachments && object_attachments.response.total > 0)
   end
 
   def tab_collection_info
-    if current_object.is_a?(Collection)
-      Tab.new("Collection Info", "collection_info", collection_info_object_path(current_object))
-    end
+    Tab.new("collection_info", 
+            href: collection_info_object_path(current_object)
+            )
   end
 
 end

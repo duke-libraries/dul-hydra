@@ -6,6 +6,9 @@
 	<%= render_tabs_content %>
   </div>
 </div>
+
+<% if current_tabs.present? %>
 <script type="text/javascript">
   $(function() { $('#object-show-tabs a[href="#<%= current_tabs.active.css_id %>"]').tab('show'); })
 </script>
+<% end %>
