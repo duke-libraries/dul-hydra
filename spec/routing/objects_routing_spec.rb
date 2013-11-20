@@ -55,7 +55,12 @@ describe "object routes" do
       expect(:get => download_datastream_object_path('duke:1', 'content')).to route_to(@route)
     end
 
-    describe "descriptive metadata editing routes" do
+    describe "descriptive metadata routes" do
+      it "should have a show route" do
+        @route = {controller: 'objects', action: 'show', id: 'duke:1', tab: 'descriptive_metadata'}
+        expect(:get => '/objects/duke:1/descriptive_metadata').to route_to(@route)
+        expect(:get => record_path('duke:1')).to route_to(@route)
+      end
       it "should have an edit route" do
         @route = {controller: 'objects', action: 'edit', id: 'duke:1'}
         expect(:get => '/objects/duke:1/descriptive_metadata/edit').to route_to(@route)
@@ -69,6 +74,11 @@ describe "object routes" do
     end
 
     describe "permissions routes" do
+      it "should have a show route" do
+        @route = {controller: 'objects', action: 'show', id: 'duke:1', tab: 'permissions'}
+        expect(:get => '/objects/duke:1/permissions').to route_to(@route)
+        expect(:get => permissions_path('duke:1')).to route_to(@route)
+      end
       it "should have an edit route" do
         @route = {controller: 'permissions', action: 'edit', id: 'duke:1'}
         expect(:get => '/objects/duke:1/permissions/edit').to route_to(@route)
@@ -82,6 +92,11 @@ describe "object routes" do
     end
 
     describe "default permissions routes" do
+      it "should have a show route" do
+        @route = {controller: 'objects', action: 'show', id: 'duke:1', tab: 'default_permissions'}
+        expect(:get => '/objects/duke:1/default_permissions').to route_to(@route)
+        expect(:get => default_permissions_path('duke:1')).to route_to(@route)
+      end
       it "should have an edit route" do
         @route = {controller: 'permissions', action: 'edit', default_permissions: true, id: 'duke:1'}
         expect(:get => '/objects/duke:1/default_permissions/edit').to route_to(@route)
@@ -91,6 +106,24 @@ describe "object routes" do
         @route = {controller: 'permissions', action: 'update', default_permissions: true, id: 'duke:1'}
         expect(:put => '/objects/duke:1/default_permissions').to route_to(@route)
         expect(:put => default_permissions_path('duke:1')).to route_to(@route)
+      end
+    end
+
+    describe "other object show tabs" do
+      it "should have an attachments route" do
+        @route = {controller: 'objects', action: 'show', id: 'duke:1', tab: 'attachments'}
+        expect(:get => '/objects/duke:1/attachments').to route_to(@route)
+        expect(:get => object_tab_path('duke:1', 'attachments')).to route_to(@route)        
+      end
+      it "should have an items route" do
+        @route = {controller: 'objects', action: 'show', id: 'duke:1', tab: 'items'}
+        expect(:get => '/objects/duke:1/items').to route_to(@route)
+        expect(:get => object_tab_path('duke:1', 'items')).to route_to(@route)        
+      end
+      it "should have a components route" do
+        @route = {controller: 'objects', action: 'show', id: 'duke:1', tab: 'components'}
+        expect(:get => '/objects/duke:1/components').to route_to(@route)
+        expect(:get => object_tab_path('duke:1', 'components')).to route_to(@route)        
       end
     end
 
