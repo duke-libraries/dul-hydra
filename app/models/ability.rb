@@ -9,8 +9,8 @@ class Ability
 
   def create_permissions
     super
-    cannot :create, AdminPolicy unless user_groups.include?(DulHydra.groups[:admin_policy_creators])
-    cannot :create, Collection unless user_groups.include?(DulHydra.groups[:collection_creators])
+    cannot :create, AdminPolicy unless current_user.member_of? DulHydra.groups.fetch(:admin_policy_creators, nil)
+    cannot :create, Collection unless current_user.member_of? DulHydra.groups.fetch(:collection_creators, nil)
   end
 
   def read_permissions

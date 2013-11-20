@@ -32,6 +32,7 @@ module DulHydra::Configurable
 
     # Group mappings
     mattr_accessor :groups
+    self.groups = {}
   end
 
   module ClassMethods
