@@ -33,6 +33,9 @@ module DulHydra::Configurable
     # Group mappings
     mattr_accessor :groups
     self.groups = {}
+
+    # Repository content models that can be created through the web
+    mattr_accessor :creatable_models
   end
 
   module ClassMethods

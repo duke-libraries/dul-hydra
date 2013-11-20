@@ -17,6 +17,7 @@ DulHydra.configure do |config|
                                 :download_permissions
                                ]
   if File.exists? "#{Rails.root}/config/groups.yml"
-    config.groups = YAML.load_file("#{Rails.root}/config/groups.yml")
+    config.groups = YAML.load_file("#{Rails.root}/config/groups.yml").with_indifferent_access
   end
+  config.creatable_models = ["AdminPolicy", "Collection", "Item"]
 end

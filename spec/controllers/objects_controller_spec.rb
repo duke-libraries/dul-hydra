@@ -11,6 +11,12 @@ describe ObjectsController do
     object.delete
     sign_out user
   end
+  context "#new" do
+    it "should render the new template" do
+      get :new
+      response.should render_template(:new)
+    end
+  end
   context "#show" do
     it "should render the show template" do
       controller.current_ability.can(:read, SolrDocument) do |obj|

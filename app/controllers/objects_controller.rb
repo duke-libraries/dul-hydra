@@ -16,6 +16,10 @@ class ObjectsController < ApplicationController
   helper_method :object_attachments
   helper_method :object_preservation_events
 
+  def new
+    
+  end
+  
   def show
     object_children # lazy loading doesn't seem to work
   end

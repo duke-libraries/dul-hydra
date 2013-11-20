@@ -9,8 +9,13 @@ describe Ability do
   after { user.delete }
 
   describe "#create_permissions" do
+    context "ActiveFedora::Base" do
+      it "should NOT permit creation" do
+        ability.can?(:create, ActiveFedora::Base).should be_false
+      end
+    end
     context "AdminPolicy" do
-      context "user is member of admin policy creators group" do
+      context "user is a member of the admin policy creators group" do
         before { user.stub(:groups).and_return([DulHydra.groups[:admin_policy_creators]]) }
         it "should permit creation" do
           ability.can?(:create, AdminPolicy).should be_true
@@ -23,7 +28,7 @@ describe Ability do
       end
     end
     context "Collection" do
-      context "user is member of collection creators group" do
+      context "user is a member of the collection creators group" do
         before { user.stub(:groups).and_return([DulHydra.groups[:collection_creators]]) }
         it "should permit creation" do
           ability.can?(:create, Collection).should be_true
@@ -32,6 +37,19 @@ describe Ability do
       context "user is NOT member of collection creators group" do
         it "should not permit creation" do
           ability.can?(:create, Collection).should be_false
+        end
+      end
+    end
+    context "Item" do
+      context "user is a member of the items creators group" do
+        before { user.stub(:groups).and_return([DulHydra.groups[:item_creators]]) }
+        it "should permit creation" do
+          ability.can?(:create, Item).should be_true
+        end
+      end
+      context "user is NOT member of collection creators group" do
+        it "should not permit creation" do
+          ability.can?(:create, Item).should be_false
         end
       end
     end

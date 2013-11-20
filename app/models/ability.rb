@@ -8,9 +8,15 @@ class Ability
   self.ability_logic += DulHydra.extra_ability_logic if DulHydra.extra_ability_logic
 
   def create_permissions
-    super
-    cannot :create, AdminPolicy unless current_user.member_of? DulHydra.groups.fetch(:admin_policy_creators, nil)
-    cannot :create, Collection unless current_user.member_of? DulHydra.groups.fetch(:collection_creators, nil)
+    super # Permits :create for :all if user is authenticated
+    # First block repository object creation ...
+    cannot :create, ActiveFedora::Base 
+    # ... then permit members of authorized groups on a per-model basis
+    DulHydra.creatable_models.each do |model|
+      if current_user.member_of? DulHydra.groups.fetch("#{model.underscore}_creators", nil)
+        can :create, model.constantize
+      end
+    end
   end
 
   def read_permissions

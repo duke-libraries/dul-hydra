@@ -11,8 +11,10 @@ describe "object routes" do
       expect(:get => '/objects/duke:1').to route_to(@route)
       expect(:get => object_path('duke:1')).to route_to(@route)
     end
-    it "should not have a new route" do
-      expect(:get => '/objects/new').not_to be_routable
+    it "should have a new route" do
+      @route = {controller: 'objects', action: 'new'}
+      expect(:get => '/objects/new').to route_to(@route)
+      expect(:get => new_object_path).to route_to(@route)
     end
     it "should not have a create route" do
       expect(:post => '/objects').not_to be_routable

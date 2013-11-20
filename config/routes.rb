@@ -17,7 +17,7 @@ DulHydra::Application.routes.draw do
 
   mount FcrepoAdmin::Engine => '/fcrepo', as: 'fcrepo_admin'
 
-  resources :objects, only: [:show], constraints: PID_CONSTRAINT do
+  resources :objects, only: [:new, :show], constraints: PID_CONSTRAINT do
     member do
       get 'collection_info', constraints: XhrRequestConstraint
       get 'download' => 'downloads#show'
