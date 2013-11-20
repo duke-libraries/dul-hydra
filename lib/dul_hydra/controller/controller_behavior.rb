@@ -48,7 +48,7 @@ module DulHydra::Controller
     #
 
     def current_tabs
-      return unless self.respond_to?(:tabs)
+      return Tabs.new(self) unless self.respond_to?(:tabs)
       @current_tabs ||= self.tabs
     end
 
@@ -112,11 +112,11 @@ module DulHydra::Controller
       end
 
       def default?(tab)
-        tab.id == self.default.id
+        self.default ? tab.id == self.default.id : false
       end
 
       def default
-        self.first[1]
+        self.first[1] unless self.empty?
       end
     end
     
