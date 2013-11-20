@@ -3,13 +3,42 @@ require 'dul_hydra'
 
 describe Ability do
 
-  describe "#download_permissions" do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:ability) { described_class.new(user) }
-    after do
-      user.delete 
-      obj.delete
+  let(:user) { FactoryGirl.create(:user) }
+  let(:ability) { described_class.new(user) }
+
+  after { user.delete }
+
+  describe "#create_permissions" do
+    context "AdminPolicy" do
+      context "user is member of admin policy creators group" do
+        before { user.stub(:groups).and_return([DulHydra.groups[:admin_policy_creators]]) }
+        it "should permit creation" do
+          ability.can?(:create, AdminPolicy).should be_true
+        end
+      end
+      context "user is NOT member of admin policy creators group" do
+        it "should not permit creation" do
+          ability.can?(:create, AdminPolicy).should be_false
+        end
+      end
     end
+    context "Collection" do
+      context "user is member of collection creators group" do
+        before { user.stub(:groups).and_return([DulHydra.groups[:collection_creators]]) }
+        it "should permit creation" do
+          ability.can?(:create, Collection).should be_true
+        end
+      end
+      context "user is NOT member of collection creators group" do
+        it "should not permit creation" do
+          ability.can?(:create, Collection).should be_false
+        end
+      end
+    end
+  end
+
+  describe "#download_permissions" do
+    after { obj.delete }
     context "ActiveFedora::Base object datastream" do
       let(:obj) { FactoryGirl.create(:test_model) }
       context "user has read permission" do
@@ -65,11 +94,6 @@ describe Ability do
   end
   
   describe "#ingest_folders_permissions" do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:ability) { described_class.new(user) }
-    after do
-      user.delete 
-    end
     context "user has no permitted ingest folders" do
       before { IngestFolder.stub(:permitted_folders).with(user).and_return([]) }
       it "should deny create permission to the user" do
