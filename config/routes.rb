@@ -27,21 +27,26 @@ DulHydra::Application.routes.draw do
     end
   end
 
-  # hydra-editor for descriptive metadata
+  # other object tabs
+  get '/objects/:id/:tab' => 'objects#show', 
+      constraints: PID_CONSTRAINT.merge(tab: /attachments|items|components/), 
+      as: 'object_tab'
+
+  # Hydra-editor for descriptive metadata
   scope '/objects/:id/descriptive_metadata', constraints: PID_CONSTRAINT, as: 'record' do
-    get '/' => redirect {|params, req| "/objects/#{CGI::unescape(params[:id])}?tab=descriptive_metadata" }
+    get '/' => 'objects#show', defaults: {tab: 'descriptive_metadata'}
     get 'edit' => 'objects#edit'
     put '/' => 'objects#update'
   end
 
   scope '/objects/:id/permissions', constraints: PID_CONSTRAINT, as: 'permissions' do
-    get '/' => redirect {|params, req| "/objects/#{CGI::unescape(params[:id])}?tab=permissions" }
+    get '/' => 'objects#show', defaults: {tab: 'permissions'}
     get 'edit' => 'permissions#edit'
     put '/' => 'permissions#update'
   end
 
   scope '/objects/:id/default_permissions', constraints: PID_CONSTRAINT, as: 'default_permissions' do
-    get '/' => redirect {|params, req| "/objects/#{CGI::unescape(params[:id])}?tab=default_permissions" }
+    get '/' => 'objects#show', defaults: {tab: 'default_permissions'}
     get 'edit' => 'permissions#edit', defaults: {default_permissions: true}
     put '/' => 'permissions#update', defaults: {default_permissions: true}
   end

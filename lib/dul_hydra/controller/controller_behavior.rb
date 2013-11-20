@@ -71,12 +71,7 @@ module DulHydra::Controller
       end
 
       def partial
-        return 'tab_ajax_content' if href
-        if ["items", "components"].include?(id)
-          'children'
-        else
-          id
-        end
+        href ? 'tab_ajax_content': id
       end
 
       def label

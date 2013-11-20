@@ -17,12 +17,10 @@ describe ExportSetsController do
     let(:object_discover) { FactoryGirl.create(:test_content) }
     before do
       sign_in user      
-      controller.current_ability.can :read, ActiveFedora::Base do |obj|
-        obj.pid == object_read.pid
-      end
-      controller.current_ability.can :discover, ActiveFedora::Base do |obj|
-        obj.pid == object_discover.pid
-      end
+      object_read.read_users = [user.user_key]
+      object_read.save
+      object_discover.discover_users = [user.user_key]
+      object_discover.save
     end
     after do
       object_read.delete 
@@ -42,13 +40,12 @@ describe ExportSetsController do
     let(:object) { FactoryGirl.create(:test_content) }
     before do
       sign_in user
+      object.read_users = [user.user_key]
+      object.save
     end
     after { user.delete; object.delete }
     it "should create an export set and redirect to the show page" do
       user.export_sets.count.should == 0
-      controller.current_ability.can :read, ActiveFedora::Base do |obj|
-        obj.pid == object.pid
-      end
       post :create, :export_set => {:pids => [object.pid]}
       user.export_sets.count.should == 1
       expect(response).to redirect_to(export_set_path(assigns[:export_set]))
