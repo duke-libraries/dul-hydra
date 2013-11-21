@@ -4,7 +4,7 @@ en:
             ingest_folder:
                 admin_policy_pid: Admin Policy
                 base_path: Base Path
-                checksum_file: Checksum File Sub-Path
+                checksum_file: Checksum File
                 checksum_type: Checksum Type
                 collection_pid: Collection
                 file_creator: File Creator

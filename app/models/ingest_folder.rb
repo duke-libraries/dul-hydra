@@ -2,6 +2,8 @@ class IngestFolder < ActiveRecord::Base
   
   include ActiveModel::Validations
   
+  after_initialize :init
+  
   attr_accessible :admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path,
                   :checksum_file, :checksum_type, :add_parents, :parent_id_length
   belongs_to :user, :inverse_of => :ingest_folders
@@ -15,9 +17,23 @@ class IngestFolder < ActiveRecord::Base
   DEFAULT_INCLUDED_FILE_EXTENSIONS = ['.pdf', '.tif', '.tiff']
   
   ScanResults = Struct.new(:file_count, :parent_count, :target_count, :excluded_files)
+  
+  def init
+    if self.new_record?
+      self.checksum_type = IngestFolder.default_checksum_type
+    end
+  end
     
   def self.load_configuration
     @@configuration ||= YAML::load(File.read(CONFIG_FILE)).with_indifferent_access
+  end
+  
+  def self.default_checksum_file_location
+    self.load_configuration.fetch(:config).fetch(:checksum_file).fetch(:location)
+  end
+  
+  def self.default_checksum_type
+    self.load_configuration.fetch(:config).fetch(:checksum_file).fetch(:type)
   end
   
   def self.default_file_model
@@ -56,12 +72,20 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def full_checksum_path
-    path = File.join(mount_point || '', base_path)
+    path = IngestFolder.default_checksum_file_location
     path.eql?(File::SEPARATOR) ? nil : path
   end
   
   def checksum_file_location
-    File.join(full_checksum_path, checksum_file)
+    case
+    when checksum_file.blank?
+      path_parts = sub_path.split(File::SEPARATOR).reject { |p| p.empty? }
+      File.join(full_checksum_path, "#{path_parts.first}.txt")
+    when checksum_file.start_with?(File::SEPARATOR)
+      checksum_file
+    else
+      File.join(full_checksum_path, checksum_file)
+    end
   end
   
   def scan
@@ -109,10 +133,7 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def checksum_hash_key(file_path)
-    normalized_path = file_path.gsub('\\', File::SEPARATOR)
-    idx = normalized_path.index(@checksum_file_directory)
-    len = normalized_path.length
-    key = normalized_path[idx, len]
+    file_path
   end
 
   def scan_files(dirpath, create_batch_objects)
@@ -277,7 +298,7 @@ class IngestFolder < ActiveRecord::Base
   def path_must_be_readable
     errors.add(:sub_path, I18n.t('batch.ingest_folder.not_readable', :path => sub_path)) unless File.readable?(full_path)
     if checksum_file.present?
-      errors.add(:checksum_file, I18n.t('batch.ingest_folder.not_readable', :path => checksum_file)) unless File.readable?(checksum_file_location)
+      errors.add(:checksum_file, I18n.t('batch.ingest_folder.not_readable', :path => checksum_file_location)) unless File.readable?(checksum_file_location)
     end
   end
   

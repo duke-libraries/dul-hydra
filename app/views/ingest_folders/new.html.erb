@@ -25,11 +25,6 @@
 </div>
 
 <div>
-	<%= f.label :checksum_file, :style => "display: inline" %>
-	<%= f.text_field :checksum_file %>
-</div>
-
-<div>
 	<%= f.label :file_creator, :style => "display: inline" %>
 	<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), :include_blank => true %>
 </div>

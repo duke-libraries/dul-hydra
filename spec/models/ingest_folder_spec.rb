@@ -10,18 +10,46 @@ end
 describe IngestFolder do
 
   let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user) }
+  let(:mount_point_name) { "base" }
+  let(:mount_point_path) { "/mount/" }
+  let(:base_path) { File.join(mount_point_name, "base/path/") }
+  let(:checksum_directory) { "/fixity/fedora_ingest/" }
+  let(:checksum_type) { "checksum-type" }
   let(:user) { FactoryGirl.create(:user) }
   before do
     File.stub(:readable?).and_return(true)
-    IngestFolder.stub(:permitted_folders).with(user).and_return(["/base/path/"])
+    config = <<-EOS
+    config:
+        file_model: TestChild
+        target_model: Target
+        target_folder: targets
+        checksum_file:
+            location: #{checksum_directory}
+            type: #{checksum_type}
+        file_creators:
+            ABC: Alpha Bravo Charlie
+    files:
+        mount_points:
+            #{mount_point_name}: #{mount_point_path}
+        permissions:
+            #{user.user_key}:
+            - #{mount_point_name}/path/
+    EOS
+    IngestFolder.stub(:load_configuration).and_return(YAML.load(config).with_indifferent_access)
   end
   after do
     user.destroy
   end
+  context "initialization" do
+    let(:ingest_folder) { IngestFolder.new }
+    it "should set the checksum type to the default" do
+      expect(ingest_folder.checksum_type).to eql(checksum_type)
+    end
+  end
   context "validation" do
     before do
-      File.stub(:readable?).with("/base/path/unreadable/").and_return(false)
-      File.stub(:readable?).with("/base/path/subpath/unreadable.txt").and_return(false)      
+      File.stub(:readable?).with("/mount/base/path/unreadable/").and_return(false)
+      File.stub(:readable?).with(File.join(checksum_directory, "unreadable.txt")).and_return(false)      
     end
     it "should have a valid factory" do
       expect(ingest_folder).to be_valid
@@ -53,25 +81,54 @@ describe IngestFolder do
     end
     context "checksum file unreadable" do
       let(:error_field) { :checksum_file }
-      before { ingest_folder.checksum_file = "/subpath/unreadable.txt" }
+      before do 
+        ingest_folder.checksum_file = "unreadable.txt"
+      end
       it_behaves_like "an invalid ingest folder"
+    end
+  end
+  context "methods" do
+    let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user) }
+    context "#checksum_file_location" do
+      context "checksum file not specified" do
+        let(:expected_location) { File.join(IngestFolder.default_checksum_file_location, "#{ingest_folder.sub_path}.txt") }
+        it "should return the default path with subpath-based filename" do
+          expect(ingest_folder.checksum_file_location).to eql(expected_location)
+        end
+      end
+      context "relative checksum file specified" do
+        let(:file_name) { "checksum_file.txt" }
+        let(:expected_location) { File.join(IngestFolder.default_checksum_file_location, file_name) }
+        before {ingest_folder.checksum_file = file_name }
+        it "should return the default path with specified filename" do
+          expect(ingest_folder.checksum_file_location).to eql(expected_location)
+        end
+      end
+      context "absolute checksum file specified" do
+        let(:file_path) { "/dir/fixity/checksum_file.txt" }
+        let(:expected_location) { file_path }
+        before {ingest_folder.checksum_file = file_path }
+        it "should return the default path with specified filename" do
+          expect(ingest_folder.checksum_file_location).to eql(expected_location)
+        end
+      end
     end
   end
   context "operations" do
     let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user) }
     before do
-      Dir.stub(:foreach).with("/base/path/subpath/").and_return(
+      Dir.stub(:foreach).with("/mount/base/path/subpath").and_return(
         Enumerator.new { |y| y << "Thumbs.db" << "file01001.tif" << "file01002.tif" << "pdf" << "targets" }
       )
-      Dir.stub(:foreach).with("/base/path/subpath/pdf").and_return(
+      Dir.stub(:foreach).with("/mount/base/path/subpath/pdf").and_return(
         Enumerator.new { |y| y << "file01.pdf" }
       )
-      Dir.stub(:foreach).with("/base/path/subpath/targets").and_return(
+      Dir.stub(:foreach).with("/mount/base/path/subpath/targets").and_return(
         Enumerator.new { |y| y << "Thumbs.db" << "T001.tiff" << "T002.tiff"}
       )
       File.stub(:directory?).and_return(false)
-      File.stub(:directory?).with("/base/path/subpath/pdf").and_return(true)
-      File.stub(:directory?).with("/base/path/subpath/targets").and_return(true)
+      File.stub(:directory?).with("/mount/base/path/subpath/pdf").and_return(true)
+      File.stub(:directory?).with("/mount/base/path/subpath/targets").and_return(true)
     end
     context "scan" do
       let(:scan_results) { ingest_folder.scan }
@@ -87,7 +144,8 @@ describe IngestFolder do
       let(:dss) { {} }
       let(:rels) { {} }
       let(:parent_model) { DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
-      before do 
+      before do
+        IngestFolder.any_instance.stub(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) 
         ingest_folder.procezz
         user.batches.first.batch_objects.each do |obj|
           objects[obj.identifier] = obj
