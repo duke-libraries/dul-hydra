@@ -35,7 +35,9 @@ module DulHydra::Configurable
     self.groups = {}
 
     # Repository content models that can be created through the web
+    # List model names as strings not classes.
     mattr_accessor :creatable_models
+    self.creatable_models = []
   end
 
   module ClassMethods

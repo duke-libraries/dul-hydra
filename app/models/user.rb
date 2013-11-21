@@ -7,16 +7,21 @@ class User < ActiveRecord::Base
   has_many :ingest_folders, :inverse_of => :user
   has_many :export_sets, :dependent => :destroy
 
-  delegate :can?, :cannot?, :to => :ability
+  delegate :can?, :cannot?, :can_create_models?, to: :ability
 
   validates_uniqueness_of :username, :case_sensitive => false
   validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/
 
   devise :remote_user_authenticatable, :database_authenticatable, :registerable,
-  :rememberable, :trackable, :validatable
+         :rememberable, :trackable, :validatable
 
   attr_accessible :username, :email, :password, :password_confirmation, :remember_me
-  attr_writer :groups
+
+  attr_writer :group_service
+
+  def group_service
+    @group_service ||= DulHydra::Services::GroupService.new
+  end
 
   def to_s
     user_key
@@ -26,12 +31,16 @@ class User < ActiveRecord::Base
     @ability ||= ::Ability.new(self)
   end
 
-  def member_of?(group)
-    self.groups.include? group
+  def groups
+    @groups ||= group_service.groups(self)
   end
 
-  def groups
-    @groups ||= DulHydra::Services::RemoteGroupService.new.groups(self)
+  def member_of?(group)
+    group ? self.groups.include?(group) : false
+  end
+
+  def member_of_model_creators_group?(model)
+    member_of? group_service.model_creators_group(model)
   end
 
 end

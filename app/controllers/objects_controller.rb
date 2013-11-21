@@ -5,10 +5,7 @@ class ObjectsController < ApplicationController
 
   copy_blacklight_config_from(CatalogController)
 
-  SHOW_VIEWS = [:show, :preservation_events, :collection_info]
-
-  before_filter :enforce_show_permissions, only: SHOW_VIEWS
-
+  before_filter :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
   before_filter :configure_blacklight_for_related_objects, only: :show
 
   helper_method :get_solr_response_for_field_values
@@ -16,8 +13,27 @@ class ObjectsController < ApplicationController
   helper_method :object_attachments
   helper_method :object_preservation_events
 
+  layout 'application', only: :new
+
   def new
-    
+    model = params[:model].camelize.constantize
+    authorize! :new, model
+    @model = model.new
+  rescue NameError # This shouldn't happen b/c of route constraint, but what the hell
+    CanCan::AccessDenied    
+  end
+
+  def create
+    model = params[:model].camelize.constantize
+    authorize! :create, model
+    @object = model.new
+    @object.update_attributes(params[:object])
+    # Grant edit rights to creator
+    @object.permissions = [{type: "user", access: "edit", name: current_user.user_key}]
+    @object.save
+    redirect_to action: :show, id: @object
+  rescue NameError # This is just a sanity guard against brute force
+    CanCan::AccessDenied
   end
   
   def show

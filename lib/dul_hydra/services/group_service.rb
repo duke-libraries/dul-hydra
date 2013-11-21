@@ -18,5 +18,17 @@ module DulHydra::Services
       dg
     end
 
+    def model_creators_group(model)
+      model_group(model, "creators")
+    end
+
+    def model_editors_group
+      model_group(model, "editors")
+    end
+
+    def model_group(model, suffix)
+      DulHydra.groups.fetch([model.to_s.underscore, suffix].join('_'), nil)
+    end
+
   end
 end

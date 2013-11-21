@@ -1,5 +1,10 @@
 DulHydra::Application.routes.draw do
 
+  root :to => "catalog#index"
+  Blacklight.add_routes(self)
+  devise_for :users
+  mount FcrepoAdmin::Engine => '/fcrepo', as: 'fcrepo_admin'
+
   # http://railsadventures.wordpress.com/2012/10/07/routing-only-ajax-requests-in-ror/
   class XhrRequestConstraint
     def matches?(request)
@@ -7,17 +12,9 @@ DulHydra::Application.routes.draw do
     end
   end
 
-  PID_CONSTRAINT = { id: /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/ }
+  pid_constraint = {id: /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/}
 
-  root :to => "catalog#index"
-
-  Blacklight.add_routes(self)
-
-  devise_for :users
-
-  mount FcrepoAdmin::Engine => '/fcrepo', as: 'fcrepo_admin'
-
-  resources :objects, only: [:new, :show], constraints: PID_CONSTRAINT do
+  resources :objects, only: [:create, :show], constraints: pid_constraint do
     member do
       get 'collection_info', constraints: XhrRequestConstraint
       get 'download' => 'downloads#show'
@@ -27,25 +24,28 @@ DulHydra::Application.routes.draw do
     end
   end
 
+  model_params = DulHydra.creatable_models.map { |m| m.underscore }
+  get '/objects/new/:model' => 'objects#new', constraints: {model: /#{model_params.join("|")}/}, as: 'new_object'
+
   # other object tabs
   get '/objects/:id/:tab' => 'objects#show', 
-      constraints: PID_CONSTRAINT.merge(tab: /attachments|items|components/), 
+      constraints: pid_constraint.merge(tab: /attachments|items|components/), 
       as: 'object_tab'
 
   # Hydra-editor for descriptive metadata
-  scope '/objects/:id/descriptive_metadata', constraints: PID_CONSTRAINT, as: 'record' do
+  scope '/objects/:id/descriptive_metadata', constraints: pid_constraint, as: 'record' do
     get '/' => 'objects#show', defaults: {tab: 'descriptive_metadata'}
     get 'edit' => 'objects#edit'
     put '/' => 'objects#update'
   end
 
-  scope '/objects/:id/permissions', constraints: PID_CONSTRAINT, as: 'permissions' do
+  scope '/objects/:id/permissions', constraints: pid_constraint, as: 'permissions' do
     get '/' => 'objects#show', defaults: {tab: 'permissions'}
     get 'edit' => 'permissions#edit'
     put '/' => 'permissions#update'
   end
 
-  scope '/objects/:id/default_permissions', constraints: PID_CONSTRAINT, as: 'default_permissions' do
+  scope '/objects/:id/default_permissions', constraints: pid_constraint, as: 'default_permissions' do
     get '/' => 'objects#show', defaults: {tab: 'default_permissions'}
     get 'edit' => 'permissions#edit', defaults: {default_permissions: true}
     put '/' => 'permissions#update', defaults: {default_permissions: true}
@@ -77,6 +77,6 @@ DulHydra::Application.routes.draw do
     end
   end
   
-  resources :admin_policies, :only => [:edit, :update], constraints: PID_CONSTRAINT
+  resources :admin_policies, :only => [:edit, :update], constraints: pid_constraint
   
 end

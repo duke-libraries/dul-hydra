@@ -3,6 +3,7 @@ require 'spec_helper'
 describe "object routes" do
 
   describe "RESTful routes" do
+    before { DulHydra.creatable_models = ["Collection"] }
     it "should not have an index route" do
       expect(:get => '/objects').not_to be_routable
     end
@@ -12,12 +13,16 @@ describe "object routes" do
       expect(:get => object_path('duke:1')).to route_to(@route)
     end
     it "should have a new route" do
-      @route = {controller: 'objects', action: 'new'}
-      expect(:get => '/objects/new').to route_to(@route)
-      expect(:get => new_object_path).to route_to(@route)
+      @route = {controller: 'objects', action: 'new', model: 'collection'}
+      expect(:get => '/objects/new/collection').to route_to(@route)
+      expect(:get => new_object_path('collection')).to route_to(@route)
+      expect(:get => '/objects/new').not_to be_routable     # no model param
+      expect(:get => '/objects/new/foo').not_to be_routable # invalid model param
     end
-    it "should not have a create route" do
-      expect(:post => '/objects').not_to be_routable
+    it "should have a create route" do
+      @route = {controller: 'objects', action: 'create'}
+      expect(:post => '/objects').to route_to(@route)
+      expect(:post => objects_path).to route_to(@route)
     end    
     it "should not have an edit route" do
       expect(:get => '/objects/duke:1/edit').not_to be_routable

@@ -21,3 +21,29 @@ DulHydra.configure do |config|
   end
   config.creatable_models = ["AdminPolicy", "Collection", "Item"]
 end
+
+# Load configurion for Grouper service, if present
+if File.exists? "#{Rails.root}/config/grouper.yml"
+  require 'dul_hydra/services/grouper_service'
+  DulHydra::Services::GrouperService.config = YAML.load_file("#{Rails.root}/config/grouper.yml")[Rails.env]
+end
+
+# Load and configure devise-remote-user plugin
+require 'devise_remote_user'
+DeviseRemoteUser.configure do |config|
+  config.auto_create = true
+  config.attribute_map = {
+    email: 'mail', 
+    first_name: 'givenName',
+    middle_name: 'duMiddleName1',
+    nickname: 'eduPersonNickname',
+    last_name: 'sn',
+    display_name: 'displayName'
+  }
+  config.auto_update = true
+end
+
+# Integration of remote (Grouper) groups via Shibboleth
+Warden::Manager.after_set_user do |user, auth, opts|
+  user.group_service = DulHydra::Services::RemoteGroupService.new(auth.env)
+end
