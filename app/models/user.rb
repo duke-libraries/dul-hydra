@@ -7,16 +7,25 @@ class User < ActiveRecord::Base
   has_many :ingest_folders, :inverse_of => :user
   has_many :export_sets, :dependent => :destroy
 
-  delegate :can?, :cannot?, :to => :ability
+  delegate :can?, :cannot?, to: :ability
+  delegate :can_create_model?, :can_create_models?, :can_create_models, to: :ability
 
   validates_uniqueness_of :username, :case_sensitive => false
   validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/
 
   devise :remote_user_authenticatable, :database_authenticatable, :registerable,
-  :rememberable, :trackable, :validatable
+         :rememberable, :trackable, :validatable
 
   attr_accessible :username, :email, :password, :password_confirmation, :remember_me
-  attr_writer :groups
+
+  attr_writer :group_service
+
+  def group_service
+    # This is a fallback -- see config/initializers/dul_hydra.rb,
+    # which use a Warden callback to set group_service on the
+    # authenticated user.
+    @group_service ||= DulHydra::Services::GroupService.new
+  end
 
   def to_s
     user_key
@@ -26,12 +35,12 @@ class User < ActiveRecord::Base
     @ability ||= ::Ability.new(self)
   end
 
-  def member_of?(group)
-    self.groups.include? group
+  def groups
+    @groups ||= group_service.user_groups(self)
   end
 
-  def groups
-    @groups ||= DulHydra::Services::RemoteGroupService.new.groups(self)
+  def member_of?(group)
+    group ? self.groups.include?(group) : false
   end
 
 end

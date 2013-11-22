@@ -8,9 +8,13 @@ class Ability
   self.ability_logic += DulHydra.extra_ability_logic if DulHydra.extra_ability_logic
 
   def create_permissions
-    super
-    cannot :create, AdminPolicy unless current_user.member_of? DulHydra.groups.fetch(:admin_policy_creators, nil)
-    cannot :create, Collection unless current_user.member_of? DulHydra.groups.fetch(:collection_creators, nil)
+    super # Permits :create for :all if user is authenticated
+    # First block repository object creation ...
+    cannot :create, ActiveFedora::Base 
+    # ... then permit members of authorized groups on a per-model basis
+    DulHydra.creatable_models.each do |model|
+      grant_by_group(action: :create, model: model)
+    end
   end
 
   def read_permissions
@@ -137,6 +141,37 @@ class Ability
 
   def self.discover_group_field
     Hydra.config[:permissions][:discover][:group]
+  end
+
+  def can_create_models
+    DulHydra.creatable_models.select { |model| can_create_model? model }
+  end
+
+  def can_create_model?(model)
+    can? :create, model_class(model)
+  end
+
+  def can_create_models?
+    can_create_models.present?
+  end
+
+  protected
+
+  def grant_by_group(args)
+    can args[:action], model_class(args[:model]) if current_user.member_of?(ability_group(args))
+  end
+
+  def ability_group(args)
+    model_s = args[:model].to_s
+    if DulHydra.ability_group_map.key? model_s
+      DulHydra.ability_group_map[model_s][args[:action]]
+    end
+  end
+  
+  private
+
+  def model_class(model)
+    model.respond_to?(:constantize) ? model.constantize : model
   end
 
 end

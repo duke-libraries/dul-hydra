@@ -3,35 +3,57 @@ require 'dul_hydra'
 
 describe Ability do
 
+  subject { described_class.new(user) }
   let(:user) { FactoryGirl.create(:user) }
-  let(:ability) { described_class.new(user) }
 
   after { user.delete }
 
-  describe "#create_permissions" do
-    context "AdminPolicy" do
-      context "user is member of admin policy creators group" do
-        before { user.stub(:groups).and_return([DulHydra.groups[:admin_policy_creators]]) }
-        it "should permit creation" do
-          ability.can?(:create, AdminPolicy).should be_true
-        end
-      end
-      context "user is NOT member of admin policy creators group" do
-        it "should not permit creation" do
-          ability.can?(:create, AdminPolicy).should be_false
-        end
+  describe "create permissions" do
+    context "ActiveFedora::Base" do
+      it "should NOT permit creation" do
+        subject.can?(:create, ActiveFedora::Base).should be_false
       end
     end
-    context "Collection" do
-      context "user is member of collection creators group" do
-        before { user.stub(:groups).and_return([DulHydra.groups[:collection_creators]]) }
+    context "creatable models" do
+      before do
+        DulHydra.creatable_models = ["AdminPolicy", "Collection"]
+        DulHydra.ability_group_map = {"AdminPolicy" => {create: "admins"}, "Collection" => {create: "collection_admins"}}.with_indifferent_access
+      end
+      context "user is a member of the model creators group" do
+        before { user.stub(:groups).and_return(["admins", "collection_admins"]) }
         it "should permit creation" do
-          ability.can?(:create, Collection).should be_true
+          DulHydra.creatable_models.each do |model|
+            subject.can?(:create, model.constantize).should be_true
+          end
+        end
+        it "should have a non-empty list of can_create_models" do
+          subject.can_create_models.map{|m| m.to_s}.should == DulHydra.creatable_models
+        end
+        it "should return true for can_create_model? on granted models" do
+          DulHydra.creatable_models.each do |model|
+            subject.can_create_model?(model).should be_true
+          end
+        end
+        it "should return true for can_create_models?" do
+          subject.can_create_models?.should be_true
         end
       end
-      context "user is NOT member of collection creators group" do
+      context "user is NOT member of model creators group" do
         it "should not permit creation" do
-          ability.can?(:create, Collection).should be_false
+          DulHydra.creatable_models.each do |model|
+            subject.can?(:create, model.constantize).should be_false
+          end
+        end
+        it "should have an empty list of can_create_models" do
+          subject.can_create_models.should be_empty
+        end
+        it "should return false for can_create_models?" do
+          subject.can_create_models?.should be_false
+        end
+        it "should return false for can_create_model? on all models" do
+          DulHydra.creatable_models.each do |model|
+            subject.can_create_model?(model).should be_false
+          end
         end
       end
     end
@@ -47,7 +69,7 @@ describe Ability do
           obj.save
         end
         it "should grant download permission to the user" do
-          ability.can?(:download, obj.descMetadata).should be_true
+          subject.can?(:download, obj.descMetadata).should be_true
         end
       end
       context "user lacks read permission" do
@@ -56,7 +78,7 @@ describe Ability do
           obj.save
         end
         it "should deny download permission to the user" do
-          ability.can?(:download, obj.descMetadata).should be_false
+          subject.can?(:download, obj.descMetadata).should be_false
         end
       end
     end
@@ -71,13 +93,13 @@ describe Ability do
         context "user is member of download group" do
           it "should grant download permission to the user" do
             user.stub(:groups).and_return(["foo:bar"])
-            ability.can?(:download, obj.datastreams[DulHydra::Datastreams::CONTENT]).should be_true
+            subject.can?(:download, obj.datastreams[DulHydra::Datastreams::CONTENT]).should be_true
           end
         end
         context "user is not member of download group" do
           it "should deny download permission to the user" do
             user.stub(:groups).and_return(["spam:eggs"])
-            ability.can?(:download, obj.datastreams[DulHydra::Datastreams::CONTENT]).should be_false
+            subject.can?(:download, obj.datastreams[DulHydra::Datastreams::CONTENT]).should be_false
           end
         end
       end      
@@ -97,13 +119,13 @@ describe Ability do
     context "user has no permitted ingest folders" do
       before { IngestFolder.stub(:permitted_folders).with(user).and_return([]) }
       it "should deny create permission to the user" do
-        ability.can?(:create, IngestFolder).should be_false
+        subject.can?(:create, IngestFolder).should be_false
       end      
     end
     context "user has at least one permitted ingest folder" do
       before { IngestFolder.stub(:permitted_folders).with(user).and_return(['dir']) }
       it "should allow create permission to the user" do
-        ability.can?(:create, IngestFolder).should be_true
+        subject.can?(:create, IngestFolder).should be_true
       end      
     end
   end
