@@ -17,11 +17,6 @@ before_script:
   - "rake jetty:clean"
   - "rake jetty:config"
 script: "rake dul_hydra:ci"
-branches:
-  except:
-    - master
-    - download-behavior
-    - fcrepo-admin
 notifications:
   email:
     - lib-drs@duke.edu
