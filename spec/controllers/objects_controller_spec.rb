@@ -26,10 +26,6 @@ describe ObjectsController do
         post :create, model: 'collection', object: {title: 'New Collection'}
         assigns(:object).should be_persisted
       end
-      it "should redirect to the object show page" do
-        post :create, model: 'collection', object: {title: 'New Collection'}
-        response.should redirect_to(object_path(assigns(:object)))
-      end
       it "should grant edit rights to the object creator (user)" do
         post :create, model: 'collection', object: {title: 'New Collection'}
         assigns(:object).edit_users.should include(user.user_key)
@@ -40,6 +36,20 @@ describe ObjectsController do
         it "should assign an admin policy" do
           post :create, model: 'collection', object: {title: 'New Collection', admin_policy_id: apo.pid}
           assigns(:object).admin_policy_id.should == apo.pid
+        end
+      end
+      context "after creation" do
+        context "model is AdminPolicy" do
+          it "should redirect to edit default permissions page" do
+            post :create, model: 'admin_policy', object: {title: 'New Admin Policy'}
+            response.should redirect_to(default_permissions_edit_path(assigns(:object)))
+          end
+        end
+        context "other models" do
+          it "should redirect to the object show page" do
+            post :create, model: 'collection', object: {title: 'New Collection'}
+            response.should redirect_to(object_path(assigns(:object)))
+          end
         end
       end
     end

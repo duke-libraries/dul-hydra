@@ -31,7 +31,7 @@ class ObjectsController < ApplicationController
     # Grant edit rights to creator
     @object.permissions = [{type: "user", access: "edit", name: current_user.user_key}]
     @object.save
-    redirect_to action: :show, id: @object
+    redirect_to redirect_after_create
   rescue NameError # This is just a sanity guard against brute force
     CanCan::AccessDenied
   end
@@ -89,6 +89,15 @@ class ObjectsController < ApplicationController
   end
 
   protected
+
+  def redirect_after_create
+    case @object.class.to_s
+    when "AdminPolicy"
+      default_permissions_edit_path(@object)
+    else
+      object_path(@object)
+    end
+  end
 
   def object_preservation_events
     @object_preservation_events ||= PreservationEvent.events_for(params[:id])
