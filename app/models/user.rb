@@ -39,8 +39,4 @@ class User < ActiveRecord::Base
     group ? self.groups.include?(group) : false
   end
 
-  def member_of_model_creators_group?(model)
-    member_of? group_service.model_creators_group(model)
-  end
-
 end

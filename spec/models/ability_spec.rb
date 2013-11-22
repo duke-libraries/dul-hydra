@@ -16,11 +16,11 @@ describe Ability do
     end
     context "creatable models" do
       before do
-        DulHydra.creatable_models = ["AdminPolicy", "Collection", "Item"]
-        DulHydra.groups = {admin_policy_creators: "admins", collection_creators: "collection_admins", item_creators: "item_creators"}.with_indifferent_access
+        DulHydra.creatable_models = ["AdminPolicy", "Collection"]
+        DulHydra.ability_group_map = {"AdminPolicy" => {create: "admins"}, "Collection" => {create: "collection_admins"}}.with_indifferent_access
       end
       context "user is a member of the model creators group" do
-        before { user.stub(:groups).and_return(DulHydra.groups.values) }
+        before { user.stub(:groups).and_return(["admins", "collection_admins"]) }
         it "should permit creation" do
           DulHydra.creatable_models.each do |model|
             subject.can?(:create, model.constantize).should be_true

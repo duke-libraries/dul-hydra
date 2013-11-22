@@ -13,7 +13,13 @@ class Ability
     cannot :create, ActiveFedora::Base 
     # ... then permit members of authorized groups on a per-model basis
     DulHydra.creatable_models.each do |model|
-      can :create, model.constantize if current_user.member_of_model_creators_group? model
+      can :create, model.constantize if current_user.member_of?(ability_group_for(model, :create))
+    end
+  end
+
+  def ability_group_for(model, action)
+    if DulHydra.ability_group_map.key? model
+      DulHydra.ability_group_map[model][action]
     end
   end
 

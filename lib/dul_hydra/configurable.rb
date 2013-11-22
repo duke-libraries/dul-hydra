@@ -30,9 +30,9 @@ module DulHydra::Configurable
     # Methods to add to Ability initialization
     mattr_accessor :extra_ability_logic
 
-    # Group mappings
-    mattr_accessor :groups
-    self.groups = {}
+    # Ability-Group mappings
+    mattr_accessor :ability_group_map
+    self.ability_group_map = {}
 
     # Repository content models that can be created through the web
     # List model names as strings not classes.
