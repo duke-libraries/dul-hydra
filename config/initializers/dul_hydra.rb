@@ -19,7 +19,7 @@ DulHydra.configure do |config|
   if File.exists? "#{Rails.root}/config/ability_group_map.yml"
     config.ability_group_map = YAML.load_file("#{Rails.root}/config/ability_group_map.yml").with_indifferent_access
   end
-  config.creatable_models = ["AdminPolicy", "Collection", "Item"]
+  config.creatable_models = ["AdminPolicy", "Collection"]
 end
 
 # Load configurion for Grouper service, if present

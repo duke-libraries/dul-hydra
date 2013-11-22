@@ -7,21 +7,16 @@ module DulHydra::Services
       @env = env
     end
 
-    def append_groups(user = nil)
-      if user
-        if env && env.key?(DulHydra.remote_groups_env_key)
-          remote_groups
-        else
-          grouper_groups(user)
-        end
-      else
-        grouper_groups
-      end
+    def append_groups
+      GrouperService.repository_group_names
     end
 
-    def grouper_groups(user = nil)
-      return [] unless GrouperService.configured?
-      user ? GrouperService.user_group_names(user) : GrouperService.repository_group_names
+    def append_user_groups(user)
+      if env && env.key?(DulHydra.remote_groups_env_key)
+        remote_groups
+      else
+        GrouperService.user_group_names(user)
+      end
     end
 
     def remote_groups

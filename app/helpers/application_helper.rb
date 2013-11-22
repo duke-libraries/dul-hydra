@@ -242,6 +242,10 @@ module ApplicationHelper
     "#{document.active_fedora_model} #{document.id}"
   end
 
+  def link_to_create_model(model)
+    link_to model, new_object_path(model.underscore)
+  end
+
   private
 
   def render_label(text, label)

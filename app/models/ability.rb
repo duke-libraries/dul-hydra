@@ -13,13 +13,7 @@ class Ability
     cannot :create, ActiveFedora::Base 
     # ... then permit members of authorized groups on a per-model basis
     DulHydra.creatable_models.each do |model|
-      can :create, model.constantize if current_user.member_of?(ability_group_for(model, :create))
-    end
-  end
-
-  def ability_group_for(model, action)
-    if DulHydra.ability_group_map.key? model
-      DulHydra.ability_group_map[model][action]
+      grant_by_group(action: :create, model: model)
     end
   end
 
@@ -149,12 +143,35 @@ class Ability
     Hydra.config[:permissions][:discover][:group]
   end
 
-  def creatable_models
-    DulHydra.creatable_models.select { |model| can? :create, model.constantize }
+  def can_create_models
+    DulHydra.creatable_models.select { |model| can_create_model? model }
+  end
+
+  def can_create_model?(model)
+    can? :create, model_class(model)
   end
 
   def can_create_models?
-    creatable_models.present?
+    can_create_models.present?
+  end
+
+  protected
+
+  def grant_by_group(args)
+    can args[:action], model_class(args[:model]) if current_user.member_of?(ability_group(args))
+  end
+
+  def ability_group(args)
+    model_s = args[:model].to_s
+    if DulHydra.ability_group_map.key? model_s
+      DulHydra.ability_group_map[model_s][args[:action]]
+    end
+  end
+  
+  private
+
+  def model_class(model)
+    model.respond_to?(:constantize) ? model.constantize : model
   end
 
 end

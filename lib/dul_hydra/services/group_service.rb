@@ -1,21 +1,34 @@
 module DulHydra::Services
   class GroupService
 
-    # Return groups for user (if not nil) or all groups (if nil)
-    def groups(user = nil)
-      default_groups(user) | append_groups(user)
+    def groups
+      default_groups | append_groups
     end
 
-    def append_groups(user = nil)
+    def user_groups(user)
+      default_user_groups(user) | append_user_groups(user)
+    end
+
+    def append_groups
       []
     end
 
-    def default_groups(user = nil)
-      dg = user ? RoleMapper.roles(user) : RoleMapper.role_names
-      # XXX This duplicates logic in Hydra::Ability -- should try to DRY up.
-      dg << Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
-      dg << Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED if user.nil? or user.persisted?
+    def append_user_groups(user)
+      []
+    end
+
+    def default_groups
+      dg = [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC,
+            Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED]
+      dg += RoleMapper.role_names
       dg
+    end
+
+    def default_user_groups(user)
+      dug = [Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC]
+      dug << Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED if user.persisted?
+      dug += RoleMapper.roles(user)
+      dug
     end
 
   end

@@ -1,5 +1,4 @@
 require 'dul_hydra'
-require 'yaml'
 require 'grouper-rest-client'
 
 module DulHydra::Services
@@ -14,6 +13,8 @@ module DulHydra::Services
     # List of all grouper groups for the repository
     def self.repository_groups
       client.groups(DulHydra.remote_groups_name_filter)
+    rescue DulHydra::ConfigurationError
+      []
     end
 
     def self.repository_group_names
@@ -34,6 +35,8 @@ module DulHydra::Services
       else
         []
       end
+    rescue DulHydra::ConfigurationError
+      []
     end
 
     def self.user_group_names(user)
@@ -41,12 +44,13 @@ module DulHydra::Services
     end
     
     def self.subject_id(user)
-      user.username.split('@').first
+      user.user_key.split('@').first
     end
 
     private
 
     def self.client
+      raise DulHydra::ConfigurationError unless configured?
       Grouper::Rest::Client::Resource.new(config["url"], user: config["user"], password: config["password"])
     end
 

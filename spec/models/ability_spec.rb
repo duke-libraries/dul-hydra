@@ -26,8 +26,13 @@ describe Ability do
             subject.can?(:create, model.constantize).should be_true
           end
         end
-        it "should have a non-empty list of creatable models" do
-          subject.creatable_models.should == DulHydra.creatable_models
+        it "should have a non-empty list of can_create_models" do
+          subject.can_create_models.map{|m| m.to_s}.should == DulHydra.creatable_models
+        end
+        it "should return true for can_create_model? on granted models" do
+          DulHydra.creatable_models.each do |model|
+            subject.can_create_model?(model).should be_true
+          end
         end
         it "should return true for can_create_models?" do
           subject.can_create_models?.should be_true
@@ -39,11 +44,16 @@ describe Ability do
             subject.can?(:create, model.constantize).should be_false
           end
         end
-        it "should have an empty list of creatable models" do
-          subject.creatable_models.should be_empty
+        it "should have an empty list of can_create_models" do
+          subject.can_create_models.should be_empty
         end
         it "should return false for can_create_models?" do
           subject.can_create_models?.should be_false
+        end
+        it "should return false for can_create_model? on all models" do
+          DulHydra.creatable_models.each do |model|
+            subject.can_create_model?(model).should be_false
+          end
         end
       end
     end
