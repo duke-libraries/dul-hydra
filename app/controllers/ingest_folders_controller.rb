@@ -22,7 +22,8 @@ class IngestFoldersController < ApplicationController
     @ingest_folder.user = current_user
     @ingest_folder.model = IngestFolder.default_file_model
     @ingest_folder.add_parents = true
-    @ingest_folder.checksum_type = DulHydra::Datastreams::CHECKSUM_TYPE_SHA256
+    @ingest_folder.checksum_file = @ingest_folder.checksum_file_location
+    @ingest_folder.checksum_type = IngestFolder.default_checksum_type
     if @ingest_folder.save
       redirect_to :action => :show, :id => @ingest_folder
     else
@@ -32,7 +33,6 @@ class IngestFoldersController < ApplicationController
   
   def show
     @collection_title = Collection.find(@ingest_folder.collection_pid).title.first if @ingest_folder.collection_pid.present?
-#    @included_files, @included_parents, @included_targets, @excluded = @ingest_folder.scan
     @scan_results = @ingest_folder.scan
   end
   
