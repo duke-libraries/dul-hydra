@@ -13,7 +13,7 @@ module DulHydra::Services
     # List of all grouper groups for the repository
     def self.repository_groups
       client.groups(DulHydra.remote_groups_name_filter)
-    rescue DulHydra::ConfigurationError
+    rescue DulHydra::Error
       []
     end
 
@@ -35,7 +35,7 @@ module DulHydra::Services
       else
         []
       end
-    rescue DulHydra::ConfigurationError
+    rescue DulHydra::Error
       []
     end
 
@@ -50,7 +50,7 @@ module DulHydra::Services
     private
 
     def self.client
-      raise DulHydra::ConfigurationError unless configured?
+      raise DulHydra::Error unless configured?
       Grouper::Rest::Client::Resource.new(config["url"], user: config["user"], password: config["password"])
     end
 
