@@ -1,27 +1,47 @@
 <div class="btn-group">
-  <%= link_to current_user.to_s, edit_user_registration_path, class: "btn btn-primary btn-small" %>
-  <button class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown">
+  <a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+	<%= current_user.to_s %>
     <span class="caret"></span>
-  </button>
+  </a>
   <ul class="dropdown-menu">
 	<li>
-	  <%= link_to t('blacklight.header_links.bookmarks'), bookmarks_path %>
+	  <%= link_to edit_user_registration_path do %>
+	    <i class="icon-user"></i> Profile
+	  <% end %>
 	</li>
 	<li>
-	  <%= link_to "Export Sets", export_sets_path %>
+	  <%= link_to bookmarks_path do %>
+	    <i class="icon-bookmark"></i> Bookmarks
+      <% end %>
 	</li>
 	<li>
-	  <%= link_to "Batches", batches_path %>
+	  <%= link_to export_sets_path do %>
+	    <i class="icon-download-alt"></i> Export Sets
+	  <% end %>
 	</li>
 	<li>
-	  <%= link_to t('blacklight.header_links.saved_searches'), saved_searches_path %>
+	  <%= link_to batches_path do %>
+	    <i class="icon-list"></i> Batches
+	  <% end %>
 	</li>
 	<li>
-	  <%= link_to t('blacklight.header_links.search_history'), search_history_path %>
+	  <%= link_to saved_searches_path do %>
+	    <i class="icon-search"></i> 
+		<%= t('blacklight.header_links.saved_searches') %>
+	  <% end %>
+	</li>
+	<li>
+	  <%= link_to search_history_path do %>
+	    <i class="icon-time"></i>
+	    <%= t('blacklight.header_links.search_history') %>
+	  <% end %>
 	</li>
 	<li class="divider"></li>
 	<li>
-	  <%= link_to t('blacklight.header_links.logout'), destroy_user_session_path %>
+	  <%= link_to destroy_user_session_path do %>
+	    <i class="icon-hand-left"></i>
+	    <%= t('blacklight.header_links.logout') %>
+	  <% end %>
 	</li>
   </ul>
 </div>
