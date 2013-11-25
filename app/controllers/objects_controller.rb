@@ -12,26 +12,27 @@ class ObjectsController < ApplicationController
   helper_method :object_children
   helper_method :object_attachments
   helper_method :object_preservation_events
+  helper_method :new_object
+  helper_method :new_model
+  helper_method :terms_for_creating
 
-  layout 'application', only: :new
+  layout 'application', only: [:new]
 
   def new
-    model = params[:model].camelize.constantize
-    authorize! :new, model
-    @model = model.new
+    authorize! :new, new_model
   rescue NameError # This shouldn't happen b/c of route constraint, but what the hell
     CanCan::AccessDenied    
   end
 
   def create
-    model = params[:model].camelize.constantize
-    authorize! :create, model
-    @object = model.new
-    @object.update_attributes(params[:object])
-    # Grant edit rights to creator
-    @object.permissions = [{type: "user", access: "edit", name: current_user.user_key}]
-    @object.save
-    redirect_to redirect_after_create
+    authorize! :create, new_model
+    new_object.attributes = new_object_attributes
+    new_object.permissions = new_object_permissions
+    if new_object.save
+      redirect_to redirect_after_create, notice: "New #{new_model} successfully created."
+    else
+      render 'new'
+    end
   rescue NameError # This is just a sanity guard against brute force
     CanCan::AccessDenied
   end
@@ -57,7 +58,7 @@ class ObjectsController < ApplicationController
   end
 
   def tabs
-    methods = case current_object.class.to_s
+    methods = case current_object.model_name
               when "AdminPolicy"
                 [:tab_descriptive_metadata, 
                  :tab_default_permissions, 
@@ -90,12 +91,41 @@ class ObjectsController < ApplicationController
 
   protected
 
-  def redirect_after_create
-    case @object.class.to_s
-    when "AdminPolicy"
-      default_permissions_edit_path(@object)
+  def new_object
+    @new_object ||= @new_model.new
+  end
+
+  def new_model
+    @new_model ||= params[:model].camelize.constantize
+  end
+
+  def terms_for_creating
+    if new_object.respond_to?(:terms_for_creating)
+      new_object.terms_for_creating
     else
-      object_path(@object)
+      DulHydra.terms_for_creating
+    end
+  end
+
+  def new_object_attributes
+    params[new_model.model_name.singluar]
+  end
+
+  def new_object_permissions
+    if new_object.respond_to?(:initial_permissions)
+      new_object.initial_permissions
+    else
+      # grant edit to current user -- i.e., the object creator
+      [Hydra::AccessControls::Permission.new(type: "user", access: "edit", name: current_user.user_key)]
+    end
+  end
+
+  def redirect_after_create
+    case new_model.model_name
+    when "AdminPolicy"
+      default_permissions_edit_path(new_object)
+    else
+      object_path(new_object)
     end
   end
 

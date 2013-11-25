@@ -1,17 +1,16 @@
-<h2>New <%= @model.class %></h2>
+<h2>New <%= new_model %></h2>
 
-<%= form_for :object, url: objects_path do |f| %>
-  <%= hidden_field_tag "model", params[:model] %>
-  <% if @model.governable? %>
-    <%= f.label :admin_policy_id %>
-	<%= f.select :admin_policy_id, AdminPolicy.all.collect {|apo| [apo.title, apo.pid]}, {}, {class: "span5"} %>
+<%= bootstrap_form_for new_object, url: objects_path do |f| %>
+  <%= hidden_field_tag "model", new_model.model_name.singular %>
+  <% if new_object.governable? %>
+    <%= f.select :admin_policy_id, AdminPolicy.all.collect {|apo| [apo.title, apo.pid]}, {}, {class: "span5"} %>
   <% end %>
-  <%= f.label :title %>
-  <%= f.text_field :title, size: "50", class: "span5" %>
-  <%= f.label :description %>
-  <%= f.text_area :description, size: "50x5", class: "span5" %>
+  <% terms_for_creating.each do |term| %>
+    <%= f.label term %>
+    <%= render_new_term_field term %>
+  <% end %>
   <p>
-	<%= f.submit "Save", data: {confirm: "You are about to create a new #{@model.class} in the repository. Continue?"}, class: "btn btn-primary" %>
-	<%= link_to "Cancel", :back, data: {confirm: "Are you sure you wanted to cancel creating a new #{@model.class}?"}, class: "btn btn-danger" %>
+	<%= f.submit "Save", data: {confirm: "This action will create a new #{new_model} in the repository. Continue?"}, class: "btn btn-primary" %>
+	<%= link_to "Cancel", :back, data: {confirm: "Cancel creating a new #{new_model}?"}, class: "btn btn-danger" %>
   </p>
 <% end %>

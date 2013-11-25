@@ -1,11 +1,8 @@
 module ObjectsHelper
 
-  def descriptive_metadata_edit_link
-    link_to "Edit", record_edit_path(current_object)
-  end
-
-  def download_datastream_xml_link(dsid)
-    link_to "Download XML", download_datastream_object_path(current_object, dsid)
+  def render_new_term_field(term)
+    value = new_model.multiple?(term) ? new_object[term].first : new_object[term]
+    text_field_tag "#{new_model.model_name.singular}[#{term}]", value, size: "50", class: "span5"
   end
 
 end

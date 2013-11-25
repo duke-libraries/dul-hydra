@@ -38,6 +38,8 @@ module DulHydra::Configurable
     # List model names as strings not classes.
     mattr_accessor :creatable_models
     self.creatable_models = []
+
+    mattr_accessor :terms_for_creating
   end
 
   module ClassMethods
