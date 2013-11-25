@@ -24,9 +24,6 @@ module DulHydra::Configurable
     # Filter for getting list of remote groups for the repository - String, not Regexp
     mattr_accessor :remote_groups_name_filter
 
-    # Groups authz for downloading Component content
-    mattr_accessor :component_download_group
-
     # Methods to add to Ability initialization
     mattr_accessor :extra_ability_logic
 

@@ -8,7 +8,6 @@ DulHydra.configure do |config|
   config.remote_groups_env_value_delim = ";"
   config.remote_groups_env_value_sub = [/^urn:mace:duke\.edu:groups/, "duke"]
   config.remote_groups_name_filter = "duke:library:repository:ddr:"
-  config.component_download_group = "duke:library:repository:ddr:component_download"
   config.extra_ability_logic = [:discover_permissions, 
                                 :export_sets_permissions, 
                                 :preservation_events_permissions,

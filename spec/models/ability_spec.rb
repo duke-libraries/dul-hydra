@@ -84,15 +84,15 @@ describe Ability do
     end
     context "Component `content' datastream" do
       let(:obj) { FactoryGirl.create(:component) }
+      before { DulHydra.ability_group_map = {"Component" => {download: "component_download"}}.with_indifferent_access }
       context "user lacks read permission" do
         before do
-          DulHydra.component_download_group = "foo:bar"
           obj.rightsMetadata.clear_permissions!
           obj.save
         end
         context "user is member of download group" do
           it "should grant download permission to the user" do
-            user.stub(:groups).and_return(["foo:bar"])
+            user.stub(:groups).and_return(["component_download"])
             subject.can?(:download, obj.datastreams[DulHydra::Datastreams::CONTENT]).should be_true
           end
         end
