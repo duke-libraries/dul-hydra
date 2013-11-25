@@ -11,6 +11,8 @@ class AdminPolicy < Hydra::AdminPolicy
   delegate :default_license_description, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
   delegate :default_license_url, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :url], multiple: false
 
+  validates :title, presence: true
+
   APO_NAMESPACE = "duke-apo"
 
   def self.create_pid(suffix)

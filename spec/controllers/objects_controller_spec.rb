@@ -31,7 +31,7 @@ describe ObjectsController do
         assigns(:object).edit_users.should include(user.user_key)
       end
       context "governable objects" do
-        let(:apo) { AdminPolicy.create }
+        let(:apo) { AdminPolicy.create(title: "Test Policy") }
         after { apo.delete }
         it "should assign an admin policy" do
           post :create, model: 'collection', object: {title: 'New Collection', admin_policy_id: apo.pid}

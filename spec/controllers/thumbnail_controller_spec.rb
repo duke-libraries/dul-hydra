@@ -21,7 +21,7 @@ describe ThumbnailController do
     end
   end
   context "user with discover policy permission, but not read permission, on asset" do
-    let(:policy) { AdminPolicy.create }
+    let(:policy) { AdminPolicy.create(title: "Test Policy") }
     before do
       policy.default_permissions = [{type: 'group', name: 'public', access: 'discover'},
                                     {type: 'group', name: 'registered', access: 'read'}]
