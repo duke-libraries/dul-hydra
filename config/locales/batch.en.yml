@@ -57,7 +57,7 @@ en:
                 invalid_key: "Invalid key in manifest object %{identifier}: %{key}"
                 invalid_subkey: "Invalid subkey in manifest object %{identifier}: %{key} - %{subkey}"
         web:
-            no_batches: "No batches found for your user account."
+            no_batches: "No %{type} batches found for your user account."
             no_batch_runs: "No runs found for this batch."
             no_batch_objects: "No objects in this batch."
             batch_queued: "Batch %{id} queued for processing."
