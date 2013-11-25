@@ -27,6 +27,10 @@ module DulHydra::Batch::Models
       batch_objects.map{ |x| x.pid if x.pid.present? }.compact      
     end
     
+    def finished?
+      [STATUS_FINISHED, STATUS_INTERRUPTED].include?(status)
+    end
+    
   end
   
 end

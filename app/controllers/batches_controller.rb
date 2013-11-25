@@ -3,6 +3,15 @@ class BatchesController < ApplicationController
   load_and_authorize_resource :class => DulHydra::Batch::Models::Batch
 
   def index
+    @pending = []
+    @finished = []
+    @batches.each do |batch|
+      if batch.finished?
+        @finished << batch
+      else
+        @pending << batch
+      end
+    end
   end
   
   def show
@@ -19,6 +28,19 @@ class BatchesController < ApplicationController
     valid = @errors.empty?
     flash[:notice] = "Batch is #{valid ? '' : 'not '}valid"
     render :show
+  end
+  
+  def tabs
+    methods = [:tab_pending_batches, :tab_finished_batches]
+    Tabs.new(self, *methods)
+  end
+  
+  def tab_pending_batches
+    Tab.new("pending_batches")
+  end
+  
+  def tab_finished_batches
+    Tab.new("finished_batches")
   end
   
 end

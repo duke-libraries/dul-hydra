@@ -79,6 +79,10 @@ en:
         label: "Preservation Events"
       attachments:
         label: Attachments
+      pending_batches:
+          label: Pending
+      finished_batches:
+          label: Already Run
   blacklight:
     application_name: 'Duke Digital Repository'
   fcrepo_admin:
