@@ -58,7 +58,7 @@ module DulHydra::Batch::Scripts
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:manifest_file) { File.join(test_dir, 'manifest.yml') }
     let(:log_dir) { test_dir }
-    let(:apo) { AdminPolicy.create }
+    let(:apo) { AdminPolicy.create(title: "Test Policy") }
     after do
       FileUtils.remove_dir test_dir
       apo.destroy

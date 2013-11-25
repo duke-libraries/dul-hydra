@@ -21,7 +21,7 @@ describe PermissionsController do
       end
     end
     context "default permissions" do
-      let(:object) { AdminPolicy.create }
+      let(:object) { AdminPolicy.create(title: "Test Policy") }
       it "should render the edit_default_permissions template" do
         get :edit, id: object, default_permissions: true
         response.should render_template("edit_default_permissions")      
@@ -50,7 +50,7 @@ describe PermissionsController do
       end
     end
     context "default permissions" do
-      let(:object) { AdminPolicy.create }
+      let(:object) { AdminPolicy.create(title: "Test Policy") }
       it "should update the default permissions" do
         put :update, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}, default_permissions: true
         object.reload
