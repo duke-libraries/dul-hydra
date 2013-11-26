@@ -21,6 +21,26 @@ describe AdminPolicy do
     end
   end
 
+  context "#set_initial_permissions" do
+    let(:apo) { AdminPolicy.new }
+    context "no user creator" do
+      before { apo.set_initial_permissions }
+      it "should have registered read access" do
+        apo.permissions.should == [Hydra::AccessControls::Permission.new(DulHydra::Permissions::REGISTERED_READ_ACCESS)]
+      end
+    end
+    context "user creator" do
+      let(:user) { FactoryGirl.build(:user) }
+      before { apo.set_initial_permissions(user) }
+      it "should have user edit access" do
+        apo.edit_users.should == [user.to_s]
+      end      
+      it "should have registered read access" do
+        apo.read_groups.should == ["registered"]
+      end
+    end
+  end
+
   context "indexing" do
     subject { SolrDocument.new(ActiveFedora::SolrService.query(ActiveFedora::SolrService.construct_query_for_pids([apo.pid])).first) }
     after { apo.delete }
