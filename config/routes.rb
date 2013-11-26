@@ -77,6 +77,4 @@ DulHydra::Application.routes.draw do
     end
   end
   
-  resources :admin_policies, :only => [:edit, :update], constraints: pid_constraint
-  
 end

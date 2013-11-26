@@ -1,8 +1,0 @@
-<%= content_tag :h1, I18n.t('dul_hydra.admin_policies.page_titles.edit') %>
-<%= form_for @admin_policy do |f| %>
-  <%= render :partial => 'edit_inheritable_rights', :locals => {:f => f } %>
-  <%= render :partial => 'edit_license', :locals => {:f => f } %>
-  <div>
-    <%= f.submit "Update Admin Policy", :id => "update_admin_policy_button", :class => "btn brn-primary" %>
-  </div>
-<% end %>
