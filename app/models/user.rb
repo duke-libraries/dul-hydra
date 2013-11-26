@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
 
   def group_service
     # This is a fallback -- see config/initializers/dul_hydra.rb,
-    # which use a Warden callback to set group_service on the
+    # which uses a Warden callback to set group_service on the
     # authenticated user.
     @group_service ||= DulHydra::Services::GroupService.new
   end
