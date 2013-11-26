@@ -42,7 +42,7 @@ describe ObjectsController do
         context "model is AdminPolicy" do
           it "should redirect to edit default permissions page" do
             post :create, model: 'admin_policy', object: {title: 'New Admin Policy'}
-            response.should redirect_to(default_permissions_edit_path(assigns(:object)))
+            response.should redirect_to(default_permissions_path(assigns(:object)))
           end
         end
         context "other models" do
