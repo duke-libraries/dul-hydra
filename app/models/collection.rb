@@ -8,6 +8,8 @@ class Collection < DulHydra::Models::Base
   alias_method :items, :children
   alias_method :item_ids, :child_ids
 
+  validates :title, presence: true
+
   def components_query
     {
       q: "{!join to=#{DulHydra::IndexFields::IS_PART_OF} from=#{DulHydra::IndexFields::INTERNAL_URI}}#{ActiveFedora::SolrService.construct_query_for_rel(:is_member_of_collection => internal_uri)}",

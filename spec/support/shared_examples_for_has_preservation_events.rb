@@ -12,14 +12,14 @@ shared_examples "an object that has preservation events" do
   context "#fixity_check" do
     subject { obj.fixity_check }
     after { obj.delete }
-    let(:obj) { described_class.create }
+    let(:obj) { described_class.create(title: 'I can be fixity-checked') }
     it_should_behave_like "a fixity check success preservation event"
   end
 
   context "#fixity_check!" do
     subject { obj.fixity_check! }
     after { obj.destroy }
-    let(:obj) { described_class.create }
+    let(:obj) { described_class.create(title: 'I can be fixity-checked!') }
     it_should_behave_like "a fixity check success preservation event"
   end  
 

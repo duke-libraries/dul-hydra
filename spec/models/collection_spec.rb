@@ -22,6 +22,12 @@ end
 
 describe Collection do
   it_behaves_like "a DulHydra object"
+
+  context "validation" do
+    it "should have a title" do
+      expect { Collection.create! }.to raise_error(ActiveFedora::RecordInvalid)
+    end
+  end
   
   context "collection-item relationships" do
     let!(:collection) { FactoryGirl.create(:collection) }
