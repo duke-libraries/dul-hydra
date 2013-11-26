@@ -48,6 +48,14 @@ class AdminPolicy < Hydra::AdminPolicy
     solr_doc
   end
 
+  def set_initial_permissions(creator_user = nil)
+    initial_permissions = [DulHydra::Permissions::REGISTERED_READ_ACCESS]
+    if creator_user
+      initial_permissions << {type: "user", access: "edit", name: creator_user.to_s}
+    end
+    self.permissions = initial_permissions
+  end
+
   def default_entities_for_permission(type, access)
     default_permissions.collect { |p| p[:name] if p[:type] == type and p[:access] == access }.compact
   end

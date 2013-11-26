@@ -22,7 +22,7 @@ class ObjectsController < ApplicationController
 
   def create
     @object.attributes = params[:object].reject {|key, value| value.blank?}
-    @object.permissions = initial_permissions
+    set_initial_permissions
     if @object.save
       redirect_to redirect_after_create, notice: "New #{@model} successfully created."
     else
@@ -84,11 +84,9 @@ class ObjectsController < ApplicationController
 
   protected
 
-  def initial_permissions
-    if @object.respond_to?(:initial_permissions)
-      @object.initial_permissions(current_user)
-    else
-      [{type: "user", access: "edit", name: current_user.user_key}]
+  def set_initial_permissions
+    if @object.respond_to?(:set_initial_permissions)
+      @object.set_initial_permissions(current_user)
     end
   end
 

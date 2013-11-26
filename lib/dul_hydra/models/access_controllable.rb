@@ -14,5 +14,11 @@ module DulHydra::Models
     # adds methods for managing Hydra rightsMetadata content
     include Hydra::AccessControls::Permissions
 
+    def set_initial_permissions(user_creator = nil)
+      if user_creator
+        self.permissions = [{type: "user", access: "edit", name: user_creator.to_s}]
+      end
+    end
+
   end
 end

@@ -26,16 +26,24 @@ describe ObjectsController do
         post :create, model: 'collection', object: {title: 'New Collection'}
         assigns(:object).should be_persisted
       end
-      it "should grant edit rights to the object creator (user)" do
-        post :create, model: 'collection', object: {title: 'New Collection'}
-        assigns(:object).edit_users.should include(user.user_key)
-      end
       context "governable objects" do
         let(:apo) { AdminPolicy.create(title: "Test Policy") }
         after { apo.delete }
         it "should assign an admin policy" do
           post :create, model: 'collection', object: {title: 'New Collection', admin_policy_id: apo.pid}
           assigns(:object).admin_policy_id.should == apo.pid
+        end
+      end
+      context "initial permissions" do
+        it "should grant edit rights to the object creator (user)" do
+          post :create, model: 'collection', object: {title: 'New Collection'}
+          assigns(:object).edit_users.should include(user.user_key)
+        end
+        context "Admin Policy objects" do
+          it "should grant read access to the `registered' group" do
+            post :create, model: 'admin_policy', object: {title: 'New Admin Policy'}
+            assigns(:object).read_groups.should include('registered')
+          end
         end
       end
       context "after creation" do
