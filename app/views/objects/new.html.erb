@@ -1,16 +1,16 @@
-<h2>New <%= new_model %></h2>
+<h2>New <%= @model %></h2>
 
-<%= bootstrap_form_for new_object, url: objects_path do |f| %>
-  <%= hidden_field_tag "model", new_model.model_name.singular %>
-  <% if new_object.governable? %>
+<%= bootstrap_form_for @object, url: objects_path do |f| %>
+  <%= hidden_field_tag "model", params[:model] %>
+  <% if @object.governable? %>
     <%= f.select :admin_policy_id, AdminPolicy.all.collect {|apo| [apo.title, apo.pid]}, {}, {class: "span5"} %>
   <% end %>
   <% terms_for_creating.each do |term| %>
     <%= f.label term %>
-    <%= render_new_term_field term %>
+	<%= text_field_tag "#{params[:model]}[#{term}]", @object[term].first %>
   <% end %>
   <p>
-	<%= f.submit "Save", data: {confirm: "This action will create a new #{new_model} in the repository. Continue?"}, class: "btn btn-primary" %>
-	<%= link_to "Cancel", :back, data: {confirm: "Cancel creating a new #{new_model}?"}, class: "btn btn-danger" %>
+	<%= f.submit "Save", data: {confirm: "This action will create a new #{@model} in the repository. Continue?"}, class: "btn btn-primary" %>
+	<%= link_to "Cancel", :back, data: {confirm: "Cancel creating a new #{@model}?"}, class: "btn btn-danger" %>
   </p>
 <% end %>
