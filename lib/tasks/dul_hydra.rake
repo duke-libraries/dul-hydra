@@ -8,13 +8,6 @@ namespace :dul_hydra do
     	    Rake::Task['spec'].invoke
 		end
 	end
-    namespace :admin_policies do
-        desc "Load admin policy objects from FILE_PATH"
-	task :load => :environment do
-	    raise "Must specify a config file. Ex: FILE_PATH=config/admin_policies.yml" unless ENV['FILE_PATH']
-	    AdminPolicy.load_policies(ENV['FILE_PATH'])
-	end
-    end
     namespace :batch do
         desc "Converts CSV file to one or more XML files"
         task :csv_to_xml => :environment do
