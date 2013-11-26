@@ -1,5 +1,5 @@
 shared_examples "a describable object" do
-  let!(:object) { described_class.create(:identifier => 'id001') }
+  let!(:object) { described_class.create(:title => 'Describable', :identifier => 'id001') }
   after { object.delete }
   context "having an identifier" do
     it "should be findable by identifier" do

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 shared_examples "an object that has a thumbnail" do
-  let!(:object) { described_class.create! }
+  let!(:object) { described_class.create!(title: 'I have a thumbnail') }
   after { object.delete }
   context "before thumbnail creation" do
     it "should not have a thumbnail" do
