@@ -246,6 +246,11 @@ module ApplicationHelper
     link_to model, new_object_path(model.underscore)
   end
 
+  def model_options_for_select(model)
+    options = find_models_with_gated_discovery(model).collect { |m| [m.title, m.pid] }
+    options_for_select options
+  end
+
   private
 
   def render_label(text, label)

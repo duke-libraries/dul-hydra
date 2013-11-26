@@ -13,6 +13,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_tabs
   helper_method :group_service
   helper_method :all_permissions
+  helper_method :find_models_with_gated_discovery
 
   rescue_from CanCan::AccessDenied do |exception|
     render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
@@ -23,6 +24,11 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def find_models_with_gated_discovery(model)
+    solr_results = model.find_with_conditions({}, fq: gated_discovery_filters.join(" OR "))
+    ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
+  end
 
   def group_service
     @group_service ||= DulHydra::Services::RemoteGroupService.new(request.env)
