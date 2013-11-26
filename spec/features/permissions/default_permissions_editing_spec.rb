@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "default permissions editing" do
   let(:user) { FactoryGirl.create(:user) }
-  let(:object) { AdminPolicy.create }
+  let(:object) { AdminPolicy.create(title: "Test Policy") }
   before do
     object.edit_users = [user.user_key]
     object.default_permissions = [{type: "group", access: "read", name: "registered"},

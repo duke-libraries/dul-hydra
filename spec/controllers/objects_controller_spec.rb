@@ -31,7 +31,7 @@ describe ObjectsController do
         assigns(:object).edit_users.should include(user.user_key)
       end
       context "governable objects" do
-        let(:apo) { AdminPolicy.create }
+        let(:apo) { AdminPolicy.create(title: "Test Policy") }
         after { apo.delete }
         it "should assign an admin policy" do
           post :create, model: 'collection', object: {title: 'New Collection', admin_policy_id: apo.pid}
@@ -42,7 +42,7 @@ describe ObjectsController do
         context "model is AdminPolicy" do
           it "should redirect to edit default permissions page" do
             post :create, model: 'admin_policy', object: {title: 'New Admin Policy'}
-            response.should redirect_to(default_permissions_edit_path(assigns(:object)))
+            response.should redirect_to(default_permissions_path(assigns(:object)))
           end
         end
         context "other models" do

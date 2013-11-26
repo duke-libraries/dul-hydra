@@ -24,7 +24,7 @@ DulHydra::Application.routes.draw do
     end
   end
 
-  model_params = DulHydra.creatable_models.map { |m| m.underscore }
+  model_params = DulHydra.creatable_models.map { |m| m.constantize.model_name.singular }
   get '/objects/new/:model' => 'objects#new', constraints: {model: /#{model_params.join("|")}/}, as: 'new_object'
 
   # other object tabs

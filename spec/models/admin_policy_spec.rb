@@ -14,18 +14,20 @@ describe AdminPolicy do
       apo.defaultRights.license.url.first.should == "http://library.duke.edu"
     end
   end
+
+  context "validation" do
+    it "should require a title" do
+      expect { AdminPolicy.create! }.to raise_error(ActiveFedora::RecordInvalid)
+    end
+  end
+
   context "indexing" do
     subject { SolrDocument.new(ActiveFedora::SolrService.query(ActiveFedora::SolrService.construct_query_for_pids([apo.pid])).first) }
     after { apo.delete }
-    context "no title" do
-      let(:apo) { AdminPolicy.create }
-      its(:title) { should == apo.pid }
-    end
-    context "has title" do
-      let(:apo) { AdminPolicy.create(title: 'Awesome Policy') }
-      its(:title) { should == apo.title }
-    end
+    let(:apo) { AdminPolicy.create(title: 'Awesome Policy') }
+    its(:title) { should == apo.title }
   end
+
   context ".load_policies" do
     before do
       @pid = 'duke-apo:TestPolicy'

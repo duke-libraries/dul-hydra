@@ -19,7 +19,7 @@ module DulHydra::Batch::Models
     context "validate" do
       let(:admin_policy_pid) { "duke-apo:adminPolicy" }
       context "valid" do
-        let!(:admin_policy) { AdminPolicy.create(:pid => admin_policy_pid) }
+        let!(:admin_policy) { AdminPolicy.create(:pid => admin_policy_pid, :title => "Test Policy") }
         after { admin_policy.destroy }
         context "manifest with files" do
           let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }

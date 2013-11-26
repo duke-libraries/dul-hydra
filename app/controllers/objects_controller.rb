@@ -7,33 +7,27 @@ class ObjectsController < ApplicationController
 
   before_filter :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
   before_filter :configure_blacklight_for_related_objects, only: :show
+  before_filter :load_and_authorize_new_object, only: [:new, :create]
 
   helper_method :get_solr_response_for_field_values
   helper_method :object_children
   helper_method :object_attachments
   helper_method :object_preservation_events
 
-  layout 'application', only: :new
+  layout 'application', only: [:new, :create]
 
   def new
-    model = params[:model].camelize.constantize
-    authorize! :new, model
-    @model = model.new
-  rescue NameError # This shouldn't happen b/c of route constraint, but what the hell
-    CanCan::AccessDenied    
+    # Overriding RecordsControllerBehavior
   end
 
   def create
-    model = params[:model].camelize.constantize
-    authorize! :create, model
-    @object = model.new
-    @object.update_attributes(params[:object])
-    # Grant edit rights to creator
-    @object.permissions = [{type: "user", access: "edit", name: current_user.user_key}]
-    @object.save
-    redirect_to redirect_after_create
-  rescue NameError # This is just a sanity guard against brute force
-    CanCan::AccessDenied
+    @object.attributes = params[:object].reject {|key, value| value.blank?}
+    @object.permissions = initial_permissions
+    if @object.save
+      redirect_to redirect_after_create, notice: "New #{@model} successfully created."
+    else
+      render :action => 'new'
+    end
   end
   
   def show
@@ -90,10 +84,26 @@ class ObjectsController < ApplicationController
 
   protected
 
+  def initial_permissions
+    if @object.respond_to?(:initial_permissions)
+      @object.initial_permissions(current_user)
+    else
+      [{type: "user", access: "edit", name: current_user.user_key}]
+    end
+  end
+
+  def load_and_authorize_new_object
+    @model = params[:model].camelize.constantize
+    authorize! :create, @model
+    @object = @model.new
+  rescue NameError # This shouldn't happen, but what the hell
+    raise CanCan::AccessDenied    
+  end
+
   def redirect_after_create
     case @object.class.to_s
     when "AdminPolicy"
-      default_permissions_edit_path(@object)
+      default_permissions_path(@object)
     else
       object_path(@object)
     end
