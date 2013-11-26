@@ -1,5 +1,6 @@
 require 'dul_hydra'
 require 'dul_hydra/decorators/active_fedora/base_decorator'
+require 'dul_hydra/decorators/active_fedora/datastream_decorator'
 
 DulHydra.configure do |config|
   config.export_set_manifest_file_name = "README.txt"
