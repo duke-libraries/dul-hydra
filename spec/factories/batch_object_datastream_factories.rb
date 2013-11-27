@@ -26,5 +26,23 @@ FactoryGirl.define do
       
     end
   
-  end
+    factory :batch_object_addupdate_datastream do
+      operation DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE
+
+      factory :batch_object_addupdate_desc_metadata_datastream_bytes do
+        name DulHydra::Datastreams::DESC_METADATA
+        payload "<dc xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><dcterms:title>Test Object Updated Title</dcterms:title></dc>"
+        payload_type DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
+      end
+
+      factory :batch_object_addupdate_desc_metadata_datastream_file do
+        name DulHydra::Datastreams::DESC_METADATA
+        payload File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'qdc_updated.xml')
+        payload_type DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
+      end
+
+    end
+
+  end  
+  
 end

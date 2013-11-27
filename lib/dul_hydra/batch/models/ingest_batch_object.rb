@@ -2,7 +2,7 @@ module DulHydra::Batch::Models
   
   class IngestBatchObject < DulHydra::Batch::Models::BatchObject
   
-    def validate_required_attributes
+    def local_validations
       errs = []
       errs << "#{@error_prefix} Model required for INGEST operation" unless model
       errs
@@ -12,6 +12,15 @@ module DulHydra::Batch::Models
       ingest(opts)
     end
     
+    def results_message
+      if pid
+        verification_result = (verified ? "Verified" : "VERIFICATION FAILURE")
+        message = "Ingested #{model} #{identifier} into #{pid}...#{verification_result}"
+      else
+        message = "Attempt to ingest #{model} #{identifier} FAILED"
+      end      
+    end
+        
     private
     
     Results = Struct.new(:repository_object, :verified, :verifications)
@@ -50,11 +59,36 @@ module DulHydra::Batch::Models
       repo_object = model.constantize.new(:pid => repo_pid)
       repo_object.label = label if label
       repo_object.save unless dryrun
-      batch_object_datastreams.each {|d| repo_object = add_datastream(repo_object, d, dryrun)} if batch_object_datastreams
+      batch_object_datastreams.each {|d| repo_object = populate_datastream(repo_object, d, dryrun)} if batch_object_datastreams
       batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
       repo_object.save unless dryrun
       repo_object
     end  
+  
+    def create_preservation_event(event_type, event_outcome, outcome_details, repository_object)
+      event = PreservationEvent.new(:event_type => event_type,
+                                    :event_detail => event_detail(event_type),
+                                    :event_outcome => event_outcome,
+                                    :event_outcome_detail_note => outcome_details.join("\n"),
+                                    )
+      event.for_object = repository_object
+      event.save
+    end
+    
+    def event_detail(event_type)
+      event_label = case event_type
+              when PreservationEvent::INGESTION
+                "Object ingestion"
+              when PreservationEvent::VALIDATION
+                "Object ingest validation"
+              end
+      PRESERVATION_EVENT_DETAIL % {
+        :label => event_label,
+        :batch_id => id,
+        :identifier => identifier,
+        :model => model
+      }
+    end
   
   end
 
