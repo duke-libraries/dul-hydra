@@ -96,12 +96,7 @@ module DulHydra::Batch::Scripts
         message = "Dry run ingest attempt for #{object.model} #{object.identifier}"
       else
         object.verified ? @successes += 1 : @failures += 1
-        if object.pid
-          verification_result = (object.verified ? "Verified" : "VERIFICATION FAILURE")
-          message = "Ingested #{object.model} #{object.identifier} into #{object.pid}...#{verification_result}"
-        else
-          message = "Attempt to ingest #{object.model} #{object.identifier} FAILED"
-        end
+        message = object.results_message
       end
       @details << message
       @log.info(message)

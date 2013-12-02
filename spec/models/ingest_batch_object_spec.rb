@@ -2,13 +2,13 @@ require 'spec_helper'
 
 module DulHydra::Batch::Models
 
-  shared_examples "a valid object" do
+  shared_examples "a valid ingest object" do
     it "should be valid" do
       expect(object.validate).to be_empty
     end
   end
   
-  shared_examples "an invalid object" do
+  shared_examples "an invalid ingest object" do
     it "should not be valid" do
       expect(object.validate).to include(error_message)
     end
@@ -44,11 +44,11 @@ module DulHydra::Batch::Models
         end
         context "generic object" do
           let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
-          it_behaves_like "a valid object"
+          it_behaves_like "a valid ingest object"
         end
         context "target object" do
           let(:object) { FactoryGirl.create(:target_ingest_batch_object) }
-          it_behaves_like "a valid object"
+          it_behaves_like "a valid ingest object"
         end
         context "object related to an uncreated object with pre-assigned PID" do
           let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
@@ -78,7 +78,7 @@ module DulHydra::Batch::Models
               Collection.find(r.object).destroy if r.name.eql?("collection")
             end            
           end
-          it_behaves_like "a valid object"
+          it_behaves_like "a valid ingest object"
         end
       end
   
@@ -87,13 +87,13 @@ module DulHydra::Batch::Models
         context "missing model" do
           let(:object) { FactoryGirl.create(:ingest_batch_object) }
           let(:error_message) { "#{error_prefix} Model required for INGEST operation" }
-          it_behaves_like "an invalid object"
+          it_behaves_like "an invalid ingest object"
         end
         context "invalid model" do
           let(:object) { FactoryGirl.create(:ingest_batch_object) }
           let(:error_message) { "#{error_prefix} Invalid model name: #{object.model}" }
           before { object.model = "BadModel" }
-          it_behaves_like "an invalid object"
+          it_behaves_like "an invalid ingest object"
         end
         context "invalid admin policy" do
           let(:object) { FactoryGirl.create(:ingest_batch_object, :has_model) }
@@ -105,7 +105,7 @@ module DulHydra::Batch::Models
               object.batch_object_relationships << relationship
               object.save
             end
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
           context "admin policy pid object exists but is not admin policy" do
             let(:error_message) { "#{error_prefix} admin_policy relationship object #{@not_admin_policy.pid} exists but is not a(n) AdminPolicy" }
@@ -116,7 +116,7 @@ module DulHydra::Batch::Models
               object.save
             end
             after { @not_admin_policy.destroy }
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
         end
         context "invalid datastreams" do
@@ -128,7 +128,7 @@ module DulHydra::Batch::Models
               datastream.name = "invalid_name"
               datastream.save!
             end
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
           context "invalid payload type" do
             let(:error_message) { "#{error_prefix} Invalid payload type for #{object.batch_object_datastreams.first[:name]} datastream: #{object.batch_object_datastreams.first[:payload_type]}" }
@@ -137,7 +137,7 @@ module DulHydra::Batch::Models
               datastream.payload_type = "invalid_type"
               datastream.save!
             end
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
           context "missing data file" do
             let(:error_message) { "#{error_prefix} Missing or unreadable file for #{object.batch_object_datastreams.last[:name]} datastream: #{object.batch_object_datastreams.last[:payload]}" }
@@ -146,7 +146,7 @@ module DulHydra::Batch::Models
               datastream.payload = "non_existent_file.xml"
               datastream.save!
             end
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
           context "checksum without checksum type" do
             let(:error_message) { "#{error_prefix} Must specify checksum type if providing checksum for #{object.batch_object_datastreams.first.name} datastream" }
@@ -156,7 +156,7 @@ module DulHydra::Batch::Models
               datastream.checksum_type = nil
               datastream.save!
             end
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
           context "invalid checksum type" do
             let(:error_message) { "#{error_prefix} Invalid checksum type for #{object.batch_object_datastreams.first.name} datastream: #{object.batch_object_datastreams.first.checksum_type}" }
@@ -165,7 +165,7 @@ module DulHydra::Batch::Models
               datastream.checksum_type = "SHA-INVALID"
               datastream.save!
             end
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
         end
         context "invalid parent" do
@@ -178,7 +178,7 @@ module DulHydra::Batch::Models
               object.batch_object_relationships << relationship
               object.save
             end
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
           context "parent pid object exists but is not correct parent object type" do
             let(:error_message) { "#{error_prefix} parent relationship object #{@not_parent.pid} exists but is not a(n) TestParent" }
@@ -189,7 +189,7 @@ module DulHydra::Batch::Models
               object.save
             end
             after { @not_parent.destroy }
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
         end
         context "invalid target_for" do
@@ -203,7 +203,7 @@ module DulHydra::Batch::Models
               object.batch_object_relationships << relationship
               object.save
             end
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
           context "target_for pid object exists but is not collection" do
             let(:error_message) { "#{error_prefix} collection relationship object #{@not_collection.pid} exists but is not a(n) Collection" }
@@ -215,7 +215,7 @@ module DulHydra::Batch::Models
               object.save
             end
             after { @not_collection.destroy }
-            it_behaves_like "an invalid object"
+            it_behaves_like "an invalid ingest object"
           end
         end
       end
