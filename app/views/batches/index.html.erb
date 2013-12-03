@@ -1,7 +1,4 @@
-<%= content_tag :h1, I18n.t('batch.web.page_titles.batches') %>
-<% if can? :create, IngestFolder %>
-	<div><%= ingest_folder_create_link %>
-<% end %>
+<h3><%= I18n.t('batch.web.page_titles.batches') %></h3>
 <div class="tabbable">
   <ul class="nav nav-tabs" id="object-show-tabs">
 	<%= render_tabs %>

@@ -1,7 +1,14 @@
 module BatchesHelper
 
   def batch_action(batch)
-    batch.status.nil? ? link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch)) : batch.status
+    case batch.status
+    when nil
+      link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
+    when DulHydra::Batch::Models::Batch::STATUS_VALIDATED
+      link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
+    else
+      batch.status
+    end
   end
 
   def show_batch_tabs
@@ -28,6 +35,12 @@ module BatchesHelper
       css_class = tab[:active] ? "tab-pane active" : "tab-pane"
       content_tag :div, class: css_class, id: tab[:id] do
         render(tab[:partial])
+      end
+    end
+    
+    def render_validate_batch_link(batch)
+      if batch.status.nil?
+        link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
       end
     end
   

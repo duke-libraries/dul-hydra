@@ -24,10 +24,20 @@ class BatchesController < ApplicationController
   end
   
   def validate
+    referrer = request.env['HTTP_REFERER']
     @errors = @batch.validate
     valid = @errors.empty?
+    if valid
+      @batch.status = DulHydra::Batch::Models::Batch::STATUS_VALIDATED
+      @batch.save
+    end
     flash[:notice] = "Batch is #{valid ? '' : 'not '}valid"
-    render :show
+    case referrer
+    when url_for(action: 'index', only_path: false)
+      redirect_to batches_url
+    else
+      render :show
+    end
   end
   
   def tabs
