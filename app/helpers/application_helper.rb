@@ -155,35 +155,12 @@ module ApplicationHelper
     render partial: 'document_summary', locals: {document: document}
   end
 
-  def render_document_summary_association(document)
-    association, label = case document.active_fedora_model
-                         when "Attachment"
-                           [:is_attached_to, "Attached to"]
-                         when "Item"
-                           [:is_member_of_collection, "Member of"]
-                         when "Component"
-                           [:is_part_of, "Part of"]
-                         end
-    if association && label
-      associated_doc = get_associated_document(document, association)
-      if associated_doc
-        render partial: 'document_summary_association', locals: {label: label, document: associated_doc}
-      end
+  def get_associated_document(document)
+    [:is_member_of_collection, :is_part_of, :is_attached_to].each do |assoc|
+      associated_pid = document.association(assoc)
+      return [assoc, get_solr_response_for_field_values(:id, associated_pid)[1].first] if associated_pid
     end
-  end
-
-  def get_associated_document(document, association)
-    associated_pid = document.association(association)
-    get_solr_response_for_field_values(:id, associated_pid)[1].first if associated_pid
-  end
-
-  def link_to_associated(document_or_object, label = nil)
-    label ||= document_or_object.title rescue document_or_object.id
-    if can? :read, document_or_object
-      link_to label, object_path(document_or_object.id)
-    else
-      label
-    end
+    nil
   end
 
   def link_to_fcrepo_view(dsid = nil)

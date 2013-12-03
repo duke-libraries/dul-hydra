@@ -1,4 +1,4 @@
-<% if can? :read, document %>
+<% if can? :download, document %>
   <%= render partial: 'document_download', locals: {document: document} %>
 <% else %>
   <%= render_content_type_and_size document %>
