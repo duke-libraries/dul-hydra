@@ -13,7 +13,7 @@ class Ability
     cannot :create, ActiveFedora::Base 
     # ... then permit members of authorized groups on a per-model basis
     DulHydra.creatable_models.each do |model|
-      grant_by_group(action: :create, subject: model_class(model))
+      can :create, model.constantize if has_ability_group?(:create, model)
     end
   end
 
@@ -52,9 +52,23 @@ class Ability
   
   # Hydra::Ability adds #download_permissions in hydra-head 7.0
   def download_permissions
+    can :download, ActiveFedora::Base do |obj|
+      if obj.class == Component
+        can?(:read, obj) and has_ability_group?(:download, Component)
+      else
+        can? :read, obj
+      end
+    end
+    can :download, SolrDocument do |doc|
+      if doc.active_fedora_model == "Component"
+        can?(:read, doc) and has_ability_group?(:download, Component)
+      else
+        can? :read, doc
+      end
+    end
     can :download, ActiveFedora::Datastream do |ds|
       if ds.dsid == DulHydra::Datastreams::CONTENT and ds.digital_object.original_class == Component
-        grant_by_group(action: :download, subject: Component)
+        can?(:read, ds) and has_ability_group?(:download, Component)
       else
         can? :read, ds
       end
@@ -156,14 +170,12 @@ class Ability
 
   protected
 
-  def grant_by_group(args)
-    can args[:action], args[:subject] if current_user.member_of?(ability_group(args))
+  def has_ability_group?(action, model)
+    current_user.member_of?(ability_group(action, model))
   end
 
-  def ability_group(args)
-    model_s = args[:subject].to_s
-    return unless DulHydra.ability_group_map.key?(model_s)
-    DulHydra.ability_group_map[model_s][args[:action]]
+  def ability_group(action, model)
+    DulHydra.ability_group_map[model.to_s][action] rescue nil
   end
   
   private

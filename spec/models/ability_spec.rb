@@ -5,7 +5,6 @@ describe Ability do
 
   subject { described_class.new(user) }
   let(:user) { FactoryGirl.create(:user) }
-
   after { user.delete }
 
   describe "create permissions" do
@@ -60,51 +59,172 @@ describe Ability do
   end
 
   describe "#download_permissions" do
+
     after { obj.delete }
-    context "ActiveFedora::Base object datastream" do
-      let(:obj) { FactoryGirl.create(:test_model) }
-      context "user has read permission" do
-        before do
-          obj.read_users = [user.user_key]
-          obj.save
+
+    context "object" do
+
+      context "is a Component" do
+        let(:obj) { FactoryGirl.create(:component_with_content) }
+        before { DulHydra.ability_group_map = {"Component" => {download: "component_download"}}.with_indifferent_access }
+        context "user is NOT a member of the component download ability group" do
+
+          context "and user has read permission" do
+            before do
+              obj.read_users = [user.to_s]
+              obj.save
+            end
+            it "should deny download" do
+              subject.can?(:download, obj).should be_false
+            end
+          end
+
+          context "and user lacks read permission" do
+            it "should deny download" do
+              subject.can?(:download, obj).should be_false
+            end            
+          end
         end
-        it "should grant download permission to the user" do
-          subject.can?(:download, obj.descMetadata).should be_true
-        end
-      end
-      context "user lacks read permission" do
-        before do
-          obj.rightsMetadata.clear_permissions!
-          obj.save
-        end
-        it "should deny download permission to the user" do
-          subject.can?(:download, obj.descMetadata).should be_false
-        end
-      end
-    end
-    context "Component `content' datastream" do
-      let(:obj) { FactoryGirl.create(:component) }
-      before { DulHydra.ability_group_map = {"Component" => {download: "component_download"}}.with_indifferent_access }
-      context "user lacks read permission" do
-        before do
-          obj.rightsMetadata.clear_permissions!
-          obj.save
-        end
-        context "user is member of download group" do
-          it "should grant download permission to the user" do
+
+        context "user is a member of the component download ability group" do
+          before do
             user.stub(:groups).and_return(["component_download"])
-            subject.can?(:download, obj.datastreams[DulHydra::Datastreams::CONTENT]).should be_true
+          end
+
+          context "and user has read permission" do
+            before do
+              obj.read_users = [user.to_s]
+              obj.save
+            end
+            it "should permit download" do
+              subject.can?(:download, obj).should be_true
+            end
+          end
+
+          context "and user lacks read permission" do
+            it "should deny download" do
+              subject.can?(:download, obj).should be_false
+            end            
+          end          
+        end
+      end
+
+      context "is not a Component" do
+        let(:obj) { FactoryGirl.create(:test_content) }
+
+        context "and user has read permission" do
+          before do
+            obj.read_users = [user.to_s]
+            obj.save
+          end
+          it "should permit download" do
+            subject.can?(:download, obj).should be_true
           end
         end
-        context "user is not member of download group" do
-          it "should deny download permission to the user" do
-            user.stub(:groups).and_return(["spam:eggs"])
-            subject.can?(:download, obj.datastreams[DulHydra::Datastreams::CONTENT]).should be_false
-          end
-        end
-      end      
+
+        context "and user lacks read permission" do
+          it "should deny download" do
+            subject.can?(:download, obj).should be_false
+          end            
+        end                  
+      end
     end
-  end
+
+    context "datastream" do
+
+      context "content" do
+        let(:ds) { obj.content }
+
+        context "object is a Component" do
+          let(:obj) { FactoryGirl.create(:component_with_content) }
+          before { DulHydra.ability_group_map = {"Component" => {download: "component_download"}}.with_indifferent_access }
+          context "user is NOT a member of the component download ability group" do
+
+            context "and user has read permission on the object" do
+              before do
+                obj.read_users = [user.to_s]
+                obj.save
+              end
+              it "should deny download" do
+                subject.can?(:download, ds).should be_false
+              end
+            end
+
+            context "and user lacks read permission on the object" do
+              it "should deny download" do
+                subject.can?(:download, ds).should be_false
+              end            
+            end
+          end
+
+          context "user is a member of the component download ability group" do
+            before do
+              user.stub(:groups).and_return(["component_download"])
+            end
+
+            context "and user has read permission on the object" do
+              before do
+                obj.read_users = [user.to_s]
+                obj.save
+              end
+              it "should permit download" do
+                subject.can?(:download, ds).should be_true
+              end
+            end
+
+            context "and user lacks read permission on the object" do
+              it "should deny download" do
+                subject.can?(:download, ds).should be_false
+              end            
+            end          
+          end
+        end
+
+        context "object is not a Component" do
+          let(:obj) { FactoryGirl.create(:test_content) }
+
+          context "and user has read permission on the object" do
+            before do
+              obj.read_users = [user.to_s]
+              obj.save
+            end
+            it "should permit download" do
+              subject.can?(:download, ds).should be_true
+            end
+          end
+
+          context "and user lacks read permission on the object" do
+            it "should deny download" do
+              subject.can?(:download, ds).should be_false
+            end            
+          end                  
+          
+        end
+
+      end
+
+      context "not content" do
+        let(:obj) { FactoryGirl.create(:test_model) }
+        let(:ds) { obj.descMetadata }
+        context "and user has read permission on the object" do
+          before do
+            obj.read_users = [user.to_s]
+            obj.save
+          end
+          it "should permit download" do
+            subject.can?(:download, ds).should be_true
+          end
+        end
+        context "and user lacks read permission on the object" do
+          it "should deny download" do
+            subject.can?(:download, ds).should be_false
+          end
+        end        
+      end
+
+    end
+
+  end # download_permissions
 
   describe "#discover_permissions" do
   end
