@@ -1,7 +1,7 @@
 module IngestFoldersHelper
   
   def ingest_folder_create_link
-    button_to I18n.t('batch.ingest_folder.create'), new_ingest_folder_path, :method => 'get'
+    link_to I18n.t('batch.ingest_folder.create'), new_ingest_folder_path
   end
   
   def excluded_file_list

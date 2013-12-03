@@ -86,7 +86,7 @@ en:
                 log: "Log"
             action_names:
                 procezz: "Process"
-                reprocezz: "Re-Process"
+                validate: "Validate"
             tab_names:
                 batch_info: "Batch Info"
                 batch_objects: "Batch Objects"
