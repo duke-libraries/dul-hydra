@@ -13,9 +13,12 @@ module DulHydra::Services
     # List of all grouper groups for the repository
     def self.repository_groups
       groups = []
-      client do |c|
-        g = c.groups(DulHydra.remote_groups_name_filter)
-        groups = g if c.ok?
+      begin
+        client do |c|
+          g = c.groups(DulHydra.remote_groups_name_filter)
+          groups = g if c.ok?
+        end
+      rescue DulHydra::Error
       end
       groups
     end
@@ -26,21 +29,24 @@ module DulHydra::Services
 
     def self.user_groups(user)
       groups = []
-      client do |c|
-        request_body = { 
-          "WsRestGetGroupsRequest" => {
-            "subjectLookups" => [{"subjectIdentifier" => subject_id(user)}]
+      begin
+        client do |c|
+          request_body = { 
+            "WsRestGetGroupsRequest" => {
+              "subjectLookups" => [{"subjectIdentifier" => subject_id(user)}]
+            }
           }
-        }
-        # Have to use :call b/c grouper-rest-client :subjects method doesn't support POST
-        response = c.call("subjects", :post, request_body)
-        if c.ok?
-          result = response["WsGetGroupsResults"]["results"].first
-          # Have to manually filter results b/c Grouper WS version 1.5 does not support filter parameter
-          if result && result["wsGroups"]
-            groups = result["wsGroups"].select { |g| g["name"] =~ /^#{DulHydra.remote_groups_name_filter}/ }
+          # Have to use :call b/c grouper-rest-client :subjects method doesn't support POST
+          response = c.call("subjects", :post, request_body)
+          if c.ok?
+            result = response["WsGetGroupsResults"]["results"].first
+            # Have to manually filter results b/c Grouper WS version 1.5 does not support filter parameter
+            if result && result["wsGroups"]
+              groups = result["wsGroups"].select { |g| g["name"] =~ /^#{DulHydra.remote_groups_name_filter}/ }
+            end
           end
         end
+      rescue DulHydra::Error
       end
       groups
     end
