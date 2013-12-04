@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131119190808) do
+ActiveRecord::Schema.define(:version => 20131203162900) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -118,6 +118,17 @@ ActiveRecord::Schema.define(:version => 20131119190808) do
     t.integer  "parent_id_length"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
+  end
+
+  create_table "metadata_files", :force => true do |t|
+    t.integer  "user_id"
+    t.text     "options"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
+    t.string   "metadata_file_name"
+    t.string   "metadata_content_type"
+    t.integer  "metadata_file_size"
+    t.datetime "metadata_updated_at"
   end
 
   create_table "preservation_events", :force => true do |t|

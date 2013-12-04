@@ -76,5 +76,11 @@ DulHydra::Application.routes.draw do
       get 'procezz'
     end
   end
+
+  resources :metadata_files, :only => [:new, :create, :show] do
+    member do
+      get 'procezz'
+    end
+  end
   
 end
