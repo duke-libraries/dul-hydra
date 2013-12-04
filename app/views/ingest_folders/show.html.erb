@@ -40,11 +40,11 @@
 	<% end %>
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.collection_pid')) %>
-		<%= content_tag(:td, @collection_title) %>
+		<%= content_tag(:td, object_display_title(@ingest_folder.collection_pid)) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.admin_policy_pid')) %>
-		<%= content_tag(:td, @ingest_folder.admin_policy_pid) %>
+		<%= content_tag(:td, object_display_title(@ingest_folder.admin_policy_pid)) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.parent_id_length')) %>
