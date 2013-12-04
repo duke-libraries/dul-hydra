@@ -60,6 +60,10 @@ class AdminPolicy < Hydra::AdminPolicy
     default_permissions.collect { |p| p[:name] if p[:type] == type and p[:access] == access }.compact
   end
 
+  def title_display
+    title
+  end
+  
   ["discover", "read", "edit"].each do |access|
     ["user", "group"].each do |type|
       define_method("default_#{access}_#{type}s") { default_entities_for_permission(type, access) }

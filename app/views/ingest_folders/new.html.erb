@@ -14,40 +14,21 @@
 
 <%= form_for @ingest_folder do |f| %>
 
-<div>
-	<%= f.label :base_path, :style => "display: inline" %>
-	<%= f.select :base_path, options_for_select(@permitted_folder_bases), {}, {:style => 'width: auto;'} %>
-</div>
-
-<div>
-	<%= f.label :sub_path, :style => "display: inline" %>
+	<%= f.label :base_path %>
+	<%= f.select :base_path, options_for_select(permitted_folder_bases), {}, {:style => 'width: auto;'} %>
+	<%= f.label :sub_path %>
 	<%= f.text_field :sub_path %>
-</div>
-
-<div>
-	<%= f.label :file_creator, :style => "display: inline" %>
+	<%= f.label :file_creator %>
 	<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), :include_blank => true %>
-</div>
+	<%= f.label :collection_pid %>
+	<%= f.select :collection_pid, model_options_for_select(Collection), :include_blank => true %>
+	<%= f.label :admin_policy_pid %>
+	<%= f.select :admin_policy_pid, model_options_for_select(AdminPolicy), :include_blank => true %>
+	<%= f.label :parent_id_length %>
+	<%= f.text_field :parent_id_length %>
 
-<div>
-	<%= f.label :collection_pid, :style => "display: inline" %>
-	<%= f.select :collection_pid, options_for_select(@collection_options), :include_blank => true %>
-</div>
-
-<div>
-	<%= f.label :admin_policy_pid, :style => "display: inline" %>
-	<%= f.select :admin_policy_pid, @admin_policies.collect { |apo| apo.pid }, :include_blank => true %>
-</div>
-
-<div>
-	<div>
-		<%= f.label :parent_id_length, :style => "display: inline" %>
-		<%= f.text_field :parent_id_length %>
-	</div>	
-</div>
-
-<div>
-  <%= f.submit I18n.t('batch.ingest_folder.scan_folder'), :id => 'ingest_folders_submit_button', :class => "btn btn-primary" %>
-</div>
+	<p>
+  	<%= f.submit t('batch.ingest_folder.scan_folder'), :id => 'ingest_folders_submit_button', :class => "btn btn-primary" %>
+	</p>
 	
 <% end %>

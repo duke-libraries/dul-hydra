@@ -224,7 +224,7 @@ module ApplicationHelper
   end
 
   def model_options_for_select(model)
-    options = find_models_with_gated_discovery(model).collect { |m| [m.title, m.pid] }
+    options = find_models_with_gated_discovery(model).collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
     options_for_select options
   end
 
