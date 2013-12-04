@@ -12,9 +12,15 @@ module DulHydra::Services
 
     # List of all grouper groups for the repository
     def self.repository_groups
-      client.groups(DulHydra.remote_groups_name_filter)
-    rescue DulHydra::Error
-      []
+      groups = []
+      begin
+        client do |c|
+          g = c.groups(DulHydra.remote_groups_name_filter)
+          groups = g if c.ok?
+        end
+      rescue DulHydra::Error
+      end
+      groups
     end
 
     def self.repository_group_names
@@ -22,21 +28,27 @@ module DulHydra::Services
     end
 
     def self.user_groups(user)
-      request_body = { 
-        "WsRestGetGroupsRequest" => {
-          "subjectLookups" => [{"subjectIdentifier" => subject_id(user)}]
-        }
-      }
-      # Have to use :call b/c grouper-rest-client :subjects method doesn't support POST
-      result = client.call("subjects", :post, request_body)["WsGetGroupsResults"]["results"].first
-      # Have to manually filter results b/c Grouper WS version 1.5 does not support filter parameter
-      if result && result["wsGroups"]
-        result["wsGroups"].select { |g| g["name"] =~ /^#{DulHydra.remote_groups_name_filter}/ }
-      else
-        []
+      groups = []
+      begin
+        client do |c|
+          request_body = { 
+            "WsRestGetGroupsRequest" => {
+              "subjectLookups" => [{"subjectIdentifier" => subject_id(user)}]
+            }
+          }
+          # Have to use :call b/c grouper-rest-client :subjects method doesn't support POST
+          response = c.call("subjects", :post, request_body)
+          if c.ok?
+            result = response["WsGetGroupsResults"]["results"].first
+            # Have to manually filter results b/c Grouper WS version 1.5 does not support filter parameter
+            if result && result["wsGroups"]
+              groups = result["wsGroups"].select { |g| g["name"] =~ /^#{DulHydra.remote_groups_name_filter}/ }
+            end
+          end
+        end
+      rescue DulHydra::Error
       end
-    rescue DulHydra::Error
-      []
+      groups
     end
 
     def self.user_group_names(user)
@@ -51,7 +63,11 @@ module DulHydra::Services
 
     def self.client
       raise DulHydra::Error unless configured?
-      Grouper::Rest::Client::Resource.new(config["url"], user: config["user"], password: config["password"])
+      yield Grouper::Rest::Client::Resource.new(config["url"], 
+                                                user: config["user"], 
+                                                password: config["password"],
+                                                timeout: config.fetch("timeout", 5).to_i
+                                                )
     end
 
   end

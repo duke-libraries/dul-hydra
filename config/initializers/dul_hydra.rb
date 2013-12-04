@@ -23,7 +23,7 @@ DulHydra.configure do |config|
   config.creatable_models = ["AdminPolicy", "Collection"]
 end
 
-# Load configurion for Grouper service, if present
+# Load configuration for Grouper service, if present
 if File.exists? "#{Rails.root}/config/grouper.yml"
   require 'dul_hydra/services/grouper_service'
   DulHydra::Services::GrouperService.config = YAML.load_file("#{Rails.root}/config/grouper.yml")[Rails.env]
