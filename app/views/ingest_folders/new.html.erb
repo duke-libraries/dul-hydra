@@ -1,7 +1,7 @@
 <h1>Ingest Folder</h1>
 
 <% if @ingest_folder.errors.any? %>
-  <div id="error_explanation">
+  <div class="alert alert-danger">
     <h2><%= pluralize(@ingest_folder.errors.count, "error") %> prohibited this ingest folder from being scanned:</h2>
  
     <ul>
@@ -19,13 +19,13 @@
 	<%= f.label :sub_path %>
 	<%= f.text_field :sub_path %>
 	<%= f.label :file_creator %>
-	<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), :include_blank => true %>
+	<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), { :prompt =>  t('dul_hydra.prompts.select') % "File Creator (if applicable)" }, {:style => 'width: auto;'} %>
 	<%= f.label :collection_pid %>
-	<%= f.select :collection_pid, model_options_for_select(Collection), :include_blank => true %>
+	<%= f.select :collection_pid, model_options_for_select(Collection), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {:style => 'width: auto;'} %>
 	<%= f.label :admin_policy_pid %>
-	<%= f.select :admin_policy_pid, model_options_for_select(AdminPolicy), :include_blank => true %>
+	<%= f.select :admin_policy_pid, model_options_for_select(AdminPolicy), { :prompt =>  t('dul_hydra.prompts.select') % "Admin Policy" }, {:style => 'width: auto;'}%>
 	<%= f.label :parent_id_length %>
-	<%= f.text_field :parent_id_length %>
+	<%= f.text_field :parent_id_length %>&nbsp;<em><%= t('batch.ingest_folder.help.parent_id_length')%></em>
 
 	<p>
   	<%= f.submit t('batch.ingest_folder.scan_folder'), :id => 'ingest_folders_submit_button', :class => "btn btn-primary" %>

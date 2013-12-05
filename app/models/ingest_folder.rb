@@ -200,6 +200,7 @@ class IngestFolder < ActiveRecord::Base
   
   def parent_identifier(child_identifier)
     case parent_id_length
+    when nil then child_identifier
     when 0 then child_identifier
     else child_identifier[0, parent_id_length]
     end
