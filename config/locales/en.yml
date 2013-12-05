@@ -7,6 +7,8 @@ en:
       is_part_of: 'Part of'
       is_member_of_collection: 'Member of'
       is_attached_to: 'Attached to'
+    prompts:
+      select: "Select %s ..."
     user:
       welcome:
         authenticated: 'Welcome'

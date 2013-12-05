@@ -8,7 +8,7 @@ en:
                 checksum_type: Checksum Type
                 collection_pid: Collection
                 file_creator: File Creator
-                parent_id_length: Length of Parent Identifier
+                parent_id_length: Length of Item Identifier
                 sub_path: Folder Sub-Path
     batch:
         ingest_folder:
@@ -22,6 +22,8 @@ en:
             not_readable: "%{path} does not exist or is not readable" 
             objects_to_ingest: Objects to be Ingested
             scan_folder: Scan Folder
+            help:
+                parent_id_length: Leave blank or set to 0 to create a separate Item for each file.
         manifest:
             validation_failed: "Did not process manifest due to manifest validation errors"
             validation_skipped: "Skipped validation"
