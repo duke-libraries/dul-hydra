@@ -3,11 +3,18 @@ module DulHydra::Batch::Models
   class IngestBatchObject < DulHydra::Batch::Models::BatchObject
   
     def local_validations
-      errs = []
-      errs << "#{@error_prefix} Model required for INGEST operation" unless model
-      errs
+      errors = []
+      errors << "#{@error_prefix} Model required for INGEST operation" unless model
+      errors += validate_pre_assigned_pid if pid
+      errors
     end
   
+    def validate_pre_assigned_pid
+      errs = []
+      errs << "#{@error_prefix} #{pid} already exists in repository" if ActiveFedora::Base.exists?(pid)
+      return errs      
+    end
+    
     def process(opts = {})
       ingest(opts)
     end

@@ -95,6 +95,14 @@ module DulHydra::Batch::Models
           before { object.model = "BadModel" }
           it_behaves_like "an invalid ingest object"
         end
+        context "pre-assigned pid already exists" do
+          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_model) }
+          let(:existing_object) { FactoryGirl.create(:test_model) }
+          let(:error_message) { "#{error_prefix} #{existing_object.pid} already exists in repository" }
+          before { object.pid = existing_object.pid }
+          after { existing_object.destroy }
+          it_behaves_like "an invalid ingest object"
+        end
         context "invalid admin policy" do
           let(:object) { FactoryGirl.create(:ingest_batch_object, :has_model) }
           context "admin policy pid object does not exist" do
