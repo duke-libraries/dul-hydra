@@ -70,9 +70,9 @@ module DulHydra::Batch::Scripts
       @log.info "Batch id: #{@batch.id}"
       @log.info "Batch name: #{@batch.name}" if @batch.name
       @log.info "Batch size: #{@batch.batch_objects.size}"
-      @batch.start = DateTime.now
-      @batch.status = DulHydra::Batch::Models::Batch::STATUS_RUNNING
-      @batch.version = DulHydra::VERSION
+      @batch.update_attributes(:start => DateTime.now,
+                               :status => DulHydra::Batch::Models::Batch::STATUS_RUNNING,
+                               :version => DulHydra::VERSION)
       @failures = 0
       @successes = 0
       @details = []
