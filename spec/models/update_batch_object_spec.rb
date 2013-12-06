@@ -25,17 +25,21 @@ module DulHydra::Batch::Models
         batch.destroy
       end
       context "valid object" do
+        let(:repo_object) { TestModel.create(:pid => object.pid) }
+        let(:apo) { FactoryGirl.create(:group_edit_policy) }
+        before do
+          repo_object.admin_policy = apo
+          repo_object.save
+        end
+        after do
+          repo_object.destroy
+          apo.destroy
+        end
         context "generic object" do
-          let(:repo_object) { TestModel.create(:pid => object.pid) }
-          let(:apo) { FactoryGirl.create(:group_edit_policy) }
-          before do
-            repo_object.admin_policy = apo
-            repo_object.save
-          end
-          after do
-            repo_object.destroy
-            apo.destroy
-          end
+          it_behaves_like "a valid update object"
+        end
+        context "generic object without a model attribute" do
+          before { object.model = nil }
           it_behaves_like "a valid update object"
         end
       end
