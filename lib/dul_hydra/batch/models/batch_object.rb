@@ -59,7 +59,7 @@ DulHydra version #{DulHydra::VERSION}
       errs = []
       batch_object_datastreams.each do |d|
         begin
-          unless model.constantize.new.datastreams.keys.include?(d.name)
+          unless model_datastream_keys.include?(d.name)
             errs << "#{@error_prefix} Invalid datastream name for #{model}: #{d.name}"
           end
         rescue NameError

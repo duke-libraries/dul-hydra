@@ -15,6 +15,10 @@ module DulHydra::Batch::Models
       return errs      
     end
     
+    def model_datastream_keys
+      model.constantize.new.datastreams.keys
+    end
+        
     def process(opts = {})
       ingest(opts)
     end

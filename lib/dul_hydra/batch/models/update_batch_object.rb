@@ -15,6 +15,17 @@ module DulHydra::Batch::Models
       errs
     end
   
+    def model_datastream_keys
+      if pid
+        begin
+          obj = ActiveFedora::Base.find(pid, :cast => true)
+          obj.datastreams.keys
+        rescue
+          nil
+        end
+      end
+    end
+        
     def process(opts = {})
       update_repository_object(opts)
       verifications = verify_repository_object
