@@ -9,7 +9,6 @@ class ObjectsController < ApplicationController
   before_filter :configure_blacklight_for_related_objects, only: :show
   before_filter :load_and_authorize_new_object, only: [:new, :create]
 
-  helper_method :get_solr_response_for_field_values
   helper_method :object_children
   helper_method :object_attachments
   helper_method :object_preservation_events
