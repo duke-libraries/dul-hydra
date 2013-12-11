@@ -24,6 +24,11 @@ en:
             scan_folder: Scan Folder
             help:
                 parent_id_length: Leave blank or set to 0 to create a separate Item for each file.
+        metadata_file:
+            create: Upload Metadata Update File
+            batch_name: Metadata Update File
+            create_batch: Create Update Batch
+            upload_file: Upload File
         manifest:
             validation_failed: "Did not process manifest due to manifest validation errors"
             validation_skipped: "Skipped validation"

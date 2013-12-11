@@ -1,0 +1,23 @@
+<h3>Metadata Update File</h3>
+
+<% if @metadata_file.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= pluralize(@metadata_file.errors.count, "error") %> prohibited this metadata file from being processed:</h2>
+ 
+    <ul>
+    <% @metadata_file.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_for @metadata_file, :html => { :multipart => true } do |f| %>
+
+	<%= f.file_field :metadata %>
+
+	<div>
+	  <%= f.submit I18n.t('batch.metadata_file.upload_file'), :id => 'metadata_file_submit_button', :class => "btn btn-primary" %>
+	</div>
+
+<% end %>

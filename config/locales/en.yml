@@ -89,6 +89,8 @@ en:
           label: Pending
       finished_batches:
           label: Already Run
+    errors:
+        multiple_object_matches: "%{criteria} retrieved multiple repository objects"
   blacklight:
     application_name: 'Duke Digital Repository'
   fcrepo_admin:
