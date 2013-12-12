@@ -16,7 +16,7 @@ class MetadataFile < ActiveRecord::Base
       :repeating_fields_separator => ";",
       :include_empty_fields => false,
       :model => "Item",
-      :attribute_map => self.default_attribute_map
+      :attribute_map => self.downcase_attribute_map_keys(self.default_attribute_map)
     }
   end
   
@@ -27,10 +27,18 @@ class MetadataFile < ActiveRecord::Base
     }
   end
   
+  def self.downcase_attribute_map_keys(attribute_map)
+    Hash[attribute_map.map { |k, v| [k.downcase, v] } ]
+  end
+  
   def canonical_attribute_name(attribute_name)
     return attribute_name if ActiveFedora::QualifiedDublinCoreDatastream::DCTERMS.include?(attribute_name.to_sym)
-    return options[:attribute_map][attribute_name] if options[:attribute_map].has_key?(attribute_name)
+    return options[:attribute_map][attribute_name.downcase] if options[:attribute_map].has_key?(attribute_name.downcase)
     return nil
+  end
+  
+  def model(row)
+    row.headers.include?("model") ? row.field("model") : options[:model]
   end
   
   def procezz
@@ -42,7 +50,6 @@ class MetadataFile < ActiveRecord::Base
     CSV.foreach(metadata.path, csv_options) do |row|
       obj = DulHydra::Batch::Models::UpdateBatchObject.new(:batch => @batch)
       obj.model = row.field("model") if row.headers.include?("model")
-      obj.model = options[:model] unless obj.model.present? 
       obj.pid = row.field("pid") if row.headers.include?("pid")
       obj.save
       ds = ActiveFedora::QualifiedDublinCoreDatastream.new
@@ -50,9 +57,9 @@ class MetadataFile < ActiveRecord::Base
         if !row.field(header).blank?  # for now, assume we're not including empty fields
           if canonical_attribute_name(header).present?
             if canonical_attribute_name(header).eql?("identifier")
-              obj.update_attributes(:identifier => row.field(header))
+              obj.update_attributes(:identifier => row.field(header)) unless obj.identifier.present?
             end
-            ds.send("#{canonical_attribute_name(header).to_sym}=", row.field(header))
+            ds.send("#{canonical_attribute_name(header).to_sym}=", parse_field(row.field(header), header))
           end
         end
       end
@@ -64,9 +71,17 @@ class MetadataFile < ActiveRecord::Base
                 :payload_type => DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
                 )
       unless obj.pid.present?
-        obj.pid = determine_pid_from_identifier(obj.identifier, obj.model)
+        obj.pid = determine_pid_from_identifier(obj.identifier, model(row))
         obj.save
       end
+    end
+  end
+  
+  def parse_field(value, header)
+    if options[:repeating_fields].include?(header)
+      value.split(options[:repeating_fields_separator]).map(&:strip)
+    else
+      value
     end
   end
   
@@ -75,16 +90,26 @@ class MetadataFile < ActiveRecord::Base
     ActiveFedora::Base.find_each( { DulHydra::IndexFields::IDENTIFIER => identifier }, { :cast => true } ) { |o| objs << o }
     case objs.size
     when 0
-      return nil
+      pid = nil
     when 1
-      return objs.first.pid
+      pid = objs.first.pid
     else
       if model.present?
-        objs.each { |obj| return obj.pid if obj.class.eql?(model.constantize) }
+        model_matches = 0
+        objs.each do |obj|
+          if obj.class.eql?(model.constantize)
+            pid = obj.pid
+            model_matches += 1
+          end
+        end
+        if model_matches > 1
+          raise DulHydra::Error, I18n.t('dul_hydra.errors.multiple_object_matches', :criteria => "model #{model} identifier #{identifier}")
+        end
       else
         raise DulHydra::Error, I18n.t('dul_hydra.errors.multiple_object_matches', :criteria => "identifer #{identifier}")
       end
     end
+    return pid
   end
   
   def self.default_attribute_map
@@ -92,7 +117,23 @@ class MetadataFile < ActiveRecord::Base
       "Title" => "title",
       "Subject-Name" => "subject",
       "Subject-Topic" => "subject",
-      "Identifier-DukeID" => "identifier"
+      "Description" => "description",
+      "Creator" => "creator",
+      "Date" => "date",
+      "Type-DCMI" => "type",
+      "Type-AAT" => "type",
+      "Type-Genre" => "type",
+      "Identifier-DukeID" => "identifier",
+      "Print Number" => "identifier",
+      "Identifier-Other" => "identifier",
+      "Source" => "source",
+      "Digital Collection" => "isPartOf",
+      "Language" => "language",
+      "Rights" => "rights",
+      "Extent" => "extent",
+      "Spatial" => "spatial",
+      "Series" => "isPartOf",
+      "Subseries" => "isPartOf"
     }    
   end
 
