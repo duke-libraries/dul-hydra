@@ -8,6 +8,7 @@
 			<%= content_tag :th, I18n.t('batch.web.column_names.start'), :scope => 'col' %>
 			<%= content_tag :th, I18n.t('batch.web.column_names.status'), :scope => 'col' %>
 			<%= content_tag :th, I18n.t('batch.web.column_names.outcome'), :scope => 'col' %>
+            <%= content_tag :th, I18n.t('batch.web.column_names.log'), :scope => 'col' %>
 		<% end %>
 
 	<% end %>
@@ -20,6 +21,7 @@
 			<%= content_tag :td, @batch.start.nil? ? '--' : @batch.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
 			<%= content_tag :td, @batch.status.nil? ? '--' : @batch.status %>
 			<%= content_tag :td, @batch.outcome.nil? ? '--' : @batch.outcome %>
+            <%= content_tag :td, @batch.logfile_file_name.nil? ? '--' : link_to(I18n.t('batch.web.column_names.log'), @batch.logfile.url) %>
 		<% end %>
 	<% end %>
 <% end %>

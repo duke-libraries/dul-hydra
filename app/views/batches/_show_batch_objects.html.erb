@@ -12,7 +12,7 @@
 <%= content_tag :tbody do %>
 <% @batch.batch_objects.each do |bo| %>
 <%= content_tag :tr do %>
-<%= content_tag :td, bo.id %>
+<%= content_tag :td, link_to(bo.id, batch_object_path(bo)) %>
 <%= content_tag :td, bo.identifier %>
 <%= content_tag :td, bo.model %>
 <%= content_tag :td, bo.pid %>

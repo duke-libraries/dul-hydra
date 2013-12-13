@@ -43,5 +43,17 @@ module BatchesHelper
         link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
       end
     end
+    
+    def render_link_to_batch_with_name(batch)
+      text = batch.id.to_s
+      if batch.name.present? || batch.description.present?
+        text << " ("
+        text << batch.name if batch.name.present?
+        text << " - " if batch.name.present? && batch.description.present?
+        text << batch.description if batch.description.present?
+        text << ")"
+      end
+      link_to(text, batch_path(batch))
+    end
   
 end
