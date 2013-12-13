@@ -60,17 +60,19 @@ DulHydra::Application.routes.draw do
     end
   end
   
-  resources :batches do
+  resources :batches, :only => [:index, :show] do
     member do
       get 'procezz'
       get 'validate'
     end
-    resources :batch_objects do
-      resources :batch_object_datastreams
-      resources :batch_object_relationships
-    end
+    resources :batch_objects, :only => :index
   end
-
+  
+  resources :batch_objects, :only => :show do
+    resources :batch_object_datastreams, :only => :index
+    resources :batch_object_relationships, :only => :index
+  end
+  
   resources :ingest_folders, :only => [:new, :create, :show] do
     member do
       get 'procezz'

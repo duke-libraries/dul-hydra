@@ -43,6 +43,9 @@ class Ability
   
   def batches_permissions
     can :manage, DulHydra::Batch::Models::Batch, :user_id => current_user.id
+    can :manage, DulHydra::Batch::Models::BatchObject do |batch_object|
+      can? :manage, batch_object.batch
+    end
   end
 
   def ingest_folders_permissions
