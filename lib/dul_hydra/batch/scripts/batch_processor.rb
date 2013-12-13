@@ -76,6 +76,7 @@ module DulHydra::Batch::Scripts
       @failures = 0
       @successes = 0
       @details = []
+      @results_tracker = Hash.new
     end
     
     def close_batch_run
@@ -85,7 +86,27 @@ module DulHydra::Batch::Scripts
                                :status => DulHydra::Batch::Models::Batch::STATUS_FINISHED,
                                :stop => DateTime.now,
                                :success => @successes)
-      @log.info "Ingested #{@batch.success} of #{@batch.batch_objects.size} objects"
+      @log.info "====== Summary ======"
+      @results_tracker.keys.each do |type|
+        verb = case type
+        when DulHydra::Batch::Models::IngestBatchObject.name
+          "Ingested"
+        when DulHydra::Batch::Models::UpdateBatchObject.name
+          "Updated"
+        end
+        @results_tracker[type].keys.each do |model|
+          @log.info "#{verb} #{@results_tracker[type][model][:successes]} of #{@results_tracker[type][model][:total]} #{model}"
+        end
+      end
+    end
+    
+    def update_results_tracker(type, model, verified)
+      @results_tracker[type] = Hash.new unless @results_tracker.has_key?(type)
+      @results_tracker[type][model] = Hash.new unless @results_tracker[type].has_key?(model)
+      @results_tracker[type][model][:successes] = 0 unless @results_tracker[type][model].has_key?(:successes)
+      @results_tracker[type][model][:total] = 0 unless @results_tracker[type][model].has_key?(:total)
+      @results_tracker[type][model][:successes] += 1 if verified
+      @results_tracker[type][model][:total] += 1
     end
     
     def process_object(object)
@@ -95,7 +116,12 @@ module DulHydra::Batch::Scripts
         @successes += 1 # need to think more about what a dry run failure would be and how to handle it
         message = "Dry run ingest attempt for #{object.model} #{object.identifier}"
       else
-        object.verified ? @successes += 1 : @failures += 1
+        update_results_tracker(object.type, results.repository_object.class, object.verified)
+        if object.verified
+          @successes += 1
+        else
+          @failures += 1
+        end
         message = object.results_message
       end
       @details << message

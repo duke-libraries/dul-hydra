@@ -43,6 +43,8 @@ DulHydra version #{DulHydra::VERSION}
       raise NotImplementedError
     end
     
+    Results = Struct.new(:repository_object, :verified, :verifications)
+
     private
     
     def validate_model
