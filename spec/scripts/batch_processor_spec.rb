@@ -3,6 +3,7 @@ require 'spec_helper'
 module DulHydra::Batch::Scripts
   
   shared_examples "a successful ingest batch" do
+    let(:log_contents) { File.open(File.join(test_dir, DulHydra::Batch::Scripts::BatchProcessor::DEFAULT_LOG_FILE)) { |io| io.read } }
     before do
       batch.reload
       @repo_objects = []
@@ -45,10 +46,12 @@ module DulHydra::Batch::Scripts
       expect(batch.stop).to be_within(3.minutes).of(Time.now)
       expect(batch.version).to eq(DulHydra::VERSION)
       batch.batch_objects.each { |obj| expect(batch.details).to include("Ingested #{obj.model} #{obj.identifier} into #{obj.pid}") }
+      expect(log_contents).to include("Ingested #{batch.success} of #{batch.batch_objects.size} TestModelOmnibus")
     end
   end
   
   shared_examples "a successful update batch" do
+    let(:log_contents) { File.open(File.join(test_dir, DulHydra::Batch::Scripts::BatchProcessor::DEFAULT_LOG_FILE)) { |io| io.read } }
     before do
       batch.reload
       @repo_objects = []
@@ -74,6 +77,7 @@ module DulHydra::Batch::Scripts
       expect(batch.stop).to be_within(3.minutes).of(Time.now)
       expect(batch.version).to eq(DulHydra::VERSION)
       batch.batch_objects.each { |obj| expect(batch.details).to include("Updated #{obj.pid}") }
+      expect(log_contents).to include("Updated #{batch.success} of #{batch.batch_objects.size} TestModelOmnibus")
     end
   end
 

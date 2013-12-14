@@ -34,8 +34,6 @@ module DulHydra::Batch::Models
         
     private
     
-    Results = Struct.new(:repository_object, :verified, :verifications)
-  
     def ingest(opts = {})
       dryrun = opts.fetch(:dryrun, false)
       repo_object = create_repository_object(dryrun)
