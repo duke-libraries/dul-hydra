@@ -35,9 +35,8 @@ module DulHydra::Batch::Models
     private
     
     def ingest(opts = {})
-      dryrun = opts.fetch(:dryrun, false)
-      repo_object = create_repository_object(dryrun)
-      if !repo_object.nil? && !dryrun
+      repo_object = create_repository_object
+      if !repo_object.nil?
         ingest_outcome_detail = []
         ingest_outcome_detail << "Ingested #{model} #{identifier} into #{repo_object.pid}"
         create_preservation_event(PreservationEvent::INGESTION,
@@ -63,14 +62,14 @@ module DulHydra::Batch::Models
       Results.new(repo_object, verified, verifications)
     end
     
-    def create_repository_object(dryrun)
+    def create_repository_object
       repo_pid = pid if pid.present?
       repo_object = model.constantize.new(:pid => repo_pid)
       repo_object.label = label if label
-      repo_object.save unless dryrun
-      batch_object_datastreams.each {|d| repo_object = populate_datastream(repo_object, d, dryrun)} if batch_object_datastreams
+      repo_object.save
+      batch_object_datastreams.each {|d| repo_object = populate_datastream(repo_object, d)} if batch_object_datastreams
       batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
-      repo_object.save unless dryrun
+      repo_object.save
       repo_object
     end  
   
