@@ -3,7 +3,6 @@ require 'dul_hydra'
 class Ability
 
   include Hydra::PolicyAwareAbility
-  include FcrepoAdmin::Ability
 
   self.ability_logic += DulHydra.extra_ability_logic if DulHydra.extra_ability_logic
 

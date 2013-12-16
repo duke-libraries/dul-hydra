@@ -163,11 +163,6 @@ module ApplicationHelper
     nil
   end
 
-  def link_to_fcrepo_view(dsid = nil)
-    path = dsid ? fcrepo_admin.object_datastream_path(current_object, dsid) : fcrepo_admin.object_path(current_object)
-    link_to "Fcrepo View", path
-  end
-
   def format_date(date)
     date.to_formatted_s(:db) if date
   end
