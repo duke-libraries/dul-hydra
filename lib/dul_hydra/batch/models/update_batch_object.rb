@@ -56,7 +56,7 @@ module DulHydra::Batch::Models
         batch_object_datastreams.each do |d|
           repo_object = case
           when d.operation.eql?(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
-            populate_datastream(repo_object, d, false)
+            populate_datastream(repo_object, d)
           end        
         end
       end

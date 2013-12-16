@@ -11,7 +11,6 @@ module DulHydra::Batch::Scripts
     #   :batch_id - required - database id of batch to process
     #   :log_dir - optional - directory for log file - default is given in DEFAULT_LOG_DIR
     #   :log_file - optional - filename of log file - default is given in DEFAULT_LOG_FILE
-    #   :dryrun - optional - whether this is a processing dry run or the real deal - default is false
     #   :skip_validation - optional - whether to skip batch object validation step when processing - default is false
     #   :ignore_validation_errors - optional - whether to continue processing even if batch object validation errors occur - default is false
     def initialize(opts={})
@@ -22,7 +21,6 @@ module DulHydra::Batch::Scripts
       end
       @log_dir = opts.fetch(:log_dir, DEFAULT_LOG_DIR)
       @log_file = opts.fetch(:log_file, DEFAULT_LOG_FILE)
-      @dryrun = opts.fetch(:dryrun, false)
       @skip_validation = opts.fetch(:skip_validation, false)
       @ignore_validation_errors = opts.fetch(:ignore_validation_errors, false)
     end
@@ -111,19 +109,14 @@ module DulHydra::Batch::Scripts
     
     def process_object(object)
       @log.debug "Processing object: #{object.identifier}"
-      results = object.process(:dryrun => @dryrun)
-      if @dryrun
-        @successes += 1 # need to think more about what a dry run failure would be and how to handle it
-        message = "Dry run ingest attempt for #{object.model} #{object.identifier}"
+      results = object.process
+      update_results_tracker(object.type, results.repository_object.class, object.verified)
+      if object.verified
+        @successes += 1
       else
-        update_results_tracker(object.type, results.repository_object.class, object.verified)
-        if object.verified
-          @successes += 1
-        else
-          @failures += 1
-        end
-        message = object.results_message
+        @failures += 1
       end
+      message = object.results_message
       @details << message
       @log.info(message)
     end
