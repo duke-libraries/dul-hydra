@@ -21,6 +21,14 @@ module DulHydra::Batch::Models
       errors.flatten
     end
     
+    def found_pids
+      @found_pids ||= {}
+    end
+    
+    def add_found_pid(pid, model)
+      @found_pids[pid] = model
+    end
+    
     def pre_assigned_pids
       @pre_assigned_pids ||= collect_pre_assigned_pids
     end

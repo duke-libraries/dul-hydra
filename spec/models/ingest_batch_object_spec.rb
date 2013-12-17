@@ -41,13 +41,15 @@ module DulHydra::Batch::Models
             AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
             Collection.find(r.object).destroy if r.name.eql?("collection")
           end
+          object.batch.delete if object.batch.present?
+          object.destroy
         end
         context "generic object" do
-          let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
+          let(:object) { FactoryGirl.create(:generic_ingest_batch_object, :has_batch) }
           it_behaves_like "a valid ingest object"
         end
         context "target object" do
-          let(:object) { FactoryGirl.create(:target_ingest_batch_object) }
+          let(:object) { FactoryGirl.create(:target_ingest_batch_object, :has_batch) }
           it_behaves_like "a valid ingest object"
         end
         context "object related to an uncreated object with pre-assigned PID" do
@@ -104,7 +106,7 @@ module DulHydra::Batch::Models
           it_behaves_like "an invalid ingest object"
         end
         context "invalid admin policy" do
-          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_model) }
+          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_batch, :has_model) }
           context "admin policy pid object does not exist" do
             let(:admin_policy_pid) { "bogus:AdminPolicy" }
             let(:error_message) { "#{error_prefix} admin_policy relationship object does not exist: #{admin_policy_pid}" }
@@ -177,7 +179,7 @@ module DulHydra::Batch::Models
           end
         end
         context "invalid parent" do
-          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_model) }
+          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_batch, :has_model) }
           context "parent pid object does not exist" do
             let(:parent_pid) { "bogus:TestParent" }
             let(:error_message) { "#{error_prefix} parent relationship object does not exist: #{parent_pid}" }
@@ -201,7 +203,7 @@ module DulHydra::Batch::Models
           end
         end
         context "invalid target_for" do
-          let(:object) { FactoryGirl.create(:ingest_batch_object) }
+          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_batch) }
           context "target_for pid object does not exist" do
             let(:collection_pid) { "bogus:Collection" }
             let(:error_message) { "#{error_prefix} collection relationship object does not exist: #{collection_pid}" }

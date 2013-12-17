@@ -1,4 +1,10 @@
 FactoryGirl.define do
+  
+  trait :has_batch do
+    after(:create) do |batch_object|
+      batch_object.batch = FactoryGirl.create(:batch)
+    end
+  end
 
   trait :has_identifier do
     sequence(:identifier) { |n| "test%05d" % n }
