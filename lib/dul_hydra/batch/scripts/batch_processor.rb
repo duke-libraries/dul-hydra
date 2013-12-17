@@ -90,7 +90,7 @@ module DulHydra::Batch::Scripts
     
     def process_object(object)
       @log.debug "Processing object: #{object.identifier}"
-      results = object.process(:dryrun => @dryrun)
+      object.process(:dryrun => @dryrun)
       if @dryrun
         @successes += 1 # need to think more about what a dry run failure would be and how to handle it
         message = "Dry run ingest attempt for #{object.model} #{object.identifier}"

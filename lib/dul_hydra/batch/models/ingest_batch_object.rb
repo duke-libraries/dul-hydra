@@ -20,7 +20,7 @@ module DulHydra::Batch::Models
     end
         
     def process(opts = {})
-      ingest(opts)
+      ingest(opts) unless verified
     end
     
     def results_message
@@ -34,8 +34,6 @@ module DulHydra::Batch::Models
         
     private
     
-    Results = Struct.new(:repository_object, :verified, :verifications)
-  
     def ingest(opts = {})
       dryrun = opts.fetch(:dryrun, false)
       repo_object = create_repository_object(dryrun)
@@ -62,7 +60,6 @@ module DulHydra::Batch::Models
       else
         verifications = nil
       end
-      Results.new(repo_object, verified, verifications)
     end
     
     def create_repository_object(dryrun)
