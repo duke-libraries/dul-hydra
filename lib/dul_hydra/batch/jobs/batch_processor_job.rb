@@ -14,6 +14,11 @@ module DulHydra::Batch::Jobs
       batch.outcome = DulHydra::Batch::Models::Batch::OUTCOME_FAILURE
       batch.status = DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED
       batch.save
+      begin
+        BatchProcessorRunMailer.send_notification(batch).deliver!
+      rescue
+        puts "An error occurred while attempting to send the notification."
+      end
     end
     
   end

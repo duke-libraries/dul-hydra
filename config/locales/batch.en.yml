@@ -88,6 +88,7 @@ en:
                 log: "Log"
             action_names:
                 procezz: "Process"
+                restart: "Restart"
                 validate: "Validate"
             tab_names:
                 batch_info: "Batch Info"

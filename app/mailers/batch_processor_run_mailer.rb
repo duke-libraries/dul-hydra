@@ -4,7 +4,7 @@ class BatchProcessorRunMailer < ActionMailer::Base
   
   def send_notification(batch)
     @batch = batch
-    @title = "Batch Processor Run Results"
+    @title = "Batch Processor Run #{@batch.status}"
     @host = `uname -n`.strip
     @subject = "[#{@host}] #{@title}"
     from = "#{`echo $USER`.strip}@#{@host}"

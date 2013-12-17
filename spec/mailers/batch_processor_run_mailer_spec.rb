@@ -16,7 +16,7 @@ describe BatchProcessorRunMailer do
     ActionMailer::Base.deliveries.should_not be_empty
     email = ActionMailer::Base.deliveries.first
     email.to.should == [batch.user.email]
-    email.subject.should include("Batch Processor Run Results")
+    email.subject.should include("Batch Processor Run #{batch.status}")
     email.parts.first.to_s.should include("Ingested TestModelOmnibus")
     email.parts.second.to_s.should include("Objects in batch: #{batch.batch_objects.count}")
     email.parts.second.to_s.should include(DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS)

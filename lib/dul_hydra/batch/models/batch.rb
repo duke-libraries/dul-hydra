@@ -14,10 +14,15 @@ module DulHydra::Batch::Models
     STATUS_RUNNING = "RUNNING"
     STATUS_FINISHED = "FINISHED"
     STATUS_INTERRUPTED = "INTERRUPTED"
+    STATUS_RESTARTABLE = "INTERRUPTED - RESTARTABLE"
 
     def validate
       errors = []
-      batch_objects.each { |object| errors << object.validate }
+      batch_objects.each do |object|
+        unless object.verified
+          errors << object.validate
+        end
+      end
       errors.flatten
     end
     
@@ -30,7 +35,7 @@ module DulHydra::Batch::Models
     end
     
     def finished?
-      [STATUS_FINISHED, STATUS_INTERRUPTED].include?(status)
+      status == STATUS_FINISHED
     end
     
   end
