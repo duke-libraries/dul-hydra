@@ -27,9 +27,9 @@ module DulHydra::Scripts
       context "child has thumbnail" do
         let(:collection) { FactoryGirl.create(:collection_has_apo_with_items_and_components) }
         let(:items) { collection.children }
+        let(:item) { items[0] }
+        let(:children) { item.children }
         context "contentMetadata" do
-          let(:item) { items[0] }
-          let(:children) { item.children }
           before do
             contentMetadata = <<-EOD
 <?xml version="1.0"?>
@@ -68,11 +68,16 @@ module DulHydra::Scripts
         end
         context "no contentMetadata" do
           before do
+            iden = children[0].identifier
+            children[0].identifier = children[1].identifier
+            children[0].save
+            children[1].identifier = iden
+            children[1].save
             thumbnails_script.execute
-            items.each { |item| item.reload }
+            item.reload
           end
-          it "should populate the thumbnail datastream from the first child" do
-            items.each { |item| expect(item.datastreams["thumbnail"].content).to eq(item.children[0].datastreams["thumbnail"].content) }
+          it "should populate the thumbnail datastream from the first child (sorted by identifier)" do
+            expect(item.datastreams["thumbnail"].content).to eq(children[1].datastreams["thumbnail"].content)
           end
         end
       end
