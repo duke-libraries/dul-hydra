@@ -90,28 +90,38 @@ DulHydra version #{DulHydra::VERSION}
     def validate_relationships
       errs = []
       batch_object_relationships.each do |r|
+        obj_model = nil
         unless DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPES.include?(r[:object_type])
           errs << "#{@error_prefix} Invalid object_type for #{r[:name]} relationship: #{r[:object_type]}"
         end
         if r[:object_type].eql?(DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID)
-          begin
-            obj = ActiveFedora::Base.find(r[:object], :cast => true)
-          rescue ActiveFedora::ObjectNotFoundError
-            pid_in_batch = false
-            if batch.present?
-              if batch.pre_assigned_pids.include?(r[:object]) 
-                pid_in_batch = true
+          if batch.present? && batch.found_pids.keys.include?(r[:object])
+            obj_model = batch.found_pids[r[:object]]
+          else
+            begin
+              obj = ActiveFedora::Base.find(r[:object], :cast => true)
+              obj_model = obj.class.name
+              if batch.present?
+                batch.add_found_pid(obj.pid, obj_model)
+              end
+            rescue ActiveFedora::ObjectNotFoundError
+              pid_in_batch = false
+              if batch.present?
+                if batch.pre_assigned_pids.include?(r[:object]) 
+                  pid_in_batch = true
+                end
+              end
+              unless pid_in_batch
+                errs << "#{@error_prefix} #{r[:name]} relationship object does not exist: #{r[:object]}"
               end
             end
-            unless pid_in_batch
-              errs << "#{@error_prefix} #{r[:name]} relationship object does not exist: #{r[:object]}"
-            end
-          else
+          end
+          if obj_model
             relationship_reflection = DulHydra::Utils.relationship_object_reflection(model, r[:name])
             if relationship_reflection
               klass = DulHydra::Utils.reflection_object_class(relationship_reflection)
               if klass
-                errs << "#{@error_prefix} #{r[:name]} relationship object #{r[:object]} exists but is not a(n) #{klass}" unless obj.is_a?(klass)
+                errs << "#{@error_prefix} #{r[:name]} relationship object #{r[:object]} exists but is not a(n) #{klass}" unless batch.found_pids[r[:object]].eql?(klass.name)
               end
             else
               errs << "#{@error_prefix} #{model} does not define a(n) #{r[:name]} relationship"
