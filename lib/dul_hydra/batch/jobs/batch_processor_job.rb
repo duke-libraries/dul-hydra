@@ -8,6 +8,10 @@ module DulHydra::Batch::Jobs
       bp.execute
     end
     
+    def error(job, exception)
+      Rails.logger.error "Delayed Job #{job.id}: #{exception}"
+    end
+    
     def failure(job)
       batch = DulHydra::Batch::Models::Batch.find(batch_id)
       batch.stop = Time.now
