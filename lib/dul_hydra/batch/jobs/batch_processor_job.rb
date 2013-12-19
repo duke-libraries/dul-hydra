@@ -10,6 +10,7 @@ module DulHydra::Batch::Jobs
     
     def error(job, exception)
       Rails.logger.error "Delayed Job #{job.id}: #{exception}"
+      Rails.logger.error exception.backtrace.join("\n")
     end
     
     def failure(job)
