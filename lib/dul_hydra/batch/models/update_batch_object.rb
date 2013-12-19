@@ -28,7 +28,7 @@ module DulHydra::Batch::Models
         
     def process(opts = {})
       unless verified
-        update_repository_object(opts)
+        repo_object = update_repository_object(opts)
         verifications = verify_repository_object
         verification_outcome_detail = []
         verified = true
@@ -37,6 +37,7 @@ module DulHydra::Batch::Models
           verified = false if value.eql?(VERIFICATION_FAIL)
         end
         update_attributes(:verified => verified)
+        repo_object
       end
     end
     

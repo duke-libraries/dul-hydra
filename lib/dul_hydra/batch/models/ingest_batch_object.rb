@@ -59,6 +59,7 @@ module DulHydra::Batch::Models
       else
         verifications = nil
       end
+      repo_object
     end
     
     def create_repository_object

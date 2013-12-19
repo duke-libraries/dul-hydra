@@ -109,8 +109,8 @@ module DulHydra::Batch::Scripts
     
     def process_object(object)
       @log.debug "Processing object: #{object.identifier}"
-      results = object.process
-      update_results_tracker(object.type, results.repository_object.class, object.verified)
+      repository_object = object.process
+      update_results_tracker(object.type, repository_object.present? ? repository_object.class.name : object.model, object.verified)
       if object.verified
         @successes += 1
       else
