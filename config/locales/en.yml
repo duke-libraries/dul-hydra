@@ -27,7 +27,6 @@ en:
         object_modified_date: 'Modified'
         metadata: 'Metadata'
         preservation_events: 'Preservation Events'
-        fcrepo_admin: 'Fcrepo View'
         collection_report: 'Collection Report'
         last_fixity_check_on: 'Checked'
         last_fixity_check_outcome: 'Outcome'
@@ -93,10 +92,3 @@ en:
         multiple_object_matches: "%{criteria} retrieved multiple repository objects"
   blacklight:
     application_name: 'Duke Digital Repository'
-  fcrepo_admin:
-    object:
-      nav:
-        items:
-          catalog: 'Back to Staff View'
-    datastream:
-      not_persisted: 'Not currently used'

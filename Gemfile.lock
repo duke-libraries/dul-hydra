@@ -98,14 +98,6 @@ GEM
       factory_girl (~> 4.2.0)
       railties (>= 3.0.0)
     fastercsv (1.5.5)
-    fcrepo_admin (0.6.1)
-      active-fedora (~> 6.1)
-      blacklight
-      devise
-      hydra-head (~> 6.0)
-      mime-types (~> 1.19)
-      rails (~> 3.2)
-      rubydora (>= 1.6.5)
     ffi (1.9.0)
     grouper-rest-client (0.2.7)
       json (>= 1.5.1)
@@ -300,7 +292,6 @@ DEPENDENCIES
   devise (~> 3.1.1)
   devise-remote-user (= 0.2.0)
   factory_girl_rails (~> 4.0)
-  fcrepo_admin (~> 0.6.1)
   grouper-rest-client
   hydra-editor (= 0.1.1)
   hydra-head (~> 6.4)

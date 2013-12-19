@@ -8,12 +8,22 @@ module DulHydra::Batch::Jobs
       bp.execute
     end
     
+    def error(job, exception)
+      Rails.logger.error "Delayed Job #{job.id}: #{exception}"
+      Rails.logger.error exception.backtrace.join("\n")
+    end
+    
     def failure(job)
       batch = DulHydra::Batch::Models::Batch.find(batch_id)
       batch.stop = Time.now
       batch.outcome = DulHydra::Batch::Models::Batch::OUTCOME_FAILURE
       batch.status = DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED
       batch.save
+      begin
+        BatchProcessorRunMailer.send_notification(batch).deliver!
+      rescue
+        puts "An error occurred while attempting to send the notification."
+      end
     end
     
   end

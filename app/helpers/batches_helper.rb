@@ -6,6 +6,8 @@ module BatchesHelper
       link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
     when DulHydra::Batch::Models::Batch::STATUS_VALIDATED
       link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
+    when DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
+      link_to(I18n.t('batch.web.action_names.restart'), procezz_batch_path(batch))
     else
       batch.status
     end

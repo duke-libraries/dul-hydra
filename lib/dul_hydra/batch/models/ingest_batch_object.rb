@@ -20,7 +20,7 @@ module DulHydra::Batch::Models
     end
         
     def process(opts = {})
-      ingest(opts)
+      ingest(opts) unless verified
     end
     
     def results_message
@@ -59,7 +59,6 @@ module DulHydra::Batch::Models
       else
         verifications = nil
       end
-      Results.new(repo_object, verified, verifications)
     end
     
     def create_repository_object

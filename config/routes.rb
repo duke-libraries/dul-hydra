@@ -3,7 +3,6 @@ DulHydra::Application.routes.draw do
   root :to => "catalog#index"
   Blacklight.add_routes(self)
   devise_for :users
-  mount FcrepoAdmin::Engine => '/fcrepo', as: 'fcrepo_admin'
 
   # http://railsadventures.wordpress.com/2012/10/07/routing-only-ajax-requests-in-ror/
   class XhrRequestConstraint

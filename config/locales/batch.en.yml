@@ -103,4 +103,5 @@ en:
                 part_of_batch: "Part of Batch"
             action_names:
                 procezz: "Process"
+                restart: "Restart"
                 validate: "Validate"

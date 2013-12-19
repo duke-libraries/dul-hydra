@@ -27,16 +27,17 @@ module DulHydra::Batch::Models
     end
         
     def process(opts = {})
-      repo_object = update_repository_object(opts)
-      verifications = verify_repository_object
-      verification_outcome_detail = []
-      verified = true
-      verifications.each do |key, value|
-        verification_outcome_detail << "#{key}...#{value}"
-        verified = false if value.eql?(VERIFICATION_FAIL)
+      unless verified
+        update_repository_object(opts)
+        verifications = verify_repository_object
+        verification_outcome_detail = []
+        verified = true
+        verifications.each do |key, value|
+          verification_outcome_detail << "#{key}...#{value}"
+          verified = false if value.eql?(VERIFICATION_FAIL)
+        end
+        update_attributes(:verified => verified)
       end
-      update_attributes(:verified => verified)
-      Results.new(repo_object, verified, verifications)
     end
     
     def results_message

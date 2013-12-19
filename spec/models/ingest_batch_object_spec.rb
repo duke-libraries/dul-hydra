@@ -15,12 +15,13 @@ module DulHydra::Batch::Models
   end
   
   shared_examples "a successful ingest" do
-    let(:results) { object.process }
+    # let(:results) { object.process }
+    before { object.process }
     it "should result in a verified repository object" do
-      expect(results.repository_object).to_not be_nil
-      expect(results.verified).to be_true
-      results.verifications.each { |condition, result| expect(result).to eq(BatchObject::VERIFICATION_PASS) }
-      expect(object.pid).to eq(results.repository_object.pid)
+      # expect(results.repository_object).to_not be_nil
+      # expect(results.verified).to be_true
+      # results.verifications.each { |condition, result| expect(result).to eq(BatchObject::VERIFICATION_PASS) }
+      # expect(object.pid).to eq(results.repository_object.pid)
       expect(object.verified).to be_true
       expect(object.pid).to eq(assigned_pid) if assigned_pid.present?
     end
@@ -254,6 +255,16 @@ module DulHydra::Batch::Models
             object.save
           end
           it_behaves_like "a successful ingest"
+        end
+        context "previously ingested object (e.g., during restart)" do
+          let(:assigned_pid) { 'test:6543' }
+          before do
+            object.pid = assigned_pid
+            object.verified = true
+            object.save
+            object.model.constantize.create(:pid => assigned_pid)
+          end
+          it_behaves_like "a successful ingest"          
         end
       end
       

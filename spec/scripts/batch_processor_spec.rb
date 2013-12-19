@@ -88,7 +88,6 @@ module DulHydra::Batch::Scripts
     context "ingest" do
       let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
-      before { bp.execute }
       after do
         batch.batch_objects.each do |obj|
           repo_obj = ActiveFedora::Base.find(obj.pid, :cast => true)
@@ -97,8 +96,17 @@ module DulHydra::Batch::Scripts
           repo_obj.destroy
         end
       end
-      context "successful ingest" do
+      context "successful initial run" do
+        before { bp.execute }
         it_behaves_like "a successful ingest batch"
+      end
+      context "successful restart run" do
+        before do
+          batch.batch_objects.first.process
+          batch.update_attributes(:status => DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE)
+          bp.execute
+        end
+        it_behaves_like "a successful ingest batch"        
       end
     end
     context "update" do
