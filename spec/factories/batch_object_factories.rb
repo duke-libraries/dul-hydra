@@ -18,6 +18,10 @@ FactoryGirl.define do
     model "TestModelOmnibus"
   end
   
+  trait :has_pid do
+    sequence(:pid) { |n| "test:%d" % n }
+  end
+  
   trait :has_parent do
     after(:create) do |batch_object|
       FactoryGirl.create(:batch_object_add_parent, :batch_object => batch_object)
@@ -37,7 +41,13 @@ FactoryGirl.define do
       FactoryGirl.create(:batch_object_add_content_datastream, :batch_object => batch_object)          
     end      
   end
-      
+
+  trait :with_addupdate_desc_metadata_datastream do
+    after(:create) do |batch_object|
+      FactoryGirl.create(:batch_object_addupdate_desc_metadata_datastream_file, :batch_object => batch_object)
+    end
+  end
+  
   factory :ingest_batch_object, :class => DulHydra::Batch::Models::IngestBatchObject do
     has_identifier
     has_label
@@ -57,6 +67,18 @@ FactoryGirl.define do
       model "Target"
       is_target_for_collection
     end
+  end
+  
+  factory :update_batch_object, :class => DulHydra::Batch::Models::UpdateBatchObject do
+    has_identifier
+    has_label
+    has_pid
+    
+    factory :basic_update_batch_object do
+      has_model
+      with_addupdate_desc_metadata_datastream
+    end
+    
   end
   
 end

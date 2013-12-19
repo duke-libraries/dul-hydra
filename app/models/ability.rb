@@ -1,28 +1,77 @@
-class Ability
-  include Hydra::Ability
-  include Hydra::PolicyAwareAbility
-  include FcrepoAdmin::Ability
+require 'dul_hydra'
 
-  # Hydra::Ability provides this hook into its initialization
-  def custom_permissions
-    discover_permissions
-    export_sets_permissions
-    batches_permissions
-    preservation_events_permissions
+class Ability
+
+  include Hydra::PolicyAwareAbility
+
+  self.ability_logic += DulHydra.extra_ability_logic if DulHydra.extra_ability_logic
+
+  def create_permissions
+    super # Permits :create for :all if user is authenticated
+    # First block repository object creation ...
+    cannot :create, ActiveFedora::Base 
+    # ... then permit members of authorized groups on a per-model basis
+    DulHydra.creatable_models.each do |model|
+      can :create, model.constantize if has_ability_group?(:create, model)
+    end
+  end
+
+  def read_permissions
+    super
+    can :read, ActiveFedora::Datastream do |ds|
+      can? :read, ds.pid
+    end
+  end
+
+  def edit_permissions
+    super
+    can [:edit, :update, :destroy], ActiveFedora::Datastream do |action, ds|
+      can? action, ds.pid
+    end
   end
 
   def export_sets_permissions
-    can :manage, ExportSet, :user_id => @current_user.id
+    can :manage, ExportSet, :user_id => current_user.id
   end
 
   def preservation_events_permissions
     can :read, PreservationEvent do |pe|
-      pe.for_object? && test_read(pe.for_object)
+      pe.for_object? and can?(:read, pe.for_object)
     end
   end
   
   def batches_permissions
-    can :manage, DulHydra::Batch::Models::Batch, :user_id => @current_user.id
+    can :manage, DulHydra::Batch::Models::Batch, :user_id => current_user.id
+  end
+
+  def ingest_folders_permissions
+    cannot :create, IngestFolder unless IngestFolder.permitted_folders(current_user).present?
+    can [:show, :procezz], IngestFolder, :user => current_user
+  end
+  
+  # Hydra::Ability adds #download_permissions in hydra-head 7.0
+  def download_permissions
+    can :download, ActiveFedora::Base do |obj|
+      if obj.class == Component
+        can?(:read, obj) and has_ability_group?(:download, Component)
+      else
+        can? :read, obj
+      end
+    end
+    can :download, SolrDocument do |doc|
+      if doc.active_fedora_model == "Component"
+        can?(:read, doc) and has_ability_group?(:download, Component)
+      else
+        can? :read, doc
+      end
+    end
+    can :download, ActiveFedora::Datastream do |ds|
+      if ds.dsid == DulHydra::Datastreams::CONTENT and ds.digital_object.original_class == Component
+        can?(:read, ds) and has_ability_group?(:download, Component)
+      else
+        can? :read, ds
+      end
+    end
   end
 
   # Mimics Hydra::Ability#read_permissions
@@ -34,7 +83,7 @@ class Ability
     can :discover, ActiveFedora::Base do |obj|
       test_discover(obj.pid)
     end 
-      
+    
     can :discover, SolrDocument do |obj|
       cache.put(obj.id, obj)
       test_discover(obj.id)
@@ -104,6 +153,34 @@ class Ability
 
   def self.discover_group_field
     Hydra.config[:permissions][:discover][:group]
+  end
+
+  def can_create_models
+    DulHydra.creatable_models.select { |model| can_create_model? model }
+  end
+
+  def can_create_model?(model)
+    can? :create, model_class(model)
+  end
+
+  def can_create_models?
+    can_create_models.present?
+  end
+
+  protected
+
+  def has_ability_group?(action, model)
+    current_user.member_of?(ability_group(action, model))
+  end
+
+  def ability_group(action, model)
+    DulHydra.ability_group_map[model.to_s][action] rescue nil
+  end
+  
+  private
+
+  def model_class(model)
+    model.respond_to?(:constantize) ? model.constantize : model
   end
 
 end

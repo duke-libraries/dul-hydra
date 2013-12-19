@@ -38,7 +38,8 @@ module DulHydra::Batch::Scripts
         @log.info("Making manifest: #{@manifest}")
         @manifest_hash = {}
         build_manifest_level
-        enumerate_objects
+        objects_list = enumerate_objects(@dirpath).flatten
+        @manifest_hash["objects"] = objects_list
         @log.debug(@manifest_hash)
         write_manifest
       rescue Exception => e
@@ -55,20 +56,27 @@ module DulHydra::Batch::Scripts
       @manifest_hash["datastreams"] = DEFAULT_DATASTREAMS
       content_hash = {}
       content_hash["extension"] = @extension
-      content_hash["location"] = @dirpath
       @manifest_hash["content"] = content_hash
     end
     
-    def enumerate_objects
+    def enumerate_objects(dirpath)
       objects_list = []
-      files = Dir.glob(File.join(@dirpath, '*')).select{|x| test(?f,x)}
-      files.each do |file|
-        if File.extname(file).eql?(@extension)
-          base_filename = File.basename(file, File.extname(file))
-          objects_list << { "identifier" => base_filename }
+      Dir.foreach(dirpath) do |entry|
+        unless [".", ".."].include?(entry)
+          if File.directory?(File.join(dirpath, entry))
+            objects_list << enumerate_objects(File.join(dirpath, entry))
+          else
+            if File.extname(entry).eql?(@extension)
+              object_hash = {}
+              base_filename = File.basename(entry, File.extname(entry))
+              object_hash["identifier"] = base_filename
+              object_hash["content"] = File.join(dirpath, entry)
+              objects_list << object_hash
+            end
+          end
         end
       end
-      @manifest_hash["objects"] = objects_list
+      objects_list
     end
     
     def write_manifest

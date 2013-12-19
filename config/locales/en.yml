@@ -1,5 +1,18 @@
 en:
+  hydra_editor:
+    form:
+      title: 'Edit Descriptive Metadata'
   dul_hydra:
+    associations:
+      is_part_of: 'Part of'
+      is_member_of_collection: 'Member of'
+      is_attached_to: 'Attached to'
+    prompts:
+      select: "Select %s ..."
+    user:
+      welcome:
+        authenticated: 'Welcome'
+        guest: 'Welcome, Guest'
     object_nav:
       headings:
         object_info: 'About This Object'
@@ -14,7 +27,6 @@ en:
         object_modified_date: 'Modified'
         metadata: 'Metadata'
         preservation_events: 'Preservation Events'
-        fcrepo_admin: 'Fcrepo View'
         collection_report: 'Collection Report'
         last_fixity_check_on: 'Checked'
         last_fixity_check_outcome: 'Outcome'
@@ -30,15 +42,51 @@ en:
         updated: 'Admin Policy updated'
       page_titles:
         edit: 'Editing Admin Policy'
+    permissions:
+      page_titles:
+        edit_default_permissions: "Modify Default Permissions"
+        edit: "Modify Permissions"
+      alerts:
+        inherited: 'This object is governed by the Admin Policy %s. Permissions granted on this page are <strong>added to</strong> the inherited permissions (if any) shown below the select boxes.'
+        default_permissions: "These settings are <strong>inherited</strong> by objects governed by this policy. They do <strong>not</strong> apply to this Admin Policy object itself."
+      descriptions:
+        discover: 'Find object via search and view summary data'
+        read: 'View object and download content (includes Discover)'
+        edit: 'Modify object (includes Discover + Read)'
+    tabs:
+      items:
+        label: Items
+      components:
+        label: Components
+      descriptive_metadata:
+        label: "Descriptive Metadata"
+        actions:
+          edit: Edit
+          download: "Download XML"
+      permissions:
+        label: Permissions
+        actions:
+          edit: Modify
+          download: "Download XML"
+        alerts:
+          is_admin_policy: "These settings apply to this Admin Policy object itself. They are <strong>not inherited</strong> by objects governed by this policy."
+          has_admin_policy: "This object is governed by the Admin Policy %s. Permissions inherited from the policy are shown below."
+      default_permissions:
+        label: "Default Permissions"
+        actions:
+          edit: Modify
+          download: "Download XML"
+      collection_info:
+        label: "Collection Info"
+        actions:
+          download: "Download CSV Report"
+      preservation_events:
+        label: "Preservation Events"
+      attachments:
+        label: Attachments
+      pending_batches:
+          label: Pending
+      finished_batches:
+          label: Already Run
   blacklight:
-    application_name: 'DUL Preservation Repository'
-    header_links:
-      saved_searches: 'Searches'
-      export_sets: 'Exports'
-  fcrepo_admin:
-    object:
-      nav:
-        items:
-          catalog: 'Back to Staff View'
-    datastream:
-      not_persisted: 'Not currently used'
+    application_name: 'Duke Digital Repository'

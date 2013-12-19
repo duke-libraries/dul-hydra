@@ -1,21 +1,29 @@
 <h4>Access Controls</h4>
-<table class="table" style="width:auto">
+
+<table class="table access-controls">
   <thead>
 	<tr>
-	  <th scope="col">User/Group</th>
 	  <th scope="col">Permission</th>
+	  <th scope="col">Granted To</th>
+	  <% if current_object.governable? -%>
+	    <th scope="col">Inherited</th>
+	  <% end -%>
 	</tr>
   </thead>
   <tbody>
-	<% permissions.each do |perm| %>
-	<tr>
-	  <td>
-		<i class="icon-user"></i><% if perm[:type] == :group %><i class="icon-user"></i><% end %>
-		<%= perm[:name] %>
+	<% all_permissions.each do |access| %>
+	<tr class="access-level-<%= access %>">
+	  <td class="access-level">
+		<%= access %>
 	  </td>
 	  <td>
-		<%= perm[:access] %> <% if perm[:inherited] %>(inherited)<% end %>
+		<%= render_permission_grantees access %>
 	  </td>
+	  <% if current_object.governable? %>
+	  <td>
+		<%= render_inherited_permission_grantees access %>
+	  </td>
+	  <% end %>
 	</tr>
 	<% end %>
   </tbody>

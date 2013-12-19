@@ -2,11 +2,12 @@
   <div class="navbar-inner">
 	<ul class="nav">
 	  <li>
-		<%= link_to "Download CSV Report", collection_info_object_path(@object, format: 'csv') %>
+		<%= link_to t('dul_hydra.tabs.collection_info.actions.download'), collection_info_object_path(current_object, format: 'csv') %>
 	  </li>
 	</ul>
   </div>
 </div>
+
 <table class="table" style="width:auto">
   <tr>
 	<th scope="row">Items</th>

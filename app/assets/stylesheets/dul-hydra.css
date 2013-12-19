@@ -1,9 +1,52 @@
 #header-navbar-fixed-top .brand { /* BL override */
-	background-image: url(/assets/dul_hydra/logo_wide.png);
+	background-image: url(/assets/dul_hydra/ddr_logo.png);
 	min-height: 42px;
 	min-width: 200px;
 	padding-bottom: 0;
 }
 form.bookmark_toggle {
 	display: inline;
+}
+.permissions-form legend {
+	font-size: medium;
+	font-weight: bold;
+}
+.permissions-form fieldset {
+	margin-bottom: 1em;
+}
+.permissions-form textarea,
+.permissions-form input[type="text"],
+.permissions-form select {
+	width: auto;
+}
+.permissions-form .access-level {
+	margin-bottom: 1.5em;
+}
+.permissions-form .access-level-label {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+.permissions-form .access-level-description {
+	font-weight: normal;
+}
+.permissions-form .access-level-description:before {
+	content: " - "
+}
+table.access-controls {
+	width: auto;
+}
+table.access-controls .access-level-label {
+	text-transform: uppercase;
+	font-weight: bold;
+}
+table.access-controls td ul {
+	margin: 0;
+}
+.field_with_errors {
+	padding: 2px;
+	background-color: red;
+	display: table;
+}
+.small {
+	font-size: smaller;
 }

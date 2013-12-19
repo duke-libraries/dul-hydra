@@ -19,6 +19,7 @@ class ExportSetsController < ApplicationController
   
   def create
     flash[:notice] = @export_set.create_archive ? "New export set created." : "Export set archive creation failed."
+    @export_set.save if @export_set.new_record?
     redirect_to :action => :show, :id => @export_set
   end
 

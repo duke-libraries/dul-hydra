@@ -1,0 +1,20 @@
+<dc xmlns:dcterms="http://purl.org/dc/terms/" xmlns:duke="http://library.duke.edu/metadata/terms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/TR/xlink/">
+        <dcterms:type>black-and-white photographs</dcterms:type>
+        <dcterms:type>documentary photographs</dcterms:type>
+        <dcterms:creator>Sample, Example</dcterms:creator>
+        <dcterms:type>photographs</dcterms:type>
+        <dcterms:spatial>North Carolina</dcterms:spatial>
+        <dcterms:spatial>Durham County (NC)</dcterms:spatial>
+        <dcterms:provenance>The Sample Items were purchased by someone from 1991 to 2010.</dcterms:provenance>
+        <dcterms:title>Sample updated title</dcterms:title>
+        <dcterms:date>1981-01</dcterms:date>
+        <dcterms:temporal>1981-01</dcterms:temporal>
+        <dcterms:type>Image</dcterms:type>
+        <dcterms:type>Still Image</dcterms:type>
+        <dcterms:identifier>12-345-6</dcterms:identifier>
+        <dcterms:identifier>Box PHO 1</dcterms:identifier>
+        <dcterms:extent>11 x 14 in.</dcterms:extent>
+        <dcterms:subject>Photographic Materials Series</dcterms:subject>
+        <dcterms:subject>Sample Location</dcterms:subject>
+        <dcterms:rights>The copyright in the materials included in this sample collection is unknown.</dcterms:rights>
+</dc>

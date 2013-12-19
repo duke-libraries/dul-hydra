@@ -73,5 +73,15 @@ module DulHydra
     log4r_config = YAML.load_file(File.join(File.dirname(__FILE__),"log4r.yml"))
     YamlConfigurator.decode_yaml(log4r_config['log4r_config'])
     config.logger = Log4r::Logger[Rails.env]
+
+    # Load environment variable from file
+    # http://railsapps.github.io/rails-environment-variables.html
+    config.before_configuration do
+      env_file = File.join(Rails.root, 'config', 'local_env.yml')
+      if File.exists?(env_file)
+        YAML.load_file(env_file).each { |key, value| ENV[key.to_s] = value }
+      end 
+    end
+
   end
 end

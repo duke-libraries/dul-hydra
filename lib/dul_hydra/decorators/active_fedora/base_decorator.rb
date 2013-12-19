@@ -34,6 +34,15 @@ ActiveFedora::Base.class_eval do
   def governable?
     self.is_a?(DulHydra::Models::Governable)
   end
+
+  def has_admin_policy?
+    governable? && admin_policy.present?
+  end
+
+  def has_rights_metadata?
+    ds = self.datastreams[DulHydra::Datastreams::RIGHTS_METADATA]
+    ds && ds.size && ds.size > 0
+  end
   
   def has_thumbnail?
     self.is_a?(DulHydra::Models::HasThumbnail) && self.datastreams[DulHydra::Datastreams::THUMBNAIL].has_content?

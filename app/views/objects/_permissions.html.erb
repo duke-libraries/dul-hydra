@@ -1,10 +1,4 @@
-<% if @object.governable? && @object.admin_policy.present? %>
-  <p class="alert">
-	This object is governed by the admin policy <strong><%= link_to @object.admin_policy.pid, object_path(@object.admin_policy) %></strong>. 
-  </p>
-<% end %>
-<%= render partial: 'access_controls', locals: {permissions: effective_permissions} %>
-<%= render partial: 'license', locals: {license: @object.rightsMetadata.license, inherited: false} %>
-<% if @object.governable? && @object.admin_policy.present? %>
-  <%= render partial: 'license', locals: {license: @object.admin_policy.datastreams["defaultRights"].license, inherited: true} %>
-<% end %>
+<%= render partial: 'tab_actions', locals: {tab: tab} %>
+<%= render 'permissions_alerts' %>
+<%= render 'access_controls' %>
+<%= render 'license' %>

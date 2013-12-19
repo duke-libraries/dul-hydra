@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130924140755) do
+ActiveRecord::Schema.define(:version => 20131119190808) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -47,31 +47,24 @@ ActiveRecord::Schema.define(:version => 20130924140755) do
     t.boolean  "verified",   :default => false
   end
 
-  create_table "batch_runs", :force => true do |t|
-    t.integer  "batch_id"
+  create_table "batches", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
+    t.integer  "user_id"
     t.string   "status"
     t.datetime "start"
     t.datetime "stop"
     t.string   "outcome"
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
     t.text     "details"
     t.integer  "failure",              :default => 0
     t.integer  "success",              :default => 0
-    t.integer  "total",                :default => 0
     t.string   "version"
     t.string   "logfile_file_name"
     t.string   "logfile_content_type"
     t.integer  "logfile_file_size"
     t.datetime "logfile_updated_at"
-  end
-
-  create_table "batches", :force => true do |t|
-    t.string   "name"
-    t.string   "description"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
-    t.integer  "user_id"
   end
 
   create_table "bookmarks", :force => true do |t|
@@ -109,6 +102,22 @@ ActiveRecord::Schema.define(:version => 20130924140755) do
     t.datetime "archive_updated_at"
     t.text     "pids"
     t.string   "title"
+  end
+
+  create_table "ingest_folders", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "base_path"
+    t.string   "sub_path"
+    t.string   "admin_policy_pid"
+    t.string   "collection_pid"
+    t.string   "model"
+    t.string   "file_creator"
+    t.string   "checksum_file"
+    t.string   "checksum_type"
+    t.boolean  "add_parents"
+    t.integer  "parent_id_length"
+    t.datetime "created_at",       :null => false
+    t.datetime "updated_at",       :null => false
   end
 
   create_table "preservation_events", :force => true do |t|
@@ -153,6 +162,11 @@ ActiveRecord::Schema.define(:version => 20130924140755) do
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
     t.string   "username",               :default => "", :null => false
+    t.string   "first_name"
+    t.string   "middle_name"
+    t.string   "nickname"
+    t.string   "last_name"
+    t.string   "display_name"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"

@@ -1,0 +1,34 @@
+<h1>Ingest Folder</h1>
+
+<% if @ingest_folder.errors.any? %>
+  <div class="alert alert-danger">
+    <h2><%= pluralize(@ingest_folder.errors.count, "error") %> prohibited this ingest folder from being scanned:</h2>
+ 
+    <ul>
+    <% @ingest_folder.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_for @ingest_folder do |f| %>
+
+	<%= f.label :base_path %>
+	<%= f.select :base_path, options_for_select(permitted_folder_bases), {}, {:style => 'width: auto;'} %>
+	<%= f.label :sub_path %>
+	<%= f.text_field :sub_path %>
+	<%= f.label :file_creator %>
+	<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), { :prompt =>  t('dul_hydra.prompts.select') % "File Creator (if applicable)" }, {:style => 'width: auto;'} %>
+	<%= f.label :collection_pid %>
+	<%= f.select :collection_pid, model_options_for_select(Collection), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {:style => 'width: auto;'} %>
+	<%= f.label :admin_policy_pid %>
+	<%= f.select :admin_policy_pid, model_options_for_select(AdminPolicy), { :prompt =>  t('dul_hydra.prompts.select') % "Admin Policy" }, {:style => 'width: auto;'}%>
+	<%= f.label :parent_id_length %>
+	<%= f.text_field :parent_id_length %>&nbsp;<em><%= t('batch.ingest_folder.help.parent_id_length')%></em>
+
+	<p>
+  	<%= f.submit t('batch.ingest_folder.scan_folder'), :id => 'ingest_folders_submit_button', :class => "btn btn-primary" %>
+	</p>
+	
+<% end %>

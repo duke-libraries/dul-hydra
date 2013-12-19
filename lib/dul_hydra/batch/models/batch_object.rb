@@ -32,11 +32,15 @@ DulHydra version #{DulHydra::VERSION}
     def validate
       @error_prefix = I18n.t('batch.manifest_object.errors.prefix', :identifier => identifier, :id => id)
       errors = []
-      errors += validate_required_attributes
       errors += validate_model if model
       errors += validate_datastreams if batch_object_datastreams
       errors += validate_relationships if batch_object_relationships
+      errors += local_validations
       return errors
+    end
+    
+    def results_message
+      raise NotImplementedError
     end
     
     private
@@ -55,7 +59,7 @@ DulHydra version #{DulHydra::VERSION}
       errs = []
       batch_object_datastreams.each do |d|
         begin
-          unless model.constantize.new.datastreams.keys.include?(d.name)
+          unless model_datastream_keys.include?(d.name)
             errs << "#{@error_prefix} Invalid datastream name for #{model}: #{d.name}"
           end
         rescue NameError
@@ -91,7 +95,15 @@ DulHydra version #{DulHydra::VERSION}
           begin
             obj = ActiveFedora::Base.find(r[:object], :cast => true)
           rescue ActiveFedora::ObjectNotFoundError
-            errs << "#{@error_prefix} #{r[:name]} relationship object does not exist: #{r[:object]}"
+            pid_in_batch = false
+            if batch.present?
+              if batch.pre_assigned_pids.include?(r[:object]) 
+                pid_in_batch = true
+              end
+            end
+            unless pid_in_batch
+              errs << "#{@error_prefix} #{r[:name]} relationship object does not exist: #{r[:object]}"
+            end
           else
             relationship_reflection = DulHydra::Utils.relationship_object_reflection(model, r[:name])
             if relationship_reflection
@@ -107,43 +119,11 @@ DulHydra version #{DulHydra::VERSION}
       end
       return errs
     end
+    
+    def local_validations
+      []
+    end
   
-    def add_datastream(repo_object, datastream, dryrun)
-      case datastream[:payload_type]
-      when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
-        repo_object.datastreams[datastream[:name]].content = datastream[:payload]
-      when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-        if repo_object.datastreams[datastream[:name]].is_a? ActiveFedora::OmDatastream
-          repo_object.datastreams[datastream[:name]].content = File.read(datastream[:payload])
-          repo_object.save
-        else
-          datastream_file = File.open(datastream[:payload])
-          repo_object.datastreams[datastream[:name]].content = datastream_file
-          repo_object.save
-          datastream_file.close
-        end
-      end
-      if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
-        if DulHydra::Derivatives::Image.derivable?(repo_object.datastreams[datastream[:name]].mimeType)
-          if dryrun
-            repo_object.generate_thumbnail(repo_object.datastreams[datastream[:name]])
-          else
-            repo_object.generate_thumbnail!(repo_object.datastreams[datastream[:name]])
-          end
-        end
-      end
-      return repo_object
-    end
-    
-    def add_relationship(repo_object, relationship)
-      relationship_object = case relationship[:object_type]
-      when BatchObjectRelationship::OBJECT_TYPE_PID
-        ActiveFedora::Base.find(relationship[:object], :cast => true)
-      end
-      repo_object.send("#{relationship[:name]}=", relationship_object)
-      return repo_object
-    end
-    
     def verify_repository_object
       verifications = {}
       begin
@@ -215,31 +195,42 @@ DulHydra version #{DulHydra::VERSION}
       end
     end
     
-    def create_preservation_event(event_type, event_outcome, outcome_details, repository_object)
-      event = PreservationEvent.new(:event_type => event_type,
-                                    :event_detail => event_detail(event_type),
-                                    :event_outcome => event_outcome,
-                                    :event_outcome_detail_note => outcome_details.join("\n"),
-                                    )
-      event.for_object = repository_object
-      event.save
+    def populate_datastream(repo_object, datastream, dryrun)
+      case datastream[:payload_type]
+      when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
+        repo_object.datastreams[datastream[:name]].content = datastream[:payload]
+      when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
+        if repo_object.datastreams[datastream[:name]].is_a? ActiveFedora::OmDatastream
+          repo_object.datastreams[datastream[:name]].content = File.read(datastream[:payload])
+          repo_object.save
+        else
+          datastream_file = File.open(datastream[:payload])
+          repo_object.datastreams[datastream[:name]].content = datastream_file
+          repo_object.save
+          datastream_file.close
+        end
+      end
+      if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
+        if DulHydra::Derivatives::Image.derivable?(repo_object.datastreams[datastream[:name]].mimeType)
+          if dryrun
+            repo_object.generate_thumbnail(repo_object.datastreams[datastream[:name]])
+          else
+            repo_object.generate_thumbnail!(repo_object.datastreams[datastream[:name]])
+          end
+        end
+      end
+      return repo_object
     end
     
-    def event_detail(event_type)
-      event_label = case event_type
-              when PreservationEvent::INGESTION
-                "Object ingestion"
-              when PreservationEvent::VALIDATION
-                "Object ingest validation"
-              end
-      PRESERVATION_EVENT_DETAIL % {
-        :label => event_label,
-        :batch_id => id,
-        :identifier => identifier,
-        :model => model
-      }
+    def add_relationship(repo_object, relationship)
+      relationship_object = case relationship[:object_type]
+      when BatchObjectRelationship::OBJECT_TYPE_PID
+        ActiveFedora::Base.find(relationship[:object], :cast => true)
+      end
+      repo_object.send("#{relationship[:name]}=", relationship_object)
+      return repo_object
     end
-  
+    
   end
 
 end

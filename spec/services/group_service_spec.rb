@@ -1,0 +1,35 @@
+require 'spec_helper'
+
+describe DulHydra::Services::GroupService do  
+  subject { described_class.new }
+  
+  describe "#groups" do
+    before { RoleMapper.stub(:role_names).and_return(["foo", "bar"]) }
+    it "should provide a list of groups" do
+      subject.groups.sort.should == ["foo", "bar", "public", "registered"].sort
+    end
+    describe "using #append_groups hook" do
+      before { subject.stub(:append_groups).and_return(["spam:eggs", "fish:water"]) }
+      it "should add the roles to the list" do
+        subject.groups.sort.should eq(["foo", "bar", "spam:eggs", "fish:water", "public", "registered"].sort)
+      end
+    end
+  end
+  
+  describe "#user_groups(user)" do
+    let(:user) { FactoryGirl.build(:user) }
+    before do
+      RoleMapper.stub(:roles).with(user).and_return(["foo", "bar"])
+    end      
+    it "should provide a list of groups for a user" do
+      subject.user_groups(user).sort.should eq(["foo", "bar", "public"].sort)
+    end
+    describe "user #append_user_groups(user) hook" do
+      before { subject.stub(:append_user_groups).with(user).and_return(["spam:eggs", "fish:water"]) }
+      it "should add the groups to the list" do
+        subject.user_groups(user).sort.should eq(["foo", "bar", "spam:eggs", "fish:water", "public"].sort)
+      end
+    end
+  end
+end
+

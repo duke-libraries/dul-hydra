@@ -14,61 +14,55 @@ module ApplicationHelper
     link_to(title, catalog_path(pid), :class => "parent-link").html_safe
   end
 
-  def display_structure(structure)
-    display = ""
-    if structure.has_key?("div")
-      pids = walk_structure_div(structure["div"], "pids", [])
-      structure_contents_info = get_structure_contents_info(pids)
-      walk_structure_div(structure["div"], "display", display, structure_contents_info)
-    end
-    return display
-  end
-  
-  def walk_structure_div(structure_div, mode, collector, structure_contents_info=nil)
-    structure_div.each do |div|
-      collector << div["label"] if mode.eql?("display") && div.has_key?("label")
-      if div.has_key?("div")
-        walk_structure_div(div["div"], mode, collector, structure_contents_info)
-      else
-        walk_structure_pids(div["pids"], mode, collector, structure_contents_info)
-      end
-    end
-    return collector
-  end
-  
-  def walk_structure_pids(structure_pids, mode, collector, structure_contents_info=nil)
-    collector << "<ul>" if mode.eql?("display")
-    structure_pids.each do |pid|
-      collector << case mode
-                   when "pids"
-                     pid["pid"]
-                   when "display"
-                     "<li>" << link_to(structure_contents_info[pid["pid"]][DulHydra::IndexFields::TITLE], fcrepo_admin.object_path(pid["pid"])) << " [" << pid["use"] << "]</li>"
-                   end
-    end
-    collector << "</ul>" if mode.eql?("display")
-    return collector
-  end
-  
-  def get_structure_contents_info(pids)
-    structure_contents_info = {}
-    query = ActiveFedora::SolrService.construct_query_for_pids(pids)
-    contents_docs = ActiveFedora::SolrService.query(query, :rows => 999)
-    contents_docs.each do |contents_doc|
-      structure_contents_info[contents_doc["id"]] = contents_doc
-    end
-    return structure_contents_info
+  def render_object_title
+    current_object.title_display rescue "#{current_object.class.to_s} #{current_object.pid}"
   end
 
-  def render_object_title
-    @object.title_display rescue "#{@object.class.to_s} #{@object.pid}"
+  def bootstrap_icon(icon)
+    if icon == :group
+      (bootstrap_icon(:user)*2).html_safe
+    else
+      content_tag :i, "", class: "icon-#{icon}"
+    end
+  end
+
+  def entity_icon(type)
+    send "#{type}_icon"
+  end
+  
+  def user_icon
+    image_tag("silk/user.png", size: "16x16", alt: "user")
+  end
+
+  def group_icon(group = nil)
+    case group
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+      public_icon
+    else
+      image_tag("silk/group.png", size: "16x16", alt: "group")
+    end
+  end
+
+  def public_icon
+    image_tag("silk/world.png", size: "16x16", alt: "world")
+  end
+
+  def group_display_name(group)
+    case group
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+      "Public"
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
+      "Duke Community"
+    else
+      group
+    end
   end
 
   def render_object_identifier
-    if @object.identifier.respond_to?(:join)
-      @object.identifier.join("<br />")
+    if current_object.identifier.respond_to?(:join)
+      current_object.identifier.join("<br />")
     else
-      @object.identifier
+      current_object.identifier
     end
   end
 
@@ -80,66 +74,58 @@ module ApplicationHelper
     truncate crumb.title, separator: ' '
   end
 
-  def render_tab(tab, active = false)
-    content_tag(:li, active ? {class: "active"} : {}) do
+  def render_tab(tab)
+    content_tag :li do
       link_to(tab.label, "##{tab.css_id}", "data-toggle" => "tab")
     end
   end
 
   def render_tabs
-    return if @tabs.blank?
-    output = ""
-    @tabs.each_with_index do |tab, index|
-      output << render_tab(tab, index == 0 ? true : false)
-    end
-    output.html_safe
+    return if current_tabs.blank?
+    current_tabs.values.inject("") { |output, tab| output << render_tab(tab) }.html_safe
   end
 
-  def render_tab_content(tab, active = false)
-    css_class = active ? "tab-pane active" : "tab-pane"
-    content_tag :div, class: css_class, id: tab.css_id do
+  def render_tab_content(tab)
+    content_tag :div, class: "tab-pane", id: tab.css_id do
       render partial: tab.partial, locals: {tab: tab}
     end
   end
 
   def render_tabs_content
-    return if @tabs.blank?
-    output = ""
-    @tabs.each_with_index do |tab, index|
-      output << render_tab_content(tab, index == 0 ? true : false)
-    end
-    output.html_safe
+    return if current_tabs.blank?
+    current_tabs.values.inject("") { |output, tab| output << render_tab_content(tab) }.html_safe
   end
 
   def render_object_state
     case
-    when @object.state == 'A'
+    when current_object.state == 'A'
       render_label "Active", "info"
-    when @object.state == 'I'
+    when current_object.state == 'I'
       render_label "Inactive", "warning"
-    when @object.state == 'D'
+    when current_object.state == 'D'
       render_label "Deleted", "important"
     end
   end
 
   def render_last_fixity_check_outcome
-    outcome = @document.last_fixity_check_outcome
+    outcome = current_document.last_fixity_check_outcome
     if outcome.present?
       label = outcome == "success" ? "success" : "important"
       render_label outcome.capitalize, label
     end
   end
 
-  def render_content_size(document = @document)
+  def render_content_size(document)
     number_to_human_size(document.content_size) rescue nil
   end
 
-  def render_content_type_and_size(document = @document)
+  def render_content_type_and_size(document)
     "#{document.content_mime_type} #{render_content_size(document)}"
   end
 
   def render_download_link(args = {})
-    document = args.fetch(:document, @document)
+    document = args[:document]
+    return unless document
     label = args.fetch(:label, "Download")
     css_class = args.fetch(:css_class, "")
     css_id = args.fetch(:css_id, "download-#{document.safe_id}")
@@ -152,10 +138,10 @@ module ApplicationHelper
   end
 
   def render_document_title
-    @document.title
+    current_document.title
   end
 
-  def render_document_thumbnail(document = @document, linked = false)
+  def render_document_thumbnail(document, linked = false)
     src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
     if linked && can?(:read, document)
@@ -165,80 +151,76 @@ module ApplicationHelper
     end
   end
 
-  def render_document_summary(document = @document)
+  def render_document_summary(document)
     render partial: 'document_summary', locals: {document: document}
   end
 
-  def render_document_summary_association(document)
-    association, label = case document.active_fedora_model
-                         when "Attachment"
-                           [:is_attached_to, "Attached to"]
-                         when "Item"
-                           [:is_member_of_collection, "Member of"]
-                         when "Component"
-                           [:is_part_of, "Part of"]
-                         end
-    if association && label
-      associated_doc = get_associated_document(document, association)
-      if associated_doc
-        render partial: 'document_summary_association', locals: {label: label, document: associated_doc}
-      end
+  def get_associated_document(document)
+    [:is_member_of_collection, :is_part_of, :is_attached_to].each do |assoc|
+      associated_pid = document.association(assoc)
+      return [assoc, get_solr_response_for_field_values(:id, associated_pid)[1].first] if associated_pid
     end
-  end
-
-  def get_associated_document(document, association)
-    associated_pid = document.association(association)
-    get_solr_response_for_field_values(:id, associated_pid)[1].first if associated_pid
-  end
-
-  def link_to_associated(document_or_object, label = nil)
-    label ||= document_or_object.title rescue document_or_object.id
-    if can? :read, document_or_object
-      link_to label, object_path(document_or_object.id)
-    else
-      label
-    end
-  end
-
-  def link_to_fcrepo_view(dsid = nil)
-    path = dsid ? fcrepo_admin.object_datastream_path(@object, dsid) : fcrepo_admin.object_path(@object)
-    link_to "Fcrepo View", path
+    nil
   end
 
   def format_date(date)
     date.to_formatted_s(:db) if date
   end
 
-  def effective_permissions(object = @object)
-    results = []
-    permissions = current_ability.permissions_doc(object.pid)
-    policy_pid = current_ability.policy_pid_for(object.pid)
-    policy_permissions = policy_pid ? current_ability.policy_permissions_doc(policy_pid) : nil
-    [:discover, :read, :edit].each do |access|
-      [:individual, :group].each do |type|
-        permissions.fetch(Hydra.config[:permissions][access][type], []).each do |name|
-          results << {type: type, access: access, name: name, inherited: false}
-        end
-        if policy_permissions
-          policy_permissions.fetch(Hydra.config[:permissions][:inheritable][access][type], []).each do |name|
-            results << {type: type, access: access, name: name, inherited: true}
-          end
-        end
-      end
-    end
-    results
+  def render_permission_grantees(access)
+    grantees = {
+      users: current_object.send("#{access}_users"),
+      groups: current_object.send("#{access}_groups")
+    }
+    render partial: 'permission_grantees', locals: {grantees: grantees}
   end
 
-  def inheritable_permissions(object = @object)
-    object.default_permissions
+  def render_inherited_permission_grantees(access)
+    grantees = {
+      users: current_object.send("inherited_#{access}_users"),
+      groups: current_object.send("inherited_#{access}_groups")
+    }
+    render partial: 'permission_grantees', locals: {grantees: grantees}
+  end
+
+  def render_default_permission_grantees(access)
+    grantees = {
+      users: current_object.send("default_#{access}_users"),
+      groups: current_object.send("default_#{access}_groups")
+    }
+    render partial: 'permission_grantees', locals: {grantees: grantees}
+  end
+
+  def render_inherited_entities(type, access)
+    if current_object.governable?
+      inherited_entities = current_object.send("inherited_#{access}_#{type}s")
+      render partial: 'inherited_permissions', locals: {inherited_entities: inherited_entities, type: type}
+    end
+  end
+
+  def render_inherited_groups(access)
+    render_inherited_entities("group", access)
+  end
+
+  def render_inherited_users(access)
+    render_inherited_entities("user", access)
   end
 
   def event_outcome_label(pe)
     content_tag :span, pe.event_outcome.capitalize, :class => "label label-#{pe.success? ? 'success' : 'important'}"
   end
 
-  def render_document_model_and_id(document = @document)
+  def render_document_model_and_id(document)
     "#{document.active_fedora_model} #{document.id}"
+  end
+
+  def link_to_create_model(model)
+    link_to model, new_object_path(model.underscore)
+  end
+
+  def model_options_for_select(model)
+    options = find_models_with_gated_discovery(model).collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
+    options_for_select options
   end
 
   private

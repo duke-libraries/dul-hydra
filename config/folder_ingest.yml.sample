@@ -1,0 +1,15 @@
+config:
+    file_model: TestChild
+    target_model: Target
+    target_folder: targets
+    checksum_file:
+        location: /dir/fixity/fedora_ingest/
+        type: SHA-256
+    file_creators:
+        ABC: Alpha Bravo Charlie
+files:
+    mount_points:
+        base_folder: /mnt/point/
+    permissions:
+        user_user_key:
+            - base_folder/base_subfolder/

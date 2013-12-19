@@ -70,40 +70,33 @@ module DulHydra::Batch::Scripts
       @log.info "Batch id: #{@batch.id}"
       @log.info "Batch name: #{@batch.name}" if @batch.name
       @log.info "Batch size: #{@batch.batch_objects.size}"
-      @batch_run = DulHydra::Batch::Models::BatchRun.create(:batch => @batch,
-                                   :start => DateTime.now,
-                                   :status => DulHydra::Batch::Models::BatchRun::STATUS_RUNNING,
-                                   :total => @batch.batch_objects.size,
-                                   :version => DulHydra::VERSION)
+      @batch.update_attributes(:start => DateTime.now,
+                               :status => DulHydra::Batch::Models::Batch::STATUS_RUNNING,
+                               :version => DulHydra::VERSION)
       @failures = 0
       @successes = 0
       @details = []
     end
     
     def close_batch_run
-      @batch_run.update_attributes(:details => @details.join("\n"),
-                                   :failure => @failures,
-                                   :outcome => @successes.eql?(@batch_run.total) ? DulHydra::Batch::Models::BatchRun::OUTCOME_SUCCESS : DulHydra::Batch::Models::BatchRun::OUTCOME_FAILURE,
-                                   :status => DulHydra::Batch::Models::BatchRun::STATUS_FINISHED,
-                                   :stop => DateTime.now,
-                                   :success => @successes)
-      @log.info "Ingested #{@batch_run.success} of #{@batch_run.total} objects"
+      @batch.update_attributes(:details => @details.join("\n"),
+                               :failure => @failures,
+                               :outcome => @successes.eql?(@batch.batch_objects.size) ? DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS : DulHydra::Batch::Models::Batch::OUTCOME_FAILURE,
+                               :status => DulHydra::Batch::Models::Batch::STATUS_FINISHED,
+                               :stop => DateTime.now,
+                               :success => @successes)
+      @log.info "Ingested #{@batch.success} of #{@batch.batch_objects.size} objects"
     end
     
     def process_object(object)
       @log.debug "Processing object: #{object.identifier}"
-      results = object.process(:dryrun => @dryrun)
+      object.process(:dryrun => @dryrun)
       if @dryrun
         @successes += 1 # need to think more about what a dry run failure would be and how to handle it
         message = "Dry run ingest attempt for #{object.model} #{object.identifier}"
       else
         object.verified ? @successes += 1 : @failures += 1
-        if object.pid
-          verification_result = (object.verified ? "Verified" : "VERIFICATION FAILURE")
-          message = "Ingested #{object.model} #{object.identifier} into #{object.pid}...#{verification_result}"
-        else
-          message = "Attempt to ingest #{object.model} #{object.identifier} FAILED"
-        end
+        message = object.results_message
       end
       @details << message
       @log.info(message)
@@ -120,12 +113,12 @@ module DulHydra::Batch::Scripts
       @log.outputters.each do |outputter|
         @logfilename = outputter.filename if outputter.respond_to?(:filename)
       end
-      @batch_run.update_attributes({:logfile => File.new(@logfilename)}) if @logfilename
+      @batch.update_attributes({:logfile => File.new(@logfilename)}) if @logfilename
     end
     
     def send_notification
       begin
-        BatchProcessorRunMailer.send_notification(@batch_run, @batch.user.email).deliver!
+        BatchProcessorRunMailer.send_notification(@batch).deliver!
       rescue
         puts "An error occurred while attempting to send the notification."
       end

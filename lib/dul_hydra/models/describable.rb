@@ -25,11 +25,19 @@ module DulHydra::Models
                    :versionable => true, 
                    :label => "Descriptive Metadata for this object", 
                    :control_group => 'X'
-      delegate_to DulHydra::Datastreams::DESC_METADATA, DC11_ELEMENTS
+      delegate_to DulHydra::Datastreams::DESC_METADATA, DC11_ELEMENTS, multiple: true
     end
 
     def descriptive_metadata_terms
       DC11_ELEMENTS
+    end
+
+    def terms_for_editing
+      descriptive_metadata_terms
+    end
+    
+    def descriptive_metadata_editable?
+      return descmetadata_source.nil?
     end
 
     module ClassMethods

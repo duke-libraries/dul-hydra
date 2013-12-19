@@ -3,12 +3,12 @@ require 'spec_helper'
 module DulHydra::Batch::Scripts
   
   shared_examples "a successful ingest batch" do
-    let(:batch_run) { batch.batch_runs.last }
     before do
+      batch.reload
       @repo_objects = []
       batch.batch_objects.each { |obj| @repo_objects << ActiveFedora::Base.find(obj.pid, :cast => true) }
     end
-    it "should add the objects to the repository, validate them, and have an appropriate batch run record" do
+    it "should add the objects to the repository and verify them" do
       expect(@repo_objects.size).to eq(batch.batch_objects.size)
       @repo_objects.each_with_index do |obj, index|
         batch_obj = batch.batch_objects[index]
@@ -37,18 +37,46 @@ module DulHydra::Batch::Scripts
           end
         end
       end
-      expect(batch_run.outcome).to eq(DulHydra::Batch::Models::BatchRun::OUTCOME_SUCCESS)
-      expect(batch_run.total).to eq(batch.batch_objects.size)
-      expect(batch_run.success).to eq(batch_run.total)
-      expect(batch_run.failure).to eq(0)
-      expect(batch_run.status).to eq(DulHydra::Batch::Models::BatchRun::STATUS_FINISHED)
-      expect(batch_run.start).to be < batch_run.stop
-      expect(batch_run.stop).to be_within(3.minutes).of(Time.now)
-      expect(batch_run.version).to eq(DulHydra::VERSION)
-      batch.batch_objects.each { |obj| expect(batch_run.details).to include("Ingested #{obj.model} #{obj.identifier} into #{obj.pid}") }
+      expect(batch.outcome).to eq(DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS)
+      expect(batch.success).to eq(batch.batch_objects.size)
+      expect(batch.failure).to eq(0)
+      expect(batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_FINISHED)
+      expect(batch.start).to be < batch.stop
+      expect(batch.stop).to be_within(3.minutes).of(Time.now)
+      expect(batch.version).to eq(DulHydra::VERSION)
+      batch.batch_objects.each { |obj| expect(batch.details).to include("Ingested #{obj.model} #{obj.identifier} into #{obj.pid}") }
     end
   end
   
+  shared_examples "a successful update batch" do
+    before do
+      batch.reload
+      @repo_objects = []
+      batch.batch_objects.each { |obj| @repo_objects << ActiveFedora::Base.find(obj.pid, :cast => true) }
+    end
+    it "should update the objects in the repository" do
+      expect(@repo_objects.size).to eq(batch.batch_objects.size)
+      @repo_objects.each_with_index do |obj, index|
+        batch_obj = batch.batch_objects[index]
+        expect(obj).to be_an_instance_of(batch_obj.model.constantize)
+        expect(obj.label).to eq(batch_obj.label) if batch_obj.label
+        expect(obj.title.first).to eq('Sample updated title')
+        batch_obj_ds = batch_obj.batch_object_datastreams
+        batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
+        batch_obj_rs = batch_obj.batch_object_relationships
+        batch_obj_rs.each { |r| expect(obj.send(r.name).pid).to eq(r.object) }
+      end
+      expect(batch.outcome).to eq(DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS)
+      expect(batch.success).to eq(batch.batch_objects.size)
+      expect(batch.failure).to eq(0)
+      expect(batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_FINISHED)
+      expect(batch.start).to be <= batch.stop
+      expect(batch.stop).to be_within(3.minutes).of(Time.now)
+      expect(batch.version).to eq(DulHydra::VERSION)
+      batch.batch_objects.each { |obj| expect(batch.details).to include("Updated #{obj.pid}") }
+    end
+  end
+
   describe BatchProcessor do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:log_dir) { test_dir }
@@ -56,7 +84,6 @@ module DulHydra::Batch::Scripts
     context "ingest" do
       let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
-      before { bp.execute }
       after do
         batch.batch_objects.each do |obj|
           repo_obj = ActiveFedora::Base.find(obj.pid, :cast => true)
@@ -65,8 +92,35 @@ module DulHydra::Batch::Scripts
           repo_obj.destroy
         end
       end
-      context "successful ingest" do
+      context "successful initial run" do
+        before { bp.execute }
         it_behaves_like "a successful ingest batch"
+      end
+      context "successful restart run" do
+        before do
+          batch.batch_objects.first.process
+          batch.update_attributes(:status => DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE)
+          bp.execute
+        end
+        it_behaves_like "a successful ingest batch"        
+      end
+    end
+    context "update" do
+      let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
+      let(:repo_object) { TestModelOmnibus.create(:pid => batch.batch_objects.first.pid, :label => 'Object Label') }
+      let(:apo) { FactoryGirl.create(:group_edit_policy) }
+      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
+      before do
+        repo_object.admin_policy = apo
+        repo_object.save
+        bp.execute
+      end
+      after do
+        repo_object.destroy
+        apo.destroy
+      end
+      context "successful update" do
+        it_behaves_like "a successful update batch"
       end
     end
   end  

@@ -1,16 +1,17 @@
 source 'http://rubygems.org'
 
-gem 'rails', '~> 3.2.13'
+gem 'rails', '~> 3.2.16'
 
 gem 'sqlite3'
 gem 'hydra-head', '~> 6.4'
 gem 'blacklight', '4.5.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
-gem 'devise'
-gem 'devise-remote-user'
-gem 'fcrepo_admin', '~> 0.6.1'
+gem 'devise', '~> 3.1.1'
+gem 'devise-remote-user', '0.2.0'
 gem 'active-fedora', '~> 6.6'
+gem 'grouper-rest-client'
+gem 'hydra-editor', '0.1.1'
 
 gem 'log4r'
 
@@ -23,7 +24,7 @@ gem 'therubyracer', '~> 0.11.3', :require => 'v8'
 gem 'mime-types', '~> 1.19'
 
 # Export sets
-gem 'rubyzip'
+gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 3.0'
 
 # Image manipulation
@@ -32,7 +33,7 @@ gem 'mini_magick'
 group :development, :test do
   gem 'rspec-rails' #, '~> 2.12.0'
   gem 'capybara', '~> 2.0'
-  gem 'jettywrapper'
+  gem 'jettywrapper', '~> 1.5'
   gem 'factory_girl_rails', '~> 4.0'
   gem 'orderly'
   gem 'launchy'

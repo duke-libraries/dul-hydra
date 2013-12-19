@@ -1,6 +1,11 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
+
+  # Given the modules that we implement, this shouldn't be used, but Devise >= 3.1 requires it,
+  # so a random value should suffice.
+  config.secret_key = SecureRandom.hex(64)
+
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
@@ -212,8 +217,8 @@ Devise.setup do |config|
   # change the failure app, you can configure them inside the config.warden block.
   #
   # config.warden do |manager|
-  #   manager.intercept_401 = false
-  #   manager.default_strategies(:scope => :user).unshift :remote_user_authenticatable
+    # manager.intercept_401 = false
+    # manager.default_strategies(:scope => :user).unshift :remote_user_authenticatable
   # end
 
   # ==> Mountable engine configurations
@@ -229,10 +234,4 @@ Devise.setup do |config|
   # When using omniauth, Devise cannot automatically set Omniauth path,
   # so you need to do it manually. For the users scope, it would be:
   # config.omniauth_path_prefix = "/my_engine/users/auth"
-
-  # ==> Remote user authenticatable config
-  require 'devise_remote_user'
-  config.remote_user_autocreate = true
-  config.remote_user_attribute_map = {:email => 'mail'}
-
 end

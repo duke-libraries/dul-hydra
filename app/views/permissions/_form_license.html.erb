@@ -1,0 +1,8 @@
+<legend><% if params[:default_permissions] %>Default <% end %>License</legend>
+<%= label_tag "license_title", "License Title" %>
+<%= text_field_tag "license[title]", license[:title], size: "50" %>
+<%= label_tag "license_description", "License Description" %>
+<textarea name="license[description]" id="license_description" cols="50" rows="5"><%= license[:description] %></textarea>
+<%= label_tag "license_url", "License URL" %>
+<%= text_field_tag "license[url]", license[:url], size: "50" %>
+

@@ -1,0 +1,27 @@
+<div class="well well-small">
+  <ul class="nav nav-list">
+	<li class="nav-header">
+	  Created
+	</li>
+	<li>
+	  <%= render_object_date current_object.create_date %>
+	</li>
+	<li class="nav-header">
+	  Modified
+	</li>
+	<li>
+	   <%= render_object_date current_object.modified_date %>
+	</li>
+	<li class="nav-header">
+	  <%= t('dul_hydra.object_nav.headings.fixity') %>
+	</li>
+	<li>
+	  <% if current_document.last_fixity_check_outcome.present? %>
+	    <%= format_date current_document.last_fixity_check_on %>
+		<%= render_last_fixity_check_outcome %>
+      <% else %>
+	    No fixity checks
+	  <% end %>
+	</li>
+  </ul>
+</div>

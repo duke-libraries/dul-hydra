@@ -3,12 +3,26 @@
 	<%= render_document_model_and_id document %>
   </li>
   <% if document.identifier -%>
-    <li>
-  	  <small><%= document.identifier %></small>
+    <li class="small">
+  	  <%= document.identifier %>
     </li>
   <% end -%>
   <% if document.id == params[:id] -%>
-    <%= render_document_summary_association document %>
+    <% association, associated_doc = get_associated_document(document) -%>
+	<% if associated_doc -%>
+	  <li class="small">
+		  <%= t("dul_hydra.associations.#{association}") %>:
+		  <% if can? :read, associated_doc -%>
+		    <%= link_to associated_doc.title, object_path(associated_doc.id) %>
+		  <% else -%>
+		    <%= associated_doc.title %>
+		  <% end -%>
+	  </li>
+	<% end -%>
   <% end -%>
-  <%= render partial: 'document_summary_content', locals: {document: document} %>
+  <% if document.has_content? -%>
+    <li class="small">
+      <%= render partial: 'document_content', locals: {document: document} %>
+    </li>
+  <% end -%>
 </ul>

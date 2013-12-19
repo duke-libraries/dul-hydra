@@ -1,10 +1,12 @@
 require 'spec_helper'
-require 'helpers/user_helper'
 
 describe "export_sets/index.html.erb" do
   let!(:user) { FactoryGirl.create(:user) }
-  before { login user }
-  after { user.delete }
+  before { login_as user }
+  after do
+    user.delete
+    Warden.test_reset!
+  end
   context "user has no bookmarks" do
     it "should not have a 'new export set' link" do
       visit export_sets_path
@@ -28,6 +30,8 @@ describe "export_sets/index.html.erb" do
     before do
       export_set.user = user
       export_set.pids = [object.pid]
+      object.read_users = [export_set.user.user_key]
+      object.save
       export_set.create_archive
     end
     after { object.delete }
