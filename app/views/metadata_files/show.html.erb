@@ -1,7 +1,64 @@
 <h3>Metadata Update File</h3>
 
-<%= @metadata_file.metadata %>
+<%= content_tag(:table, :class => 'table-bordered') do %>
 
-<%= @metadata_file.options %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('activerecord.attributes.metadata_file.metadata')) %>
+		<%= content_tag(:td, @metadata_file.metadata_file_name) %>
+	<% end %>
+
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('activerecord.attributes.metadata_file.profile')) %>
+		<%= content_tag(:td, metadata_file_profile_name(@metadata_file.profile)) %>
+	<% end %>
+
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.collection_pid')) %>
+		<%= content_tag(:td, object_display_title(@metadata_file.collection_pid)) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, :col_span => 2) do %>
+			<%= content_tag(:strong, I18n.t('batch.metadata_file.options')) %>
+		<% end %>
+	<% end %>
+	
+	<% @metadata_file.effective_options[:csv].each do |key, value| %>
+		<%= content_tag(:tr) do %>
+			<%= content_tag(:td, key) %>
+			<%= content_tag(:td, value.inspect) %>
+		<% end %>
+	<% end %>
+	
+	<% @metadata_file.effective_options[:parse].each do |key, value| %>
+		<%= content_tag(:tr) do %>
+			<%= content_tag(:td, key) %>
+			<%= content_tag(:td) do %>
+				<% if value.is_a? Array %>
+					<%= content_tag(:ul) do %>
+						<% value.each do |v| %>
+							<%= content_tag(:li, v) %>
+						<% end %>
+					<% end %>
+				<% else %>
+					<%= value %>
+				<% end %>
+			<% end %>
+		<% end %>
+	<% end %>
+	
+	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, :col_span => 2) do %>
+			<%= content_tag(:strong, I18n.t('batch.metadata_file.schema_map')) %>
+		<% end %>
+	<% end %>
+	
+	<% @metadata_file.effective_options[:schema_map].each do |key, value| %>
+		<%= content_tag(:tr) do %>
+			<%= content_tag(:td, key) %>
+			<%= content_tag(:td, value) %>
+		<% end %>
+	<% end %>
+	
+<% end %>
 
 <%= link_to I18n.t('batch.metadata_file.create_batch'), procezz_metadata_file_path(@metadata_file), :class => "btn btn-primary" %>

@@ -4,19 +4,6 @@ module IngestFoldersHelper
     link_to I18n.t('batch.ingest_folder.create'), new_ingest_folder_path
   end
   
-  def object_display_title(pid)
-    if pid.present?
-      begin
-        object = ActiveFedora::Base.find(pid, :cast => true)
-        if object.respond_to?(:title_display)
-          object.title_display
-        end
-      rescue ActiveFedora::ObjectNotFoundError
-        log.error("Unable to find #{pid} in repository")
-      end
-    end
-  end
-  
   def permitted_folder_bases
     IngestFolder.permitted_folders(current_user)
   end

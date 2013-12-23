@@ -122,7 +122,8 @@ ActiveRecord::Schema.define(:version => 20131203162900) do
 
   create_table "metadata_files", :force => true do |t|
     t.integer  "user_id"
-    t.text     "options"
+    t.string   "profile"
+    t.string   "collection_pid"
     t.datetime "created_at",            :null => false
     t.datetime "updated_at",            :null => false
     t.string   "metadata_file_name"

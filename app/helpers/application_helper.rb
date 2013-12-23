@@ -18,6 +18,19 @@ module ApplicationHelper
     current_object.title_display rescue "#{current_object.class.to_s} #{current_object.pid}"
   end
 
+  def object_display_title(pid)
+    if pid.present?
+      begin
+        object = ActiveFedora::Base.find(pid, :cast => true)
+        if object.respond_to?(:title_display)
+          object.title_display
+        end
+      rescue ActiveFedora::ObjectNotFoundError
+        log.error("Unable to find #{pid} in repository")
+      end
+    end
+  end
+  
   def bootstrap_icon(icon)
     if icon == :group
       (bootstrap_icon(:user)*2).html_safe
