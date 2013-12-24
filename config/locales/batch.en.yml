@@ -10,6 +10,9 @@ en:
                 file_creator: File Creator
                 parent_id_length: Length of Item Identifier
                 sub_path: Folder Sub-Path
+            metadata_file:
+                metadata: Metadata File
+                profile: Metadata File Type
     batch:
         ingest_folder:
             create: New Ingest Folder
@@ -25,10 +28,13 @@ en:
             help:
                 parent_id_length: Leave blank or set to 0 to create a separate Item for each file.
         metadata_file:
-            create: Upload Metadata Update File
             batch_name: Metadata Update File
             create_batch: Create Update Batch
+            new: Upload Metadata File
+            options: Options
+            schema_map: Schema Map
             upload_file: Upload File
+            uploaded_file: Uploaded File
         manifest:
             validation_failed: "Did not process manifest due to manifest validation errors"
             validation_skipped: "Skipped validation"

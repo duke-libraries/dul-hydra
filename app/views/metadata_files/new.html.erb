@@ -14,7 +14,12 @@
 
 <%= form_for @metadata_file, :html => { :multipart => true } do |f| %>
 
+	<%= f.label :metadata %>
 	<%= f.file_field :metadata %>
+	<%= f.label :profile %>
+	<%= f.select :profile, options_for_select(metadata_file_profiles) %>
+	<%= f.label :collection_pid %>
+	<%= f.select :collection_pid, model_options_for_select(Collection), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {:style => 'width: auto;'}%>
 
 	<div>
 	  <%= f.submit I18n.t('batch.metadata_file.upload_file'), :id => 'metadata_file_submit_button', :class => "btn btn-primary" %>

@@ -8,7 +8,6 @@ class MetadataFilesController < ApplicationController
 	def create
 	  @metadata_file = MetadataFile.new(params[:metadata_file])
 	  @metadata_file.user = current_user
-	  @metadata_file.options = MetadataFile.default_options
     if @metadata_file.save
       redirect_to :action => :show, :id => @metadata_file
     else
