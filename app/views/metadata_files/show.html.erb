@@ -46,16 +46,18 @@
 		<% end %>
 	<% end %>
 	
-	<%= content_tag(:tr) do %>
-		<%= content_tag(:td, :col_span => 2) do %>
-			<%= content_tag(:strong, I18n.t('batch.metadata_file.schema_map')) %>
-		<% end %>
-	<% end %>
-	
-	<% @metadata_file.effective_options[:schema_map].each do |key, value| %>
+	<% if @metadata_file.effective_options[:schema_map].present? %>
 		<%= content_tag(:tr) do %>
-			<%= content_tag(:td, key) %>
-			<%= content_tag(:td, value) %>
+			<%= content_tag(:td, :col_span => 2) do %>
+				<%= content_tag(:strong, I18n.t('batch.metadata_file.schema_map')) %>
+			<% end %>
+		<% end %>
+	
+		<% @metadata_file.effective_options[:schema_map].each do |key, value| %>
+			<%= content_tag(:tr) do %>
+				<%= content_tag(:td, key) %>
+				<%= content_tag(:td, value) %>
+			<% end %>
 		<% end %>
 	<% end %>
 	
