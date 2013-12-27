@@ -14,7 +14,7 @@ module MetadataFilesHelper
   end
   
   def metadata_file_profile_name(file)
-    File.basename(file, ".yml").gsub('_', ' ').capitalize
+    File.basename(file, ".yml").gsub('_', ' ')
   end
   
   def metadata_file_profiles_dir

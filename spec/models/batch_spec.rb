@@ -51,7 +51,6 @@ module DulHydra::Batch::Models
       end
 
       it "should cache the results of looking up relationship objects" do
-        puts batch.id
         batch.should_receive(:add_found_pid).once.with(admin_policy.pid, "AdminPolicy").and_call_original
         batch.validate
         expect(batch.found_pids).to eq(pid_cache)
