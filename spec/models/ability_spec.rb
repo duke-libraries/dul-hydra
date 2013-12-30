@@ -235,8 +235,20 @@ describe Ability do
     # TODO
   end
 
-  describe "#export_sets_permissions" do
-    # TODO
+  describe "#export_sets_permissions", export_sets: true do
+    let(:export_set) { FactoryGirl.create(:descriptive_metadata_export_set, user: user, pids: ["foo:bar"]) }
+    context "associated user" do
+      it "should PERMIT :manage" do
+        subject.should be_able_to(:manage, export_set)
+      end
+    end
+    context "other user" do
+      let(:other_user) { FactoryGirl.create(:user) }
+      after { other_user.delete }
+      it "should DENY :read access" do
+        described_class.new(other_user).should_not be_able_to(:read, export_set)
+      end
+    end
   end
   
   describe "#ingest_folders_permissions" do

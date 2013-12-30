@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'zip/zip'
 
-describe ExportSetsController do
+describe ExportSetsController, export_sets: true do
+  before { sign_in user }
+  after { user.destroy }    
   context "#index" do
     let(:user) { FactoryGirl.create(:user) }
-    before { sign_in user }
-    after { user.delete }    
     it "should display the user's list of export sets" do
       get :index
       response.should render_template(:index)
@@ -13,56 +13,40 @@ describe ExportSetsController do
   end
   context "#new" do
     let(:user) { FactoryGirl.create(:user) }
-    let(:object_read) { FactoryGirl.create(:test_content) }
-    let(:object_discover) { FactoryGirl.create(:test_content) }
-    before do
-      sign_in user      
-      object_read.read_users = [user.user_key]
-      object_read.save
-      object_discover.discover_users = [user.user_key]
-      object_discover.save
+    context "valid export type" do
+      it "should render the :new template" do
+        get :new, export_type: ExportSet::Types::CONTENT
+        response.should render_template(:new)
+      end
     end
-    after do
-      object_read.delete 
-      object_discover.delete 
-      user.delete
-    end
-    it "should list bookmarks for content-bearing objects on which user has read permission" do
-      pending "Figuring out how to create bookmarks"
-      user.bookmarks.size.should == 2
-      get :new
-      response.should render_template(:new)
-      assigns(:documents).size.should == 1
+    context "missing or invalid export type" do
+      before { request.env["HTTP_REFERER"] = export_sets_url }
+      it "should redirect back" do
+        get :new
+        response.should be_redirect
+      end
     end
   end
   context "#create" do
-    let(:user) { FactoryGirl.create(:user) }
     let(:object) { FactoryGirl.create(:test_content) }
+    let(:user) { FactoryGirl.create(:user) }
     before do
-      sign_in user
       object.read_users = [user.user_key]
       object.save
     end
-    after { user.delete; object.delete }
+    after do
+      object.delete
+    end
     it "should create an export set and redirect to the show page" do
       user.export_sets.count.should == 0
-      post :create, :export_set => {:pids => [object.pid]}
+      post :create, :export_set => {:pids => [object.pid], :export_type => ExportSet::Types::CONTENT}
       user.export_sets.count.should == 1
       expect(response).to redirect_to(export_set_path(assigns[:export_set]))
-      # XXX The test below should be in a model spec
-      # Zip::ZipFile.open(assigns[:export_set].archive.path) do |arch|
-      #   arch.find_entry(DulHydra.export_set_manifest_file_name).should_not be_nil
-      #   arch.find_entry(DulHydra.export_set_manifest_file_name).get_input_stream().read.should \
-      #       include(object.datastreams[DulHydra::Datastreams::CONTENT].checksum)
-      #   arch.find_entry(DulHydra.export_set_manifest_file_name).get_input_stream().read.should \
-      #       include(object.datastreams[DulHydra::Datastreams::CONTENT].checksumType)
-      # end
     end
   end
   context "#update" do
-    let(:export_set) { FactoryGirl.create(:export_set, :pids => ["foo:bar"]) }
-    before { sign_in export_set.user }
-    after { export_set.user.delete }
+    let(:export_set) { FactoryGirl.create(:content_export_set, :pids => ["foo:bar"]) }
+    let(:user) { export_set.user }
     it "should change the title" do
       put :update, :id => export_set, :export_set => {:title => "Title Changed"}
       export_set.reload.title.should == "Title Changed"
@@ -70,9 +54,8 @@ describe ExportSetsController do
     end
   end
   context "#destroy" do
-    before { sign_in export_set.user }
-    after { export_set.user.delete }
-    let(:export_set) { FactoryGirl.create(:export_set, :pids => ["foo:bar"]) }
+    let(:export_set) { FactoryGirl.create(:content_export_set, :pids => ["foo:bar"]) }
+    let(:user) { export_set.user }
     it "should delete the export set and redirect to the index page" do
       delete :destroy, :id => export_set
       lambda { ExportSet.find(export_set.id) }.should raise_error(ActiveRecord::RecordNotFound)
@@ -81,15 +64,14 @@ describe ExportSetsController do
   end
   context "#archive" do 
     let(:object) { FactoryGirl.create(:test_content) }
-    let(:export_set) { FactoryGirl.create(:export_set, :pids => [object.pid]) }
+    let(:export_set) { FactoryGirl.create(:content_export_set, :pids => [object.pid]) }
+    let(:user) { export_set.user }
     before do 
-      object.read_users = [export_set.user.user_key]
+      object.read_users = [user.user_key]
       object.save
-      sign_in export_set.user
     end
     after do
       object.delete
-      export_set.user.delete
     end
     context "request method == delete" do
       before { export_set.create_archive }
