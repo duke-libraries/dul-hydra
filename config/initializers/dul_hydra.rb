@@ -15,6 +15,7 @@ DulHydra.configure do |config|
                                 :preservation_events_permissions,
                                 :batches_permissions,
                                 :ingest_folders_permissions,
+                                :metadata_files_permissions,
                                 :download_permissions
                                ]
   if File.exists? "#{Rails.root}/config/ability_group_map.yml"

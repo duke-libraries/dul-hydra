@@ -52,6 +52,11 @@ class Ability
     can [:show, :procezz], IngestFolder, :user => current_user
   end
   
+  def metadata_files_permissions
+    cannot :create, MetadataFile unless has_ability_group?(:create, MetadataFile)
+    can [:show, :procezz], MetadataFile, :user => current_user
+  end
+  
   # Hydra::Ability adds #download_permissions in hydra-head 7.0
   def download_permissions
     can :download, ActiveFedora::Base do |obj|
