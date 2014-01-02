@@ -1,6 +1,6 @@
 class MetadataFilesController < ApplicationController
   
-	load_resource
+	load_and_authorize_resource
 	
 	def new
 	end

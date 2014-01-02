@@ -1,10 +1,11 @@
 <div class="well well-small" id="sidebar-nav">
   <ul class="nav nav-list">
 	<li><%= link_to_unless_current I18n.t('batch.web.page_titles.batches'), batches_path %></li>
-    <li>
-		<% if can? :create, IngestFolder %>
-			<div><%= ingest_folder_create_link %>
-		<% end %>
-    </li>
+	<% if can? :create, IngestFolder %>
+    	<li><%= ingest_folder_create_link %></li>
+	<% end %>
+	<% if can? :create, MetadataFile %>
+		<li><%= new_metadata_file_link %></li>
+	<% end %>
   </ul>
 </div>
