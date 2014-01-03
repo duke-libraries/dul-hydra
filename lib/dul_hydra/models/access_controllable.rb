@@ -16,7 +16,7 @@ module DulHydra::Models
 
     def set_initial_permissions(user_creator = nil)
       if user_creator
-        self.permissions = [{type: "user", access: "edit", name: user_creator.to_s}]
+        self.permissions_attributes = [{type: "user", access: "edit", name: user_creator.to_s}]
       end
     end
 
