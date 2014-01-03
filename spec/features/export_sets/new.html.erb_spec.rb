@@ -10,14 +10,8 @@ describe "export_sets/new.html.erb" do
     object_read.save
     object_discover.discover_users = [user.username]
     object_discover.save
-#    user.bookmarks.create(:document_id => object_read.pid)
-#    user.bookmarks.create(:document_id => object_discover.pid)
-    bookmark1 = user.bookmarks.create
-    bookmark1.document_id = object_read.pid
-    bookmark1.save
-    bookmark2 = user.bookmarks.create
-    bookmark2.document_id = object_discover.pid
-    bookmark2.save
+    user.bookmarks.create(:document_id => object_read.pid)
+    user.bookmarks.create(:document_id => object_discover.pid)
     login user
   end
   after do

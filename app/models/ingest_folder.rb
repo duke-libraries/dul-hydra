@@ -4,8 +4,8 @@ class IngestFolder < ActiveRecord::Base
   
   after_initialize :init
   
-  attr_accessible :admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path,
-                  :checksum_file, :checksum_type, :add_parents, :parent_id_length
+#  attr_accessible :admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path,
+#                  :checksum_file, :checksum_type, :add_parents, :parent_id_length
   belongs_to :user, :inverse_of => :ingest_folders
   
   validates_presence_of :admin_policy_pid, :collection_pid, :sub_path

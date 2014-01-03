@@ -1,7 +1,7 @@
 module DulHydra::Batch::Models
   
   class BatchObjectRelationship < ActiveRecord::Base
-    attr_accessible :name, :object, :object_type, :operation, :batch_object
+#    attr_accessible :name, :object, :object_type, :operation, :batch_object
     belongs_to :batch_object, :inverse_of => :batch_object_relationships
   
     RELATIONSHIP_ADMIN_POLICY = "admin_policy"

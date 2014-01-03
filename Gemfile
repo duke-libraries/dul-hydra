@@ -13,8 +13,6 @@ gem 'active-fedora', '~> 6.6'
 gem 'grouper-rest-client'
 gem 'hydra-editor', '0.1.1'
 
-gem 'protected_attributes'
-
 gem 'log4r'
 
 gem 'delayed_job_active_record'

@@ -4,7 +4,7 @@ class MetadataFile < ActiveRecord::Base
 
   belongs_to :user, :inverse_of => :metadata_files
   has_attached_file :metadata
-  attr_accessible :collection_pid, :metadata, :metadata_file_name, :profile
+#  attr_accessible :collection_pid, :metadata, :metadata_file_name, :profile
   
   def self.default_options
     {

@@ -2,8 +2,14 @@ class ExportSetsController < ApplicationController
   
   include Blacklight::Catalog
 
+  before_filter :new_export_set, :only => [:create]
+
   load_and_authorize_resource
 
+  def new_export_set
+    @export_set = ExportSet.new(export_set_params)
+  end
+  
   def index
   end
   
@@ -18,6 +24,7 @@ class ExportSetsController < ApplicationController
   end
   
   def create
+    @export_set.user = current_user
     flash[:notice] = @export_set.create_archive ? "New export set created." : "Export set archive creation failed."
     @export_set.save if @export_set.new_record?
     redirect_to :action => :show, :id => @export_set
@@ -27,7 +34,7 @@ class ExportSetsController < ApplicationController
   end
 
   def update
-    @export_set.update_attributes(params[:export_set])
+    @export_set.update(export_set_params)
     flash[:notice] = "Export set updated."
     redirect_to :action => :show, :id => @export_set
   end
@@ -53,6 +60,13 @@ class ExportSetsController < ApplicationController
                        end
     end
     redirect_to :action => :show, :id => @export_set
+  end
+  
+  private
+  
+  def export_set_params
+    puts params
+    params.require(:export_set).permit(:archive, :title, :pids => [])
   end
 
 end
