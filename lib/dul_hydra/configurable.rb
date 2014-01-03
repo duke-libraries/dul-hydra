@@ -24,9 +24,6 @@ module DulHydra::Configurable
     # Filter for getting list of remote groups for the repository - String, not Regexp
     mattr_accessor :remote_groups_name_filter
 
-    # Methods to add to Ability initialization
-    mattr_accessor :extra_ability_logic
-
     # Ability-Group mappings
     mattr_accessor :ability_group_map
     self.ability_group_map = {}
@@ -37,6 +34,9 @@ module DulHydra::Configurable
     self.creatable_models = []
 
     mattr_accessor :terms_for_creating
+
+    # Superuser group
+    mattr_accessor :superuser_group
   end
 
   module ClassMethods

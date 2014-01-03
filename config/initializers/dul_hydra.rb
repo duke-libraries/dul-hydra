@@ -4,24 +4,26 @@ require 'dul_hydra/decorators/active_fedora/datastream_decorator'
 
 DulHydra.configure do |config|
   config.export_set_manifest_file_name = "README.txt"
+
   config.collection_report_fields = [:pid, :identifier, :content_size]
+
   config.remote_groups_env_key = "ismemberof"
+
   config.remote_groups_env_value_delim = ";"
+
   config.remote_groups_env_value_sub = [/^urn:mace:duke\.edu:groups/, "duke"]
+
   config.remote_groups_name_filter = "duke:library:repository:ddr:"
+
   config.terms_for_creating = [:title, :description]
-  config.extra_ability_logic = [:discover_permissions, 
-                                :export_sets_permissions, 
-                                :preservation_events_permissions,
-                                :batches_permissions,
-                                :ingest_folders_permissions,
-                                :metadata_files_permissions,
-                                :download_permissions
-                               ]
+
   if File.exists? "#{Rails.root}/config/ability_group_map.yml"
     config.ability_group_map = YAML.load_file("#{Rails.root}/config/ability_group_map.yml").with_indifferent_access
   end
+
   config.creatable_models = ["AdminPolicy", "Collection"]
+
+  config.superuser_group = ENV['SUPERUSER_GROUP']
 end
 
 # Load configuration for Grouper service, if present
