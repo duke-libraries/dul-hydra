@@ -11,6 +11,8 @@ describe BatchProcessorRunMailer do
         repo_object.destroy
       end
     end
+    batch.user.destroy
+    batch.destroy
   end
   it "should send a notification" do
     ActionMailer::Base.deliveries.should_not be_empty

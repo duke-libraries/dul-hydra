@@ -15,13 +15,8 @@ module DulHydra::Batch::Models
   end
   
   shared_examples "a successful ingest" do
-    # let(:results) { object.process }
     before { object.process }
     it "should result in a verified repository object" do
-      # expect(results.repository_object).to_not be_nil
-      # expect(results.verified).to be_true
-      # results.verifications.each { |condition, result| expect(result).to eq(BatchObject::VERIFICATION_PASS) }
-      # expect(object.pid).to eq(results.repository_object.pid)
       expect(object.verified).to be_true
       expect(object.pid).to eq(assigned_pid) if assigned_pid.present?
     end
@@ -42,6 +37,7 @@ module DulHydra::Batch::Models
             AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
             Collection.find(r.object).destroy if r.name.eql?("collection")
           end
+          object.batch.user.delete if object.batch.present? && object.batch.user.present?
           object.batch.delete if object.batch.present?
           object.destroy
         end
@@ -79,7 +75,8 @@ module DulHydra::Batch::Models
               ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
               AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
               Collection.find(r.object).destroy if r.name.eql?("collection")
-            end            
+            end
+            parent.destroy
           end
           it_behaves_like "a valid ingest object"
         end
@@ -87,6 +84,7 @@ module DulHydra::Batch::Models
   
       context "invalid object" do
         let(:error_prefix) { "#{object.identifier} [Database ID: #{object.id}]:"}
+        after { object.destroy }
         context "missing model" do
           let(:object) { FactoryGirl.create(:ingest_batch_object) }
           let(:error_message) { "#{error_prefix} Model required for INGEST operation" }
@@ -108,6 +106,10 @@ module DulHydra::Batch::Models
         end
         context "invalid admin policy" do
           let(:object) { FactoryGirl.create(:ingest_batch_object, :has_batch, :has_model) }
+          after do
+            object.batch.user.delete
+            object.batch.delete
+          end
           context "admin policy pid object does not exist" do
             let(:admin_policy_pid) { "bogus:AdminPolicy" }
             let(:error_message) { "#{error_prefix} admin_policy relationship object does not exist: #{admin_policy_pid}" }
@@ -181,6 +183,10 @@ module DulHydra::Batch::Models
         end
         context "invalid parent" do
           let(:object) { FactoryGirl.create(:ingest_batch_object, :has_batch, :has_model) }
+          after do
+            object.batch.user.delete
+            object.batch.delete
+          end
           context "parent pid object does not exist" do
             let(:parent_pid) { "bogus:TestParent" }
             let(:error_message) { "#{error_prefix} parent relationship object does not exist: #{parent_pid}" }
@@ -205,6 +211,10 @@ module DulHydra::Batch::Models
         end
         context "invalid target_for" do
           let(:object) { FactoryGirl.create(:ingest_batch_object, :has_batch) }
+          after do
+            object.batch.user.delete
+            object.batch.delete
+          end
           context "target_for pid object does not exist" do
             let(:collection_pid) { "bogus:Collection" }
             let(:error_message) { "#{error_prefix} collection relationship object does not exist: #{collection_pid}" }
@@ -243,6 +253,7 @@ module DulHydra::Batch::Models
             Collection.find(r.object).destroy if r.name.eql?("collection")
           end
           ActiveFedora::Base.find(object.pid, :cast => true).destroy
+          object.destroy
         end
         context "object without a pre-assigned PID" do
           let(:assigned_pid) { nil }

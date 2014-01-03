@@ -39,6 +39,7 @@ describe IngestFoldersController do
     before do
       post :create, ingest_folder: FactoryGirl.attributes_for(:ingest_folder).merge(additional_attributes)
     end
+    after { IngestFolder.first.delete }
 
     it "sets the ingest folder attributes correctly" do
       expect(assigns[:ingest_folder].add_parents).to be_true

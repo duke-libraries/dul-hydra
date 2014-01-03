@@ -8,6 +8,7 @@ module DulHydra::Batch::Models
     
       let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
       before do
+        batch.user.destroy
         batch.destroy
       end
       after do
@@ -47,6 +48,7 @@ module DulHydra::Batch::Models
       
       after do
         admin_policy.delete
+        batch.user.destroy
         batch.destroy
       end
 
