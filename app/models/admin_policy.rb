@@ -53,7 +53,7 @@ class AdminPolicy < Hydra::AdminPolicy
     if creator_user
       initial_permissions << {type: "user", access: "edit", name: creator_user.to_s}
     end
-    self.permissions = initial_permissions
+    self.permissions_attributes = initial_permissions
   end
 
   def default_entities_for_permission(type, access)
