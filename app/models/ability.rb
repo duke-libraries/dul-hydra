@@ -4,7 +4,23 @@ class Ability
 
   include Hydra::PolicyAwareAbility
 
-  self.ability_logic += DulHydra.extra_ability_logic if DulHydra.extra_ability_logic
+  def hydra_default_permissions
+    if current_user.superuser?
+      can :manage, :all
+    else
+      super
+    end
+  end
+
+  def custom_permissions
+    download_permissions unless self.ability_logic.include?(:download_permissions)
+    discover_permissions
+    export_sets_permissions
+    preservation_events_permissions
+    batches_permissions
+    ingest_folders_permissions
+    metadata_files_permissions
+  end
 
   def create_permissions
     super # Permits :create for :all if user is authenticated
@@ -57,7 +73,6 @@ class Ability
     can [:show, :procezz], MetadataFile, :user => current_user
   end
   
-  # Hydra::Ability adds #download_permissions in hydra-head 7.0
   def download_permissions
     can :download, ActiveFedora::Base do |obj|
       if obj.class == Component

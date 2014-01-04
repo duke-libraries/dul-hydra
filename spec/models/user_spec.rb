@@ -12,4 +12,21 @@ describe User do
       user.should_not be_member_of("baz")
     end
   end
+  describe "#superuser?" do
+    let(:user) { FactoryGirl.build(:user) }
+    it "should return false if the superuser group is not defined (nil)" do
+      DulHydra.superuser_group = nil
+      user.should_not be_superuser
+    end
+    it "should return false if the user is not a member of the superuser group" do
+      DulHydra.superuser_group = "superusers"
+      user.stub(:groups).and_return(["normal"])
+      user.should_not be_superuser
+    end
+    it "should return true if the user is a member of the superuser group" do
+      DulHydra.superuser_group = "superusers"
+      user.stub(:groups).and_return(["superusers"])
+      user.should be_superuser
+    end
+  end
 end

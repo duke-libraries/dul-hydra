@@ -9,6 +9,10 @@ module DulHydra::Services
       default_user_groups(user) | append_user_groups(user)
     end
 
+    def superuser_group
+      DulHydra.superuser_group
+    end
+
     def append_groups
       []
     end

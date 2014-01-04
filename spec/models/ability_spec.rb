@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'dul_hydra'
+require 'cancan/matchers'
 
 describe Ability do
 
@@ -9,8 +10,8 @@ describe Ability do
 
   describe "create permissions" do
     context "ActiveFedora::Base" do
-      it "should NOT permit creation" do
-        subject.can?(:create, ActiveFedora::Base).should be_false
+      it "should DENY creation" do
+        subject.should_not be_able_to(:create, ActiveFedora::Base)
       end
     end
     context "creatable models" do
@@ -20,36 +21,36 @@ describe Ability do
       end
       context "user is a member of the model creators group" do
         before { user.stub(:groups).and_return(["admins", "collection_admins"]) }
-        it "should permit creation" do
+        it "should PERMIT creation" do
           DulHydra.creatable_models.each do |model|
-            subject.can?(:create, model.constantize).should be_true
+            subject.should be_able_to(:create, model.constantize)
           end
         end
         it "should have a non-empty list of can_create_models" do
           subject.can_create_models.map{|m| m.to_s}.should == DulHydra.creatable_models
         end
-        it "should return true for can_create_model? on granted models" do
+        it "should return true for :can_create_model? on granted models" do
           DulHydra.creatable_models.each do |model|
             subject.can_create_model?(model).should be_true
           end
         end
-        it "should return true for can_create_models?" do
+        it "should return true for :can_create_models?" do
           subject.can_create_models?.should be_true
         end
       end
       context "user is NOT member of model creators group" do
-        it "should not permit creation" do
+        it "should DENY creation" do
           DulHydra.creatable_models.each do |model|
-            subject.can?(:create, model.constantize).should be_false
+            subject.should_not be_able_to(:create, model.constantize)
           end
         end
-        it "should have an empty list of can_create_models" do
+        it "should have an empty list of :can_create_models" do
           subject.can_create_models.should be_empty
         end
-        it "should return false for can_create_models?" do
+        it "should return false for :can_create_models?" do
           subject.can_create_models?.should be_false
         end
-        it "should return false for can_create_model? on all models" do
+        it "should return false for :can_create_model? on all models" do
           DulHydra.creatable_models.each do |model|
             subject.can_create_model?(model).should be_false
           end
@@ -74,14 +75,14 @@ describe Ability do
               obj.read_users = [user.to_s]
               obj.save
             end
-            it "should deny download" do
-              subject.can?(:download, obj).should be_false
+            it "should DENY download" do
+              subject.should_not be_able_to(:download, obj)
             end
           end
 
           context "and user lacks read permission" do
-            it "should deny download" do
-              subject.can?(:download, obj).should be_false
+            it "should DENY download" do
+              subject.should_not be_able_to(:download, obj)
             end            
           end
         end
@@ -96,14 +97,14 @@ describe Ability do
               obj.read_users = [user.to_s]
               obj.save
             end
-            it "should permit download" do
-              subject.can?(:download, obj).should be_true
+            it "should PERMIT download" do
+              subject.should be_able_to(:download, obj)
             end
           end
 
           context "and user lacks read permission" do
-            it "should deny download" do
-              subject.can?(:download, obj).should be_false
+            it "should DENY download" do
+              subject.should_not be_able_to(:download, obj)
             end            
           end          
         end
@@ -117,14 +118,14 @@ describe Ability do
             obj.read_users = [user.to_s]
             obj.save
           end
-          it "should permit download" do
-            subject.can?(:download, obj).should be_true
+          it "should PERMIT download" do
+            subject.should be_able_to(:download, obj)
           end
         end
 
         context "and user lacks read permission" do
-          it "should deny download" do
-            subject.can?(:download, obj).should be_false
+          it "should DENY download" do
+            subject.should_not be_able_to(:download, obj)
           end            
         end                  
       end
@@ -145,14 +146,14 @@ describe Ability do
                 obj.read_users = [user.to_s]
                 obj.save
               end
-              it "should deny download" do
-                subject.can?(:download, ds).should be_false
+              it "should DENY download" do
+                subject.should_not be_able_to(:download, ds)
               end
             end
 
             context "and user lacks read permission on the object" do
-              it "should deny download" do
-                subject.can?(:download, ds).should be_false
+              it "should DENY download" do
+                subject.should_not be_able_to(:download, ds)
               end            
             end
           end
@@ -167,14 +168,14 @@ describe Ability do
                 obj.read_users = [user.to_s]
                 obj.save
               end
-              it "should permit download" do
-                subject.can?(:download, ds).should be_true
+              it "should PERMIT download" do
+                subject.should be_able_to(:download, ds)
               end
             end
 
             context "and user lacks read permission on the object" do
-              it "should deny download" do
-                subject.can?(:download, ds).should be_false
+              it "should DENY download" do
+                subject.should_not be_able_to(:download, ds)
               end            
             end          
           end
@@ -188,14 +189,14 @@ describe Ability do
               obj.read_users = [user.to_s]
               obj.save
             end
-            it "should permit download" do
-              subject.can?(:download, ds).should be_true
+            it "should PERMIT download" do
+              subject.should be_able_to(:download, ds)
             end
           end
 
           context "and user lacks read permission on the object" do
-            it "should deny download" do
-              subject.can?(:download, ds).should be_false
+            it "should DENY download" do
+              subject.should_not be_able_to(:download, ds)
             end            
           end                  
           
@@ -211,13 +212,13 @@ describe Ability do
             obj.read_users = [user.to_s]
             obj.save
           end
-          it "should permit download" do
-            subject.can?(:download, ds).should be_true
+          it "should PERMIT download" do
+            subject.should be_able_to(:download, ds)
           end
         end
         context "and user lacks read permission on the object" do
-          it "should deny download" do
-            subject.can?(:download, ds).should be_false
+          it "should DENY download" do
+            subject.should_not be_able_to(:download, ds)
           end
         end        
       end
@@ -227,26 +228,40 @@ describe Ability do
   end # download_permissions
 
   describe "#discover_permissions" do
+    # TODO
   end
 
   describe "#preservation_events_permissions" do
+    # TODO
   end
 
   describe "#export_sets_permissions" do
+    # TODO
   end
   
   describe "#ingest_folders_permissions" do
     context "user has no permitted ingest folders" do
       before { IngestFolder.stub(:permitted_folders).with(user).and_return([]) }
-      it "should deny create permission to the user" do
-        subject.can?(:create, IngestFolder).should be_false
+      it "should DENY create permission to the user" do
+        subject.should_not be_able_to(:create, IngestFolder)
       end      
     end
     context "user has at least one permitted ingest folder" do
       before { IngestFolder.stub(:permitted_folders).with(user).and_return(['dir']) }
-      it "should allow create permission to the user" do
-        subject.can?(:create, IngestFolder).should be_true
+      it "should PERMIT create permission to the user" do
+        subject.should be_able_to(:create, IngestFolder)
       end      
+    end
+  end
+
+  describe "#superuser_permissions" do
+    before do
+      DulHydra.creatable_models = ["AdminPolicy", "Collection"]
+      DulHydra.stub(:superuser_group).and_return("superusers")
+      user.stub(:groups).and_return(["superusers"])
+    end
+    it "should grant :manage on :all" do
+      subject.should be_able_to(:manage, :all)
     end
   end
 

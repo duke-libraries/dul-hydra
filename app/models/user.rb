@@ -43,5 +43,9 @@ class User < ActiveRecord::Base
   def member_of?(group)
     group ? self.groups.include?(group) : false
   end
+  
+  def superuser?
+    member_of? group_service.superuser_group
+  end
 
 end
