@@ -36,20 +36,10 @@ describe "object routes" do
   end
 
   describe "non-RESTful routes" do
-    it "should have a 'collection_info' route" do
-      @route = {controller: 'objects', action: 'collection_info', id: 'duke:1'}
-      expect(:get => '/objects/duke:1/collection_info').to route_to(@route)
-      expect(:get => collection_info_object_path('duke:1')).to route_to(@route)
-    end
     it "should have a 'download' route" do
       @route = {controller: 'downloads', action: 'show', id: 'duke:1'}
       expect(:get => '/objects/duke:1/download').to route_to(@route)
       expect(:get => download_object_path('duke:1')).to route_to(@route)
-    end
-    it "should have a 'preservation_events' route" do
-      @route = {controller: 'objects', action: 'preservation_events', id: 'duke:1'}
-      expect(:get => '/objects/duke:1/preservation_events').to route_to(@route)
-      expect(:get => preservation_events_object_path('duke:1')).to route_to(@route)
     end
     it "should have a 'thumbnail' route" do
       @route = {controller: 'thumbnail', action: 'show', id: 'duke:1'}
@@ -60,6 +50,21 @@ describe "object routes" do
       @route = {controller: 'downloads', action: 'show', id: 'duke:1', datastream_id: 'content'}
       expect(:get => '/objects/duke:1/datastreams/content').to route_to(@route)
       expect(:get => download_datastream_object_path('duke:1', 'content')).to route_to(@route)
+    end
+
+    describe "Ajax routes" do
+      it "should have a 'collection_info' route" do
+        pending "Mocking request to include header {'X-Requested-With' => 'XMLHttpRequest'}"
+        @route = {controller: 'objects', action: 'collection_info', id: 'duke:1'}
+        expect(:get => '/objects/duke:1/collection_info').to route_to(@route)
+        expect(:get => collection_info_object_path('duke:1')).to route_to(@route)
+      end
+      it "should have a 'preservation_events' route" do
+        pending "Mocking request to include header {'X-Requested-With' => 'XMLHttpRequest'}"
+        @route = {controller: 'objects', action: 'preservation_events', id: 'duke:1'}
+        expect(:get => '/objects/duke:1/preservation_events').to route_to(@route)
+        expect(:get => preservation_events_object_path('duke:1')).to route_to(@route)
+      end
     end
 
     describe "descriptive metadata routes" do
