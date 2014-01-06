@@ -71,6 +71,7 @@ describe ExportSetsController do
   end
   context "#destroy" do
     before { sign_in export_set.user }
+    after { export_set.user.delete }
     let(:export_set) { FactoryGirl.create(:export_set, :pids => ["foo:bar"]) }
     it "should delete the export set and redirect to the index page" do
       delete :destroy, :id => export_set

@@ -10,9 +10,9 @@ describe "objects/show.html.erb" do
   end
   after(:each) do
     logout user
+    user.delete
     object.delete
   end
-  after(:all) { user.delete }
   context "object is describable" do
     let(:object) { FactoryGirl.create(:item) }
     it "should display the descriptive metadata" do

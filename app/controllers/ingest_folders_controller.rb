@@ -1,12 +1,17 @@
 class IngestFoldersController < ApplicationController
   
+  before_filter :new_ingest_folder, :only => [:new, :create]
+
   load_and_authorize_resource
 
+  def new_ingest_folder
+    @ingest_folder = IngestFolder.new(ingest_folder_params)
+  end
+  
   def new
   end
   
   def create
-    @ingest_folder = IngestFolder.new(params[:ingest_folder])
     @ingest_folder.user = current_user
     @ingest_folder.model = IngestFolder.default_file_model
     @ingest_folder.add_parents = true
@@ -26,6 +31,12 @@ class IngestFoldersController < ApplicationController
   def procezz
     @ingest_folder.procezz
     redirect_to :controller => :batches, :action => :index
+  end
+  
+  private
+  
+  def ingest_folder_params
+    params.require(:ingest_folder).permit(:admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path, :checksum_file, :checksum_type, :add_parents, :parent_id_length)
   end
     
 end

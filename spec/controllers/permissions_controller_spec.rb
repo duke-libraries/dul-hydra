@@ -7,10 +7,10 @@ describe PermissionsController do
     object.save
     sign_in user 
   end
-  after(:all) { user.delete }
   after(:each) do
     object.delete
     sign_out user
+    user.delete
   end
   describe "#edit" do
     context "permissions" do

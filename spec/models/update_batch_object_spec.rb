@@ -18,12 +18,13 @@ module DulHydra::Batch::Models
 
     let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
     let(:object) { batch.batch_objects.first }
+
+    after do
+      batch.user.destroy
+      batch.destroy
+    end
     
     context "validate" do
-      after do
-        batch.user.destroy
-        batch.destroy
-      end
       context "valid object" do
         let(:repo_object) { TestModel.create(:pid => object.pid) }
         let(:apo) { FactoryGirl.create(:group_edit_policy) }

@@ -4,7 +4,7 @@ class ExportSet < ActiveRecord::Base
 
   belongs_to :user
   has_attached_file :archive
-  attr_accessible :archive, :pids, :title
+#  attr_accessible :archive, :pids, :title
   serialize :pids
   validates_presence_of :user, :pids
 

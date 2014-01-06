@@ -3,10 +3,10 @@ require 'spec_helper'
 describe ThumbnailController do
   let(:object) { FactoryGirl.create(:component_with_content) }
   let(:user) { FactoryGirl.create(:user) }
-  after(:all) { user.delete }
   before(:each) { sign_in user }
   after(:each) do
     sign_out user
+    user.delete
     object.delete
   end
   context "user with discover permssion but not read permission on asset" do

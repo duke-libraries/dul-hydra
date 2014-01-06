@@ -6,7 +6,7 @@ DulHydra::Application.routes.draw do
 
   # http://railsadventures.wordpress.com/2012/10/07/routing-only-ajax-requests-in-ror/
   class XhrRequestConstraint
-    def matches?(request)
+    def self.matches?(request)
       request.xhr?
     end
   end

@@ -7,9 +7,9 @@ describe "catalog/index.html.erb" do
   before(:each) { login user }
   after(:each) do
     logout user
+    user.delete
     object.delete
   end
-  after(:all) { user.delete }
   context "search options" do
     before do
       object.discover_groups = ["public"]

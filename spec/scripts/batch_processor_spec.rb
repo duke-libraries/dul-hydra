@@ -95,6 +95,8 @@ module DulHydra::Batch::Scripts
           repo_obj.admin_policy.destroy if repo_obj.admin_policy
           repo_obj.destroy
         end
+        batch.user.destroy
+        batch.destroy
       end
       context "successful initial run" do
         before { bp.execute }
@@ -122,6 +124,8 @@ module DulHydra::Batch::Scripts
       after do
         repo_object.destroy
         apo.destroy
+        batch.user.destroy
+        batch.destroy
       end
       context "successful update" do
         it_behaves_like "a successful update batch"

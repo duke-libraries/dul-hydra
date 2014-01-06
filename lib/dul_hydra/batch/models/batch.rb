@@ -1,9 +1,9 @@
 module DulHydra::Batch::Models
   
   class Batch < ActiveRecord::Base
-    attr_accessible :description, :name, :user, :details, :failure, :logfile, :outcome, :start, :status, :stop, :success, :version
+#    attr_accessible :description, :name, :user, :details, :failure, :logfile, :outcome, :start, :status, :stop, :success, :version
     belongs_to :user, :inverse_of => :batches
-    has_many :batch_objects, :inverse_of => :batch, :dependent => :destroy, :order => 'id ASC'
+    has_many :batch_objects, -> { order("id ASC") }, :inverse_of => :batch, :dependent => :destroy
     has_attached_file :logfile
 
     OUTCOME_SUCCESS = "SUCCESS"

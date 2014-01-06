@@ -17,7 +17,7 @@ class User < ActiveRecord::Base
   devise :remote_user_authenticatable, :database_authenticatable, :registerable,
          :rememberable, :trackable, :validatable
 
-  attr_accessible :username, :email, :password, :password_confirmation, :remember_me
+#  attr_accessible :username, :email, :password, :password_confirmation, :remember_me
 
   attr_writer :group_service
 

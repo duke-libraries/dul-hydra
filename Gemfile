@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '~> 3.2.16'
+gem 'rails', '~> 4.0.2'
 
 gem 'sqlite3'
 gem 'hydra-head', '~> 6.4'
@@ -43,13 +43,9 @@ group :production do
   gem 'mysql2'
 end
 
-# Gems used only for assets and not required
-# in production environments by default.
-group :assets do
-  gem 'sass-rails', '~> 3.2.3'
-  gem 'jquery-rails'
-  gem 'uglifier', '~> 1.3.0'
-end
+gem 'sass-rails', '~> 4.0.1'
+gem 'jquery-rails'
+gem 'uglifier', '~> 1.3.0'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

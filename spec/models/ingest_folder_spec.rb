@@ -38,6 +38,7 @@ describe IngestFolder do
     IngestFolder.stub(:load_configuration).and_return(YAML.load(config).with_indifferent_access)
   end
   after do
+    ingest_folder.destroy
     user.destroy
   end
   context "initialization" do
@@ -153,6 +154,7 @@ describe IngestFolder do
           obj.batch_object_relationships.each { |rel| rels[obj.identifier] = { rel.name => rel } }
         end
       end
+      after { user.batches.first.destroy }
       it "should create the correct batch objects" do
         expect(user.batches.count).to eql(1)
         expect(user.batches.first.name).to eql(I18n.t('batch.ingest_folder.batch_name'))
