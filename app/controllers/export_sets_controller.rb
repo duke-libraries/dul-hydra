@@ -65,7 +65,6 @@ class ExportSetsController < ApplicationController
   private
   
   def export_set_params
-    puts params
     params.require(:export_set).permit(:archive, :title, :pids => [])
   end
 
