@@ -11,6 +11,7 @@ en:
                 parent_id_length: Length of Item Identifier
                 sub_path: Folder Sub-Path
             metadata_file:
+                collection_pid: Collection
                 metadata: Metadata File
                 profile: Metadata File Type
     batch:

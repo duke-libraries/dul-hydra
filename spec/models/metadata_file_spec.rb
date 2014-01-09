@@ -1,5 +1,12 @@
 require 'spec_helper'
 
+shared_examples "an invalid metadata file" do
+  it "should not be valid" do
+    expect(metadata_file).to_not be_valid
+    expect(metadata_file.errors).to have_key(error_field)
+  end  
+end
+
 shared_examples "a successful metadata file processing" do
   it "should create a batch with an appropriate UpdateBatchObject" do
     expect(@batch_object).to be_a(DulHydra::Batch::Models::UpdateBatchObject)
@@ -11,10 +18,38 @@ shared_examples "a successful metadata file processing" do
 end
 
 describe MetadataFile do
+  
+  let(:metadata_file) { FactoryGirl.create(:metadata_file) }
+
+  after { metadata_file.destroy }
+
+  context "validation" do
+    context "valid" do
+      it "should have a valid factory" do
+        expect(metadata_file).to be_valid
+        expect(metadata_file.validate_parseability).to be_empty
+      end
+    end
+    context "metadata file missing" do
+      let(:error_field)  { :metadata }
+      before { metadata_file.metadata = nil }
+      it_behaves_like "an invalid metadata file"
+    end
+    context "profile missing" do
+      let(:error_field)  { :profile }
+      before { metadata_file.profile = nil }
+      it_behaves_like "an invalid metadata file"
+    end
+    context "metadata file not parseable with profile" do
+      before { metadata_file.update(:metadata => File.new(Rails.root.join('spec', 'fixtures', 'batch_update', 'cdm_export.txt'))) }
+      it "should have a parseability error" do
+        expect(metadata_file.validate_parseability).to_not be_empty
+      end
+    end
+  end
 
   context "successful processing" do
 
-    let(:metadata_file) { MetadataFile.create }
     let(:expected_qdc) do
       ds = ActiveFedora::QualifiedDublinCoreDatastream.new
       ds.title = "Updated Title"
@@ -33,10 +68,7 @@ describe MetadataFile do
       @datastream = @batch_object.batch_object_datastreams.first
     end
 
-    after do
-      metadata_file.destroy
-      @batch.destroy
-    end
+    after { @batch.destroy }
 
     context "cdm export metadata file" do
       let(:delimited_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_update', 'cdm_export.txt') }

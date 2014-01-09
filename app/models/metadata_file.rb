@@ -4,7 +4,17 @@ class MetadataFile < ActiveRecord::Base
 
   belongs_to :user, :inverse_of => :metadata_files
   has_attached_file :metadata
-#  attr_accessible :collection_pid, :metadata, :metadata_file_name, :profile
+  
+  validates_presence_of :metadata, :profile
+  
+  def validate_parseability
+    begin
+      CSV.read(metadata.path, effective_options[:csv])
+    rescue CSV::MalformedCSVError
+      errors.add(:metadata, "Parse error")
+    end
+    errors
+  end
   
   def self.default_options
     {
