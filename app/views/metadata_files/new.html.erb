@@ -1,7 +1,7 @@
 <h3>Metadata Update File</h3>
 
 <% if @metadata_file.errors.any? %>
-  <div id="error_explanation">
+  <div class="alert alert-danger">
     <h2><%= pluralize(@metadata_file.errors.count, "error") %> prohibited this metadata file from being processed:</h2>
  
     <ul>
@@ -17,7 +17,7 @@
 	<%= f.label :metadata %>
 	<%= f.file_field :metadata %>
 	<%= f.label :profile %>
-	<%= f.select :profile, options_for_select(metadata_file_profiles) %>
+	<%= f.select :profile, options_for_select(metadata_file_profiles), { :prompt =>  t('dul_hydra.prompts.select') % "Metadata File Type" }, {:style => 'width: auto;'} %>
 	<%= f.label :collection_pid %>
 	<%= f.select :collection_pid, model_options_for_select(Collection), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {:style => 'width: auto;'}%>
 
