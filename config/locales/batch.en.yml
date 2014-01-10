@@ -36,6 +36,10 @@ en:
             schema_map: Schema Map
             upload_file: Upload File
             uploaded_file: Uploaded File
+            error:
+                parse_error: Error parsing the file
+                attribute_name: Invalid attribute name
+                mapped_attribute_name: Attribute mapped to invalid name
         manifest:
             validation_failed: "Did not process manifest due to manifest validation errors"
             validation_skipped: "Skipped validation"
