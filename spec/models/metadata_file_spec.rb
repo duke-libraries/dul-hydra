@@ -55,7 +55,7 @@ describe MetadataFile do
       ds.title = "Updated Title"
       ds.identifier = "test12345"
       ds.description = 'This is some description; this is "some more" description.'
-      ds.subject = [ "Alpha", "Beta", "Gamma" ]
+      ds.subject = [ "Alpha", "Beta", "Gamma" , "Delta", "Epsilon" ]
       ds.content
     end
 
@@ -82,11 +82,12 @@ describe MetadataFile do
           :parse => {
             :include_empty_fields => false,
             :repeating_fields_separator => ";",
-            :repeatable_fields => [ "Subject-Topic" ]
+            :repeatable_fields => [ "Subject-Keyword", "Subject-Topic" ]
           },
           :schema_map => {
             "Description" => "description",
             "Identifier-LocalID" => "identifier",
+            "Subject-Keyword" => "subject",
             "Subject-Topic" => "subject",
             "Title" => "title"
           }

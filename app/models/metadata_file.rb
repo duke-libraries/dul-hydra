@@ -74,16 +74,15 @@ class MetadataFile < ActiveRecord::Base
       obj.pid = row.field("pid") if row.headers.include?("pid")
       obj.save
       ds = ActiveFedora::QualifiedDublinCoreDatastream.new
-      row.headers.each do |header|
-        if effective_options[:parse][:include_empty_fields] || !row.field(header).blank?
+      row.headers.each_with_index do |header, idx|
+        if effective_options[:parse][:include_empty_fields] || !row.field(header, idx).blank?
           if header.eql?(effective_options[:parse][:local_identifier])
-            obj.update_attributes(:identifier => row.field(header)) unless obj.identifier.present?
+            obj.update_attributes(:identifier => row.field(header, idx)) unless obj.identifier.present?
           end
           if canonical_attribute_name(header).present?
-            value = parse_field(row.field(header), header)
-            already_set = ds.send("#{canonical_attribute_name(header).to_sym}")
-            to_be_set = already_set.is_a?(Array) ? already_set << value : value
-            ds.send("#{canonical_attribute_name(header).to_sym}=", to_be_set)
+            value = ds.send(canonical_attribute_name(header))
+            value += parse_field(row.field(header, idx), header)
+            ds.send("#{canonical_attribute_name(header)}=", value)
           end
         end
       end
@@ -116,7 +115,7 @@ class MetadataFile < ActiveRecord::Base
     if downcase_repeatable_field_names.include?(header.downcase)
       value.split(effective_options[:parse][:repeating_fields_separator]).map(&:strip)
     else
-      value
+      [ value ]
     end
   end
   
