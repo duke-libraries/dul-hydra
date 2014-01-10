@@ -27,7 +27,7 @@ describe MetadataFile do
     context "valid" do
       it "should have a valid factory" do
         expect(metadata_file).to be_valid
-        expect(metadata_file.validate_parseability).to be_empty
+        expect(metadata_file.validate_data).to be_empty
       end
     end
     context "metadata file missing" do
@@ -42,8 +42,36 @@ describe MetadataFile do
     end
     context "metadata file not parseable with profile" do
       before { metadata_file.update(:metadata => File.new(Rails.root.join('spec', 'fixtures', 'batch_update', 'cdm_export.txt'))) }
-      it "should have a parseability error" do
-        expect(metadata_file.validate_parseability).to_not be_empty
+      it "should have a parse error" do
+        expect(metadata_file.validate_data.messages[:metadata].first).to include(I18n.t('batch.metadata_file.error.parse_error'))
+      end
+    end
+    context "metadata file invalid attribute names"do
+      context "invalid QDC header" do
+        before { metadata_file.update(:metadata => File.new(Rails.root.join('spec', 'fixtures', 'batch_update', 'qdc_csv_invalid_column.csv'))) }
+        it "should have an attribute name error" do
+          expect(metadata_file.validate_data.messages[:metadata].first).to include("#{I18n.t('batch.metadata_file.error.attribute_name')}: invalid")
+        end
+      end
+      context "invalid schema map target" do
+        before do
+          options =
+            { 
+              :csv => metadata_file.effective_options[:csv],
+              :parse => metadata_file.effective_options[:parse],
+              :schema_map => {
+                "identifier" => "identifier",
+                "title" => "title",
+                "description" => "invalid",
+                "subject" => "subject",
+                "dateSubmitted" => "dateSubmitted"
+              }
+            }          
+          MetadataFile.any_instance.stub(:effective_options).and_return(options)
+        end
+        it "should have an attribute name error" do
+          expect(metadata_file.validate_data.messages[:metadata].first).to include("#{I18n.t('batch.metadata_file.error.mapped_attribute_name')}: description => invalid")
+        end
       end
     end
   end
@@ -56,6 +84,7 @@ describe MetadataFile do
       ds.identifier = "test12345"
       ds.description = 'This is some description; this is "some more" description.'
       ds.subject = [ "Alpha", "Beta", "Gamma" , "Delta", "Epsilon" ]
+      ds.dateSubmitted = "2010-01-22"
       ds.content
     end
 
@@ -89,6 +118,7 @@ describe MetadataFile do
             "Identifier-LocalID" => "identifier",
             "Subject-Keyword" => "subject",
             "Subject-Topic" => "subject",
+            "Submission-Date" => "dateSubmitted",
             "Title" => "title"
           }
         }

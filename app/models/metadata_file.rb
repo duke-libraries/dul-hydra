@@ -7,11 +7,26 @@ class MetadataFile < ActiveRecord::Base
   
   validates_presence_of :metadata, :profile
   
-  def validate_parseability
+  def validate_data
     begin
-      CSV.read(metadata.path, effective_options[:csv])
-    rescue CSV::MalformedCSVError
-      errors.add(:metadata, "Parse error")
+      csv_table = CSV.read(metadata.path, effective_options[:csv])
+      valid_headers = [ :pid, :model ].concat(ActiveFedora::QualifiedDublinCoreDatastream::DCTERMS)
+      csv_table.headers.each do |header|
+        if effective_options[:schema_map].present?
+          canonical_name = canonical_attribute_name(header)
+          if canonical_name.present?
+            unless valid_headers.include?(canonical_name.to_sym)
+              errors.add(:metadata, "#{I18n.t('batch.metadata_file.error.mapped_attribute_name')}: #{header} => #{canonical_name}")              
+            end
+          end
+        else
+          unless valid_headers.include?(header.to_sym)
+            errors.add(:metadata, "#{I18n.t('batch.metadata_file.error.attribute_name')}: #{header}")
+          end
+        end
+      end
+    rescue CSV::MalformedCSVError => e
+      errors.add(:metadata, "#{I18n.t('batch.metadata_file.error.parse_error')}: #{e}")
     end
     errors
   end

@@ -14,8 +14,8 @@ class MetadataFilesController < ApplicationController
 	def create
 	  @metadata_file.user = current_user
     if @metadata_file.save
-      parse_errors = @metadata_file.validate_parseability
-      if parse_errors.present?
+      data_errors = @metadata_file.validate_data
+      if data_errors.present?
         render :new
       else
         redirect_to :action => :show, :id => @metadata_file

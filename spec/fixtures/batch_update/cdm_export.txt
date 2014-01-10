@@ -1,2 +1,2 @@
-Identifier-LocalID	Title	Description	Subject-Topic	Subject-Keyword
-test12345	Updated Title	This is some description; this is "some more" description.	Alpha; Beta; Gamma	Delta; Epsilon
+Identifier-LocalID	Title	Description	Subject-Topic	Subject-Keyword	Submission-Date
+test12345	Updated Title	This is some description; this is "some more" description.	Alpha; Beta; Gamma	Delta; Epsilon	2010-01-22
