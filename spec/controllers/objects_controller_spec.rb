@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ObjectsController do
+describe ObjectsController, objects: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
@@ -78,7 +78,7 @@ describe ObjectsController do
       end
     end
 
-    describe "#edit" do
+    describe "#edit", descriptive_metadata: true do
       before do
         object.edit_users = [user.user_key]
         object.save
@@ -89,7 +89,7 @@ describe ObjectsController do
       end
     end
 
-    describe "#update" do
+    describe "#update", descriptive_metadata: true do
       before do
         object.edit_users = [user.user_key]
         object.save

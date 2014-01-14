@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "object routes" do
+describe "object routes", objects: true do
 
   describe "RESTful routes" do
     before { DulHydra.creatable_models = ["Collection"] }
@@ -80,8 +80,8 @@ describe "object routes" do
       end    
       it "should have an update route" do
         @route = {controller: 'objects', action: 'update', id: 'duke:1'}
-        expect(:put => '/objects/duke:1/descriptive_metadata').to route_to(@route)
-        expect(:put => record_path('duke:1')).to route_to(@route)
+        expect(:patch => '/objects/duke:1/descriptive_metadata').to route_to(@route)
+        expect(:patch => record_path('duke:1')).to route_to(@route)
       end    
     end
 

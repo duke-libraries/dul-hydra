@@ -35,7 +35,7 @@ DulHydra::Application.routes.draw do
   scope '/objects/:id/descriptive_metadata', constraints: pid_constraint, as: 'record' do
     get '/' => 'objects#show', defaults: {tab: 'descriptive_metadata'}
     get 'edit' => 'objects#edit'
-    put '/' => 'objects#update'
+    patch '/' => 'objects#update'
   end
 
   scope '/objects/:id/permissions', constraints: pid_constraint, as: 'permissions' do

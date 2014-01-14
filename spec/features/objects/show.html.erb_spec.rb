@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'helpers/user_helper'
 
-describe "objects/show.html.erb" do
+describe "objects/show.html.erb", objects: true do
   let(:user) { FactoryGirl.create(:user) }
   before do
     object.read_users = [user.to_s]
