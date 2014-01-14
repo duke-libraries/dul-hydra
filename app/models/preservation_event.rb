@@ -103,7 +103,7 @@ class PreservationEvent < ActiveRecord::Base
   def for_object_must_exist_and_have_preservation_events
     if for_object?
       begin
-        errors.add(:linking_object_id_value, "Object does not support preservation events") unless for_object.is_a?(DulHydra::Models::HasPreservationEvents)
+        errors.add(:linking_object_id_value, "Object does not support preservation events") unless for_object.is_a?(DulHydra::HasPreservationEvents)
       rescue ArgumentError => e
         errors.add(:linking_object_id_value, e.message)
       rescue ActiveFedora::ObjectNotFoundError => e
@@ -114,12 +114,12 @@ class PreservationEvent < ActiveRecord::Base
 
   def self.events_for(object_or_pid, event_type=nil)
     raise TypeError, 'Invalid event type' unless event_type.nil? || EVENT_TYPES.include?(event_type)
-    if object_or_pid.is_a?(DulHydra::Models::HasPreservationEvents)
+    if object_or_pid.is_a?(DulHydra::HasPreservationEvents)
       pid = object_or_pid.pid
     elsif object_or_pid.is_a?(String)
       pid = object_or_pid
     else
-      raise TypeError, "First argument must be a DulHydra::Models::HasPreservationEvents or a PID string."
+      raise TypeError, "First argument must be a DulHydra::HasPreservationEvents or a PID string."
     end
     params = {
       linking_object_id_type: OBJECT,

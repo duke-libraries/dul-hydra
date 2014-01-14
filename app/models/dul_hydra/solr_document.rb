@@ -1,6 +1,6 @@
 require 'json'
 
-module DulHydra::Models
+module DulHydra
   module SolrDocument
     extend ActiveSupport::Concern
 

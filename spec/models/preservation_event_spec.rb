@@ -69,7 +69,7 @@ describe PreservationEvent do
       it "should validate the existence and proper type of object referenced in the linking_object_id_value if the linking_object_id_type is 'object'" do
         pe.should be_valid
         pe.linking_object_id_type.should == PreservationEvent::OBJECT
-        pe.for_object.should be_kind_of(DulHydra::Models::HasPreservationEvents)
+        pe.for_object.should be_kind_of(DulHydra::HasPreservationEvents)
         pe.linking_object_id_value = "foo:bar"
         pe.should_not be_valid
       end

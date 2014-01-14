@@ -1,4 +1,4 @@
-module DulHydra::Models
+module DulHydra
   module AccessControllable
     extend ActiveSupport::Concern
 

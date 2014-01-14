@@ -13,7 +13,7 @@ end
 shared_examples "a valid object preservation event" do
   it_should_behave_like "a valid preservation event"
   it "should behave like an object event" do
-    subject.for_object.should be_kind_of(DulHydra::Models::HasPreservationEvents)
+    subject.for_object.should be_kind_of(DulHydra::HasPreservationEvents)
     subject.should be_for_object
     subject.linking_object_id_type.should eq(PreservationEvent::OBJECT)
     subject.linking_object_id_value.should eq(subject.for_object.pid)

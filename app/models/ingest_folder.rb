@@ -279,7 +279,7 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def desc_metadata(identifier, source=nil, creator=nil)
-    base = DulHydra::Models::Base.new
+    base = DulHydra::Base.new
     base.identifier = identifier if identifier.present?
     base.source = source if source.present?
     base.creator = creator if creator.present?

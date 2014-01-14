@@ -1,6 +1,6 @@
-class Collection < DulHydra::Models::Base
+class Collection < DulHydra::Base
   
-  include DulHydra::Models::HasChildren
+  include DulHydra::HasChildren
 
   has_many :children, :property => :is_member_of_collection, :inbound => true, :class_name => 'Item'
   has_many :targets, :property => :is_external_target_for, :inbound => true, :class_name => 'Target'

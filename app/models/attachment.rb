@@ -1,6 +1,6 @@
-class Attachment < DulHydra::Models::Base
+class Attachment < DulHydra::Base
 
-  include DulHydra::Models::HasContent
+  include DulHydra::HasContent
   
   belongs_to :attached_to, 
              :property => :is_attached_to, 
