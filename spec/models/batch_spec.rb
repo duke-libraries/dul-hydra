@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Models
 
-  describe Batch do
+  describe Batch, batch: true do
     
     context "destroy" do
     

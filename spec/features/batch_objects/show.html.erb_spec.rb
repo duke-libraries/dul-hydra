@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'helpers/user_helper'
 
-describe "batch_objects/show.html.erb" do
+describe "batch_objects/show.html.erb", batch: true do
   
   let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
   

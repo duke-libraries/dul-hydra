@@ -14,7 +14,7 @@ module DulHydra::Batch::Models
     end
   end
   
-  describe UpdateBatchObject do
+  describe UpdateBatchObject, batch: true do
 
     let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
     let(:object) { batch.batch_objects.first }

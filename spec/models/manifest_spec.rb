@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Models
 
-  describe Manifest do
+  describe Manifest, batch: true do
   
     shared_examples "a valid manifest" do
       it "should be valid" do

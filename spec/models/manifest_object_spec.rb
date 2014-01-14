@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Models
 
-  describe "ManifestObject" do
+  describe "ManifestObject", batch: true do
   
     shared_examples "a valid manifest object" do
       it "should be valid" do

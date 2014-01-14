@@ -22,7 +22,7 @@ module DulHydra::Batch::Models
     end
   end
   
-  describe IngestBatchObject do
+  describe IngestBatchObject, batch: true, ingest: true do
     
     context "validate" do
     

@@ -55,7 +55,7 @@ module DulHydra::Batch::Scripts
     end
   end
   
-  describe ManifestProcessor do
+  describe ManifestProcessor, batch: true do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:manifest_file) { File.join(test_dir, 'manifest.yml') }
     let(:log_dir) { test_dir }
