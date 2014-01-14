@@ -76,7 +76,7 @@ describe MetadataFile do
     end
   end
 
-  context "successful processing" do
+  context "successful processing", batch: true do
 
     let(:expected_qdc) do
       ds = ActiveFedora::QualifiedDublinCoreDatastream.new

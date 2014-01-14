@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BatchesController do
+describe BatchesController, batch: true do
 
   describe "#procezz" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }

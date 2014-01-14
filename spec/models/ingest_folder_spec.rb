@@ -7,7 +7,7 @@ shared_examples "an invalid ingest folder" do
   end  
 end
 
-describe IngestFolder do
+describe IngestFolder, ingest: true do
 
   let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user) }
   let(:mount_point_name) { "base" }
@@ -140,7 +140,7 @@ describe IngestFolder do
         expect(scan_results.excluded_files).to eql(["Thumbs.db", "targets/Thumbs.db"])
       end
     end
-    context "procezz" do
+    context "procezz", batch: true do
       let(:objects) { {} }
       let(:dss) { {} }
       let(:rels) { {} }
