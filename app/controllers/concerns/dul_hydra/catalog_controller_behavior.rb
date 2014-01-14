@@ -1,4 +1,4 @@
-module DulHydra::Controller
+module DulHydra
   module CatalogControllerBehavior
     extend ActiveSupport::Concern
 
