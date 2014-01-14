@@ -17,11 +17,14 @@ shared_examples "a successful metadata file processing" do
   end
 end
 
-describe MetadataFile do
+describe MetadataFile, :metadata_file => true do
   
-  let(:metadata_file) { FactoryGirl.create(:metadata_file) }
+  let(:metadata_file) { FactoryGirl.create(:metadata_file_qdc_csv) }
 
-  after { metadata_file.destroy }
+  after do
+    metadata_file.user.destroy
+    metadata_file.destroy
+  end
 
   context "validation" do
     context "valid" do
@@ -41,7 +44,7 @@ describe MetadataFile do
       it_behaves_like "an invalid metadata file"
     end
     context "metadata file not parseable with profile" do
-      before { metadata_file.update(:metadata => File.new(Rails.root.join('spec', 'fixtures', 'batch_update', 'cdm_export.txt'))) }
+      before { metadata_file.update(:metadata => File.new(Rails.root.join('spec', 'fixtures', 'batch_update', 'mapped_tab.txt'))) }
       it "should have a parse error" do
         expect(metadata_file.validate_data.messages[:metadata].first).to include(I18n.t('batch.metadata_file.error.parse_error'))
       end
@@ -100,7 +103,7 @@ describe MetadataFile do
     after { @batch.destroy }
 
     context "cdm export metadata file" do
-      let(:delimited_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_update', 'cdm_export.txt') }
+      let(:delimited_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_update', 'mapped_tab.txt') }
       let(:options) do
         {
           :csv => {

@@ -14,6 +14,7 @@ en:
                 collection_pid: Collection
                 metadata: Metadata File
                 profile: Metadata File Type
+                rows: Rows (excludes header row)
     batch:
         ingest_folder:
             create: New Ingest Folder
@@ -31,9 +32,8 @@ en:
         metadata_file:
             batch_name: Metadata Update File
             create_batch: Create Update Batch
+            fields: Fields
             new: Upload Metadata File
-            options: Options
-            schema_map: Schema Map
             upload_file: Upload File
             uploaded_file: Uploaded File
             error:
