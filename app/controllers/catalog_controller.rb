@@ -8,6 +8,7 @@ class CatalogController < ApplicationController
 
   # Adds method from Blacklight::SolrHelper to helper context
   helper_method :get_solr_response_for_doc_id
+  helper_method :get_solr_response_for_field_values
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_show_permissions, :only => :show

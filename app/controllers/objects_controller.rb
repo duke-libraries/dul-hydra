@@ -115,7 +115,7 @@ class ObjectsController < ApplicationController
   def object_children
     return @object_children if @object_children
     if current_object.has_children?
-      @object_children = SolrResult.new(*get_search_results(params, {q: current_object.children_query}))
+      @object_children = SolrResult.new(*get_search_results(params, children_query_params))
       # For compatibility with Blacklight partials and helpers that paginate results
       @response = @object_children.response
       @documents = @object_children.documents
@@ -124,10 +124,26 @@ class ObjectsController < ApplicationController
     @object_children
   end
 
+  def has_children?
+    current_object.has_children? and query_count(params, children_query_params) > 0
+  end
+
+  def children_query_params
+    {q: current_object.children_query}
+  end
+
+  def has_attachments?
+    current_object.has_attachments? and query_count(params, attachments_query_params) > 0
+  end
+
+  def attachments_query_params
+    {q: current_object.attachments.send(:construct_query)}
+  end
+
   def object_attachments
     return @object_attachments if @object_attachments
     if current_object.has_attachments?
-      @object_attachments = SolrResult.new(*get_search_results(params, {q: current_object.attachments.send(:construct_query)}))
+      @object_attachments = SolrResult.new(*get_search_results(params, attachments_query_params))
       # For compatibility with Blacklight partials and helpers
       @partial_path_templates = ["catalog/index_default"]
     end
@@ -179,7 +195,7 @@ class ObjectsController < ApplicationController
   # tabs
   
   def tab_children(id)
-    Tab.new(id, guard: object_children && object_children.response.total > 0)
+    Tab.new(id, guard: has_children?)
   end
 
   def tab_items
@@ -236,7 +252,7 @@ class ObjectsController < ApplicationController
   end
 
   def tab_attachments
-    Tab.new("attachments", guard: object_attachments && object_attachments.response.total > 0)
+    Tab.new("attachments", guard: has_attachments?)
   end
 
   def tab_collection_info

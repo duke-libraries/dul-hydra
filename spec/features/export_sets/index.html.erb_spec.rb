@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe "export_sets/index.html.erb" do
-  let!(:user) { FactoryGirl.create(:user) }
+describe "export_sets/index.html.erb", export_sets: true do
+  let(:user) { FactoryGirl.create(:user) }
   before { login_as user }
   after do
-    user.delete
+    user.destroy
     Warden.test_reset!
   end
   context "user has no bookmarks" do
@@ -26,10 +26,8 @@ describe "export_sets/index.html.erb" do
   end
   context "user has an existing export set" do
     let(:object) { FactoryGirl.create(:test_content) }
-    let(:export_set) { ExportSet.new }
+    let(:export_set) { ExportSet.new(user: user, pids: [object.pid], export_type: ExportSet::Types::CONTENT) }
     before do
-      export_set.user = user
-      export_set.pids = [object.pid]
       object.read_users = [export_set.user.user_key]
       object.save
       export_set.create_archive

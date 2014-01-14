@@ -4,8 +4,6 @@ module DulHydra::Configurable
   included do
     mattr_accessor :unwanted_models
 
-    mattr_accessor :export_set_manifest_file_name
-
     # Columns in the CSV report generated for a collection
     # Each column represents a *method* of a SolrDocument
     # See DulHydra::Models::SolrDocument

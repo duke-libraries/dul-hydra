@@ -1,19 +1,24 @@
 <h1>Export Sets</h1>
+
 <% if current_user.bookmarks.empty? %>
   <div class="alert">
-	Export sets are created from bookmarks.  Please add one or more content-bearing objects to your bookmarks.
+	<%= t('dul_hydra.export_sets.alerts.no_bookmarks') %>
   </div>
 <% else %>
-  <p>
-	<%= link_to "New Export Set", new_export_set_path, :class => "btn btn-primary" %>
-  </p>
+  <%= render 'export_sets/create_button' %>
 <% end %>
-<% unless @export_sets.empty? %>
-<table class="table table-bordered table-striped table-condensed">
+
+<% if @export_sets.empty? %>
+  <p>
+	You have no export sets.
+  </p>
+<% else %>
+  <table class="table table-bordered table-striped table-condensed" style="margin-top: 1em;">
 	<thead>
 		<tr>
 			<th scope="col">ID</th>
 			<th scope="col">Title</th>
+			<th scope="col">Type</th>
 			<th scope="col">Created</th>
 			<th scope="col">Archive</th>
 			<th scope="col">PIDs</th>
@@ -24,6 +29,7 @@
 		<tr>
 			<td><%= link_to es.id, es %></td>
 		    <td><%= link_to es.title, es %></td>
+			<td><%= es.export_type_label %></td>
 			<td><%= es.created_at %></td>
 			<td>
 			  <% if es.archive_file_name %>
@@ -36,5 +42,5 @@
 		</tr>
 		<% end %>
 	</tbody>
-<table>
+  <table>
 <% end %>

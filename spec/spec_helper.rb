@@ -39,9 +39,14 @@ RSpec.configure do |config|
   config.order = "random"
   
   # Devise helpers
-  config.include Devise::TestHelpers, :type => :controller
+  config.include Devise::TestHelpers, type: :controller
 
   # Warden helpers
-  config.include Warden::Test::Helpers
-  
+  config.include Warden::Test::Helpers, type: :feature
+  Warden.test_mode!
+
+  config.before(:suite) do
+    User.destroy_all
+    ActiveFedora::Base.destroy_all
+  end
 end
