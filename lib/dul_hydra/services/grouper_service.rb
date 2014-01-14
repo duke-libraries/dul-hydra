@@ -46,7 +46,8 @@ module DulHydra::Services
             end
           end
         end
-      rescue DulHydra::Error
+      rescue [DulHydra::Error, TypeError] => e
+        logger.error e
       end
       groups
     end
