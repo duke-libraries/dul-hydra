@@ -4,7 +4,7 @@ require 'blacklight/catalog'
 class CatalogController < ApplicationController  
 
   include Blacklight::Catalog
-  include DulHydra::Controller::CatalogControllerBehavior
+  include DulHydra::CatalogControllerBehavior
 
   # Adds method from Blacklight::SolrHelper to helper context
   helper_method :get_solr_response_for_doc_id

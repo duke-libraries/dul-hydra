@@ -1,6 +1,6 @@
 class PermissionsController < ApplicationController
 
-  include DulHydra::Controller::ObjectsControllerBehavior
+  include DulHydra::ObjectsControllerBehavior
 
   layout 'objects'
 

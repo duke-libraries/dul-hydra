@@ -1,4 +1,4 @@
-module DulHydra::Controller
+module DulHydra
   module ObjectsControllerBehavior
     extend ActiveSupport::Concern
 

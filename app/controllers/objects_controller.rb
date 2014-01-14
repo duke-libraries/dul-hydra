@@ -1,6 +1,6 @@
 class ObjectsController < ApplicationController
 
-  include DulHydra::Controller::ObjectsControllerBehavior
+  include DulHydra::ObjectsControllerBehavior
   include RecordsControllerBehavior # hydra-editor plugin for descriptive metadata editing
 
   copy_blacklight_config_from(CatalogController)
