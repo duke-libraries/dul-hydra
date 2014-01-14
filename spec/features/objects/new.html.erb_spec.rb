@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "objects/new.html.erb" do
+describe "objects/new.html.erb", objects: true do
   let(:user) { FactoryGirl.create(:user) }
   before do
     DulHydra.creatable_models = ["AdminPolicy", "Collection"]
