@@ -16,23 +16,23 @@ ActiveFedora::Base.class_eval do
   add_association_methods
 
   def has_preservation_events?
-    self.is_a?(DulHydra::Models::HasPreservationEvents)
+    self.is_a?(DulHydra::HasPreservationEvents)
   end
     
   def has_content?
-    self.is_a?(DulHydra::Models::HasContent) && self.datastreams[DulHydra::Datastreams::CONTENT].has_content?
+    self.is_a?(DulHydra::HasContent) && self.datastreams[DulHydra::Datastreams::CONTENT].has_content?
   end
 
   def has_content_metadata?
-    self.is_a?(DulHydra::Models::HasContentMetadata) && self.datastreams[DulHydra::Datastreams::CONTENT_METADATA].has_content?
+    self.is_a?(DulHydra::HasContentMetadata) && self.datastreams[DulHydra::Datastreams::CONTENT_METADATA].has_content?
   end
 
   def describable?
-    self.is_a?(DulHydra::Models::Describable)
+    self.is_a?(DulHydra::Describable)
   end
 
   def governable?
-    self.is_a?(DulHydra::Models::Governable)
+    self.is_a?(DulHydra::Governable)
   end
 
   def has_admin_policy?
@@ -45,7 +45,7 @@ ActiveFedora::Base.class_eval do
   end
   
   def has_thumbnail?
-    self.is_a?(DulHydra::Models::HasThumbnail) && self.datastreams[DulHydra::Datastreams::THUMBNAIL].has_content?
+    self.is_a?(DulHydra::HasThumbnail) && self.datastreams[DulHydra::Datastreams::THUMBNAIL].has_content?
   end
 
   def safe_id

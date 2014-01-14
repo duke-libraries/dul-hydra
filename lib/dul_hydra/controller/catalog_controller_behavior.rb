@@ -33,7 +33,7 @@ module DulHydra::Controller
     end
     
     def get_children
-      if @object.is_a?(DulHydra::Models::HasChildren)
+      if @object.is_a?(DulHydra::HasChildren)
         configure_blacklight_for_children
         @response, @documents = get_search_results(params, {q: @object.children_query})
       end

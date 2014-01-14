@@ -1,4 +1,4 @@
-module DulHydra::Models
+module DulHydra
   class Base < ActiveFedora::Base
 
     include Describable

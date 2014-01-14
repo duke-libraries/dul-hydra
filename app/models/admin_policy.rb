@@ -1,11 +1,11 @@
 #
-# AdminPolicy does not subclass DulHydra::Models::Base
+# AdminPolicy does not subclass DulHydra::Base
 # b/c Hydra::AdminPolicy provides all the datastreams it needs.
 #
 class AdminPolicy < Hydra::AdminPolicy
 
   include ActiveFedora::Auditable
-  include DulHydra::Models::Licensable
+  include DulHydra::Licensable
 
   delegate :default_license_title, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
   delegate :default_license_description, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false

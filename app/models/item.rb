@@ -1,7 +1,7 @@
-class Item < DulHydra::Models::Base
+class Item < DulHydra::Base
   
-  include DulHydra::Models::HasContentMetadata
-  include DulHydra::Models::HasChildren
+  include DulHydra::HasContentMetadata
+  include DulHydra::HasChildren
 
   has_many :children, :property => :is_part_of, :inbound => true, :class_name => 'Component'
   belongs_to :parent, :property => :is_member_of_collection, :class_name => 'Collection'

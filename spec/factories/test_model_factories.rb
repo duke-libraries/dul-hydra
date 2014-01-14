@@ -1,12 +1,12 @@
-class TestModel < DulHydra::Models::Base
+class TestModel < DulHydra::Base
 end
 
 class TestContent < TestModel
-  include DulHydra::Models::HasContent
+  include DulHydra::HasContent
 end
 
 class TestParent < TestModel
-  include DulHydra::Models::HasChildren
+  include DulHydra::HasChildren
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true 
 end
 
@@ -15,13 +15,13 @@ class TestChild < TestModel
 end
 
 class TestContentMetadata < TestParent
-  include DulHydra::Models::HasContentMetadata
+  include DulHydra::HasContentMetadata
 end
 
 class TestModelOmnibus < TestModel
-  include DulHydra::Models::Governable
-  include DulHydra::Models::HasContent
-  include DulHydra::Models::HasContentMetadata
+  include DulHydra::Governable
+  include DulHydra::HasContent
+  include DulHydra::HasContentMetadata
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true
   belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
 end
