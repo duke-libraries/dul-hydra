@@ -71,29 +71,7 @@ module DulHydra
     end
 
     def to_csv(opts = Hash.new)
-      table.to_csv(csv_options.merge(opts))
-    end
-
-    def col_sep
-      "\t"
-    end
-    
-    def encoding
-      "UTF-8"
-    end
-
-    def header_converters
-      :symbol
-    end
-
-    def csv_options
-      {
-        encoding: encoding,
-        col_sep: col_sep,
-        headers: true,
-        write_headers: true,
-        header_converters: header_converters
-      }
+      table.to_csv(DulHydra.csv_options.merge(opts))
     end
 
   end 

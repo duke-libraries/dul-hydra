@@ -35,6 +35,9 @@ module DulHydra::Configurable
 
     # Superuser group
     mattr_accessor :superuser_group
+
+    # Default CSV options
+    mattr_accessor :csv_options
   end
 
   module ClassMethods
