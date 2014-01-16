@@ -23,9 +23,7 @@ class ExportSetsController < ApplicationController
   end
   
   def create
-    @export_set.user = current_user
-    @export_set.create_archive
-    @export_set.save!
+    @export_set.update!(user: current_user)
     flash[:notice] = "New export set created."
     redirect_to action: :show, id: @export_set
   rescue ActiveRecord::InvalidRecord
@@ -50,27 +48,62 @@ class ExportSetsController < ApplicationController
   end
 
   def archive
-    if request.delete?
-      unless @export_set.archive_file_name.nil?
-        @export_set.archive = nil
-        @export_set.save!
-        flash[:notice] = "Archive deleted."
-      end
-    elsif request.post?
-      if @export_set.archive_file_name.nil?
-        if @export_set.create_archive
-          flash[:notice] = "Archive created."
-        else
-          flash[:alert] = "Archive creation failed."
-        end
+    if request.get?
+      if @export_set.has_archive?
+        redirect_to @export_set.archive.url
       else
-        flash[:alert] = "Archive already exists."
+        render status: 404
       end
+
+    elsif request.patch?
+      begin
+        result = create_archive
+      rescue Exception => e
+        logger.error e
+        result = e
+      end
+      if request.xhr?     
+        status = case
+                 when result.is_a?(ExportSet)
+                   204
+                 when result.is_a?(Delayed::Job)
+                   202
+                 when result.is_a?(Exception)
+                   500
+                 when !result
+                   409
+                 end
+        render nothing: true, status: status
+      else
+        case
+        when result.is_a?(ExportSet)
+          flash[:notice] = "Archive created."
+        when result.is_a?(Delayed::Job)
+          flash[:notice] = "The archive is being generated ..."
+        when result.is_a?(Exception)
+          flash[:error] = "Archive creation failed due to a server error."
+        when !result
+          flash[:alert] = "Archive already exists or could not be created."
+        end
+        redirect_to action: :show, id: @export_set
+      end
+
+    elsif request.delete?
+      if @export_set.delete_archive
+        flash[:notice] = "Archive deleted."
+      else
+        flash[:alert] = "Archive deletion failed."
+      end
+      redirect_to action: :show, id: @export_set
     end
-    redirect_to export_set_path(@export_set)
   end
 
   protected
+
+  def create_archive
+    result = @export_set.create_archive
+    result ? (result.is_a?(Delayed::Job) ? result.id : true) : false
+  end
 
   def new_export_set
     @export_set = ExportSet.new(export_set_params)
