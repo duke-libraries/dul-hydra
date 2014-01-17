@@ -9,9 +9,9 @@ class MetadataFile < ActiveRecord::Base
   
   def validate_data
     begin
-      csv_table = CSV.read(metadata.path, effective_options[:csv])
+      # csv_table = CSV.read(metadata.path, effective_options[:csv])
       valid_headers = [ :pid, :model ].concat(ActiveFedora::QualifiedDublinCoreDatastream::DCTERMS)
-      csv_table.headers.each do |header|
+      as_csv_table.headers.each do |header|
         if effective_options[:schema_map].present?
           canonical_name = canonical_attribute_name(header)
           if canonical_name.present?
@@ -71,6 +71,10 @@ class MetadataFile < ActiveRecord::Base
       return @downcased_schema_map[attribute_name.downcase] if @downcased_schema_map.has_key?(attribute_name.downcase)
     end
     return nil
+  end
+  
+  def headers
+    
   end
   
   def model(row)
@@ -154,6 +158,10 @@ class MetadataFile < ActiveRecord::Base
       raise DulHydra::Error, I18n.t('dul_hydra.errors.multiple_object_matches', :criteria => "identifier #{identifier}")
     end
     return pid
+  end
+
+  def as_csv_table
+    CSV.read(metadata.path, effective_options[:csv])
   end
 
 end

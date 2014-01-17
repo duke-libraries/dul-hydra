@@ -29,7 +29,7 @@ describe "batches/index.html.erb" do
       end
     end
   end
-  context "metadata files" do
+  context "metadata files", :metadata_file => true do
     let(:user) { FactoryGirl.create(:user) }
     context "logged in user" do
       before do
