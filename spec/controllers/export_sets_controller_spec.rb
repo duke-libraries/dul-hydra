@@ -76,17 +76,16 @@ describe ExportSetsController, export_sets: true do
     context "request method == delete" do
       before { export_set.create_archive }
       it "should delete the archive and redirect to the show page" do
-        export_set.archive_file_name.should_not be_nil
         delete :archive, :id => export_set
-        export_set.reload.archive_file_name.should be_nil
+        export_set.reload.archive?.should be_false
         response.should redirect_to(export_set_path(export_set))
       end
     end
-    context "request method == post" do
+    context "request method == patch" do
       it "should create the archive" do
         export_set.archive_file_name.should be_nil
-        post :archive, :id => export_set
-        export_set.reload.archive_file_name.should_not be_nil
+        patch :archive, :id => export_set
+        export_set.reload.archive?.should be_true
         response.should redirect_to(export_set_path(export_set))
       end
     end

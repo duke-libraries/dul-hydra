@@ -11,17 +11,12 @@ class ExportSet < ActiveRecord::Base
   validates_presence_of :user, :pids
   validates :export_type, presence: true, if: :valid_type?
 
-  module Types
-    CONTENT = "content"
-    DESCRIPTIVE_METADATA = "descriptive_metadata"
+  def has_archive?
+    !archive_file_name.nil?
+  end
 
-    def self.all
-      constants(false)
-    end
-
-    def self.values
-      all.collect { |c| const_get(c) }
-    end
+  def delete_archive
+    has_archive? && update!(archive: nil)
   end
 
   def self.valid_type?(t)
@@ -33,7 +28,7 @@ class ExportSet < ActiveRecord::Base
   end
 
   def self.export_type_label(t)
-    t.titleize rescue nil
+    t.titleize if t.respond_to?(:titleize)
   end
 
   def can_export?(obj)
@@ -64,26 +59,41 @@ class ExportSet < ActiveRecord::Base
     ExportSet.export_type_label(export_type)
   end
 
-  # Return boolean indicating that archive has been successfully created
   def create_archive
-    send "add_#{export_type}_to_archive"
+    has_archive? ? false : export
   end
 
-  def add_descriptive_metadata_to_archive
+  def export
+    send "export_#{export_type}"
+  end
+
+  def update_archive(file_name)
+    update!(archive: File.new(file_name, "rb"))
+  end
+
+  def export_descriptive_metadata
     file_name = File.join(Dir.tmpdir, generate_archive_file_name('csv'))
     File.open(file_name, 'w', encoding: "UTF-8") do |file| # XXX use metadata_table.encoding?
+      logger.debug "Created temporary file #{file_name} for exporting metadata."
       metadata_table = DulHydra::DescriptiveMetadataTable.new(objects)
       file.write(metadata_table.to_csv)
+      logger.debug "Export set descriptive metadata written to file."
     end
-    update_attributes({:archive => File.new(file_name, "rb")})
+    unless File.size?(file_name)
+      raise DulHydra::Error, "Unable to archive empty or non-existent file." 
+    end
+    update_archive(file_name)
   ensure
     File.exists?(file_name) && File.unlink(file_name)
+    logger.debug "Temporary file #{file_name} deleted."
   end
 
-  def add_content_to_archive
+  def export_content
     Dir.mktmpdir do |tmpdir|
+      logger.debug "Created temp directory #{tmpdir} for export set content archive."
       zip_path = File.join(tmpdir, generate_archive_file_name('zip'))
-      zip_size = Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |zip_file|
+      Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |zip_file|
+        logger.debug "Created zip file #{zip_path} for export set content archive."
         objects.each do |object|
           content_ds = object.datastreams[DulHydra::Datastreams::CONTENT]
           # use guaranteed unique file name based on PID and dsID 
@@ -91,6 +101,7 @@ class ExportSet < ActiveRecord::Base
           # write content to file
           File.open(temp_file_path, 'wb', :encoding => 'ascii-8bit') do |f|
             content_ds.write_content(f)
+            logger.debug "Wrote object #{object.pid} content to file."
           end
           # Use original source file name, if available; otherwise the generated file name
           # Note that we keep the path of the source file in order to reduce likelihood
@@ -101,19 +112,29 @@ class ExportSet < ActiveRecord::Base
           file_name = file_name[1..-1] if file_name.start_with? '/'
           # add file to archive
           zip_file.add(file_name, temp_file_path)
+          logger.debug "Added file to zip archive."
         end # objects.each      
-        zip_file.size
       end # Zip::ZipFile.open
-      # update_attributes seems to be the way to get paperclip to work 
+      unless File.size?(zip_path)
+        raise DulHydra::Error, "Unable to archive empty or non-existent file." 
+      end
+      # update seems to be the way to get paperclip to work 
       # when not using file upload form submission to create the attachment
-      (zip_size > 0) && update_attributes({:archive => File.new(zip_path, "rb")})
+      update_archive(zip_path)
     end
   end
 
+  module Types
+    CONTENT = "content"
+    DESCRIPTIVE_METADATA = "descriptive_metadata"
 
-  def delete_archive
-    archive = nil
-    save
+    def self.all
+      constants(false)
+    end
+
+    def self.values
+      all.collect { |c| const_get(c) }
+    end
   end
 
   #

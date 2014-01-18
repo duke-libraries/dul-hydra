@@ -54,7 +54,8 @@ DulHydra::Application.routes.draw do
 
   resources :export_sets do
     member do
-      post 'archive'
+      get 'archive', as: 'download'
+      patch 'archive'
       delete 'archive'
     end
   end

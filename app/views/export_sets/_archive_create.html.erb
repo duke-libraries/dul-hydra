@@ -1,0 +1,28 @@
+<button id="export-set-archive-create-button" class="btn btn-primary" data-loading-text="Creating ..." data-complete-text="Download">Create</button>
+<script type="text/javascript">
+  var archive_url = "<%= url_for(action: 'archive', id: @export_set) %>";
+  var create_button = $("#export-set-archive-create-button");
+
+  $(create_button).click(function() {
+    $(".flash_messages").html('<div class="alert">Creating archive ... please wait.</div>');
+    $(create_button).button('loading');
+    $.ajax({
+      type: "PATCH",
+      url: archive_url,
+      success: function(data, textStatus, jqXHR) {
+        $(create_button).button('complete')
+                        .unbind('click')
+                        .click(function() {
+                          location.href = archive_url;
+                        });
+        $(".flash_messages").html('<div class="alert alert-success">Archive created.</div>');
+        $("#export-set-archive").append('<%= render 'archive_delete_link' -%>');
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        $(create_button).button('reset');
+        $(".flash_messages").html('<div class="alert alert-error">Archive creation failed.</div>');
+      }
+    });
+  });
+</script>
+

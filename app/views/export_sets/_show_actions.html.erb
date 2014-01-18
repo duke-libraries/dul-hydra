@@ -1,2 +1,13 @@
-<%= link_to "Edit", {:action => 'edit', :id => @export_set}, :method => 'get', :class => "btn btn-primary" %> 
-<%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :data => { :confirm => "You are about to delete #{export_set_show_title}. Continue?" }, :class => "btn btn-danger" %>
+<div class="navbar" id="export-set-navbar">
+  <div class="navbar-inner">
+	<ul class="nav">
+	  <li>
+		<%= link_to "Edit", edit_export_set_path(@export_set) %> 
+	  </li>
+	  <li>
+		<%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :data => { :confirm => "You are about to delete #{export_set_show_title}. Continue?" } %>	
+	  </li>
+	</ul>
+  </div>
+</div>
+
