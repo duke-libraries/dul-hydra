@@ -1,6 +1,7 @@
 :csv:
     :col_sep: "\t"
     :quote_char: '`'
+    :header_converters:
 :parse:
     :local_identifier: Identifier-LocalID
     :repeatable_fields:
