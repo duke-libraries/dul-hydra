@@ -114,16 +114,14 @@ module DulHydra::Batch::Scripts
     context "update" do
       let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
       let(:repo_object) { TestModelOmnibus.create(:pid => batch.batch_objects.first.pid, :label => 'Object Label') }
-      let(:apo) { FactoryGirl.create(:group_edit_policy) }
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
       before do
-        repo_object.admin_policy = apo
+        repo_object.edit_users = [ batch.user.user_key ]
         repo_object.save
         bp.execute
       end
       after do
         repo_object.destroy
-        apo.destroy
         batch.user.destroy
         batch.destroy
       end

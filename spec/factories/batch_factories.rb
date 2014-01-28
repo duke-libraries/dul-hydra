@@ -2,7 +2,7 @@ FactoryGirl.define do
   factory :batch, :class => DulHydra::Batch::Models::Batch do
     name "Batch"
     description "This is a batch of stuff to do."
-    user { FactoryGirl.create(:editor) }
+    user { FactoryGirl.create(:user) }
     
     factory :batch_with_basic_ingest_batch_objects do
       ignore do
