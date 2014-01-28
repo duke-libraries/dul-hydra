@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140107184205) do
+ActiveRecord::Schema.define(version: 20140128155051) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -50,16 +50,16 @@ ActiveRecord::Schema.define(version: 20140107184205) do
   create_table "batches", force: true do |t|
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
     t.integer  "user_id"
     t.string   "status"
     t.datetime "start"
     t.datetime "stop"
     t.string   "outcome"
-    t.text     "details"
-    t.integer  "failure",              default: 0
-    t.integer  "success",              default: 0
+    t.text     "details",              limit: 16777215
+    t.integer  "failure",                               default: 0
+    t.integer  "success",                               default: 0
     t.string   "version"
     t.string   "logfile_file_name"
     t.string   "logfile_content_type"
@@ -90,7 +90,7 @@ ActiveRecord::Schema.define(version: 20140107184205) do
     t.datetime "updated_at",             null: false
   end
 
-  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
 
   create_table "export_sets", force: true do |t|
     t.integer  "user_id"
@@ -125,8 +125,8 @@ ActiveRecord::Schema.define(version: 20140107184205) do
     t.integer  "user_id"
     t.string   "profile"
     t.string   "collection_pid"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "metadata_file_name"
     t.string   "metadata_content_type"
     t.integer  "metadata_file_size"
@@ -155,7 +155,7 @@ ActiveRecord::Schema.define(version: 20140107184205) do
     t.string   "user_type"
   end
 
-  add_index "searches", ["user_id"], name: "index_searches_on_user_id", using: :btree
+  add_index "searches", ["user_id"], name: "index_searches_on_user_id"
 
   create_table "superusers", force: true do |t|
     t.integer "user_id", null: false
@@ -182,8 +182,8 @@ ActiveRecord::Schema.define(version: 20140107184205) do
     t.string   "display_name"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", using: :btree
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
-  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
+  add_index "users", ["email"], name: "index_users_on_email"
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  add_index "users", ["username"], name: "index_users_on_username", unique: true
 
 end
