@@ -33,11 +33,12 @@ class MetadataFile < ActiveRecord::Base
   
   def self.default_options
     {
-      :csv => {
-        :col_sep => ",",
-        :quote_char => '"',
-        :headers => true
-      },
+      # :csv => {
+      #   :col_sep => ",",
+      #   :quote_char => '"',
+      #   :headers => true
+      # },
+      :csv => DulHydra.csv_options,
       :parse => {
         :include_empty_fields => false,
         :repeating_fields_separator => ";"

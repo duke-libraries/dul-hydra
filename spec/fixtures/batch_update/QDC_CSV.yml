@@ -1,6 +1,7 @@
 :csv:
     :col_sep: ","
     :quote_char: '"'
+    :header_converters:
 :parse:
     :local_identifier: identifier
     :repeatable_fields:
