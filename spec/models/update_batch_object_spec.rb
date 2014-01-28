@@ -27,14 +27,12 @@ module DulHydra::Batch::Models
     context "validate" do
       context "valid object" do
         let(:repo_object) { TestModel.create(:pid => object.pid) }
-        let(:apo) { FactoryGirl.create(:group_edit_policy) }
         before do
-          repo_object.admin_policy = apo
+          repo_object.edit_users = [ batch.user.user_key ]
           repo_object.save
         end
         after do
           repo_object.destroy
-          apo.destroy
         end
         context "generic object" do
           it_behaves_like "a valid update object"
