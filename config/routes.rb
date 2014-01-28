@@ -50,6 +50,10 @@ DulHydra::Application.routes.draw do
     put '/' => 'permissions#update', defaults: {default_permissions: true}
   end
 
+  scope '/objects/:id', constraints: pid_constraint do
+    resources :attachments, only: [:new, :create]
+  end
+
   resources :preservation_events, :only => :show, constraints: { id: /[1-9][0-9]*/ }
 
   resources :export_sets do

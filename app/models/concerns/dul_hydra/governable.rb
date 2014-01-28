@@ -30,5 +30,11 @@ module DulHydra
       admin_policy.default_license if admin_policy
     end
 
+    def copy_admin_policy_from(other)
+      # XXX https://github.com/projecthydra/active_fedora/issues/346
+      # prevents us from using #admin_policy= here.
+      admin_policy_id = other.admin_policy_id if other.has_admin_policy?
+    end
+
   end
 end
