@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131119190808) do
+ActiveRecord::Schema.define(:version => 20140128155051) do
 
   create_table "batch_object_datastreams", :force => true do |t|
     t.integer  "batch_object_id"
@@ -50,16 +50,16 @@ ActiveRecord::Schema.define(:version => 20131119190808) do
   create_table "batches", :force => true do |t|
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.datetime "created_at",                                              :null => false
+    t.datetime "updated_at",                                              :null => false
     t.integer  "user_id"
     t.string   "status"
     t.datetime "start"
     t.datetime "stop"
     t.string   "outcome"
-    t.text     "details"
-    t.integer  "failure",              :default => 0
-    t.integer  "success",              :default => 0
+    t.text     "details",              :limit => 16777215
+    t.integer  "failure",                                  :default => 0
+    t.integer  "success",                                  :default => 0
     t.string   "version"
     t.string   "logfile_file_name"
     t.string   "logfile_content_type"
@@ -102,6 +102,7 @@ ActiveRecord::Schema.define(:version => 20131119190808) do
     t.datetime "archive_updated_at"
     t.text     "pids"
     t.string   "title"
+    t.string   "export_type"
   end
 
   create_table "ingest_folders", :force => true do |t|
@@ -118,6 +119,18 @@ ActiveRecord::Schema.define(:version => 20131119190808) do
     t.integer  "parent_id_length"
     t.datetime "created_at",       :null => false
     t.datetime "updated_at",       :null => false
+  end
+
+  create_table "metadata_files", :force => true do |t|
+    t.integer  "user_id"
+    t.string   "profile"
+    t.string   "collection_pid"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "metadata_file_name"
+    t.string   "metadata_content_type"
+    t.integer  "metadata_file_size"
+    t.datetime "metadata_updated_at"
   end
 
   create_table "preservation_events", :force => true do |t|
