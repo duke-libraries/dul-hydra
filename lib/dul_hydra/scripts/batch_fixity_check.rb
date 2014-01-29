@@ -109,14 +109,14 @@ module DulHydra::Scripts
 
     def report_outcome(event)
       if report?
-        event.fixity_check_detail.each do |dsid, dsProfile|
-          report << [event.for_object.pid,
+        event.for_object.datastreams.each do |dsid, ds|
+          report << [ds.pid,
                      dsid,
-                     dsProfile["dsVersionID"],
-                     dsProfile["dsCreateDate"],
-                     dsProfile["dsChecksumType"],
-                     dsProfile["dsChecksum"],
-                     dsProfile["dsChecksumValid"]
+                     ds.profile["dsVersionID"],
+                     ds.profile["dsCreateDate"],
+                     ds.profile["dsChecksumType"],
+                     ds.profile["dsChecksum"],
+                     ds.profile["dsChecksumValid"]
                     ]
         end
       end
