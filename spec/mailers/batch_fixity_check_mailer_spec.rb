@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe BatchFixityCheckMailer do
+describe BatchFixityCheckMailer, fixity_check: true do
   let(:bfc) { DulHydra::Scripts::BatchFixityCheck.new(:limit => 1, :dryrun => true) }
   let(:mailto) { "nowhere@example.com" }
   before { bfc.execute }
