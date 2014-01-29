@@ -63,7 +63,10 @@ module DulHydra::Batch::Scripts
     end
     
     def process_batch
-      @batch.batch_objects.each { |object| process_object(object) }
+      @batch.batch_objects.each do |object|
+        process_object(object)
+        sleep 2
+      end
     end
     
     def initiate_batch_run
