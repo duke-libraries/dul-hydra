@@ -1,7 +1,9 @@
 module DulHydra::Batch::Models
 
+  # This is a superclass containing methods common to all batch object objects.  It is not intended to be instantiated directly.
+  # This superclass and its subclasses are designed following the ActiveRecord single-table inheritance pattern.
   class BatchObject < ActiveRecord::Base
-#    attr_accessible :batch, :batch_id, :identifier, :label, :model, :pid, :verified
+    
     belongs_to :batch, :inverse_of => :batch_objects
     has_many :batch_object_datastreams, :inverse_of => :batch_object, :dependent => :destroy
     has_many :batch_object_relationships, :inverse_of => :batch_object, :dependent => :destroy
@@ -39,6 +41,18 @@ DulHydra version #{DulHydra::VERSION}
       return errors
     end
     
+    def local_validations
+      []
+    end
+  
+    def model_datastream_keys
+      raise NotImplementedError
+    end
+    
+    def process
+      raise NotImplementedError
+    end
+
     def results_message
       raise NotImplementedError
     end
@@ -132,10 +146,6 @@ DulHydra version #{DulHydra::VERSION}
       return errs
     end
     
-    def local_validations
-      []
-    end
-  
     def verify_repository_object
       verifications = {}
       begin

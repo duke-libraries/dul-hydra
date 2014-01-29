@@ -9,12 +9,6 @@ module DulHydra::Batch::Models
       errors
     end
   
-    def validate_pre_assigned_pid
-      errs = []
-      errs << "#{@error_prefix} #{pid} already exists in repository" if ActiveFedora::Base.exists?(pid)
-      return errs      
-    end
-    
     def model_datastream_keys
       model.constantize.new.datastreams.keys
     end
@@ -33,6 +27,12 @@ module DulHydra::Batch::Models
     end
         
     private
+    
+    def validate_pre_assigned_pid
+      errs = []
+      errs << "#{@error_prefix} #{pid} already exists in repository" if ActiveFedora::Base.exists?(pid)
+      return errs      
+    end
     
     def ingest(opts = {})
       repo_object = create_repository_object
