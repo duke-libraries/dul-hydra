@@ -1,7 +1,7 @@
 language: ruby
 rvm:
   - 1.9.3
-#  - 2.0.0
+  - 2.0.0
 before_script:
   - "cp config/log4r.yml.sample config/log4r.yml"
   - "cp config/log4r_batch_processor.yml.sample config/log4r_batch_processor.yml"
