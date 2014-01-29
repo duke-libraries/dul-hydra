@@ -8,7 +8,7 @@ module DulHydra
                    :versionable => true, 
                    :label => "Properties for this object", 
                    :control_group => 'X'
-      delegate_to DulHydra::Datastreams::PROPERTIES, [:descmetadata_source], multiple: false
+      has_attributes :descmetadata_source, datastream: DulHydra::Datastreams::PROPERTIES, multiple: false
     end
     
   end

@@ -7,9 +7,9 @@ class AdminPolicy < Hydra::AdminPolicy
   include ActiveFedora::Auditable
   include DulHydra::Licensable
 
-  delegate :default_license_title, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
-  delegate :default_license_description, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
-  delegate :default_license_url, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :url], multiple: false
+  has_attributes :default_license_title, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
+  has_attributes :default_license_description, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
+  has_attributes :default_license_url, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :url], multiple: false
 
   validates :title, presence: true
 

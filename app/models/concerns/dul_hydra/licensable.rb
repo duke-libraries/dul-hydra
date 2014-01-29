@@ -3,9 +3,9 @@ module DulHydra
     extend ActiveSupport::Concern
 
     included do
-      delegate :license_title, to: DulHydra::Datastreams::RIGHTS_METADATA, at: [:license, :title], multiple: false
-      delegate :license_description, to: DulHydra::Datastreams::RIGHTS_METADATA, at: [:license, :description], multiple: false
-      delegate :license_url, to: DulHydra::Datastreams::RIGHTS_METADATA, at: [:license, :url], multiple: false
+      has_attributes :license_title, datastream: DulHydra::Datastreams::RIGHTS_METADATA, at: [:license, :title], multiple: false
+      has_attributes :license_description, datastream: DulHydra::Datastreams::RIGHTS_METADATA, at: [:license, :description], multiple: false
+      has_attributes :license_url, datastream: DulHydra::Datastreams::RIGHTS_METADATA, at: [:license, :url], multiple: false
     end
 
     def license

@@ -25,7 +25,9 @@ module DulHydra
                    :versionable => true, 
                    :label => "Descriptive Metadata for this object", 
                    :control_group => 'X'
-      delegate_to DulHydra::Datastreams::DESC_METADATA, DC11_ELEMENTS, multiple: true
+      DC11_ELEMENTS.each do |element|
+        has_attributes element, datastream: DulHydra::Datastreams::DESC_METADATA, multiple: true
+      end
     end
 
     def descriptive_metadata_terms
