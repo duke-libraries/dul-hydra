@@ -17,8 +17,12 @@ describe Attachment do
   it_behaves_like "an object that has content"
 
   context "relationships" do
-    let!(:attachment) { FactoryGirl.create(:attachment) }
-    let!(:object) { FactoryGirl.create(:test_model) }
+    let(:attachment) do
+      FactoryGirl.build(:attachment_with_content) do |obj| 
+        obj.save(validate: false)
+      end
+    end
+    let(:object) { FactoryGirl.create(:test_model) }
     after do
       object.delete
       attachment.delete
@@ -26,7 +30,7 @@ describe Attachment do
     context "#attached_to=" do
       before do
         attachment.attached_to = object
-        attachment.save!
+        attachment.save
       end
       it_behaves_like "an attached Attachment"
     end
@@ -36,6 +40,19 @@ describe Attachment do
         object.save
       end
       it_behaves_like "an attached Attachment"
+    end
+  end
+  context "validations" do
+    subject { described_class.new }
+    before { subject.valid? }
+    it "should have a title" do
+      subject.errors.messages.should have_key(:title)
+    end
+    it "should have content" do
+      subject.errors.messages.should have_key(:content)
+    end
+    it "should be attached to another object" do
+      subject.errors.messages.should have_key(:attached_to)
     end
   end
 

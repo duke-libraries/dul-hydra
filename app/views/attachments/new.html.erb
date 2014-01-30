@@ -1,0 +1,32 @@
+<h2>New Attachment</h2>
+
+<% if @attachment.errors.any? %>
+  <div class="alert alert-danger">
+	<p>
+	  <strong>A new attachment could not be created due to the following errors:</strong>
+	</p>
+	<ul>
+	  <% @attachment.errors.full_messages.each do |message| %>
+	  <li><%= message %></li>
+	  <% end %>
+	</ul>
+  </div>
+<% end %>
+
+<%= form_for @attachment, multipart: true do |f| %>
+  <!--
+  <p class="muted">
+	Attach to: <strong><%= render_document_model_and_id current_document %></strong>
+  </p>
+  -->
+  <%= f.label :title %>
+  <%= text_field_tag "attachment[title]" %>
+  <%= f.label :description %>
+  <%= text_area_tag "attachment[description]" %>
+  <%= label_tag "content" %>
+  <%= file_field_tag "content" %>
+  <p>
+	<%= f.submit "Save", data: {confirm: "This action will create a new attachment in the repository. Continue?"}, class: "btn btn-primary" %>
+	<%= link_to "Cancel", :back, data: {confirm: "Cancel creating a new attachment?" }, class: "btn btn-danger" %>
+  </p>
+<% end %>

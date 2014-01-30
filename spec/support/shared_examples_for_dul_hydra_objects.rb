@@ -31,7 +31,12 @@ shared_examples "a DulHydra object" do
   end
   
   context "#validate_checksums" do
-    let(:object) { described_class.create(:title => 'Title') }
+    let(:object) do
+      described_class.new.tap do |obj|
+        obj.title = 'Title'
+        obj.save(validate: false)
+      end
+    end
     after { object.destroy }
     it "should return a boolean success/failure flag and hash of datastream profiles" do
       outcome, detail = object.validate_checksums

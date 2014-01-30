@@ -40,7 +40,8 @@ describe AttachmentsController, attachments: true do
         @attachment.title.should == ["Attachment"]
         @attachment.description.should == ["Sample file"]
         @attachment.source.should == ["sample.docx"]
-        @attachment.content.size.should = File.size('spec/fixtures/sample.docx')
+        @attachment.content.size.should == File.size('spec/fixtures/sample.docx')
+        @attachment.attached_to.should == obj
         response.should redirect_to(controller: 'objects', action: 'show', id: obj, tab: 'attachments')
       end
     end

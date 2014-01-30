@@ -8,18 +8,21 @@ class AttachmentsController < ApplicationController
   layout 'objects'
 
   def new
+    @attachment = Attachment.new
   end
 
   def create
     @attachment = Attachment.new(attachment_params)
-    file = params[:content]
-    @attachment.content.content = file
-    @attachment.content.mimeType = file.content_type
-    @attachment.source = file.original_filename
+    if file = params[:content]
+      @attachment.content.content = file
+      @attachment.source = file.original_filename
+    end
+    @attachment.attached_to = current_object
     @attachment.save!
     flash[:success] = "New attachment added."
     redirect_to controller: 'objects', action: 'show', id: current_object, tab: 'attachments'
-  rescue
+  rescue ActiveFedora::RecordInvalid => e
+    logger.error e
     render :new
   end
 
