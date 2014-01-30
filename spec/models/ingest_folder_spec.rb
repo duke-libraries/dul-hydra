@@ -134,6 +134,7 @@ describe IngestFolder, ingest: true do
     context "scan" do
       let(:scan_results) { ingest_folder.scan }
       it "should report the correct scan results" do
+        expect(scan_results.total_count).to eql(7)
         expect(scan_results.file_count).to eql(3)
         expect(scan_results.parent_count).to eql(1)
         expect(scan_results.target_count).to eql(2)

@@ -11,6 +11,10 @@
 		<%= content_tag(:td, file_creator) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
+		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.total_files_scanned')) %>
+		<%= content_tag(:td, @scan_results.total_count) %>
+	<% end %>
+	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('batch.ingest_folder.objects_to_ingest')) %>
 		<%= content_tag(:td) do %>
 			<%= content_tag(:ul) do %>
