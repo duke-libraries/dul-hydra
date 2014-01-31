@@ -2,13 +2,17 @@ require 'spec_helper'
 require 'tempfile'
 
 shared_examples "an object that has content" do
-  let!(:object) { described_class.create! }
+  let(:object) do
+    obj = described_class.new
+    obj.save(validate: false)
+    obj
+  end
   after { object.delete }
   context "object does have content" do
     let(:file_path) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'library-devil.tiff') }
     before do
       object.content.content = File.new(file_path, "rb")
-      object.save!
+      object.save(validate: false)
     end
     context "defaults" do
       it "should have a default file prefix, file extension, and file name" do

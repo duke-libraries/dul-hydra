@@ -55,4 +55,7 @@ describe "objects/show.html.erb", objects: true do
       page.should have_xpath("//a[@href=\"#{object_path(child)}\"]")
     end
   end
+  context "object can have attachments", attachments: true do
+    # TODO
+  end
 end

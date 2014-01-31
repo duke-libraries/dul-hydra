@@ -20,6 +20,7 @@ class Ability
     batches_permissions
     ingest_folders_permissions
     metadata_files_permissions
+    attachment_permissions
   end
 
   def create_permissions
@@ -111,6 +112,12 @@ class Ability
       cache.put(obj.id, obj)
       test_discover(obj.id)
     end 
+  end
+
+  def attachment_permissions
+    can :add_attachment, ActiveFedora::Base do |obj|
+      obj.has_attachments? && can?(:edit, obj)
+    end
   end
 
   # Mimics Hydra::Ability#test_read + Hydra::PolicyAwareAbility#test_read in one method
