@@ -13,20 +13,15 @@
   </div>
 <% end %>
 
-<%= form_for @attachment, multipart: true do |f| %>
-  <!--
-  <p class="muted">
-	Attach to: <strong><%= render_document_model_and_id current_document %></strong>
-  </p>
-  -->
-  <%= f.label :title %>
+<%= form_tag attachments_path, method: "post", multipart: true do %>
+  <%= label_tag "attachment_title" %>
   <%= text_field_tag "attachment[title]" %>
-  <%= f.label :description %>
+  <%= label_tag "attachment_description" %>
   <%= text_area_tag "attachment[description]" %>
   <%= label_tag "content" %>
   <%= file_field_tag "content" %>
   <p>
-	<%= f.submit "Save", data: {confirm: "This action will create a new attachment in the repository. Continue?"}, class: "btn btn-primary" %>
+	<%= submit_tag "Save", data: {confirm: "This action will create a new attachment in the repository. Continue?"}, class: "btn btn-primary" %>
 	<%= link_to "Cancel", :back, data: {confirm: "Cancel creating a new attachment?" }, class: "btn btn-danger" %>
   </p>
 <% end %>

@@ -13,8 +13,11 @@ class AttachmentsController < ApplicationController
 
   def create
     @attachment = Attachment.new(attachment_params)
-    if file = params[:content]
+    file = params[:content]
+    if file
       @attachment.content.content = file
+      # XXX https://github.com/projecthydra/rubydora/issues/61
+      @attachment.content.mimeType = file.content_type
       @attachment.source = file.original_filename
     end
     @attachment.attached_to = current_object
