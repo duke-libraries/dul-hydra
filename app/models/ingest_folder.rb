@@ -14,7 +14,7 @@ class IngestFolder < ActiveRecord::Base
   
   DEFAULT_INCLUDED_FILE_EXTENSIONS = ['.pdf', '.tif', '.tiff']
   
-  ScanResults = Struct.new(:file_count, :parent_count, :target_count, :excluded_files)
+  ScanResults = Struct.new(:total_count, :file_count, :parent_count, :target_count, :excluded_files)
   
   def init
     if self.new_record?
@@ -88,12 +88,13 @@ class IngestFolder < ActiveRecord::Base
   
   def scan
     @parent_hash = {} if add_parents
+    @total_count = 0
     @file_count = 0
     @parent_count = 0
     @target_count = 0
     @excluded_files = []
     scan_files(full_path, false)
-    return ScanResults.new(@file_count, @parent_count, @target_count, @excluded_files)
+    return ScanResults.new(@total_count, @file_count, @parent_count, @target_count, @excluded_files)
   end
   
   def procezz
@@ -102,6 +103,7 @@ class IngestFolder < ActiveRecord::Base
                 :name => I18n.t('batch.ingest_folder.batch_name'),
                 :description => abbreviated_path
                 )
+    @total_count = 0
     @file_count = 0
     @parent_count = 0
     @target_count = 0
@@ -142,6 +144,7 @@ class IngestFolder < ActiveRecord::Base
         if File.directory?(file_loc)
           scan_files(file_loc, create_batch_objects)
         else
+          @total_count += 1
           if DEFAULT_INCLUDED_FILE_EXTENSIONS.include?(File.extname(entry))
             case target?(dirpath)
             when true

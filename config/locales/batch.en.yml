@@ -10,6 +10,7 @@ en:
                 file_creator: File Creator
                 parent_id_length: Length of Item Identifier
                 sub_path: Folder Sub-Path
+                total_files_scanned: Files Scanned
             metadata_file:
                 collection_pid: Collection
                 metadata: Metadata File
