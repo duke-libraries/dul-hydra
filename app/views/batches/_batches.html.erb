@@ -2,15 +2,18 @@
 <%= content_tag :table, :class => 'table table-bordered table-striped table-condensed' do %>
         <%= content_tag :thead do %>
                 <%= content_tag :tr do %>
-                        <%= content_tag :th, I18n.t('batch.web.column_names.id'), :scope => 'col' %>
-                        <%= content_tag :th, I18n.t('batch.web.column_names.action'), :scope => 'col' %>
-                        <%= content_tag :th, I18n.t('batch.web.column_names.name'), :scope => 'col' %>
-                        <%= content_tag :th, I18n.t('batch.web.column_names.description'), :scope => 'col' %>
-                        <%= content_tag :th, I18n.t('batch.web.column_names.objects'), :scope => 'col' %>
-                        <%= content_tag :th, I18n.t('batch.web.column_names.start'), :scope => 'col' %>
-                        <%= content_tag :th, I18n.t('batch.web.column_names.status'), :scope => 'col' %>
-                        <%= content_tag :th, I18n.t('batch.web.column_names.outcome'), :scope => 'col' %>
-                        <%= content_tag :th, I18n.t('batch.web.column_names.log'), :scope => 'col' %>
+                        <%= content_tag :th, t('batch.web.column_names.id'), :scope => 'col' %>
+                        <%= content_tag :th, t('batch.web.column_names.action'), :scope => 'col' %>
+                        <%= content_tag :th, t('batch.web.column_names.name'), :scope => 'col' %>
+                        <%= content_tag :th, t('batch.web.column_names.description'), :scope => 'col' %>
+                        <%= content_tag :th, t('batch.web.column_names.objects'), :scope => 'col' %>
+                        <%= content_tag :th, t('batch.web.column_names.start'), :scope => 'col' %>
+                        <%= content_tag :th, t('batch.web.column_names.status'), :scope => 'col' %>
+                        <%= content_tag :th, t('batch.web.column_names.outcome'), :scope => 'col' %>
+                        <%= content_tag :th, t('batch.web.column_names.log'), :scope => 'col' %>
+						<% if current_user.superuser? %>
+							<%= content_tag :th, t('batch.web.column_names.user'), :scope => 'col' %>
+						<% end %>
                 <% end %>
 
         <% end %>
@@ -26,6 +29,9 @@
                                 <%= content_tag :td, b.status.nil? ? '--' : b.status %>
                                 <%= content_tag :td, b.outcome.nil? ? '--' : b.outcome %>
                                 <%= content_tag :td, b.logfile_file_name.nil? ? '--' : link_to(I18n.t('batch.web.column_names.log'), b.logfile.url) %>
+								<% if current_user.superuser? %>
+									<%= content_tag :td, b.user.user_key %>
+								<% end %>
                         <% end %>
                 <% end %>
         <% end %>

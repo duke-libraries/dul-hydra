@@ -89,6 +89,7 @@ en:
                 batch_objects: "Objects in Batch"
             column_names:
                 id: "ID"
+                user: "User"
                 name: "Name"
                 description: "Description"
                 objects: "Objects"
