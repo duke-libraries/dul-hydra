@@ -28,7 +28,7 @@ module DulHydra
       identifier.first
     end
 
-    # Validates current version of each datastream
+    # Validates current version of each datastream that has content.
     # Returns a two-valued array consisting of a boolean result
     # and a hash of the datastream profiles.
     # The boolean result is true if and only if all datastream
@@ -36,8 +36,7 @@ module DulHydra
     def validate_checksums
       outcome = true
       results = {}
-      self.datastreams.each do |dsid, ds|
-        next if ds.profile.empty?
+      self.datastreams.select { |dsid, ds| ds.has_content? }.each do |dsid, ds|
         outcome &&= ds.dsChecksumValid
         results[dsid] = ds.profile
       end
