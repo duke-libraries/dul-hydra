@@ -109,7 +109,9 @@ module DulHydra::Scripts
 
     def report_outcome(event)
       if report?
-        event.for_object.datastreams.each do |dsid, ds|
+        event.for_object.datastreams
+                        .reject { |dsid, ds| ds.profile.empty? }
+                        .each do |dsid, ds|
           report << [ds.pid,
                      dsid,
                      ds.profile["dsVersionID"],
