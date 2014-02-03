@@ -36,7 +36,7 @@ module DulHydra::Batch::Models
     
     def ingest(opts = {})
       repo_object = create_repository_object
-      if !repo_object.nil?
+      if !repo_object.nil? && !repo_object.new?
         ingest_outcome_detail = []
         ingest_outcome_detail << "Ingested #{model} #{identifier} into #{repo_object.pid}"
         create_preservation_event(PreservationEvent::INGESTION,
@@ -64,14 +64,36 @@ module DulHydra::Batch::Models
     
     def create_repository_object
       repo_pid = pid if pid.present?
-      repo_object = model.constantize.new(:pid => repo_pid)
-      repo_object.label = label if label
-      repo_object.save
-      batch_object_datastreams.each {|d| repo_object = populate_datastream(repo_object, d)} if batch_object_datastreams
-      batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
-      repo_object.save
+      repo_object = nil
+      begin
+        repo_object = model.constantize.new(:pid => repo_pid)
+        repo_object.label = label if label
+        repo_object.save
+        batch_object_datastreams.each {|d| repo_object = populate_datastream(repo_object, d)} if batch_object_datastreams
+        batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
+        repo_object.save
+      rescue Exception => e1
+        logger.error("Error in ingest batch processing: #{e1}")
+        repo_clean = false
+        if repo_object && !repo_object.new?
+          begin
+            logger.info("Deleting potentially incomplete #{repo_object.pid} due to error in ingest batch processing")
+            repo_object.destroy
+          rescue Exception => e2
+            logger.error("Error deleting repository object #{repo_object.pid}: #{e2}")
+          else
+            repo_clean = true
+          end
+        else
+          repo_clean = true
+        end
+        if batch.present?
+          batch.status = repo_clean ? DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE : DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED
+          batch.save
+        end
+      end
       repo_object
-    end  
+    end
   
     def create_preservation_event(event_type, event_outcome, outcome_details, repository_object)
       event = PreservationEvent.new(:event_type => event_type,
