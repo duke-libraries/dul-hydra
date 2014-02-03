@@ -24,7 +24,7 @@ module DulHydra
                    :type => ActiveFedora::QualifiedDublinCoreDatastream,
                    :versionable => true, 
                    :label => "Descriptive Metadata for this object", 
-                   :control_group => 'X'
+                   :control_group => 'M'
       DC11_ELEMENTS.each do |element|
         has_attributes element, datastream: DulHydra::Datastreams::DESC_METADATA, multiple: true
       end
