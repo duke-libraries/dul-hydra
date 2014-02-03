@@ -8,7 +8,7 @@ module DulHydra
                    :type => Hydra::Datastream::RightsMetadata,
                    :versionable => true, 
                    :label => "Rights Metadata for this object", 
-                   :control_group => 'X'
+                   :control_group => 'M'
     end
 
     # adds methods for managing Hydra rightsMetadata content
