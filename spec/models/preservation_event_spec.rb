@@ -135,6 +135,34 @@ describe PreservationEvent do
     end
   end
 
+  describe ".creation" do
+    let(:obj) { FactoryGirl.create(:item) }
+    after { obj.destroy }
+    context "without a user" do
+      subject { PreservationEvent.creation(obj) }
+      it_should_behave_like "a valid object preservation event"
+    end
+    context "with a user" do
+      subject { PreservationEvent.creation(obj, user) }
+      let(:user) { FactoryGirl.build(:user) }
+      it_should_behave_like "a valid object preservation event"
+    end
+  end
+
+  describe ".creation!" do
+    let(:obj) { FactoryGirl.create(:item) }
+    after { obj.destroy }
+    context "without a user" do
+      subject { PreservationEvent.creation!(obj) }
+      it_should_behave_like "a valid object preservation event"
+    end
+    context "with a user" do
+      subject { PreservationEvent.creation!(obj, user) }
+      let(:user) { FactoryGirl.build(:user) }
+      it_should_behave_like "a valid object preservation event"
+    end
+  end
+
   describe ".events_for" do
     let(:obj) { FactoryGirl.create(:component_with_content) }
     let(:pe) { obj.fixity_check! }

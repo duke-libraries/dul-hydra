@@ -6,7 +6,6 @@ shared_examples "a valid preservation event" do
     subject.event_id_type.should eq(PreservationEvent::UUID)
     subject.event_id_value.should be_present
     PreservationEvent::EVENT_TYPES.should include(subject.event_type)
-    PreservationEvent::EVENT_OUTCOMES.should include(subject.event_outcome)
   end
 end
 
