@@ -42,7 +42,20 @@ describe AttachmentsController, attachments: true do
         @attachment.source.should == ["sample.docx"]
         @attachment.content.size.should == File.size('spec/fixtures/sample.docx')
         @attachment.attached_to.should == obj
+        @attachment.permissions.should == obj.permissions
         response.should redirect_to(controller: 'objects', action: 'show', id: obj, tab: 'attachments')
+      end
+      context "attached_to object is governed by an admin policy" do
+        let(:apo) { FactoryGirl.create(:admin_policy) }
+        before do
+          obj.admin_policy = apo
+          obj.save!
+        end
+        after { apo.destroy }
+        it "should set the admin policy of the attachment to the object's admin policy" do
+          post :create, id: obj, attachment: {title: "Attachment", description: "Sample file"}, content: fixture_file_upload('sample.docx')
+          assigns(:attachment).admin_policy.should == apo
+        end
       end
     end
     describe "user cannot add attachments to object" do

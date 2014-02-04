@@ -2,6 +2,7 @@ require 'dul_hydra'
 require 'dul_hydra/decorators/active_fedora/base_decorator'
 require 'dul_hydra/decorators/active_fedora/datastream_decorator'
 require 'dul_hydra/decorators/blacklight/solr_helper_decorator'
+require 'dul_hydra/decorators/hydra_access_controls/permission_decorator'
 
 DulHydra.configure do |config|
   config.collection_report_fields = [:pid, :identifier, :content_size]
