@@ -13,20 +13,21 @@ class AttachmentsController < ApplicationController
 
   def create
     @attachment = Attachment.new(attachment_params)
+    @attachment.attached_to = current_object
     file = params[:content]
-    if file
-      @attachment.content.content = file
-      # XXX https://github.com/projecthydra/rubydora/issues/61
+    @attachment.content.content = file
+    if @attachment.valid?
+      # XXX Can remove the line below after upgrading to Rubydora 1.7.1+
       @attachment.content.mimeType = file.content_type
       @attachment.source = file.original_filename
+      @attachment.set_initial_permissions(current_user)
+      @attachment.save
+      flash[:success] = "New attachment added."
+      redirect_to controller: 'objects', action: 'show', id: current_object, tab: 'attachments'
+    else
+      logger.error e
+      render :new
     end
-    @attachment.attached_to = current_object
-    @attachment.save!
-    flash[:success] = "New attachment added."
-    redirect_to controller: 'objects', action: 'show', id: current_object, tab: 'attachments'
-  rescue ActiveFedora::RecordInvalid => e
-    logger.error e
-    render :new
   end
 
   protected
