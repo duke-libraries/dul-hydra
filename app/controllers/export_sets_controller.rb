@@ -50,7 +50,7 @@ class ExportSetsController < ApplicationController
   def archive
     if request.get?
       if @export_set.has_archive?
-        redirect_to @export_set.archive.url
+        send_file filename: @export_set.archive_file_name, disposition: 'attachment', type: @export_set.archive_content_type
       else
         render status: 404
       end
