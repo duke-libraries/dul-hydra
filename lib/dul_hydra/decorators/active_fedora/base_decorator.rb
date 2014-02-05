@@ -1,22 +1,29 @@
 ActiveFedora::Base.class_eval do
 
-  def self.add_association_methods
-    [:attachments, :children, :parent].each do |a|
-      define_method("has_#{a}?".to_sym) do
-        # ActiveFedora 7.0 will add an #association(name) instance method to AF::Base
-        # so this can be rewritten as:
-        #
-        # !association(a).nil?
-        #
-        !self.class.reflect_on_association(a).nil?
-      end
-    end
+  def can_have_attachments?
+    self.is_a?(DulHydra::HasAttachments)
   end
 
-  add_association_methods
+  def has_attachments?
+    can_have_attachments? && attachments.size > 0
+  end
+
+  def can_have_children?
+    # DulHydra::HasChildren doesn't implement the has_many :children association
+    # In active-fedora 7, we can write !association(:children).nil?
+    !self.class.reflect_on_association(:children).nil?
+  end
+
+  def has_children?
+    can_have_children? and children.size > 0
+  end
+
+  def can_have_preservation_events?
+    self.is_a?(DulHydra::HasPreservationEvents)
+  end
 
   def has_preservation_events?
-    self.is_a?(DulHydra::HasPreservationEvents)
+    can_have_preservation_events? && preservation_events.size > 0
   end
     
   def has_content?

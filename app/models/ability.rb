@@ -116,7 +116,7 @@ class Ability
 
   def attachment_permissions
     can :add_attachment, ActiveFedora::Base do |obj|
-      obj.has_attachments? && can?(:edit, obj)
+      obj.can_have_attachments? && can?(:edit, obj)
     end
   end
 
