@@ -23,6 +23,7 @@ class ObjectsController < ApplicationController
     @object.attributes = params[:object].reject {|key, value| value.blank?}
     set_initial_permissions
     if @object.save
+      PreservationEvent.creation!(@object, current_user) if @object.can_have_preservation_events?
       redirect_to redirect_after_create, notice: "New #{@model} successfully created."
     else
       render :action => 'new'
