@@ -11,6 +11,10 @@
 	</p>
 	<%= f.hidden_field :export_type %>
     <%= render :partial => 'title_field', :locals => {:f => f} %>
+	<% if @export_set.export_descriptive_metadata? -%>
+	  <%= f.label :csv_col_sep, "CSV Column Separator" %>
+	  <%= f.select :csv_col_sep, csv_col_sep_options %>
+	<% end -%>
     <div class="alert alert-info" style="width: 30em">
 	  <%= t('dul_hydra.export_sets.alerts.new.select') %>:
 	</div>

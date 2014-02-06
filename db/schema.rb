@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140128155051) do
+ActiveRecord::Schema.define(version: 20140206033757) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -103,6 +103,7 @@ ActiveRecord::Schema.define(version: 20140128155051) do
     t.text     "pids"
     t.string   "title"
     t.string   "export_type"
+    t.string   "csv_col_sep"
   end
 
   create_table "ingest_folders", force: true do |t|
@@ -125,8 +126,8 @@ ActiveRecord::Schema.define(version: 20140128155051) do
     t.integer  "user_id"
     t.string   "profile"
     t.string   "collection_pid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
     t.string   "metadata_file_name"
     t.string   "metadata_content_type"
     t.integer  "metadata_file_size"

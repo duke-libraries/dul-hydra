@@ -11,6 +11,12 @@ class ExportSet < ActiveRecord::Base
   validates_presence_of :user, :pids
   validates :export_type, presence: true, if: :valid_type?
 
+  CSV_COL_SEP_OPTIONS = {
+    "tab" => "\t", 
+    "comma" => ",",
+    "double pipe" => "||"
+    }
+
   def has_archive?
     !archive_file_name.nil?
   end
@@ -71,12 +77,20 @@ class ExportSet < ActiveRecord::Base
     update!(archive: File.new(file_name, "rb"))
   end
 
+  def csv_options
+    if csv_col_sep
+      {col_sep: CSV_COL_SEP_OPTIONS.fetch(csv_col_sep)}
+    else
+      {}
+    end
+  end
+
   def export_descriptive_metadata
     file_name = File.join(Dir.tmpdir, generate_archive_file_name('csv'))
     File.open(file_name, 'w', encoding: "UTF-8") do |file| # XXX use metadata_table.encoding?
       logger.debug "Created temporary file #{file_name} for exporting metadata."
       metadata_table = DulHydra::DescriptiveMetadataTable.new(objects)
-      file.write(metadata_table.to_csv)
+      file.write(metadata_table.to_csv(csv_options))
       logger.debug "Export set descriptive metadata written to file."
     end
     unless File.size?(file_name)
