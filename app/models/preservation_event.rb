@@ -1,8 +1,5 @@
 class PreservationEvent < ActiveRecord::Base
 
-#  attr_accessible :event_detail, :event_date_time, :event_type, :event_outcome, :event_outcome_detail_note, 
-#                  :linking_object_id_type, :linking_object_id_value
-  
   after_initialize :set_event_id
   after_initialize :set_event_date_time
 

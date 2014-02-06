@@ -4,7 +4,7 @@ describe ObjectsController, objects: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
-  after { user.delete }
+  after { user.destroy }
 
   describe "create actions" do
     before do
@@ -21,7 +21,7 @@ describe ObjectsController, objects: true do
 
     describe "#create" do
       before { DulHydra.creatable_models = ["AdminPolicy", "Collection"] }
-      after { assigns(:object).delete }
+      after { assigns(:object).destroy }
       it "should create a new object" do
         post :create, model: 'collection', object: {title: 'New Collection'}
         assigns(:object).should be_persisted
@@ -32,6 +32,12 @@ describe ObjectsController, objects: true do
         it "should assign an admin policy" do
           post :create, model: 'collection', object: {title: 'New Collection', admin_policy_id: apo.pid}
           assigns(:object).admin_policy_id.should == apo.pid
+        end
+      end
+      context "objects that have preservation events" do
+        it "should create a creation preservation event for the object" do
+          post :create, model: 'collection', object: {title: 'New Collection'}
+          PreservationEvent.events_for(assigns(:object), PreservationEvent::CREATION).size.should == 1
         end
       end
       context "initial permissions" do
@@ -65,7 +71,7 @@ describe ObjectsController, objects: true do
 
   describe "read and update actions" do
     let(:object) { FactoryGirl.create(:test_model) }
-    after { object.delete }
+    after { object.destroy }
 
     describe "#show" do
       before do
