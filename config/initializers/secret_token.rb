@@ -9,3 +9,10 @@ DulHydra::Application.config.secret_token = if Rails.env.development? or Rails.e
                                             else
                                               ENV['SECRET_TOKEN']
                                             end
+
+# For Rails 4 -- cf. http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#wiki-upgrading-from-rails-3-2-to-rails-4-0
+DulHydra::Application.config.secret_key_base = if Rails.env.development? or Rails.env.test?
+                                                 SecureRandom.hex(64)
+                                               else
+                                                 ENV['SECRET_KEY_BASE']
+                                               end
