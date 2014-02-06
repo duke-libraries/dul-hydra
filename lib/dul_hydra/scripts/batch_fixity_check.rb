@@ -8,14 +8,12 @@ module DulHydra::Scripts
     # TODO migrate defaults to config
     DEFAULT_LIMIT = 1000
     DEFAULT_PERIOD = "60DAYS"
-    QUERY = "#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO NOW-%s]"
-    SORT = "#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON} asc"
 
-    attr_reader :limit, :dryrun, :log, :query, :report, :report_file, :summary, :executed
+    attr_reader :limit, :dryrun, :log, :period, :report, :report_file, :summary, :executed
 
     def initialize(opts={})
       @limit = opts.fetch(:limit, DEFAULT_LIMIT).to_i
-      @query = QUERY % opts.fetch(:period, DEFAULT_PERIOD)
+      @period = opts.fetch(:period, DEFAULT_PERIOD)
       @dryrun = opts.fetch(:dryrun, false)
       @summary = {objects: {}, at: nil}
       @report_file = opts[:report]
@@ -129,10 +127,23 @@ module DulHydra::Scripts
     end
 
     def objects_to_check
-      log.info "Querying index: #{query} (limit: #{limit}) ..."
-      results = ActiveFedora::SolrService.query(query, :rows => limit, :sort => SORT)
+      log.info "Finding objects to check ..."
+      rows = limit
+      results = objects_never_checked(rows)
+      rows -= results.size
+      results += objects_last_checked_before_period(rows) if rows > 0
       log.info "#{results.size} matching objects found."
       ActiveFedora::SolrService.lazy_reify_solr_results results
+    end
+
+    def objects_last_checked_before_period(rows)
+      q = "#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO NOW-#{period}]"
+      ActiveFedora::SolrService.query(q, rows: rows, sort: "#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON} asc")
+    end
+
+    def objects_never_checked(rows)
+      q = "-#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO *] NOT #{DulHydra::IndexFields::ACTIVE_FEDORA_MODEL}:AdminPolicy"
+      ActiveFedora::SolrService.query(q, rows: rows)
     end
 
   end
