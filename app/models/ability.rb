@@ -21,6 +21,7 @@ class Ability
     ingest_folders_permissions
     metadata_files_permissions
     attachment_permissions
+    children_permissions
   end
 
   def create_permissions
@@ -95,6 +96,18 @@ class Ability
       else
         can? :read, ds
       end
+    end
+  end
+
+  def children_permissions
+    can :manage_children, DulHydra::HasChildren do |obj|
+      can?(:edit, obj)
+    end
+    can :add_children, DulHydra::HasChildren do |obj|
+      can?(:manage_children, obj) or can?(:edit, obj)
+    end
+    can :remove_children, DulHydra::HasChildren do |obj|
+      can?(:manage_children, obj) or can?(:edit, obj)
     end
   end
 
