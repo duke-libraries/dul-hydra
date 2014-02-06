@@ -13,6 +13,11 @@
 	<th scope="row">Export Type</th>
 	<td><%= @export_set.export_type_label %></td>
   </tr>
+  <% if @export_set.export_descriptive_metadata? %>
+  <tr>
+	<th scope="row">CSV Column Separator</th>
+	<td><%= @export_set.csv_col_sep %></td>
+  <% end %>
   <tr>
     <th scope="row">Created</th>
     <td><%= @export_set.created_at.localtime %></td>

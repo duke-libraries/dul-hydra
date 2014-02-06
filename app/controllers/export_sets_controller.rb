@@ -50,7 +50,7 @@ class ExportSetsController < ApplicationController
   def archive
     if request.get?
       if @export_set.has_archive?
-        send_file filename: @export_set.archive_file_name, disposition: 'attachment', type: @export_set.archive_content_type
+        send_file @export_set.archive.path, filename: @export_set.archive_file_name, disposition: 'attachment', type: @export_set.archive_content_type
       else
         render status: 404
       end
@@ -112,7 +112,7 @@ class ExportSetsController < ApplicationController
   private
   
   def export_set_params
-    params.require(:export_set).permit(:title, :export_type, :pids => [])
+    params.require(:export_set).permit(:title, :export_type, :csv_col_sep, :pids => [])
   end
 
 end

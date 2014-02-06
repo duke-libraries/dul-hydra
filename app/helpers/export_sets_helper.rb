@@ -14,6 +14,10 @@ module ExportSetsHelper
     end
   end
 
+  def csv_col_sep_options
+    options_for_select(ExportSet::CSV_COL_SEP_OPTIONS.keys.collect { |opt| [opt.capitalize, opt] }, "tab")
+  end
+
   def object_list_cols
     if @export_set.export_content?
       [:pid, :object_type, :title, :identifier, :source]
