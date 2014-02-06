@@ -43,6 +43,7 @@ describe AttachmentsController, attachments: true do
         @attachment.content.size.should == File.size('spec/fixtures/sample.docx')
         @attachment.attached_to.should == obj
         @attachment.permissions.should == obj.permissions
+        @attachment.preservation_events.first.event_type.should == PreservationEvent::CREATION
         response.should redirect_to(controller: 'objects', action: 'show', id: obj, tab: 'attachments')
       end
       context "attached_to object is governed by an admin policy" do
