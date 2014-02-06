@@ -6,13 +6,11 @@ describe Ability do
 
   subject { described_class.new(user) }
   let(:user) { FactoryGirl.create(:user) }
-  after { user.delete }
+  after { user.destroy }
 
   describe "create permissions" do
     context "ActiveFedora::Base" do
-      it "should DENY creation" do
-        subject.should_not be_able_to(:create, ActiveFedora::Base)
-      end
+      it { should_not be_able_to(:create, ActiveFedora::Base) }
     end
     context "creatable models" do
       before do
@@ -34,21 +32,15 @@ describe Ability do
             subject.can_create_model?(model).should be_true
           end
         end
-        it "should return true for :can_create_models?" do
-          subject.can_create_models?.should be_true
-        end
+        its(:can_create_models?) { should be_true }
       end
       context "user is NOT member of model creators group" do
+        its(:can_create_models) { should be_empty }
+        its(:can_create_models?) { should be_false }
         it "should DENY creation" do
           DulHydra.creatable_models.each do |model|
             subject.should_not be_able_to(:create, model.constantize)
           end
-        end
-        it "should have an empty list of :can_create_models" do
-          subject.can_create_models.should be_empty
-        end
-        it "should return false for :can_create_models?" do
-          subject.can_create_models?.should be_false
         end
         it "should return false for :can_create_model? on all models" do
           DulHydra.creatable_models.each do |model|
@@ -61,7 +53,7 @@ describe Ability do
 
   describe "#download_permissions" do
 
-    after { obj.delete }
+    after { obj.destroy }
 
     context "object" do
 
@@ -69,21 +61,16 @@ describe Ability do
         let(:obj) { FactoryGirl.create(:component_with_content) }
         before { DulHydra.ability_group_map = {"Component" => {download: "component_download"}}.with_indifferent_access }
         context "user is NOT a member of the component download ability group" do
-
           context "and user has read permission" do
             before do
               obj.read_users = [user.to_s]
               obj.save
             end
-            it "should DENY download" do
-              subject.should_not be_able_to(:download, obj)
-            end
+            it { should_not be_able_to(:download, obj) }
           end
 
           context "and user lacks read permission" do
-            it "should DENY download" do
-              subject.should_not be_able_to(:download, obj)
-            end            
+            it { should_not be_able_to(:download, obj) }
           end
         end
 
@@ -97,15 +84,11 @@ describe Ability do
               obj.read_users = [user.to_s]
               obj.save
             end
-            it "should PERMIT download" do
-              subject.should be_able_to(:download, obj)
-            end
+            it { should be_able_to(:download, obj) }
           end
 
           context "and user lacks read permission" do
-            it "should DENY download" do
-              subject.should_not be_able_to(:download, obj)
-            end            
+            it { should_not be_able_to(:download, obj) }
           end          
         end
       end
@@ -118,15 +101,11 @@ describe Ability do
             obj.read_users = [user.to_s]
             obj.save
           end
-          it "should PERMIT download" do
-            subject.should be_able_to(:download, obj)
-          end
+          it { should be_able_to(:download, obj) }
         end
 
         context "and user lacks read permission" do
-          it "should DENY download" do
-            subject.should_not be_able_to(:download, obj)
-          end            
+          it { should_not be_able_to(:download, obj) }
         end                  
       end
     end
@@ -146,15 +125,11 @@ describe Ability do
                 obj.read_users = [user.to_s]
                 obj.save
               end
-              it "should DENY download" do
-                subject.should_not be_able_to(:download, ds)
-              end
+              it { should_not be_able_to(:download, ds) }
             end
 
             context "and user lacks read permission on the object" do
-              it "should DENY download" do
-                subject.should_not be_able_to(:download, ds)
-              end            
+              it { should_not be_able_to(:download, ds) }
             end
           end
 
@@ -168,15 +143,11 @@ describe Ability do
                 obj.read_users = [user.to_s]
                 obj.save
               end
-              it "should PERMIT download" do
-                subject.should be_able_to(:download, ds)
-              end
+              it { should be_able_to(:download, ds) }
             end
 
             context "and user lacks read permission on the object" do
-              it "should DENY download" do
-                subject.should_not be_able_to(:download, ds)
-              end            
+              it { should_not be_able_to(:download, ds) }
             end          
           end
         end
@@ -189,15 +160,11 @@ describe Ability do
               obj.read_users = [user.to_s]
               obj.save
             end
-            it "should PERMIT download" do
-              subject.should be_able_to(:download, ds)
-            end
+            it { should be_able_to(:download, ds) }
           end
 
           context "and user lacks read permission on the object" do
-            it "should DENY download" do
-              subject.should_not be_able_to(:download, ds)
-            end            
+            it { should_not be_able_to(:download, ds) }
           end                  
           
         end
@@ -212,14 +179,10 @@ describe Ability do
             obj.read_users = [user.to_s]
             obj.save
           end
-          it "should PERMIT download" do
-            subject.should be_able_to(:download, ds)
-          end
+          it { should be_able_to(:download, ds) }
         end
         context "and user lacks read permission on the object" do
-          it "should DENY download" do
-            subject.should_not be_able_to(:download, ds)
-          end
+          it { should_not be_able_to(:download, ds) }
         end        
       end
 
@@ -238,9 +201,7 @@ describe Ability do
   describe "#export_sets_permissions", export_sets: true do
     let(:export_set) { FactoryGirl.create(:descriptive_metadata_export_set, user: user, pids: ["foo:bar"]) }
     context "associated user" do
-      it "should PERMIT :manage" do
-        subject.should be_able_to(:manage, export_set)
-      end
+      it { should be_able_to(:manage, export_set) }
     end
     context "other user" do
       let(:other_user) { FactoryGirl.create(:user) }
@@ -254,15 +215,11 @@ describe Ability do
   describe "#ingest_folders_permissions" do
     context "user has no permitted ingest folders" do
       before { IngestFolder.stub(:permitted_folders).with(user).and_return([]) }
-      it "should DENY create permission to the user" do
-        subject.should_not be_able_to(:create, IngestFolder)
-      end      
+      it { should_not be_able_to(:create, IngestFolder) }
     end
     context "user has at least one permitted ingest folder" do
       before { IngestFolder.stub(:permitted_folders).with(user).and_return(['dir']) }
-      it "should PERMIT create permission to the user" do
-        subject.should be_able_to(:create, IngestFolder)
-      end      
+      it { should be_able_to(:create, IngestFolder) }
     end
   end
 
@@ -272,34 +229,58 @@ describe Ability do
       DulHydra.stub(:superuser_group).and_return("superusers")
       user.stub(:groups).and_return(["superusers"])
     end
-    it "should grant :manage on :all" do
-      subject.should be_able_to(:manage, :all)
-    end
+    it { should be_able_to(:manage, :all) }
   end
 
   describe "#attachment_permissions", attachments: true do
     let(:obj) { FactoryGirl.create(:test_model) }
     after { obj.destroy }
     context "user has edit rights on attached_to object" do
-      #before { subject.stub(:can?, [:edit, TestModel]).and_return(true) }
       before do
         obj.edit_users = [user.user_key]
         obj.save!
       end
-      it "should be able add an attachment" do
-        subject.should be_able_to(:add_attachment, obj)
-      end
+      it { should be_able_to(:add_attachment, obj) }
     end
     context "user lacks edit rights on attached_to object" do
-      #before { subject.stub(:can?, [:edit, TestModel]).and_return(false) }
       before do
         obj.read_users = [user.user_key]
         obj.save!
       end
-      it "should be able add an attachment" do
-        subject.should_not be_able_to(:add_attachment, obj)
+      it { should_not be_able_to(:add_attachment, obj) }
+    end
+  end
+
+  describe "#children_permissions" do
+    after { obj.destroy }
+    context "user has edit rights on object" do
+      before do
+        obj.edit_users = [user.user_key]
+        obj.save!
+      end
+      context "and object can have children" do
+        let(:obj) { FactoryGirl.create(:collection) }
+        it { should be_able_to(:add_children, obj) }
+        it { should be_able_to(:remove_children, obj) }
+        it { should be_able_to(:manage_children, obj) }
+      end
+      context "and object cannot have children" do
+        let(:obj) { FactoryGirl.create(:component) }
+        it { should_not be_able_to(:add_children, obj) }
+        it { should_not be_able_to(:remove_children, obj) }
+        it { should_not be_able_to(:manage_children, obj) }
       end
     end
+    context "user lacks edit rights on attached_to object" do
+      let(:obj) { FactoryGirl.create(:collection) }
+      before do
+        obj.read_users = [user.user_key]
+        obj.save!
+      end
+      it { should_not be_able_to(:add_children, obj) }
+      it { should_not be_able_to(:remove_children, obj) }
+      it { should_not be_able_to(:manage_children, obj) }
+    end    
   end
 
 end
