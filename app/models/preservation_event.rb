@@ -72,7 +72,9 @@ class PreservationEvent < ActiveRecord::Base
     event_detail = "New #{object.class.to_s} object created"
     event_detail << " by #{user.user_key}" if user
     event_detail << ".\n#{version_note}"
+    event_date_time = DateTime.strptime(object.create_date, DATE_TIME_FORMAT)
     pe = new(event_detail: event_detail,
+             event_date_time: event_date_time,
              event_type: CREATION)
     pe.for_object = object
     pe
