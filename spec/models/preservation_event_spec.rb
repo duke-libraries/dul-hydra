@@ -155,11 +155,17 @@ describe PreservationEvent do
     context "without a user" do
       subject { PreservationEvent.creation!(obj) }
       it_should_behave_like "a valid object preservation event"
+      it "should have event_date_time set to the object creation date/time" do
+        expect(PreservationEvent.to_event_date_time(subject.event_date_time)).to eq(obj.create_date)
+      end
     end
     context "with a user" do
       subject { PreservationEvent.creation!(obj, user) }
       let(:user) { FactoryGirl.build(:user) }
       it_should_behave_like "a valid object preservation event"
+      it "should have event_date_time set to the object creation date/time" do
+        expect(PreservationEvent.to_event_date_time(subject.event_date_time)).to eq(obj.create_date)
+      end
     end
   end
 
