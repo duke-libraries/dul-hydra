@@ -10,6 +10,7 @@ class ExportSet < ActiveRecord::Base
   serialize :pids
   validates_presence_of :user, :pids
   validates :export_type, presence: true, if: :valid_type?
+  validates :csv_col_sep, presence: true, if: :export_descriptive_metadata?
 
   CSV_COL_SEP_OPTIONS = {
     "tab" => "\t", 
