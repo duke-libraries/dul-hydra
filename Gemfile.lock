@@ -115,10 +115,17 @@ GEM
       hydra-access-controls (= 6.4.0)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
+    hydra-derivatives (0.0.7)
+      active-fedora
+      activesupport (>= 3.2.13, < 5.0)
+      hydra-file_characterization
+      mini_magick
     hydra-editor (0.1.1)
       active-fedora (>= 6.3.0)
       bootstrap_forms
       rails (>= 3.2.13, < 5.0)
+    hydra-file_characterization (0.3.1)
+      activesupport (>= 3.0.0)
     hydra-head (6.4.0)
       hydra-access-controls (= 6.4.0)
       hydra-core (= 6.4.0)
@@ -280,10 +287,12 @@ DEPENDENCIES
   bootstrap-sass
   capybara (~> 2.0)
   delayed_job_active_record
+  deprecation
   devise (~> 3.1.1)
   devise-remote-user (= 0.2.0)
   factory_girl_rails (~> 4.0)
   grouper-rest-client
+  hydra-derivatives
   hydra-editor (= 0.1.1)
   hydra-head (~> 6.4)
   jettywrapper (~> 1.5)
@@ -291,7 +300,6 @@ DEPENDENCIES
   launchy
   log4r
   mime-types (~> 1.19)
-  mini_magick
   mysql2
   orderly
   paperclip (~> 3.0)

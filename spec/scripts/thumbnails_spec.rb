@@ -100,19 +100,17 @@ module DulHydra::Scripts
     end
     
     context "thumbnail already exists" do
-        let(:collection) { FactoryGirl.create(:collection_has_apo_with_items_and_components) }
-        let(:item) { collection.children[0] }
+      let(:collection) { FactoryGirl.create(:collection_has_apo_with_items_and_components) }
+      let(:item) { collection.children[0] }
+      let(:content) { StringIO.new("awesome image") }
       before do
-        file = File.open(File.join(Rails.root, 'spec', 'fixtures', 'sample.pdf'))
-        item.generate_thumbnail!(file)
-        item.save
-        file.close
-        @thumbnail = item.datastreams["thumbnail"].content
+        item.datastreams["thumbnail"].content = content
+        item.save!
         thumbnails_script.execute
         item.reload
       end
       it "should not alter the existing thumbnail" do
-        expect(item.datastreams["thumbnail"].content).to eq(@thumbnail)
+        expect(item.datastreams["thumbnail"].content).to eq("awesome image")
       end
     end
     

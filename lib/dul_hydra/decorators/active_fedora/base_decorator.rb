@@ -1,7 +1,8 @@
 ActiveFedora::Base.class_eval do
 
   def can_have_attachments?
-    self.is_a?(DulHydra::HasAttachments)
+    # XXX Should probably test existence of association on :attachments
+    self.is_a? DulHydra::HasAttachments
   end
 
   def has_attachments?
@@ -19,15 +20,19 @@ ActiveFedora::Base.class_eval do
   end
 
   def can_have_preservation_events?
-    self.is_a?(DulHydra::HasPreservationEvents)
+    self.is_a? DulHydra::HasPreservationEvents
   end
 
   def has_preservation_events?
     can_have_preservation_events? && preservation_events.size > 0
   end
+
+  def can_have_content?
+    self.is_a? DulHydra::HasContent
+  end
     
   def has_content?
-    self.is_a?(DulHydra::HasContent) && self.datastreams[DulHydra::Datastreams::CONTENT].has_content?
+    can_have_content? && self.datastreams[DulHydra::Datastreams::CONTENT].has_content?
   end
 
   def has_content_metadata?
@@ -35,11 +40,11 @@ ActiveFedora::Base.class_eval do
   end
 
   def describable?
-    self.is_a?(DulHydra::Describable)
+    self.is_a? DulHydra::Describable
   end
 
   def governable?
-    self.is_a?(DulHydra::Governable)
+    self.is_a? DulHydra::Governable
   end
 
   def has_admin_policy?
@@ -51,8 +56,12 @@ ActiveFedora::Base.class_eval do
     ds && ds.size && ds.size > 0
   end
   
+  def can_have_thumbnail?
+    self.is_a? DulHydra::HasThumbnail
+  end
+
   def has_thumbnail?
-    self.is_a?(DulHydra::HasThumbnail) && self.datastreams[DulHydra::Datastreams::THUMBNAIL].has_content?
+    can_have_thumbnail? && self.datastreams[DulHydra::Datastreams::THUMBNAIL].has_content?
   end
 
   def safe_id
