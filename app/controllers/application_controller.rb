@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   before_filter :authenticate_user!
+  before_filter :configure_permitted_parameters, if: :devise_controller?
 
   helper_method :current_tabs
   helper_method :group_service
@@ -25,6 +26,12 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def configure_permitted_parameters
+      devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :password, :password_confirmation, :remember_me) }
+      devise_parameter_sanitizer.for(:sign_in) { |u| u.permit(:username, :email, :password, :remember_me) }
+      devise_parameter_sanitizer.for(:account_update) { |u| u.permit(:username, :email, :password, :password_confirmation, :current_password) }
+  end
+  
   def find_models_with_gated_discovery(model)
     solr_results = model.find_with_conditions({}, fq: gated_discovery_filters.join(" OR "))
     ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
