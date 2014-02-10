@@ -199,7 +199,7 @@ describe Ability do
   end
 
   describe "#export_sets_permissions", export_sets: true do
-    let(:export_set) { FactoryGirl.create(:descriptive_metadata_export_set, user: user, pids: ["foo:bar"]) }
+    let(:export_set) { FactoryGirl.create(:descriptive_metadata_export_set, user: user, pids: ["foo:bar"], csv_col_sep: "||") }
     context "associated user" do
       it { should be_able_to(:manage, export_set) }
     end
