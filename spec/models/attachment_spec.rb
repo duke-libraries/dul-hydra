@@ -22,7 +22,7 @@ describe Attachment, attachments: true do
         obj.save(validate: false)
       end
     end
-    let(:object) { FactoryGirl.create(:test_model) }
+    let(:object) { FactoryGirl.create(:test_model_omnibus) }
     after do
       object.delete
       attachment.delete
