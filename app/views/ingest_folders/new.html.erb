@@ -22,8 +22,6 @@
 	<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), { :prompt =>  t('dul_hydra.prompts.select') % "File Creator (if applicable)" }, {:style => 'width: auto;'} %>
 	<%= f.label :collection_pid %>
 	<%= f.select :collection_pid, model_options_for_select(Collection), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {:style => 'width: auto;'} %>
-	<%= f.label :admin_policy_pid %>
-	<%= f.select :admin_policy_pid, model_options_for_select(AdminPolicy), { :prompt =>  t('dul_hydra.prompts.select') % "Admin Policy" }, {:style => 'width: auto;'}%>
 	<%= f.label :parent_id_length %>
 	<%= f.text_field :parent_id_length %>&nbsp;<em><%= t('batch.ingest_folder.help.parent_id_length')%></em>
 
