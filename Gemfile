@@ -12,6 +12,8 @@ gem 'devise-remote-user', '0.2.0'
 gem 'active-fedora', '6.7.6'
 gem 'grouper-rest-client'
 gem 'hydra-editor', '0.1.1'
+gem 'hydra-derivatives'
+gem 'deprecation'
 
 gem 'log4r'
 
@@ -26,9 +28,6 @@ gem 'mime-types', '~> 1.19'
 # Export sets
 gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 3.0'
-
-# Image manipulation
-gem 'mini_magick'
 
 group :development, :test do
   gem 'rspec-rails' #, '~> 2.12.0'

@@ -232,11 +232,8 @@ DulHydra version #{DulHydra::VERSION}
           datastream_file.close
         end
       end
-      if datastream[:name].eql?(DulHydra::Datastreams::CONTENT)
-        if DulHydra::Derivatives::Image.derivable?(repo_object.datastreams[datastream[:name]].mimeType)
-          repo_object.generate_thumbnail!(repo_object.datastreams[datastream[:name]])
-        end
-      end
+      # if it's the 'content' datastream, then generate the thumbnail
+      repo_object.set_thumbnail if datastream[:name] == DulHydra::Datastreams::CONTENT
       return repo_object
     end
     
