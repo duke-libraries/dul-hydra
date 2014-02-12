@@ -5,7 +5,7 @@ FactoryGirl.define do
     sequence(:identifier) { |n| "att%05d" % n }
   
     trait :attached do
-      association :attached_to, :factory => :test_model
+      association :attached_to, :factory => :test_model_omnibus
     end
   
     factory :attachment_with_content do

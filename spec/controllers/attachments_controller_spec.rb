@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe AttachmentsController, attachments: true do
   let(:user) { FactoryGirl.create(:user) }
-  let(:obj) { FactoryGirl.create(:test_model) }
+  let(:obj) { FactoryGirl.create(:test_model_omnibus) }
   before { sign_in user }
   after do
     user.destroy

@@ -22,6 +22,7 @@ class TestModelOmnibus < TestModel
   include DulHydra::Governable
   include DulHydra::HasContent
   include DulHydra::HasContentMetadata
+  include DulHydra::HasAttachments
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true
   belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
 end

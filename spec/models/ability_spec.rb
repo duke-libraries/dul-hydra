@@ -233,18 +233,29 @@ describe Ability do
   end
 
   describe "#attachment_permissions", attachments: true do
-    let(:obj) { FactoryGirl.create(:test_model) }
-    after { obj.destroy }
-    context "user has edit rights on attached_to object" do
+    context "object can have attachments" do
+      let(:obj) { FactoryGirl.create(:test_model_omnibus) }
+      after { obj.destroy }
+      context "user has edit rights on attached_to object" do
+        before do
+          obj.edit_users = [user.user_key]
+          obj.save!
+        end
+        it { should be_able_to(:add_attachment, obj) }
+      end
+      context "user lacks edit rights on attached_to object" do
+        before do
+          obj.read_users = [user.user_key]
+          obj.save!
+        end
+        it { should_not be_able_to(:add_attachment, obj) }
+      end
+    end
+    context "object cannot have attachments" do
+      let(:obj) { FactoryGirl.create(:test_model) }
+      after { obj.destroy }
       before do
         obj.edit_users = [user.user_key]
-        obj.save!
-      end
-      it { should be_able_to(:add_attachment, obj) }
-    end
-    context "user lacks edit rights on attached_to object" do
-      before do
-        obj.read_users = [user.user_key]
         obj.save!
       end
       it { should_not be_able_to(:add_attachment, obj) }

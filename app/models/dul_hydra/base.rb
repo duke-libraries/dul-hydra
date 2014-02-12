@@ -5,7 +5,6 @@ module DulHydra
     include Governable
     include AccessControllable
     include Licensable
-    include HasAttachments
     include HasPreservationEvents
     include HasProperties
     include HasThumbnail
