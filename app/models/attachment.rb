@@ -17,7 +17,7 @@ class Attachment < DulHydra::Base
       if attached_to.has_admin_policy?
         # XXX In active-fedora 7.0 can do
         # self.admin_policy = attached_to.admin_policy
-        self.admin_policy_id = attached_to.admin_policy_id if attached_to.has_admin_policy?
+        self.admin_policy_id = attached_to.admin_policy_id
       else      
         self.permissions_attributes = attached_to.permissions.collect { |p| p.vals }
       end
