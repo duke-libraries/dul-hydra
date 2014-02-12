@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140206033757) do
+ActiveRecord::Schema.define(version: 20140212210145) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -50,16 +50,15 @@ ActiveRecord::Schema.define(version: 20140206033757) do
   create_table "batches", force: true do |t|
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.integer  "user_id"
     t.string   "status"
     t.datetime "start"
     t.datetime "stop"
     t.string   "outcome"
-    t.text     "details",              limit: 16777215
-    t.integer  "failure",                               default: 0
-    t.integer  "success",                               default: 0
+    t.integer  "failure",              default: 0
+    t.integer  "success",              default: 0
     t.string   "version"
     t.string   "logfile_file_name"
     t.string   "logfile_content_type"
@@ -126,8 +125,8 @@ ActiveRecord::Schema.define(version: 20140206033757) do
     t.integer  "user_id"
     t.string   "profile"
     t.string   "collection_pid"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "metadata_file_name"
     t.string   "metadata_content_type"
     t.integer  "metadata_file_size"

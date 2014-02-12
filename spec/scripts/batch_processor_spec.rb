@@ -45,7 +45,7 @@ module DulHydra::Batch::Scripts
       expect(batch.start).to be < batch.stop
       expect(batch.stop).to be_within(3.minutes).of(Time.now)
       expect(batch.version).to eq(DulHydra::VERSION)
-      batch.batch_objects.each { |obj| expect(batch.details).to include("Ingested #{obj.model} #{obj.identifier} into #{obj.pid}") }
+      batch.batch_objects.each { |obj| expect(log_contents).to include("Ingested #{obj.model} #{obj.identifier} into #{obj.pid}") }
       expect(log_contents).to include("Ingested #{batch.success} TestModelOmnibus")
     end
   end
@@ -76,7 +76,7 @@ module DulHydra::Batch::Scripts
       expect(batch.start).to be <= batch.stop
       expect(batch.stop).to be_within(3.minutes).of(Time.now)
       expect(batch.version).to eq(DulHydra::VERSION)
-      batch.batch_objects.each { |obj| expect(batch.details).to include("Updated #{obj.pid}") }
+      batch.batch_objects.each { |obj| expect(log_contents).to include("Updated #{obj.pid}") }
       expect(log_contents).to include("Updated #{batch.success} TestModelOmnibus")
     end
   end

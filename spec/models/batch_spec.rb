@@ -60,21 +60,6 @@ module DulHydra::Batch::Models
       
     end
 
-    context "details size" do
-      let(:batch) { FactoryGirl.create(:batch) }
-      let(:details) { "a" * (2**17) }
-      before do
-        batch.details = details
-        batch.save
-      end
-      after do
-        batch.user.destroy
-        batch.destroy
-      end
-      it "should properly save the details" do
-        expect(DulHydra::Batch::Models::Batch.find(batch.id).details).to eq(details)
-      end
-    end
   end
 
 end

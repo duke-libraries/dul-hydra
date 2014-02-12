@@ -8,7 +8,7 @@ class BatchProcessorRunMailer < ActionMailer::Base
     @host = `uname -n`.strip
     @subject = "[#{@host}] #{@title}"
     from = "#{`echo $USER`.strip}@#{@host}"
-    attachments["details.txt"] = @batch.details
+    attachments["details.txt"] = File.read(@batch.logfile.path)
     mail(from: from, to: @batch.user.email, subject: @subject)
   end
 

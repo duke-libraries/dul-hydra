@@ -53,7 +53,6 @@ module DulHydra::Batch::Scripts
         valid = false
         errors.each do |error|
           message = "Batch Object Validation Error: #{error}"
-          @details << message
           @bp_log.error(message)
         end
       end
@@ -77,12 +76,10 @@ module DulHydra::Batch::Scripts
                                :version => DulHydra::VERSION)
       @failures = 0
       @successes = 0
-      @details = []
       @results_tracker = Hash.new
     end
     
     def close_batch_run
-      @batch.details = @details.join("\n")
       @batch.failure = @failures
       @batch.outcome = @successes.eql?(@batch.batch_objects.size) ? DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS : DulHydra::Batch::Models::Batch::OUTCOME_FAILURE
       if @batch.status.eql?(DulHydra::Batch::Models::Batch::STATUS_RUNNING)
@@ -122,7 +119,6 @@ module DulHydra::Batch::Scripts
         @failures += 1
       end
       message = object.results_message
-      @details << message
       @bp_log.info(message)
     end
     
