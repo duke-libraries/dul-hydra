@@ -6,7 +6,7 @@ class IngestFolder < ActiveRecord::Base
   
   belongs_to :user, :inverse_of => :ingest_folders
   
-  validates_presence_of :admin_policy_pid, :collection_pid, :sub_path
+  validates_presence_of :collection_pid, :sub_path
   validate :path_must_be_permitted
   validate :path_must_be_readable
   
@@ -86,6 +86,18 @@ class IngestFolder < ActiveRecord::Base
     end
   end
   
+  def collection
+    @collection ||= Collection.find(collection_pid) if collection_pid
+  end
+  
+  def collection_admin_policy
+    collection.admin_policy
+  end
+  
+  def collection_permissions_attributes
+    collection.permissions.collect { |p| p.vals }
+  end
+  
   def scan
     @parent_hash = {} if add_parents
     @total_count = 0
@@ -110,6 +122,11 @@ class IngestFolder < ActiveRecord::Base
     @excluded_files = []
     @parent_hash = {} if add_parents
     @checksum_hash = checksums if checksum_file.present?
+    if collection_admin_policy.blank? && collection_permissions_attributes.present?
+      temp_surrogate = DulHydra::Base.new
+      temp_surrogate.permissions_attributes = collection_permissions_attributes
+      @rights_metadata_content = temp_surrogate.rightsMetadata.content
+    end
     scan_files(full_path, true)
   end
   
@@ -186,11 +203,17 @@ class IngestFolder < ActiveRecord::Base
             desc_metadata(parent_identifier),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
+    add_datastream(
+            obj,
+            DulHydra::Datastreams::RIGHTS_METADATA,
+            @rights_metadata_content,
+            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES            
+            ) if @rights_metadata_content
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
-            admin_policy_pid
-            ) if admin_policy_pid
+            collection_admin_policy.pid
+            ) if collection_admin_policy
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
@@ -241,11 +264,17 @@ class IngestFolder < ActiveRecord::Base
             checksum_file.present? ? file_checksum(File.join(dirpath, file_entry)) : nil,
             checksum_file.present? ? checksum_type : nil
             )
+    add_datastream(
+            obj,
+            DulHydra::Datastreams::RIGHTS_METADATA,
+            @rights_metadata_content,
+            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES            
+            ) if @rights_metadata_content
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
-            admin_policy_pid
-            ) if admin_policy_pid
+            collection_admin_policy.pid
+            ) if collection_admin_policy
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,

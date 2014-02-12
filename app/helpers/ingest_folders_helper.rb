@@ -36,4 +36,8 @@ module IngestFoldersHelper
     pluralize(@scan_results.target_count, IngestFolder.default_target_model)
   end
   
+  def admin_policy_title
+    @ingest_folder.collection_admin_policy.present? ? @ingest_folder.collection_admin_policy.title : content_tag(:em, 'None')
+  end
+  
 end
