@@ -7,26 +7,28 @@ class ObjectsController < ApplicationController
 
   before_filter :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
   before_filter :configure_blacklight_for_related_objects, only: :show
-  before_filter :load_and_authorize_new_object, only: [:new, :create]
 
   helper_method :object_children
   helper_method :object_attachments
   helper_method :object_preservation_events
 
+  # hydra-editor
+  helper_method :resource_instance_name
+
   layout 'application', only: [:new, :create]
 
   def new
-    # Overriding RecordsControllerBehavior
+    initialize_fields
   end
 
   def create
-    @object.attributes = params[:object].reject {|key, value| value.blank?}
-    set_initial_permissions
-    if @object.save
-      PreservationEvent.creation!(@object, current_user) if @object.can_have_preservation_events?
-      redirect_to redirect_after_create, notice: "New #{@model} successfully created."
+    set_attributes # hydra-editor
+    resource.set_initial_permissions(current_user) if resource.respond_to?(:set_initial_permissions)
+    if resource.save
+      PreservationEvent.creation!(resource, current_user) if resource.can_have_preservation_events?
+      redirect_to redirect_after_create, notice: "New #{resource.class.to_s} successfully created."
     else
-      render :action => 'new'
+      render 'new'
     end
   end
   
@@ -83,28 +85,29 @@ class ObjectsController < ApplicationController
   end
 
   protected
-
-  def set_initial_permissions
-    if @object.respond_to?(:set_initial_permissions)
-      @object.set_initial_permissions(current_user)
-    end
+  
+  # Override hydra-editor
+  def collect_form_attributes
+    raw_attributes = params[resource_instance_name]
+    # we could probably do this with strong parameters if the gemspec depends on Rails 4+
+    permitted_attributes = resource.terms_for_editing.each_with_object({}) { |key, attrs| attrs[key] = raw_attributes[key] if raw_attributes[key] }
+    # removes attributes that were only changed by initialize_fields
+    permitted_attributes.reject { |key, value| resource[key].empty? and value == [""] }
   end
 
-  def load_and_authorize_new_object
-    @model = params[:model].camelize.constantize
-    authorize! :create, @model
-    @object = @model.new
-  rescue NameError # This shouldn't happen, but what the hell
-    raise CanCan::AccessDenied    
-  end
-
+  # Override hydra-editro
   def redirect_after_create
-    case @object.class.to_s
+    case resource.class.to_s
     when "AdminPolicy"
-      default_permissions_path(@object)
+      default_permissions_path(resource)
     else
-      object_path(@object)
+      object_path(resource)
     end
+  end
+
+  # Override hydra-editor
+  def redirect_after_update
+    record_path(resource)
   end
 
   def object_preservation_events

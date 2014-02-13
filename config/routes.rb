@@ -13,7 +13,7 @@ DulHydra::Application.routes.draw do
 
   pid_constraint = {id: /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/}
 
-  resources :objects, only: [:create, :show], constraints: pid_constraint do
+  resources :objects, only: [:new, :create, :show], constraints: pid_constraint do
     member do
       get 'collection_info', constraints: XhrRequestConstraint
       get 'download' => 'downloads#show'
@@ -22,9 +22,6 @@ DulHydra::Application.routes.draw do
       get 'datastreams/:datastream_id' => 'downloads#show', as: 'download_datastream'
     end
   end
-
-  model_params = DulHydra.creatable_models.map { |m| m.constantize.model_name.singular }
-  get '/objects/new/:model' => 'objects#new', constraints: {model: /#{model_params.join("|")}/}, as: 'new_object'
 
   # other object tabs
   get '/objects/:id/:tab' => 'objects#show', 

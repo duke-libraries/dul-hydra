@@ -36,7 +36,7 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
     addressable (2.3.5)
-    arel (4.0.1)
+    arel (4.0.2)
     atomic (1.1.14)
     bcrypt-ruby (3.1.2)
     blacklight (4.5.0)
@@ -72,7 +72,7 @@ GEM
     delayed_job_active_record (4.0.0)
       activerecord (>= 3.0, < 4.1)
       delayed_job (>= 3.0, < 4.1)
-    deprecation (0.0.5)
+    deprecation (0.1.0)
       activesupport
     devise (3.1.1)
       bcrypt-ruby (~> 3.0)
@@ -120,9 +120,10 @@ GEM
       activesupport (>= 3.2.13, < 5.0)
       hydra-file_characterization
       mini_magick
-    hydra-editor (0.1.1)
+    hydra-editor (0.2.2)
       active-fedora (>= 6.3.0)
       bootstrap_forms
+      deprecation
       rails (>= 3.2.13, < 5.0)
     hydra-file_characterization (0.3.1)
       activesupport (>= 3.0.0)
@@ -222,7 +223,7 @@ GEM
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
-    rubydora (1.7.0)
+    rubydora (1.7.1)
       activemodel
       activesupport
       deprecation
@@ -293,7 +294,7 @@ DEPENDENCIES
   factory_girl_rails (~> 4.0)
   grouper-rest-client
   hydra-derivatives
-  hydra-editor (= 0.1.1)
+  hydra-editor (= 0.2.2)
   hydra-head (~> 6.4)
   jettywrapper (~> 1.5)
   jquery-rails
@@ -305,6 +306,7 @@ DEPENDENCIES
   paperclip (~> 3.0)
   rails (~> 4.0.2)
   rspec-rails
+  rubydora (= 1.7.1)
   rubyzip (< 1.0.0)
   sass-rails (~> 4.0.1)
   sqlite3
