@@ -14,6 +14,7 @@ gem 'grouper-rest-client'
 gem 'hydra-editor', '0.2.2'
 gem 'hydra-derivatives'
 gem 'deprecation'
+gem 'rubydora', '1.7.1'
 
 gem 'log4r'
 

@@ -223,7 +223,7 @@ GEM
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
-    rubydora (1.7.2)
+    rubydora (1.7.1)
       activemodel
       activesupport
       deprecation
@@ -306,6 +306,7 @@ DEPENDENCIES
   paperclip (~> 3.0)
   rails (~> 4.0.2)
   rspec-rails
+  rubydora (= 1.7.1)
   rubyzip (< 1.0.0)
   sass-rails (~> 4.0.1)
   sqlite3
