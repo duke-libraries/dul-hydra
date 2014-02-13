@@ -249,7 +249,7 @@ module DulHydra::Batch::Models
         object.batch_object_relationships.each do |r|
           ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
           AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
-          Collection.find(r.object).destroy if r.name.eql?("collection")
+          Collection.find(r[:object]).destroy if r[:name].eql?("collection")
         end
         ActiveFedora::Base.find(object.pid, :cast => true).destroy if object.pid.present?
         object.destroy
