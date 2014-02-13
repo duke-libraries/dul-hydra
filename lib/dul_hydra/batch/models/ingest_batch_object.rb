@@ -73,14 +73,14 @@ module DulHydra::Batch::Models
         batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
         repo_object.save
       rescue Exception => e1
-        logger.error("Error in ingest batch processing: #{e1}")
+        logger.fatal("Error in creating repository object #{repo_object.pid} for #{identifier} : #{e1}")
         repo_clean = false
         if repo_object && !repo_object.new?
           begin
             logger.info("Deleting potentially incomplete #{repo_object.pid} due to error in ingest batch processing")
             repo_object.destroy
           rescue Exception => e2
-            logger.error("Error deleting repository object #{repo_object.pid}: #{e2}")
+            logger.fatal("Error deleting repository object #{repo_object.pid}: #{e2}")
           else
             repo_clean = true
           end
@@ -91,6 +91,7 @@ module DulHydra::Batch::Models
           batch.status = repo_clean ? DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE : DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED
           batch.save
         end
+        raise e1
       end
       repo_object
     end

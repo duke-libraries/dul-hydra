@@ -53,16 +53,26 @@ module DulHydra::Batch::Models
     private
     
     def update_repository_object(opts = {})
-      repo_object = ActiveFedora::Base.find(pid, :cast => true)
-      if batch_object_datastreams
-        batch_object_datastreams.each do |d|
-          repo_object = case
-          when d.operation.eql?(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
-            populate_datastream(repo_object, d)
-          end        
+      repo_object = nil
+      begin
+        repo_object = ActiveFedora::Base.find(pid, :cast => true)
+        if batch_object_datastreams
+          batch_object_datastreams.each do |d|
+            repo_object = case
+            when d.operation.eql?(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
+              populate_datastream(repo_object, d)
+            end        
+          end
         end
+        repo_object.save
+      rescue Exception => e
+        logger.error("Error in updating repository object #{repo_object.pid} for #{identifier} : : #{e}")
+        if batch.present?
+          batch.status = DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
+          batch.save
+        end
+        raise e
       end
-      repo_object.save
       repo_object
     end
 

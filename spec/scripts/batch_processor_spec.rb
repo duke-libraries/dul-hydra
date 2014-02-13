@@ -3,7 +3,7 @@ require 'spec_helper'
 module DulHydra::Batch::Scripts
   
   shared_examples "a successful ingest batch" do
-    let(:log_contents) { File.open(File.join(test_dir, DulHydra::Batch::Scripts::BatchProcessor::DEFAULT_LOG_FILE)) { |io| io.read } }
+    let(:log_contents) { File.read(batch.logfile.path) }
     before do
       batch.reload
       @repo_objects = []
@@ -51,7 +51,7 @@ module DulHydra::Batch::Scripts
   end
   
   shared_examples "a successful update batch" do
-    let(:log_contents) { File.open(File.join(test_dir, DulHydra::Batch::Scripts::BatchProcessor::DEFAULT_LOG_FILE)) { |io| io.read } }
+    let(:log_contents) { File.read(batch.logfile.path) }
     before do
       batch.reload
       @repo_objects = []
@@ -81,6 +81,17 @@ module DulHydra::Batch::Scripts
     end
   end
 
+  shared_examples "an interrupted batch run" do
+    before { batch.reload }
+    it "should have an interrupted status and a failed outcome" do
+      expect([DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED, DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE]).to include(batch.status)
+      expect(batch.outcome).to eq(DulHydra::Batch::Models::Batch::OUTCOME_FAILURE)
+    end
+    it "should have a logfile" do
+      expect(batch.logfile).to_not be_nil
+    end
+  end
+  
   describe BatchProcessor do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:log_dir) { test_dir }
@@ -90,10 +101,12 @@ module DulHydra::Batch::Scripts
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
       after do
         batch.batch_objects.each do |obj|
-          repo_obj = ActiveFedora::Base.find(obj.pid, :cast => true)
-          repo_obj.parent.destroy if repo_obj.parent
-          repo_obj.admin_policy.destroy if repo_obj.admin_policy
-          repo_obj.destroy
+          obj.batch_object_relationships.each do |r|
+            ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
+            AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
+            Collection.find(r[:object]).destroy if r[:name].eql?("collection")
+          end
+          ActiveFedora::Base.find(obj.pid, :cast => true).destroy if obj.pid.present?
         end
         batch.user.destroy
         batch.destroy
@@ -110,6 +123,13 @@ module DulHydra::Batch::Scripts
         end
         it_behaves_like "a successful ingest batch"        
       end
+      context "exception during run" do
+        before do
+          DulHydra::Batch::Models::IngestBatchObject.any_instance.stub(:populate_datastream).and_raise(RuntimeError)
+          bp.execute
+        end
+        it_behaves_like "an interrupted batch run"
+      end
     end
     context "update" do
       let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
@@ -118,7 +138,6 @@ module DulHydra::Batch::Scripts
       before do
         repo_object.edit_users = [ batch.user.user_key ]
         repo_object.save
-        bp.execute
       end
       after do
         repo_object.destroy
@@ -126,7 +145,15 @@ module DulHydra::Batch::Scripts
         batch.destroy
       end
       context "successful update" do
+        before { bp.execute }
         it_behaves_like "a successful update batch"
+      end
+      context "exception during run" do
+        before do
+          DulHydra::Batch::Models::BatchObject.any_instance.stub(:populate_datastream).and_raise(RuntimeError)
+          bp.execute
+        end
+        it_behaves_like "an interrupted batch run"
       end
     end
   end  
