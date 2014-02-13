@@ -16,6 +16,7 @@ describe ExportSet do
   
   context "validation" do
     context "csv_col_sep" do
+      after { export_set.user.destroy }
       context "missing" do
         context "type is descriptive metadata" do
           let(:export_set) { FactoryGirl.build(:descriptive_metadata_export_set_with_pids) }
