@@ -11,7 +11,7 @@ gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user', '0.2.0'
 gem 'active-fedora', '6.7.6'
 gem 'grouper-rest-client'
-gem 'hydra-editor', '0.1.1'
+gem 'hydra-editor', '0.2.2'
 gem 'hydra-derivatives'
 gem 'deprecation'
 

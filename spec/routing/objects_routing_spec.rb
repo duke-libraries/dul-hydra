@@ -13,11 +13,9 @@ describe "object routes", objects: true do
       expect(:get => object_path('duke:1')).to route_to(@route)
     end
     it "should have a new route" do
-      @route = {controller: 'objects', action: 'new', model: 'collection'}
-      expect(:get => '/objects/new/collection').to route_to(@route)
-      expect(:get => new_object_path('collection')).to route_to(@route)
-      expect(:get => '/objects/new').not_to be_routable     # no model param
-      expect(:get => '/objects/new/foo').not_to be_routable # invalid model param
+      @route = {controller: 'objects', action: 'new', type: 'Collection'}
+      expect(:get => '/objects/new?type=Collection').to route_to(@route)
+      expect(:get => "#{new_object_path}?type=Collection").to route_to(@route)
     end
     it "should have a create route" do
       @route = {controller: 'objects', action: 'create'}

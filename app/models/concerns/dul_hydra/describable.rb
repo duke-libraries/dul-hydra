@@ -35,7 +35,20 @@ module DulHydra
     end
 
     def terms_for_editing
-      descriptive_metadata_terms
+      [:title,
+       :description, 
+       :identifier, 
+       :contributor,
+       :coverage, 
+       :creator, 
+       :date, 
+       :language, 
+       :publisher, 
+       :relation, 
+       :rights,
+       :source, 
+       :subject,
+       :type]
     end
     
     def descriptive_metadata_editable?

@@ -13,41 +13,39 @@ describe ObjectsController, objects: true do
     end
 
     describe "#new" do
-      it "should render the new template" do
-        get :new, :model => 'collection'
-        response.should render_template(:new)
-      end
+      subject { get :new, :type => 'Collection' }
+      it { should render_template("new") }
     end
 
     describe "#create" do
       before { DulHydra.creatable_models = ["AdminPolicy", "Collection"] }
       after { assigns(:object).destroy }
       it "should create a new object" do
-        post :create, model: 'collection', object: {title: 'New Collection'}
+        post :create, type: 'Collection', object: {title: ['New Collection']}
         assigns(:object).should be_persisted
       end
       context "governable objects" do
         let(:apo) { AdminPolicy.create(title: "Test Policy") }
         after { apo.delete }
         it "should assign an admin policy" do
-          post :create, model: 'collection', object: {title: 'New Collection', admin_policy_id: apo.pid}
+          post :create, type: 'Collection', object: {title: 'New Collection', admin_policy_id: apo.pid}
           assigns(:object).admin_policy_id.should == apo.pid
         end
       end
       context "objects that have preservation events" do
         it "should create a creation preservation event for the object" do
-          post :create, model: 'collection', object: {title: 'New Collection'}
+          post :create, type: 'Collection', object: {title: 'New Collection'}
           PreservationEvent.events_for(assigns(:object), PreservationEvent::CREATION).size.should == 1
         end
       end
       context "initial permissions" do
         it "should grant edit rights to the object creator (user)" do
-          post :create, model: 'collection', object: {title: 'New Collection'}
+          post :create, type: 'Collection', object: {title: 'New Collection'}
           assigns(:object).edit_users.should include(user.user_key)
         end
         context "Admin Policy objects" do
           it "should grant read access to the `registered' group" do
-            post :create, model: 'admin_policy', object: {title: 'New Admin Policy'}
+            post :create, type: 'AdminPolicy', object: {title: 'New Admin Policy'}
             assigns(:object).read_groups.should include('registered')
           end
         end
@@ -55,13 +53,13 @@ describe ObjectsController, objects: true do
       context "after creation" do
         context "model is AdminPolicy" do
           it "should redirect to edit default permissions page" do
-            post :create, model: 'admin_policy', object: {title: 'New Admin Policy'}
+            post :create, type: 'AdminPolicy', object: {title: 'New Admin Policy'}
             response.should redirect_to(default_permissions_path(assigns(:object)))
           end
         end
         context "other models" do
           it "should redirect to the object show page" do
-            post :create, model: 'collection', object: {title: 'New Collection'}
+            post :create, type: 'Collection', object: {title: 'New Collection'}
             response.should redirect_to(object_path(assigns(:object)))
           end
         end
@@ -101,12 +99,12 @@ describe ObjectsController, objects: true do
         object.save
         controller.stub(:current_object).and_return(object)
       end
-      it "should redirect to the show page" do
-        put :update, :id => object, :test_model => {:title => "Updated"}
+      it "should redirect to the descriptive metadata tab of the show page" do
+        put :update, :id => object, :object => {:title => ["Updated"]}
         response.should redirect_to(record_path(object))
       end
       it "should update the object" do
-        put :update, :id => object, :test_model => {:title => "Updated"}
+        put :update, :id => object, :object => {:title => ["Updated"]}
         object.reload
         object.title.should == ["Updated"]
       end
