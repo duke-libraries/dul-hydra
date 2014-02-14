@@ -55,7 +55,8 @@ describe AttachmentsController, attachments: true do
         after { apo.destroy }
         it "should set the admin policy of the attachment to the object's admin policy" do
           post :create, id: obj, attachment: {title: "Attachment", description: "Sample file"}, content: fixture_file_upload('sample.docx')
-          assigns(:attachment).admin_policy.should == apo
+          @attachment = Attachment.find(assigns(:attachment).pid)
+          @attachment.admin_policy.should == apo
         end
       end
     end
