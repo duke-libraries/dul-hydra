@@ -32,8 +32,7 @@ class BatchesController < ApplicationController
       @batch.save
     end
     flash[:notice] = "Batch is #{valid ? '' : 'not '}valid"
-    case referrer
-    when url_for(action: 'index', only_path: false)
+    if valid && referrer == url_for(action: 'index', only_path: false)
       redirect_to batches_url
     else
       render :show
