@@ -1,0 +1,18 @@
+<%= bootstrap_form_for resource, url: record_form_action_url(resource), html: {class: 'form-inline editor'} do |f| %>
+  <div id="descriptions_display">
+	<%= render 'records/form_header' %>
+    <div class="well">
+	  <% if resource.is_a? Collection -%> 
+        <%= render 'select_admin_policy' %>
+	  <% end -%>
+      <% f.object.terms_for_editing.each do |term| %>
+        <%= render partial: "records/edit_field", locals: {f: f, render_req: true, key: term } %>
+      <% end %>
+    </div> <!-- /well -->
+  </div>
+  <%= hidden_field_tag :type, params[:type] %>
+  <%= f.actions do %>
+    <%= f.submit 'Save' %>
+    <%= f.cancel %>
+  <% end %>
+<% end %>

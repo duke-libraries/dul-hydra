@@ -11,5 +11,10 @@ module DulHydra
       end
     end
 
+    def set_initial_permissions!(user_creator = nil)
+      set_initial_permissions
+      save if changed?
+    end
+
   end
 end

@@ -15,8 +15,6 @@ DulHydra.configure do |config|
 
   config.remote_groups_name_filter = "duke:library:repository:ddr:"
 
-  config.terms_for_creating = [:title, :description]
-
   if File.exists? "#{Rails.root}/config/ability_group_map.yml"
     config.ability_group_map = YAML.load_file("#{Rails.root}/config/ability_group_map.yml").with_indifferent_access
   end
