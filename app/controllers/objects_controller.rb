@@ -1,37 +1,34 @@
 class ObjectsController < ApplicationController
 
   include DulHydra::ObjectsControllerBehavior
-  include RecordsControllerBehavior # hydra-editor plugin for descriptive metadata editing
+  include RecordsControllerBehavior 
 
   copy_blacklight_config_from(CatalogController)
 
-  before_filter :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
-  before_filter :configure_blacklight_for_related_objects, only: :show
+  before_action :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
+  before_action :configure_blacklight_for_related_objects, only: :show
+
+  # :create filters 
+  before_action :set_admin_policy, only: :create
+  before_action :set_initial_permissions, only: :create
+  after_action :creation_event, only: :create
 
   helper_method :object_children
   helper_method :object_attachments
   helper_method :object_preservation_events
 
-  # hydra-editor
-  helper_method :resource_instance_name
+  helper_method :resource_instance_name # RecordsControllerBehavior method
 
   layout 'application', only: [:new, :create]
+
+  #
+  # #new, #create, #edit, and #update actions acquired from RecordsControllerBehavior
+  #
 
   def new
     initialize_fields
   end
 
-  def create
-    set_attributes # hydra-editor
-    resource.set_initial_permissions(current_user) if resource.respond_to?(:set_initial_permissions)
-    if resource.save
-      PreservationEvent.creation!(resource, current_user) if resource.can_have_preservation_events?
-      redirect_to redirect_after_create, notice: "New #{resource.class.to_s} successfully created."
-    else
-      render 'new'
-    end
-  end
-  
   def show
     object_children # lazy loading doesn't seem to work
   end
@@ -85,8 +82,39 @@ class ObjectsController < ApplicationController
   end
 
   protected
+
+  #
+  # Filters
+  #
+  def set_initial_permissions
+    resource.set_initial_permissions(current_user) if resource.respond_to?(:set_initial_permissions)
+  end
+
+  # def require_admin_policy
+  #   if resource.is_a? Collection
+  #     render 'select_admin_policy' unless params[:admin_policy_id].present?
+  #   end
+  # end
   
-  # Override hydra-editor
+  def set_admin_policy
+    if params[:admin_policy_id].present?
+      admin_policy = AdminPolicy.find(params[:admin_policy_id])
+      authorize! :read, admin_policy
+      resource.admin_policy = admin_policy
+    end
+  rescue ActiveFedora::ObjectNotFound
+    resource.errors.add(:admin_policy, "AdminPolicy object having PID #{params[:admin_policy_id]} was not found")
+  end
+
+  def creation_event
+    if resource.persisted? and resource.can_have_preservation_events?
+      PreservationEvent.creation!(resource, current_user)
+    end
+  end
+  
+  #
+  # Overrides of RecordsControllerBehavior
+  #
   def collect_form_attributes
     raw_attributes = params[resource_instance_name]
     # we could probably do this with strong parameters if the gemspec depends on Rails 4+
@@ -95,7 +123,6 @@ class ObjectsController < ApplicationController
     permitted_attributes.reject { |key, value| resource[key].empty? and value == [""] }
   end
 
-  # Override hydra-editro
   def redirect_after_create
     case resource.class.to_s
     when "AdminPolicy"
@@ -105,7 +132,6 @@ class ObjectsController < ApplicationController
     end
   end
 
-  # Override hydra-editor
   def redirect_after_update
     record_path(resource)
   end
@@ -191,13 +217,9 @@ class ObjectsController < ApplicationController
     end
   end
 
-  # Override RecordsControllerBehavior
-  def redirect_after_update
-    record_path(current_object)
-  end
-
-  # tabs
-  
+  #
+  # Tabs
+  #
   def tab_children(id)
     Tab.new(id, guard: has_children?)
   end

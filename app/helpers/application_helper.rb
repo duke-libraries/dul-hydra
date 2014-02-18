@@ -231,8 +231,12 @@ module ApplicationHelper
     link_to model, "#{new_object_path}?type=#{model}"
   end
 
-  def model_options_for_select(model)
-    options = find_models_with_gated_discovery(model).collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
+  def model_options_for_select(model, access=nil)
+    models = find_models_with_gated_discovery(model)
+    if access
+      models = models.select { |m| can? access, m }
+    end
+    options = models.collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
     options_for_select options
   end
 

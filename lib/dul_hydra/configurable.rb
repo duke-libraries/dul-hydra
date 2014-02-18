@@ -31,8 +31,6 @@ module DulHydra::Configurable
     mattr_accessor :creatable_models
     self.creatable_models = []
 
-    mattr_accessor :terms_for_creating
-
     # Superuser group
     mattr_accessor :superuser_group
 
