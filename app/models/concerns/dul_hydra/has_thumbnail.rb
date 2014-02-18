@@ -41,7 +41,7 @@ module DulHydra
     end
 
     def generate_content_thumbnail!(args={})
-      set_thumbnail
+      set_thumbnail_from_content
     end
     deprecation_deprecate :generate_content_thumbnail!
 
