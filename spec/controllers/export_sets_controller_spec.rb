@@ -45,12 +45,36 @@ describe ExportSetsController, export_sets: true do
     end
   end
   context "#update" do
-    let(:export_set) { FactoryGirl.create(:content_export_set, :pids => ["foo:bar"]) }
-    let(:user) { export_set.user }
-    it "should change the title" do
-      put :update, :id => export_set, :export_set => {:title => "Title Changed"}
-      export_set.reload.title.should == "Title Changed"
-      expect(response).to redirect_to(export_set_path(export_set))
+    context "content export set" do
+      let(:export_set) { FactoryGirl.create(:content_export_set, :pids => ["foo:bar"]) }
+      let(:user) { export_set.user }
+      it "should change the title" do
+        put :update, :id => export_set, :export_set => {:title => "Title Changed"}
+        export_set.reload.title.should == "Title Changed"
+        expect(response).to redirect_to(export_set_path(export_set))
+      end
+    end
+    context "metadata export set" do
+      let(:export_set) { FactoryGirl.create(:descriptive_metadata_export_set_with_pids, :csv_col_sep => "tab") }
+      let(:user) { export_set.user }
+      before do
+        export_set.archive = File.new(File.join(Rails.root, 'spec', 'fixtures', 'csv_processing', 'simple.csv'))
+        export_set.save!
+      end
+      context "csv col sep unchanged" do
+        it "should not delete the archive file" do
+          put :update, :id => export_set, :export_set => {:csv_col_sep => "tab"}
+          export_set.reload.archive_file_name.should == 'simple.csv'
+          expect(response).to redirect_to(export_set_path(export_set))
+        end
+      end
+      context "csv col sep changed" do
+        it "should delete the archive file" do
+          put :update, :id => export_set, :export_set => {:csv_col_sep => "comma"}
+          export_set.reload.archive_file_name.should be_nil
+          expect(response).to redirect_to(export_set_path(export_set))
+        end
+      end
     end
   end
   context "#destroy" do

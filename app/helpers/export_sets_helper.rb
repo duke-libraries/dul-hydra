@@ -15,7 +15,7 @@ module ExportSetsHelper
   end
 
   def csv_col_sep_options
-    options_for_select(ExportSet::CSV_COL_SEP_OPTIONS.keys.collect { |opt| [opt.capitalize, opt] }, "tab")
+    options_for_select(ExportSet::CSV_COL_SEP_OPTIONS.keys.collect { |opt| [opt.capitalize, opt] }, @export_set.csv_col_sep || "tab")
   end
 
   def object_list_cols
