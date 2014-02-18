@@ -3,8 +3,8 @@ source 'http://rubygems.org'
 gem 'rails', '~> 4.0.2'
 
 gem 'sqlite3'
-gem 'hydra-head', '~> 6.4'
-gem 'blacklight', '4.5.0'
+gem 'hydra-head', '6.5.0'
+gem 'blacklight', '4.7.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise', '~> 3.1.1'
@@ -14,7 +14,7 @@ gem 'grouper-rest-client'
 gem 'hydra-editor', '0.2.2'
 gem 'hydra-derivatives'
 gem 'deprecation'
-gem 'rubydora', '1.7.1'
+gem 'rubydora', '1.7.4'
 
 gem 'log4r'
 
