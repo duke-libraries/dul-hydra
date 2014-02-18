@@ -2,6 +2,11 @@
 
 <%= form_for @export_set do |f| %>
   <%= render :partial => 'title_field', :locals => {:f => f} %>
+  <% if @export_set.export_descriptive_metadata? -%>
+    <%= f.label :csv_col_sep, "CSV Column Separator" %>
+    <%= f.select :csv_col_sep, csv_col_sep_options %>
+	<%= t('dul_hydra.export_sets.alerts.warn_change_csv_col_sep') %>
+  <% end -%>
   <div>
 	<%= f.submit :id => "update_export_set_button", :class => "btn btn-primary" %>
   </div>
