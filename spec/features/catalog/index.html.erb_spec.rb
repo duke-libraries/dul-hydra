@@ -65,5 +65,16 @@ describe "catalog/index.html.erb" do
         page.should have_xpath("//a[@href = \"#{download_object_path(object)}\"]")
       end
     end
+    context "user is superuser" do
+      before do
+        User.any_instance.stub(:superuser?).and_return(true)
+        visit catalog_index_path
+        fill_in "q", :with => object.title.first
+        click_button "search"
+      end
+      it "should discover the object" do
+        page.should have_content(object.pid)
+      end
+    end
   end
 end

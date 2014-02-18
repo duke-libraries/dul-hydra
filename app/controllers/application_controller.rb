@@ -26,6 +26,12 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # Override Hydra::PolicyAwareAccessControlsEnforcement
+  def gated_discovery_filters
+    return [] if current_user.superuser?
+    super
+  end
+
   def configure_permitted_parameters
       devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :password, :password_confirmation, :remember_me) }
       devise_parameter_sanitizer.for(:sign_in) { |u| u.permit(:username, :email, :password, :remember_me) }
