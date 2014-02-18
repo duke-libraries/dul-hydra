@@ -14,6 +14,7 @@ en:
         no_objects:
           content: "You have bookmarked no objects with content that you have permission to export."
           descriptive_metadata: "You have bookmarked no objects with descriptive metadata that you have permission to export."
+        warn_change_csv_col_sep: "WARNING: If you change the CSV Column Separator, the existing archive file will be deleted and you will need to re-create it."
     associations:
       is_part_of: 'Part of'
       is_member_of_collection: 'Member of'
