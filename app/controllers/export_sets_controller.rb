@@ -34,6 +34,7 @@ class ExportSetsController < ApplicationController
   end
 
   def update
+    @export_set.delete_archive unless @export_set.csv_col_sep == params[:export_set][:csv_col_sep]
     @export_set.update!(export_set_params)
     flash[:notice] = "Export set updated."
     redirect_to action: :show, id: @export_set
