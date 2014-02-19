@@ -71,6 +71,7 @@ module DulHydra::Batch::Scripts
       @bp_log.info "Batch id: #{@batch.id}"
       @bp_log.info "Batch name: #{@batch.name}" if @batch.name
       @bp_log.info "Batch size: #{@batch.batch_objects.size}"
+      @batch.logfile.clear  # clear out any attached logfile
       @batch.update_attributes(:start => DateTime.now,
                                :status => DulHydra::Batch::Models::Batch::STATUS_RUNNING,
                                :version => DulHydra::VERSION)
