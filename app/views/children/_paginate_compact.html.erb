@@ -1,5 +1,0 @@
-<% if @response.total_pages > 1 %>
-  <%= paginate @response, :params => pagination_params, :theme => :blacklight_compact %>
-<% else %>
-  <%= render_pagination_info(@response) %>
-<% end %>
