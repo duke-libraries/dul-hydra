@@ -2,7 +2,7 @@
   <div id="descriptions_display">
 	<%= render 'records/form_header' %>
     <div class="well">
-	  <% if resource.is_a? Collection -%> 
+	  <% if resource.new_record? and resource.is_a?(Collection) -%> 
         <%= render 'select_admin_policy' %>
 	  <% end -%>
       <% f.object.terms_for_editing.each do |term| %>
