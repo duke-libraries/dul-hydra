@@ -8,8 +8,7 @@ class ObjectsController < ApplicationController
   before_action :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
   before_action :configure_blacklight_for_related_objects, only: :show
 
-  # :create filters 
-  before_action :set_admin_policy, only: :create
+  before_action :set_extra_params, only: [:new, :create]
   before_action :set_initial_permissions, only: :create
   after_action :creation_event, only: :create
 
@@ -90,13 +89,38 @@ class ObjectsController < ApplicationController
     resource.set_initial_permissions(current_user) if resource.respond_to?(:set_initial_permissions)
   end
   
+  def set_extra_params
+    set_admin_policy
+    set_attached_to
+    set_content
+  end
+
+  def set_attached_to
+    if params[:attached_to_id].present?
+      attached_to = ActiveFedora::Base.find(params[:attached_to_id], cast: true)
+      authorize! :add_attachment, attached_to
+      resource.attached_to = attached_to
+    end
+  rescue ActiveFedora::ObjectNotFoundError
+    resource.errors.add(:attached_to_id, "Object to attach to having PID #{params[:attached_to_id]} was not found.")
+  end
+
   def set_admin_policy
     if params[:admin_policy_id].present?
       admin_policy = AdminPolicy.find(params[:admin_policy_id])
       resource.admin_policy = admin_policy
     end
   rescue ActiveFedora::ObjectNotFoundError
-    resource.errors.add(:admin_policy, "AdminPolicy object having PID #{params[:admin_policy_id]} was not found")
+    resource.errors.add(:admin_policy_id, "AdminPolicy object having PID #{params[:admin_policy_id]} was not found")
+  end
+
+  def set_content
+    if resource.respond_to?(:set_content) and params[:content].present?
+      file = params[:content] 
+      if file.respond_to?(:path) # Sanitize user input
+        resource.set_content(file)
+      end
+    end
   end
 
   def creation_event

@@ -7,9 +7,7 @@ class Attachment < DulHydra::Base
              :class_name => 'ActiveFedora::Base'
 
   validates :title, presence: true
-  # XXX With Rubydora 1.7.1 can change to
-  # validates :content, presence: true
-  validates :content, has_content: true
+  validates :content, presence: true
   validates :attached_to, presence: true
 
   def set_initial_permissions(user_creator = nil)
