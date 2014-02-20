@@ -8,24 +8,13 @@ module DulHydra::Scripts
     let(:thumbnails_script) { DulHydra::Scripts::Thumbnails.new(collection.pid) }
     
     after do
-      collection.children.each do |item|
-        item.children.each do |component|
-          component.admin_policy.delete if component.admin_policy
-          component.delete
-        end
-        item.reload
-        item.admin_policy.delete if item.admin_policy
-        item.delete
-      end
-      collection.reload
-      collection.admin_policy.delete if collection.admin_policy
-      collection.delete
+      ActiveFedora::Base.destroy_all
     end
     
     context "thumbnail does not exist" do
       
       context "child has thumbnail" do
-        let(:collection) { FactoryGirl.create(:collection_has_apo_with_items_and_components) }
+        let(:collection) { FactoryGirl.create(:collection_with_items_and_components) }
         let(:items) { collection.children }
         let(:item) { items[0] }
         let(:children) { item.children }
@@ -100,7 +89,7 @@ module DulHydra::Scripts
     end
     
     context "thumbnail already exists" do
-      let(:collection) { FactoryGirl.create(:collection_has_apo_with_items_and_components) }
+      let(:collection) { FactoryGirl.create(:collection_with_items_and_components) }
       let(:item) { collection.children[0] }
       let(:content) { StringIO.new("awesome image") }
       before do

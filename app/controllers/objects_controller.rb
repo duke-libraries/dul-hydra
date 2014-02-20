@@ -89,20 +89,13 @@ class ObjectsController < ApplicationController
   def set_initial_permissions
     resource.set_initial_permissions(current_user) if resource.respond_to?(:set_initial_permissions)
   end
-
-  # def require_admin_policy
-  #   if resource.is_a? Collection
-  #     render 'select_admin_policy' unless params[:admin_policy_id].present?
-  #   end
-  # end
   
   def set_admin_policy
     if params[:admin_policy_id].present?
       admin_policy = AdminPolicy.find(params[:admin_policy_id])
-      authorize! :read, admin_policy
       resource.admin_policy = admin_policy
     end
-  rescue ActiveFedora::ObjectNotFound
+  rescue ActiveFedora::ObjectNotFoundError
     resource.errors.add(:admin_policy, "AdminPolicy object having PID #{params[:admin_policy_id]} was not found")
   end
 

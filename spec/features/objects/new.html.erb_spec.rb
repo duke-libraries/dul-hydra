@@ -8,35 +8,23 @@ describe "objects/new.html.erb", objects: true do
     login_as user
   end
   after do 
+    ActiveFedora::Base.destroy_all
     user.destroy
     Warden.test_reset!
   end
-  context "AdminPolicy" do
-    after { AdminPolicy.delete_all }
-    it "should create an AdminPolicy" do
-      visit "#{new_object_path}?type=AdminPolicy"
-      fill_in 'Title', with: 'New Admin Policy'
-      fill_in 'Description', with: 'Taking over the world!'
-      click_button 'Save'
-      expect(page).to have_text("Object was successfully created")
-    end
+  it "should create an AdminPolicy" do
+    visit "#{new_object_path}?type=AdminPolicy"
+    fill_in 'Title', with: 'New Admin Policy'
+    fill_in 'Description', with: 'Taking over the world!'
+    click_button 'Save'
+    expect(page).to have_text("Object was successfully created")
   end
   context "Collection" do
-    before do
-      @admin_policies = FactoryGirl.create_list(:admin_policy, 3)
-      @admin_policies.each do |apo|
-        apo.title = apo.pid
-        apo.read_users = [user.to_s]
-        apo.save
-      end
-    end
-    after do
-      Collection.delete_all
-      AdminPolicy.delete_all
-    end
+    before { @admin_policy = FactoryGirl.create(:public_discover_policy) }
     it "should create a collection" do
-      visit "#{new_object_path}?type=Collection&admin_policy_id=#{@admin_policies.first.pid}"
+      visit "#{new_object_path}?type=Collection"
       fill_in 'Title', with: 'New Collection'
+      select @admin_policy.title, from: 'admin_policy_id'
       click_button 'Save'
       expect(page).to have_text("Object was successfully created")
     end
