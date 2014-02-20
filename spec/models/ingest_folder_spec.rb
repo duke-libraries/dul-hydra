@@ -152,10 +152,7 @@ describe IngestFolder, ingest: true do
       File.stub(:directory?).with("/mount/base/path/subpath/pdf").and_return(true)
       File.stub(:directory?).with("/mount/base/path/subpath/targets").and_return(true)
     end
-    after do
-      collection.admin_policy.destroy if collection.admin_policy
-      collection.destroy
-    end
+    after { ActiveFedora::Base.destroy_all }
     context "scan" do
       let(:scan_results) { ingest_folder.scan }
       it "should report the correct scan results" do
@@ -176,8 +173,6 @@ describe IngestFolder, ingest: true do
       
       context "collection has admin policy" do
         before do
-          collection.admin_policy = FactoryGirl.create(:admin_policy)
-          collection.save
           ingest_folder.procezz
           objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
         end
@@ -191,10 +186,14 @@ describe IngestFolder, ingest: true do
       end
       
       context "collection has no admin policy" do
+        before do
+          collection.admin_policy = nil
+          collection.save(validate: false)
+        end
         context "collection has individual permissions" do
           before do
             collection.permissions_attributes = [ { type: 'user', name: 'person1', access: 'read' } ]
-            collection.save
+            collection.save(validate: false)
             ingest_folder.procezz
             objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
@@ -206,18 +205,19 @@ describe IngestFolder, ingest: true do
             end
           end
         end
-      end
-      
-      context "collection has no individual permissions" do
-        before do
-          ingest_folder.procezz
-          objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
-        end
-        it_behaves_like "a proper set of batch objects"
-        it_behaves_like "batch objects without an admin policy"
-        it_behaves_like "batch objects without individual permissions"        
-      end
 
+        context "collection has no individual permissions" do
+          before do
+            ingest_folder.procezz
+            objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
+          end
+          it_behaves_like "a proper set of batch objects"
+          it_behaves_like "batch objects without an admin policy"
+          it_behaves_like "batch objects without individual permissions"        
+        end
+
+      end
+     
     end
 
   end

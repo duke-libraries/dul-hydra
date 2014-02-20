@@ -18,23 +18,15 @@ describe ObjectsController, objects: true do
     end
 
     describe "#create" do
-      before { DulHydra.creatable_models = ["AdminPolicy", "Collection"] }
-      after { assigns(:object).destroy }
+      let(:admin_policy) { FactoryGirl.create(:admin_policy) }
+      after { ActiveFedora::Base.destroy_all }
       it "should create a new object" do
-        post :create, type: 'Collection', object: {title: ['New Collection']}
+        post :create, type: 'Collection', object: {title: ['New Collection']}, admin_policy_id: admin_policy.pid
         assigns(:object).should be_persisted
-      end
-      context "governable objects" do
-        let(:apo) { AdminPolicy.create(title: "Test Policy") }
-        after { apo.delete }
-        it "should assign an admin policy" do
-          post :create, type: 'Collection', object: {title: 'New Collection', admin_policy_id: apo.pid}
-          assigns(:object).admin_policy_id.should == apo.pid
-        end
       end
       context "objects that have preservation events" do
         it "should create a creation preservation event for the object" do
-          post :create, type: 'Collection', object: {title: 'New Collection'}
+          post :create, type: 'Collection', object: {title: 'New Collection'}, admin_policy_id: admin_policy.pid
           PreservationEvent.events_for(assigns(:object), PreservationEvent::CREATION).size.should == 1
         end
       end
@@ -59,7 +51,7 @@ describe ObjectsController, objects: true do
         end
         context "other models" do
           it "should redirect to the object show page" do
-            post :create, type: 'Collection', object: {title: 'New Collection'}
+            post :create, type: 'Collection', object: {title: 'New Collection'}, admin_policy_id: admin_policy.pid
             response.should redirect_to(object_path(assigns(:object)))
           end
         end

@@ -10,6 +10,7 @@ class Collection < DulHydra::Base
   alias_method :item_ids, :child_ids
 
   validates :title, presence: true
+  validates :admin_policy, presence: true
 
   def terms_for_editing
     if new_record?

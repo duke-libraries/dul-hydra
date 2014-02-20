@@ -21,21 +21,14 @@ shared_examples "a Collection related to a Target" do
 end
 
 describe Collection do
+
   it_behaves_like "a DulHydra object"
 
-  context "validation" do
-    it "should have a title" do
-      expect { Collection.create! }.to raise_error(ActiveFedora::RecordInvalid)
-    end
-  end
+  after { ActiveFedora::Base.destroy_all }
   
   context "collection-item relationships" do
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:item) { FactoryGirl.create(:item) }
-    after do
-      collection.delete
-      item.delete
-    end
     context "#children.<<" do
       before { collection.children << item }
       it_behaves_like "a Collection related to an Item"
@@ -49,10 +42,6 @@ describe Collection do
   context "collection-target relationships" do
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:target) { FactoryGirl.create(:target) }
-    after do
-      collection.delete
-      target.delete
-    end
     context "#targets.<<" do
       before { collection.targets << target }
       it_behaves_like "a Collection related to a Target"
