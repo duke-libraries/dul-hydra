@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140212210145) do
+ActiveRecord::Schema.define(version: 20140220211229) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -91,6 +91,20 @@ ActiveRecord::Schema.define(version: 20140212210145) do
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
 
+  create_table "event_logs", force: true do |t|
+    t.datetime "event_date_time"
+    t.string   "agent_type"
+    t.integer  "user_id"
+    t.string   "software_agent_value"
+    t.string   "action"
+    t.string   "model"
+    t.string   "object_identifier"
+    t.string   "application_version"
+    t.text     "comment"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "export_sets", force: true do |t|
     t.integer  "user_id"
     t.datetime "created_at",           null: false
@@ -125,8 +139,8 @@ ActiveRecord::Schema.define(version: 20140212210145) do
     t.integer  "user_id"
     t.string   "profile"
     t.string   "collection_pid"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",            null: false
+    t.datetime "updated_at",            null: false
     t.string   "metadata_file_name"
     t.string   "metadata_content_type"
     t.integer  "metadata_file_size"
