@@ -61,8 +61,11 @@ module DulHydra::Batch::Scripts
     
     def process_batch
       @batch.batch_objects.each do |object|
-        process_object(object)
-        break unless @batch.status.eql?(DulHydra::Batch::Models::Batch::STATUS_RUNNING)
+        begin
+          process_object(object)
+        rescue Exception => e
+          break
+        end
         sleep 2
       end
     end
@@ -71,6 +74,7 @@ module DulHydra::Batch::Scripts
       @bp_log.info "Batch id: #{@batch.id}"
       @bp_log.info "Batch name: #{@batch.name}" if @batch.name
       @bp_log.info "Batch size: #{@batch.batch_objects.size}"
+      @batch.logfile.clear  # clear out any attached logfile
       @batch.update_attributes(:start => DateTime.now,
                                :status => DulHydra::Batch::Models::Batch::STATUS_RUNNING,
                                :version => DulHydra::VERSION)
@@ -80,6 +84,7 @@ module DulHydra::Batch::Scripts
     end
     
     def close_batch_run
+      @batch.reload
       @batch.failure = @failures
       @batch.outcome = @successes.eql?(@batch.batch_objects.size) ? DulHydra::Batch::Models::Batch::OUTCOME_SUCCESS : DulHydra::Batch::Models::Batch::OUTCOME_FAILURE
       if @batch.status.eql?(DulHydra::Batch::Models::Batch::STATUS_RUNNING)

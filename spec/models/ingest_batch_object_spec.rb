@@ -249,7 +249,7 @@ module DulHydra::Batch::Models
         object.batch_object_relationships.each do |r|
           ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
           AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
-          Collection.find(r.object).destroy if r.name.eql?("collection")
+          Collection.find(r[:object]).destroy if r[:name].eql?("collection")
         end
         ActiveFedora::Base.find(object.pid, :cast => true).destroy if object.pid.present?
         object.destroy
@@ -283,15 +283,18 @@ module DulHydra::Batch::Models
       context "exception during ingest" do
         before { DulHydra::Batch::Models::IngestBatchObject.any_instance.stub(:populate_datastream).and_raise(RuntimeError) }
         context "error during processing" do
-          it "should handle the exception" do
-            expect(object.process).to_not raise_error(RuntimeError)
+          it "should log a fatal message and re-raise the exception" do
+            Rails.logger.should_receive(:fatal).with(/Error in creating repository object/)
+            expect { object.process }.to raise_error(RuntimeError)
           end
         end
         context "error while destroying repository object" do
           before { TestModelOmnibus.any_instance.stub(:destroy).and_raise(RuntimeError) }
           after { TestModelOmnibus.any_instance.unstub(:destroy) }
-          it "should handle the exception" do
-            expect(object.process).to_not raise_error(RuntimeError)
+          it "should log two fatal messages and re-raise the initial exception" do
+            Rails.logger.should_receive(:fatal).with(/Error in creating repository object/)
+            Rails.logger.should_receive(:fatal).with(/Error deleting repository object/)
+            expect { object.process }.to raise_error(RuntimeError)
           end
         end
       end
