@@ -232,7 +232,7 @@ describe Ability do
     it { should be_able_to(:manage, :all) }
   end
 
-  describe "#attachment_permissions", attachments: true do
+  describe "#attachment_permissions", attachment: true do
     context "object can have attachments" do
       let(:obj) { FactoryGirl.create(:test_model_omnibus) }
       after { obj.destroy }

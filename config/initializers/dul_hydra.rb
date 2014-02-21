@@ -19,7 +19,7 @@ DulHydra.configure do |config|
     config.ability_group_map = YAML.load_file("#{Rails.root}/config/ability_group_map.yml").with_indifferent_access
   end
 
-  config.creatable_models = ["AdminPolicy", "Collection"]
+  config.creatable_models = ["AdminPolicy", "Collection", "Attachment"]
 
   config.superuser_group = ENV['SUPERUSER_GROUP']
 

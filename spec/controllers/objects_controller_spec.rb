@@ -1,5 +1,15 @@
 require 'spec_helper'
 
+shared_examples "a newly created object" do
+  it { should be_persisted }
+  its(:edit_users) { should include(user.to_s) }
+end
+
+shared_examples "a newly created object having preservation events" do
+  it_behaves_like "a newly created object"
+  its(:preservation_events) { should have(1).items }
+end
+
 describe ObjectsController, objects: true do
 
   let(:user) { FactoryGirl.create(:user) }
@@ -8,62 +18,75 @@ describe ObjectsController, objects: true do
 
   describe "create actions" do
     before do
-      DulHydra.creatable_models = ["AdminPolicy", "Collection"]
-      controller.current_ability.can(:create, [AdminPolicy, Collection])
+      DulHydra.creatable_models = ["AdminPolicy", "Collection", "Attachment"]
+      controller.current_ability.can(:create, DulHydra.creatable_models.collect {|m| m.constantize})
     end
 
-    describe "#new" do
-      subject { get :new, :type => 'Collection' }
-      it { should render_template("new") }
+    describe "#new", descriptive_metadata: true do
+      context "Collection" do
+        subject { get :new, :type => "Collection" }
+        it { should render_template("new") }
+      end
+      context "AdminPolicy" do
+        subject { get :new, :type => "AdminPolicy" }
+        it { should render_template("new") }
+      end
+      context "Attachment", attachments: true do
+        subject { get :new, type: "Attachment", attached_to_id: attach_to.pid }
+        let(:attach_to) { FactoryGirl.create(:collection) }
+        after { attach_to.destroy }
+        context "user can add attachments to object" do
+          before { controller.current_ability.can(:add_attachment, attach_to) }
+          it { should render_template("new") }
+        end
+        context "user cannot add attachments to object" do
+          before { controller.current_ability.cannot(:add_attachment, attach_to) }
+          its(:response_code) { should == 403 }
+        end
+      end # Attachment
     end
 
-    describe "#create" do
-      let(:admin_policy) { FactoryGirl.create(:admin_policy) }
+    describe "#create", descriptive_metadata: true do
       after { ActiveFedora::Base.destroy_all }
-      it "should create a new object" do
-        post :create, type: 'Collection', object: {title: ['New Collection']}, admin_policy_id: admin_policy.pid
-        assigns(:object).should be_persisted
+      context "Collection" do
+        subject { assigns(:object) }
+        let(:admin_policy) { FactoryGirl.create(:admin_policy) }
+        before { post :create, type: 'Collection', object: {title: ['New Collection']}, admin_policy_id: admin_policy.pid }
+        it_behaves_like "a newly created object having preservation events"
       end
-      context "objects that have preservation events" do
-        it "should create a creation preservation event for the object" do
-          post :create, type: 'Collection', object: {title: 'New Collection'}, admin_policy_id: admin_policy.pid
-          PreservationEvent.events_for(assigns(:object), PreservationEvent::CREATION).size.should == 1
-        end
-      end
-      context "initial permissions" do
-        it "should grant edit rights to the object creator (user)" do
-          post :create, type: 'Collection', object: {title: 'New Collection'}
-          assigns(:object).edit_users.should include(user.user_key)
-        end
-        context "Admin Policy objects" do
-          it "should grant read access to the `registered' group" do
-            post :create, type: 'AdminPolicy', object: {title: 'New Admin Policy'}
-            assigns(:object).read_groups.should include('registered')
+      context "Attachment", attachments: true do
+        let(:attach_to) { FactoryGirl.create(:collection) }
+        context "user can add attachments to object" do
+          subject { assigns(:object) }
+          before do
+            controller.current_ability.can(:add_attachment, attach_to)
+            post :create, type: 'Attachment', object: {title: "Attachment"}, attached_to_id: attach_to.pid, content: fixture_file_upload('sample.docx') 
           end
+          it_behaves_like "a newly created object having preservation events"
+          its(:admin_policy) { should == attach_to.admin_policy }
+          its(:source) { should == ["sample.docx"] }
+          its(:attached_to) { should == attach_to }
+        end
+        context "user cannot add attachments to object" do
+          subject { post :create, type: 'Attachment', object: {title: "Attachment"}, attached_to_id: attach_to.pid, content: fixture_file_upload('sample.docx') }
+          before { controller.current_ability.cannot(:add_attachment, attach_to) }
+          its(:response_code) { should == 403 }
         end
       end
-      context "after creation" do
-        context "model is AdminPolicy" do
-          it "should redirect to edit default permissions page" do
-            post :create, type: 'AdminPolicy', object: {title: 'New Admin Policy'}
-            response.should redirect_to(default_permissions_path(assigns(:object)))
-          end
-        end
-        context "other models" do
-          it "should redirect to the object show page" do
-            post :create, type: 'Collection', object: {title: 'New Collection'}, admin_policy_id: admin_policy.pid
-            response.should redirect_to(object_path(assigns(:object)))
-          end
-        end
+      context "AdminPolicy" do
+        subject { assigns(:object) }
+        before { post :create, type: 'AdminPolicy', object: {title: ['New Collection']} }
+        it_behaves_like "a newly created object"
+        its(:read_groups) { should include("registered") }
       end
-    end
-  end
+    end # create
+  end # new / create
 
   describe "read and update actions" do
     let(:object) { FactoryGirl.create(:test_model) }
     after { object.destroy }
 
-    describe "#show" do
+    describe "#show", descriptive_metadata: true do
       before do
         object.read_users = [user.user_key]
         object.save

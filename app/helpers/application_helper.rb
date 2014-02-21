@@ -240,6 +240,15 @@ module ApplicationHelper
     options_for_select options
   end
 
+  def required?(obj, attr)
+    target = (obj.class == Class) ? obj : obj.class
+    target.validators_on(attr).map(&:class).include?(ActiveModel::Validations::PresenceValidator)
+  end
+
+  def create_menu_models
+    current_ability.can_create_models.reject { |m| m == "Attachment" }
+  end
+
   private
 
   def render_label(text, label)
