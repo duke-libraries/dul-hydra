@@ -8,15 +8,29 @@ class ExportSet < ActiveRecord::Base
   belongs_to :user
   has_attached_file :archive
   serialize :pids
-  validates_presence_of :user, :pids
-  validates :export_type, presence: true, if: :valid_type?
-  validates :csv_col_sep, presence: true, if: :export_descriptive_metadata?
+
+  module Types
+    CONTENT = "content"
+    DESCRIPTIVE_METADATA = "descriptive_metadata"
+
+    def self.all
+      constants(false)
+    end
+
+    def self.values
+      all.collect { |c| const_get(c) }
+    end
+  end
 
   CSV_COL_SEP_OPTIONS = {
     "tab" => "\t", 
     "comma" => ",",
     "double pipe" => "||"
     }
+
+  validates_presence_of :user, :pids
+  validates :export_type, inclusion: { in: Types.values }
+  validates :csv_col_sep, inclusion: { in: CSV_COL_SEP_OPTIONS }, if: :export_descriptive_metadata?
 
   def has_archive?
     !archive_file_name.nil?
@@ -136,19 +150,6 @@ class ExportSet < ActiveRecord::Base
       # update seems to be the way to get paperclip to work 
       # when not using file upload form submission to create the attachment
       update_archive(zip_path)
-    end
-  end
-
-  module Types
-    CONTENT = "content"
-    DESCRIPTIVE_METADATA = "descriptive_metadata"
-
-    def self.all
-      constants(false)
-    end
-
-    def self.values
-      all.collect { |c| const_get(c) }
     end
   end
 

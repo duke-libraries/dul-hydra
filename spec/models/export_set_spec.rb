@@ -1,39 +1,70 @@
 require 'spec_helper'
 
-shared_examples "a valid export set" do
-  it "should be valid" do
-    expect(export_set).to be_valid
-  end
-end
-
-shared_examples "an invalid export set" do
-  it "should be valid" do
-    expect(export_set).to_not be_valid
-  end
-end
-
-describe ExportSet do
+describe ExportSet, export_sets: true do
   
   context "validation" do
-    context "csv_col_sep" do
-      after { export_set.user.destroy }
-      context "missing" do
-        context "type is descriptive metadata" do
-          let(:export_set) { FactoryGirl.build(:descriptive_metadata_export_set_with_pids) }
-          it_behaves_like "an invalid export set"
-        end
-        context "type is content" do
-          let(:export_set) { FactoryGirl.build(:content_export_set_with_pids) }
-          it_behaves_like "a valid export set"
-        end
+    subject { export_set.errors.messages }
+    let(:export_set) { ExportSet.new }
+
+    context "default" do
+      before { export_set.valid? }
+      its([:user]) { should == ["can't be blank"] }
+      its([:pids]) { should == ["can't be blank"] }
+      its([:export_type]) { should == ["is not included in the list"] }
+    end
+
+    context "has pids" do
+      before do
+        export_set.pids = ["foo:bar"]
+        export_set.valid?
       end
-      context "present" do
-        context "type is descriptive metadata" do
-          let(:export_set) { FactoryGirl.build(:descriptive_metadata_export_set_with_pids) }
-          before { export_set.csv_col_sep = "||" }
-          it_behaves_like "a valid export set"
-        end
+      its([:pids]) { should be_nil }
+    end
+
+    context "has user" do
+      before do
+        export_set.user = User.new
+        export_set.valid?
       end
+      its([:user]) { should be_nil }
+    end
+
+    context "invalid export type" do
+      before do
+        export_set.export_type = "foo"
+        export_set.valid?
+      end
+      its([:export_type]) { should == ["is not included in the list"] }
+    end
+
+    context "description metadata type" do
+      before { export_set.export_type = ExportSet::Types::DESCRIPTIVE_METADATA }
+      context "default" do
+        before { export_set.valid? }
+        its([:export_type]) { should be_nil }
+        its([:csv_col_sep]) { should == ["is not included in the list"] }
+      end
+      context "invalid csv_col_sep" do
+        before do
+          export_set.csv_col_sep = "foo"
+          export_set.valid?
+        end
+        its([:csv_col_sep]) { should == ["is not included in the list"] }
+      end
+      context "valid csv_col_sep" do
+        before do
+          export_set.csv_col_sep = "tab"
+          export_set.valid?
+        end
+        its([:csv_col_sep]) { should be_nil }
+      end
+    end
+    context "content export_type" do
+      before do
+        export_set.export_type = ExportSet::Types::CONTENT 
+        export_set.valid?
+      end
+      its([:export_type]) { should be_nil }
     end
   end
   
