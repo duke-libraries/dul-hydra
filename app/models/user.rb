@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
   has_many :ingest_folders, :inverse_of => :user
   has_many :metadata_files, :inverse_of => :user
   has_many :export_sets, :dependent => :destroy
+  has_many :event_logs, :inverse_of => :user
 
   delegate :can?, :cannot?, to: :ability
   delegate :can_create_model?, :can_create_models?, :can_create_models, to: :ability
