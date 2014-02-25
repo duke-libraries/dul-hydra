@@ -27,14 +27,15 @@ describe "Upgrade Export Sets" do
     end
   end
   context "missing csv_col_sep for descriptive metadata export set" do
-    let(:export_set) { FactoryGirl.create(:descriptive_metadata_export_set_with_pids_with_csv_col_sep) }
+    let(:export_set) do
+      ExportSet.new.tap do |es|
+        es.export_type = ExportSet::Types::DESCRIPTIVE_METADATA
+        es.pids = ["foo:bar"]
+        es.user = FactoryGirl.create(:user)
+      end
+    end
     before do
-      # have to stub ExportSet.export_descriptive_metadata? in order to thwart model validation
-      # and set up the initial condition for this test
-      ExportSet.any_instance.stub(:export_descriptive_metadata?).and_return(false)
-      export_set.csv_col_sep = nil
-      export_set.save
-      ExportSet.any_instance.unstub(:export_descriptive_metadata?)
+      export_set.save(validate: false)
       run_rake_task
       export_set.reload
     end

@@ -6,7 +6,7 @@ describe Ability do
 
   subject { described_class.new(user) }
   let(:user) { FactoryGirl.create(:user) }
-  after { user.destroy }
+  after { User.destroy_all }
 
   describe "create permissions" do
     context "ActiveFedora::Base" do
@@ -199,13 +199,19 @@ describe Ability do
   end
 
   describe "#export_sets_permissions", export_sets: true do
-    let(:export_set) { FactoryGirl.create(:descriptive_metadata_export_set, user: user, pids: ["foo:bar"], csv_col_sep: "||") }
+    let(:export_set) do
+      ExportSet.new.tap do |es|
+        es.export_type = ExportSet::Types::DESCRIPTIVE_METADATA
+        es.user = user
+        es.pids = ["foo:bar"]
+        es.csv_col_sep = "double pipe"
+      end
+    end
     context "associated user" do
       it { should be_able_to(:manage, export_set) }
     end
     context "other user" do
       let(:other_user) { FactoryGirl.create(:user) }
-      after { other_user.delete }
       it "should DENY :read access" do
         described_class.new(other_user).should_not be_able_to(:read, export_set)
       end

@@ -4,7 +4,8 @@ describe "export_sets/index.html.erb", export_sets: true do
   let(:user) { FactoryGirl.create(:user) }
   before { login_as user }
   after do
-    user.destroy
+    User.destroy_all
+    ActiveFedora::Base.destroy_all
     Warden.test_reset!
   end
   context "user has no bookmarks" do
@@ -15,13 +16,14 @@ describe "export_sets/index.html.erb", export_sets: true do
   end
   context "user has bookmarks" do
     let(:object) { FactoryGirl.create(:test_content) }
-    after { object.delete }
-    it "should have a 'new export set' link" do
-      pending "Figuring out why Capybara doesn't find the control"
-      visit catalog_path(object)
-      find(:css, "#bookmark_toggle_#{object.pid.sub(/:/, '-')}").set(true)
+    before do
+      object.read_users = [user.user_key]
+      object.save
+      user.bookmarks.create(document_id: object.pid)
+    end
+    it "should have a New Export Set->Content link" do
       visit export_sets_path
-      page.should have_link("New Export Set")
+      page.should have_link("Content", href: "#{new_export_set_path}?export_type=content")
     end    
   end
   context "user has an existing export set" do
@@ -32,7 +34,6 @@ describe "export_sets/index.html.erb", export_sets: true do
       object.save
       export_set.create_archive
     end
-    after { object.delete }
     it "should list the export set" do
       visit export_sets_path
       page.should have_link(export_set.id, :href => export_set_path(export_set))
