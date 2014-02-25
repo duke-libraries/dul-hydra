@@ -11,6 +11,7 @@ class ObjectsController < ApplicationController
   before_action :set_extra_params, only: [:new, :create]
   before_action :set_initial_permissions, only: :create
   after_action :creation_event, only: :create
+  after_action :log_event, only: [:create, :update]
 
   helper_method :object_children
   helper_method :object_attachments
@@ -126,6 +127,12 @@ class ObjectsController < ApplicationController
   def creation_event
     if resource.persisted? and resource.can_have_preservation_events?
       PreservationEvent.creation!(resource, current_user)
+    end
+  end
+
+  def log_event
+    if resource.errors.empty?
+      resource.event_log_for_action(user: current_user, action: params[:action], comment: params[:comment])
     end
   end
   

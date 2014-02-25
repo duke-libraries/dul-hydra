@@ -3,6 +3,9 @@ require 'spec_helper'
 shared_examples "a newly created object" do
   it { should be_persisted }
   its(:edit_users) { should include(user.to_s) }
+  it "should have an event log entry for the create action" do
+    EventLog.where(object_identifier: subject.pid, user: user, model: subject.class.to_s, action: "create").count.should == 1
+  end
 end
 
 shared_examples "a newly created object having preservation events" do
@@ -113,15 +116,17 @@ describe ObjectsController, objects: true do
         object.edit_users = [user.user_key]
         object.save
         controller.stub(:current_object).and_return(object)
+        put :update, :id => object, :object => {:title => ["Updated"]}
       end
       it "should redirect to the descriptive metadata tab of the show page" do
-        put :update, :id => object, :object => {:title => ["Updated"]}
         response.should redirect_to(record_path(object))
       end
       it "should update the object" do
-        put :update, :id => object, :object => {:title => ["Updated"]}
         object.reload
         object.title.should == ["Updated"]
+      end
+      it "should create an event log entry for the update action" do
+        object.event_logs.count.should == 1
       end
     end
   end

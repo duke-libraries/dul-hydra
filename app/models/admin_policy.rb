@@ -6,6 +6,7 @@ class AdminPolicy < Hydra::AdminPolicy
 
   include ActiveFedora::Auditable
   include DulHydra::Licensable
+  include DulHydra::EventLoggable
 
   has_attributes :default_license_title, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
   has_attributes :default_license_description, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false

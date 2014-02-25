@@ -40,4 +40,17 @@ class EventLog < ActiveRecord::Base
     agent_type == AgentTypes::SOFTWARE
   end
 
+  def self.create_for_model_action(args)
+    object = args.delete(:object)
+    raise DulHydra::Error, ":object argument missing" unless object
+    e = new(args)
+    e.event_date_time = Time.parse(object.modified_date).localtime unless e.event_date_time
+    e.object_identifier = object.id
+    e.model = object.class.to_s
+    e.agent_type = e.user ? AgentTypes::PERSON : AgentTypes::SOFTWARE
+    e.application_version = "DulHydra #{DulHydra::VERSION}"
+    e.save!
+    e
+  end
+
 end
