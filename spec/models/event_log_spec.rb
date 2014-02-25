@@ -3,6 +3,21 @@ require 'spec_helper'
 describe EventLog do
   
   after { User.destroy_all }
+
+  context ".create_for_model_action" do
+    after do
+      ActiveFedora::Base.destroy_all
+      EventLog.destroy_all
+    end
+    let(:object) { FactoryGirl.create(:test_model) }
+    let(:user) { FactoryGirl.create(:user) }
+    subject { EventLog.create_for_model_action(user: user, object: object, action: EventLog::Actions::CREATE) }
+    its(:object_identifier) { should == object.pid }
+    its(:agent_type) { should == EventLog::AgentTypes::PERSON }
+    its(:event_date_time) { should == Time.parse(object.modified_date).localtime }
+    its(:model) { should == object.class.to_s }
+    its(:application_version) { should == "DulHydra #{DulHydra::VERSION}" }
+  end
   
   context "validation" do
     it "has a valid factory" do
