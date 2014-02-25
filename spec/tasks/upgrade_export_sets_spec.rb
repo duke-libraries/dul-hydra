@@ -18,7 +18,7 @@ describe "Upgrade Export Sets" do
     let(:export_set) { FactoryGirl.create(:content_export_set_with_pids) }
     before do
       export_set.export_type = nil
-      export_set.save
+      export_set.save(validate: false)
       run_rake_task
       export_set.reload
     end
