@@ -16,6 +16,7 @@ class EventLog < ActiveRecord::Base
   module Actions
     CREATE = "create"
     UPDATE = "update"
+    UPLOAD = "upload"
     DELETE = "delete"
     DESTROY = "destroy"
     def self.all

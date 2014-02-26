@@ -90,44 +90,91 @@ describe ObjectsController, objects: true do
     after { object.destroy }
 
     describe "#show", descriptive_metadata: true do
-      before do
-        object.read_users = [user.user_key]
-        object.save
+      subject { get :show, :id => object }
+      context "user can read" do
+        before do
+          object.read_users = [user.user_key]
+          object.save!
+        end
+        it { should render_template('show') }
       end
-      it "should render the show template" do
-        get :show, :id => object
-        response.should render_template(:show)
+      context "user cannot read" do
+        before { controller.current_ability.cannot(:read, object) }
+        its(:response_code) { should == 403 }
       end
     end
 
     describe "#edit", descriptive_metadata: true do
-      before do
-        object.edit_users = [user.user_key]
-        object.save
+      subject { get :edit, :id => object }
+      context "user can edit" do
+        before { controller.current_ability.can(:edit, object) }
+        it { should render_template('records/edit') }
       end
-      it "should render the hydra-editor edit template" do
-        get :edit, :id => object
-        response.should render_template('records/edit')
+      context "user cannot edit" do
+        before { controller.current_ability.cannot(:edit, object) }
+        its(:response_code) { should == 403 }
       end
     end
 
     describe "#update", descriptive_metadata: true do
-      before do
-        object.edit_users = [user.user_key]
-        object.save
-        controller.stub(:current_object).and_return(object)
-        put :update, :id => object, :object => {:title => ["Updated"]}
+      context "user can edit" do
+        before do
+          object.edit_users = [user.user_key]
+          object.save!
+          put :update, :id => object, :object => {:title => ["Updated"]}
+        end
+        it "should redirect to the descriptive metadata tab of the show page" do
+          response.should redirect_to(record_path(object))
+        end
+        it "should update the object" do
+          object.reload
+          object.title.should == ["Updated"]
+        end
+        it "should create an event log entry for the update action" do
+          object.event_logs.count.should == 1
+        end
       end
-      it "should redirect to the descriptive metadata tab of the show page" do
-        response.should redirect_to(record_path(object))
-      end
-      it "should update the object" do
-        object.reload
-        object.title.should == ["Updated"]
-      end
-      it "should create an event log entry for the update action" do
-        object.event_logs.count.should == 1
+      context "user cannot edit" do
+        subject { put :update, :id => object, :object => {:title => ["Updated"]} }
+        before { controller.current_ability.cannot(:edit, object) }
+        its(:response_code) { should == 403 }
       end
     end
   end
+
+  describe "#upload" do
+    let(:object) { FactoryGirl.create(:test_model_omnibus) }
+    after { object.destroy }
+    context "GET method" do
+      subject { get :upload, id: object }
+      context "user can upload" do
+        before { controller.current_ability.can(:upload, object) }
+        it { should render_template("upload") }
+      end
+      context "user cannot upload" do
+        before { controller.current_ability.cannot(:upload, object) }
+        its(:response_code) { should == 403 }
+      end
+    end
+    context "PATCH method" do
+      context "user can upload" do
+        before { controller.current_ability.can(:upload, object) }
+        it "should redirect to the show page" do
+          patch :upload, id: object, content: fixture_file_upload('sample.docx')
+          response.should redirect_to(object_path(object))
+        end
+        it "should update the object" do
+          patch :upload, id: object, content: fixture_file_upload('sample.pdf')
+          assigns(:object).source.should == ["sample.pdf"]
+          assigns(:object).content.size.should == 83777
+        end
+      end
+      context "user cannot upload" do
+        subject { patch :upload, id: object, content: fixture_file_upload('sample.docx') }
+        before { controller.current_ability.cannot(:upload, object) }
+        its(:response_code) { should == 403 }
+      end
+    end
+  end
+
 end

@@ -11,7 +11,7 @@ class ObjectsController < ApplicationController
   before_action :set_extra_params, only: [:new, :create]
   before_action :set_initial_permissions, only: :create
   after_action :creation_event, only: :create
-  after_action :log_event, only: [:create, :update]
+  after_action :log_event, only: [:create, :update, :upload]
 
   helper_method :object_children
   helper_method :object_attachments
@@ -31,6 +31,17 @@ class ObjectsController < ApplicationController
 
   def show
     object_children # lazy loading doesn't seem to work
+  end
+
+  def upload
+    authorize! :upload, current_object
+    if request.patch?
+      set_content
+      if current_object.save
+        flash[:notice] = "Content successfully uploaded."
+        redirect_to action: :show, id: current_object
+      end
+    end
   end
 
   # Intended for tab content loaded via ajax

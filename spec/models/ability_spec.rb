@@ -51,6 +51,25 @@ describe Ability do
     end
   end
 
+  describe "#upload_permissions" do
+    let(:obj) { FactoryGirl.create(:component_with_content) }
+    after { obj.destroy }
+    context "user has edit permission" do
+      before do
+        obj.edit_users = [user.to_s]
+        obj.save!
+      end
+      it { should be_able_to(:upload, obj) }
+    end
+    context "user has read permission" do
+      before do
+        obj.read_users = [user.to_s]
+        obj.save!
+      end
+      it { should_not be_able_to(:upload, obj) }
+    end
+  end
+
   describe "#download_permissions" do
 
     after { obj.destroy }

@@ -22,6 +22,7 @@ class Ability
     metadata_files_permissions
     attachment_permissions
     children_permissions
+    upload_permissions
   end
 
   def create_permissions
@@ -96,6 +97,12 @@ class Ability
       else
         can? :read, ds
       end
+    end
+  end
+
+  def upload_permissions
+    can :upload, DulHydra::HasContent do |obj|
+      can? :edit, obj
     end
   end
 

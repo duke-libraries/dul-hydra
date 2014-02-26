@@ -41,7 +41,9 @@ describe "object routes", objects: true do
     end
     it "should have an 'upload' route" do
       @route = {controller: 'objects', action: 'upload', id: 'duke:1'}
-      export(:patch => '/objects/duke:1/upload').to route_to(@route)
+      expect(:get => '/objects/duke:1/upload').to route_to(@route)
+      expect(:patch => '/objects/duke:1/upload').to route_to(@route)
+      expect(:get => upload_object_path('duke:1')).to route_to(@route)
       expect(:patch => upload_object_path('duke:1')).to route_to(@route)
     end
     it "should have a 'thumbnail' route" do
