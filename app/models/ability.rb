@@ -100,14 +100,8 @@ class Ability
   end
 
   def children_permissions
-    can :manage_children, DulHydra::HasChildren do |obj|
-      can?(:edit, obj)
-    end
     can :add_children, DulHydra::HasChildren do |obj|
-      can?(:manage_children, obj) or can?(:edit, obj)
-    end
-    can :remove_children, DulHydra::HasChildren do |obj|
-      can?(:manage_children, obj) or can?(:edit, obj)
+      can?(:edit, obj)
     end
   end
 
@@ -128,8 +122,8 @@ class Ability
   end
 
   def attachment_permissions
-    can :add_attachment, ActiveFedora::Base do |obj|
-      obj.can_have_attachments? && can?(:edit, obj)
+    can :add_attachment, DulHydra::HasAttachments do |obj|
+      can?(:edit, obj)
     end
   end
 

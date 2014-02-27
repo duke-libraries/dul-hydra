@@ -30,5 +30,11 @@ module DulHydra
       admin_policy.default_license if admin_policy
     end
 
+    def copy_admin_policy_from(other)
+      # XXX In active-fedora 7.0 can do
+      # self.admin_policy = other.admin_policy
+      admin_policy_id = other.admin_policy_id if other.has_admin_policy?
+    end
+
   end
 end

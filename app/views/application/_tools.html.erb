@@ -4,9 +4,9 @@
     <li>
 	  <%= render_show_doc_actions current_document %>
     </li>
-	<% if can? :add_attachment, current_object %>
+	<% if can?(:add_attachment, current_object) %>
 	  <li>
-		<%= link_to "Add Attachment", "#{new_object_path}?type=Attachment&attached_to_id=#{current_object.pid}" %>
+		<%= link_to "Add Attachment", new_attachment_path(current_object) %>
 	  </li>
 	<% end %>
   </ul>
