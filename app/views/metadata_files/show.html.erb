@@ -1,6 +1,6 @@
 <h3>Metadata Update File</h3>
 
-<table id="form_data" class="table_bordered">
+<table id="form_data" class="table table_bordered">
 
 	<tr>
 		<th><%= t('activerecord.attributes.metadata_file.metadata') %></th>
@@ -18,7 +18,7 @@
 	
 </table>
 
-<table class"table-bordered">
+<table class="table table-bordered table-striped">
 
 	<caption><%= t('batch.metadata_file.fields') %></caption>
 	<thead id="headers">
@@ -30,7 +30,7 @@
 		<% if @metadata_file.effective_options[:parse][:repeatable_fields].present? %>
 			<tr>
 				<% @metadata_file.as_csv_table.headers.each do |header| %>
-					<th>
+					<th class="sub-header">
 						<% if @metadata_file.effective_options[:parse][:repeatable_fields].include?(header) %>
 							multi
 						<% end %>
@@ -41,7 +41,7 @@
 		<% if @metadata_file.effective_options[:schema_map].present? %>
 			<tr>
 				<% @metadata_file.as_csv_table.headers.each do |header| %>
-					<th><%= @metadata_file.canonical_attribute_name(header) %></th>
+					<th class="mappings"><%= @metadata_file.canonical_attribute_name(header) %></th>
 				<% end %>
 			</tr>
 		<% end %>
