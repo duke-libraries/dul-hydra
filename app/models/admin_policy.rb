@@ -15,12 +15,6 @@ class AdminPolicy < Hydra::AdminPolicy
 
   validates_presence_of :title
 
-  APO_NAMESPACE = "duke-apo"
-
-  def self.create_pid(suffix)
-    "#{APO_NAMESPACE}:#{suffix}"
-  end
-
   def default_license
     if default_license_title.present? or default_license_description.present? or default_license_url.present?
       {title: default_license_title, description: default_license_description, url: default_license_url}
