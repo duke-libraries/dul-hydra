@@ -155,7 +155,7 @@ module ApplicationHelper
   end
 
   def render_document_thumbnail(document, linked = false)
-    src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail
+    src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail(document)
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
     if linked && can?(:read, document)
       link_to thumbnail, object_path(document)
@@ -255,8 +255,40 @@ module ApplicationHelper
     content_tag :span, text, :class => "label label-#{label}"
   end
 
-  def default_thumbnail
-    'dul_hydra/no_thumbnail.png'
+  def default_thumbnail(document)
+    if document.content_mime_type
+      default_mime_type_thumbnail(document.content_mime_type)
+    else
+      default_model_thumbnail(document.active_fedora_model)
+    end
+  end
+  
+  def default_mime_type_thumbnail(mime_type)
+    case mime_type
+    when /^image/
+      'crystal-clear/image2.png'
+    when /^video/
+      'crystal-clear/video.png'
+    when /^audio/
+      'crystal-clear/sound.png'
+    when /^application\/(x-)?pdf/
+      'crystal-clear/document.png'
+    when /^application/
+      'crystal-clear/binary.png'
+    else
+      'crystal-clear/misc.png'
+    end
+  end
+
+  def default_model_thumbnail(model)
+    case model
+    when 'AdminPolicy'
+      'crystal-clear/lists.png'
+    when 'Collection'
+      'crystal-clear/kmultiple.png'
+    else
+      'crystal-clear/misc.png'
+    end
   end
 
 end
