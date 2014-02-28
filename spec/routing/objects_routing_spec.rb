@@ -3,7 +3,6 @@ require 'spec_helper'
 describe "object routes", objects: true do
 
   describe "RESTful routes" do
-    before { DulHydra.creatable_models = ["Collection"] }
     it "should not have an index route" do
       expect(:get => '/objects').not_to be_routable
     end
@@ -12,21 +11,18 @@ describe "object routes", objects: true do
       expect(:get => '/objects/duke:1').to route_to(@route)
       expect(:get => object_path('duke:1')).to route_to(@route)
     end
-    it "should have a new route" do
-      @route = {controller: 'objects', action: 'new', type: 'Collection'}
-      expect(:get => '/objects/new?type=Collection').to route_to(@route)
-      expect(:get => "#{new_object_path}?type=Collection").to route_to(@route)
+    it "should not have a new route" do
+      expect(:get => '/objects/new').not_to be_routable
     end
-    it "should have a create route" do
-      @route = {controller: 'objects', action: 'create'}
-      expect(:post => '/objects').to route_to(@route)
-      expect(:post => objects_path).to route_to(@route)
-    end    
+    it "should not have a create route" do
+      expect(:post => '/objects').not_to be_routable
+    end
     it "should not have an edit route" do
       expect(:get => '/objects/duke:1/edit').not_to be_routable
     end
     it "should not have an update route" do
       expect(:put => '/objects/duke:1').not_to be_routable
+      expect(:patch => '/objects/duke:1').not_to be_routable
     end
     it "should not have a destroy route" do
       expect(:delete => '/objects/duke:1').not_to be_routable

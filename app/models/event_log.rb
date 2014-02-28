@@ -42,7 +42,7 @@ class EventLog < ActiveRecord::Base
 
   def self.create_for_model_action(args)
     object = args.delete(:object)
-    raise DulHydra::Error, ":object argument missing" unless object
+    raise ArgumentError, "Missing :object argument" unless object
     e = new(args)
     e.event_date_time = Time.parse(object.modified_date).localtime unless e.event_date_time
     e.object_identifier = object.id

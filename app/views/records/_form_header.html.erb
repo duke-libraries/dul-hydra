@@ -1,5 +1,0 @@
-<% if resource.new_record? and params[:attached_to_id] %>
-  <p>
-	Attach To: <%= link_to resource.attached_to.title.first, object_path(resource.attached_to), confirm: "You about to leave this page. Any data entered here will be lost! Continue?" %>
-  </p>
-<% end %>

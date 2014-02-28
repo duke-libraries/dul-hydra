@@ -228,7 +228,7 @@ module ApplicationHelper
   end
 
   def link_to_create_model(model)
-    link_to model, "#{new_object_path}?type=#{model}"
+    link_to model, controller: model.underscore.pluralize, action: 'new'
   end
 
   def model_options_for_select(model, access=nil)

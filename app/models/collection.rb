@@ -12,14 +12,6 @@ class Collection < DulHydra::Base
   validates :title, presence: true
   validates :admin_policy, presence: true
 
-  def terms_for_editing
-    if new_record?
-      [:title, :description]
-    else
-      super
-    end
-  end
-
   def components_query
     {
       q: "{!join to=#{DulHydra::IndexFields::IS_PART_OF} from=#{DulHydra::IndexFields::INTERNAL_URI}}#{ActiveFedora::SolrService.construct_query_for_rel(:is_member_of_collection => internal_uri)}",

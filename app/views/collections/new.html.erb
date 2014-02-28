@@ -1,0 +1,15 @@
+<h2>New Collection</h2>
+
+<%= render partial: 'new_errors', locals: {new_object: @collection} %>
+
+<%= form_for @collection do |f| %>
+  <%= render 'select_admin_policy' %>
+
+  <%= f.label :title %>
+  <%= text_field_tag "collection[title]", nil, required: true %>
+
+  <%= f.label :description %>
+  <%= text_area_tag "collection[description]" %>
+
+  <%= render partial: 'new_form_actions', locals: {f: f, new_object: @collection} %>
+<% end %>
