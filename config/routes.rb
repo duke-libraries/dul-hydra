@@ -13,7 +13,7 @@ DulHydra::Application.routes.draw do
 
   pid_constraint = {id: /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/}
 
-  resources :objects, only: [:new, :create, :show], constraints: pid_constraint do
+  resources :objects, only: [:show], constraints: pid_constraint do
     member do
       get 'collection_info', constraints: XhrRequestConstraint
       get 'download' => 'downloads#show'
@@ -24,6 +24,9 @@ DulHydra::Application.routes.draw do
       patch 'upload'
     end
   end
+
+  resources :collections, only: [:new, :create]
+  resources :admin_policies, only: [:new, :create]
 
   # other object tabs
   get '/objects/:id/:tab' => 'objects#show', 
@@ -47,6 +50,10 @@ DulHydra::Application.routes.draw do
     get '/' => 'objects#show', defaults: {tab: 'default_permissions'}
     get 'edit' => 'permissions#edit', defaults: {default_permissions: true}
     put '/' => 'permissions#update', defaults: {default_permissions: true}
+  end
+
+  scope '/objects/:id', constraints: pid_constraint do
+    resources :attachments, only: [:new, :create]
   end
 
   resources :preservation_events, :only => :show, constraints: { id: /[1-9][0-9]*/ }

@@ -7,12 +7,13 @@ class AdminPolicy < Hydra::AdminPolicy
   include ActiveFedora::Auditable
   include DulHydra::Licensable
   include DulHydra::EventLoggable
+  include DulHydra::AccessControllable
 
   has_attributes :default_license_title, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
   has_attributes :default_license_description, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
   has_attributes :default_license_url, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :url], multiple: false
 
-  validates :title, presence: true
+  validates_presence_of :title
 
   APO_NAMESPACE = "duke-apo"
 
@@ -50,11 +51,9 @@ class AdminPolicy < Hydra::AdminPolicy
   end
 
   def set_initial_permissions(creator_user = nil)
-    initial_permissions = [DulHydra::Permissions::REGISTERED_READ_ACCESS]
-    if creator_user
-      initial_permissions << {type: "user", access: "edit", name: creator_user.to_s}
-    end
-    self.permissions_attributes = initial_permissions
+    super
+    # Grant read to authenticated users
+    self.permissions_attributes = [{name: "registered", type: "group", access: "read"}]
   end
 
   def default_entities_for_permission(type, access)

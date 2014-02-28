@@ -6,18 +6,21 @@ describe Ability do
 
   subject { described_class.new(user) }
   let(:user) { FactoryGirl.create(:user) }
-  after { User.destroy_all }
+  after do
+    User.destroy_all
+    ActiveFedora::Base.destroy_all
+  end
 
   describe "create permissions" do
-    context "ActiveFedora::Base" do
+    context "on ActiveFedora::Base" do
       it { should_not be_able_to(:create, ActiveFedora::Base) }
     end
-    context "creatable models" do
+    context "on creatable models" do
       before do
-        DulHydra.creatable_models = ["AdminPolicy", "Collection"]
-        DulHydra.ability_group_map = {"AdminPolicy" => {create: "admins"}, "Collection" => {create: "collection_admins"}}.with_indifferent_access
+        DulHydra.stub(:creatable_models).and_return(["AdminPolicy", "Collection"])
+        DulHydra.stub(:ability_group_map).and_return({"AdminPolicy" => {create: "admins"}, "Collection" => {create: "collection_admins"}}.with_indifferent_access)
       end
-      context "user is a member of the model creators group" do
+      context "where user is a member of the model creators group" do
         before { user.stub(:groups).and_return(["admins", "collection_admins"]) }
         it "should PERMIT creation" do
           DulHydra.creatable_models.each do |model|
@@ -34,7 +37,7 @@ describe Ability do
         end
         its(:can_create_models?) { should be_true }
       end
-      context "user is NOT member of model creators group" do
+      context "where user is NOT member of model creators group" do
         its(:can_create_models) { should be_empty }
         its(:can_create_models?) { should be_false }
         it "should DENY creation" do
@@ -71,136 +74,103 @@ describe Ability do
   end
 
   describe "#download_permissions" do
-
-    after { obj.destroy }
-
-    context "object" do
-
-      context "is a Component" do
+    context "on an object" do
+      context "which is a Component" do
         let(:obj) { FactoryGirl.create(:component_with_content) }
-        before { DulHydra.ability_group_map = {"Component" => {download: "component_download"}}.with_indifferent_access }
-        context "user is NOT a member of the component download ability group" do
+        before { DulHydra.stub(:ability_group_map).and_return({"Component" => {download: "component_download"}}.with_indifferent_access) }
+        context "and user is NOT a member of the component download ability group" do
           context "and user has read permission" do
-            before do
-              obj.read_users = [user.to_s]
-              obj.save
-            end
+            before { subject.can(:read, obj) }
             it { should_not be_able_to(:download, obj) }
           end
-
           context "and user lacks read permission" do
+            before { subject.cannot(:read, obj) }
             it { should_not be_able_to(:download, obj) }
           end
         end
 
-        context "user is a member of the component download ability group" do
-          before do
-            user.stub(:groups).and_return(["component_download"])
-          end
-
+        context "and user is a member of the component download ability group" do
+          before { user.stub(:groups).and_return(["component_download"]) }
           context "and user has read permission" do
-            before do
-              obj.read_users = [user.to_s]
-              obj.save
-            end
+            before { subject.can(:read, obj) }
             it { should be_able_to(:download, obj) }
           end
-
           context "and user lacks read permission" do
+            before { subject.cannot(:read, obj) }
             it { should_not be_able_to(:download, obj) }
           end          
         end
       end
 
-      context "is not a Component" do
+      context "which is not a Component" do
         let(:obj) { FactoryGirl.create(:test_content) }
-
         context "and user has read permission" do
-          before do
-            obj.read_users = [user.to_s]
-            obj.save
-          end
+          before { subject.can(:read, obj) }
           it { should be_able_to(:download, obj) }
         end
-
         context "and user lacks read permission" do
+          before { subject.cannot(:read, obj) }
           it { should_not be_able_to(:download, obj) }
         end                  
       end
     end
 
-    context "datastream" do
+    context "on a datastream" do
 
-      context "content" do
+      context "named 'content'" do
         let(:ds) { obj.content }
 
-        context "object is a Component" do
-          let(:obj) { FactoryGirl.create(:component_with_content) }
-          before { DulHydra.ability_group_map = {"Component" => {download: "component_download"}}.with_indifferent_access }
-          context "user is NOT a member of the component download ability group" do
+        context "and object is a Component" do
+          let(:obj) { FactoryGirl.build(:component_with_content) }
+          before { DulHydra.stub(:ability_group_map).and_return({"Component" => {download: "component_download"}}.with_indifferent_access) }
 
+          context "and user is NOT a member of the component download ability group" do
             context "and user has read permission on the object" do
-              before do
-                obj.read_users = [user.to_s]
-                obj.save
-              end
+              before { subject.can(:read, obj.pid) }
               it { should_not be_able_to(:download, ds) }
             end
-
             context "and user lacks read permission on the object" do
+              before { subject.cannot(:read, obj.pid) }
               it { should_not be_able_to(:download, ds) }
             end
           end
 
-          context "user is a member of the component download ability group" do
-            before do
-              user.stub(:groups).and_return(["component_download"])
-            end
-
+          context "and user is a member of the component download ability group" do
+            before { user.stub(:groups).and_return(["component_download"]) }
             context "and user has read permission on the object" do
-              before do
-                obj.read_users = [user.to_s]
-                obj.save
-              end
+              before { subject.can(:read, obj.pid) }
               it { should be_able_to(:download, ds) }
             end
-
             context "and user lacks read permission on the object" do
+              before { subject.cannot(:read, obj.pid) }
               it { should_not be_able_to(:download, ds) }
             end          
           end
         end
 
-        context "object is not a Component" do
-          let(:obj) { FactoryGirl.create(:test_content) }
-
+        context "and object is not a Component" do
+          let(:obj) { FactoryGirl.build(:test_content) }
           context "and user has read permission on the object" do
-            before do
-              obj.read_users = [user.to_s]
-              obj.save
-            end
+            before { subject.can(:read, obj.pid) }
             it { should be_able_to(:download, ds) }
           end
-
           context "and user lacks read permission on the object" do
+            before { subject.cannot(:read, obj.pid) }
             it { should_not be_able_to(:download, ds) }
           end                  
-          
         end
 
       end
 
-      context "not content" do
-        let(:obj) { FactoryGirl.create(:test_model) }
+      context "not named 'content'" do
+        let(:obj) { FactoryGirl.build(:test_model) }
         let(:ds) { obj.descMetadata }
         context "and user has read permission on the object" do
-          before do
-            obj.read_users = [user.to_s]
-            obj.save
-          end
+          before { subject.can(:read, obj.pid) }
           it { should be_able_to(:download, ds) }
         end
         context "and user lacks read permission on the object" do
+          before { subject.cannot(:read, obj.pid) }
           it { should_not be_able_to(:download, ds) }
         end        
       end
@@ -257,65 +227,41 @@ describe Ability do
     it { should be_able_to(:manage, :all) }
   end
 
-  describe "#attachment_permissions", attachment: true do
+  describe "#attachment_permissions", attachments: true do
     context "object can have attachments" do
-      let(:obj) { FactoryGirl.create(:test_model_omnibus) }
-      after { obj.destroy }
-      context "user has edit rights on attached_to object" do
-        before do
-          obj.edit_users = [user.user_key]
-          obj.save!
-        end
-        it { should be_able_to(:add_attachment, obj) }
-      end
-      context "user lacks edit rights on attached_to object" do
-        before do
-          obj.read_users = [user.user_key]
-          obj.save!
-        end
+      let(:obj) { FactoryGirl.build(:test_model_omnibus) }
+      context "and user lacks edit rights" do
+        before { subject.cannot(:edit, obj) }
         it { should_not be_able_to(:add_attachment, obj) }
+      end
+      context "and user has edit rights" do
+        before { subject.can(:edit, obj) }
+        it { should be_able_to(:add_attachment, obj) }
       end
     end
     context "object cannot have attachments" do
-      let(:obj) { FactoryGirl.create(:test_model) }
-      after { obj.destroy }
-      before do
-        obj.edit_users = [user.user_key]
-        obj.save!
-      end
+      let(:obj) { FactoryGirl.build(:test_model) }
+      before { subject.can(:edit, obj) }
       it { should_not be_able_to(:add_attachment, obj) }
     end
   end
 
   describe "#children_permissions" do
-    after { obj.destroy }
     context "user has edit rights on object" do
-      before do
-        obj.edit_users = [user.user_key]
-        obj.save!
-      end
+      before { subject.can(:edit, obj) }
       context "and object can have children" do
-        let(:obj) { FactoryGirl.create(:collection) }
+        let(:obj) { FactoryGirl.build(:collection) }
         it { should be_able_to(:add_children, obj) }
-        it { should be_able_to(:remove_children, obj) }
-        it { should be_able_to(:manage_children, obj) }
       end
       context "and object cannot have children" do
-        let(:obj) { FactoryGirl.create(:component) }
+        let(:obj) { FactoryGirl.build(:component) }
         it { should_not be_able_to(:add_children, obj) }
-        it { should_not be_able_to(:remove_children, obj) }
-        it { should_not be_able_to(:manage_children, obj) }
       end
     end
     context "user lacks edit rights on attached_to object" do
-      let(:obj) { FactoryGirl.create(:collection) }
-      before do
-        obj.read_users = [user.user_key]
-        obj.save!
-      end
+      let(:obj) { FactoryGirl.build(:collection) }
+      before { subject.cannot(:edit, obj) }
       it { should_not be_able_to(:add_children, obj) }
-      it { should_not be_able_to(:remove_children, obj) }
-      it { should_not be_able_to(:manage_children, obj) }
     end    
   end
 

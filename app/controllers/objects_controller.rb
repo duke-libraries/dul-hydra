@@ -8,10 +8,7 @@ class ObjectsController < ApplicationController
   before_action :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
   before_action :configure_blacklight_for_related_objects, only: :show
 
-  before_action :set_extra_params, only: [:new, :create]
-  before_action :set_initial_permissions, only: :create
-  after_action :creation_event, only: :create
-  after_action :log_event, only: [:create, :update, :upload]
+  after_action :log_event, only: [:update, :upload]
 
   helper_method :object_children
   helper_method :object_attachments
@@ -19,15 +16,9 @@ class ObjectsController < ApplicationController
 
   helper_method :resource_instance_name # RecordsControllerBehavior method
 
-  layout 'application', only: [:new, :create]
-
   #
-  # #new, #create, #edit, and #update actions acquired from RecordsControllerBehavior
+  # #edit, and #update actions acquired from RecordsControllerBehavior
   #
-
-  def new
-    initialize_fields
-  end
 
   def show
     object_children # lazy loading doesn't seem to work
@@ -94,56 +85,9 @@ class ObjectsController < ApplicationController
 
   protected
 
-  #
-  # Filters
-  #
-  def set_initial_permissions
-    resource.set_initial_permissions(current_user) if resource.respond_to?(:set_initial_permissions)
-  end
-  
-  def set_extra_params
-    set_admin_policy
-    set_attached_to
-    set_content
-  end
-
-  def set_attached_to
-    if params[:attached_to_id].present?
-      attached_to = ActiveFedora::Base.find(params[:attached_to_id], cast: true)
-      authorize! :add_attachment, attached_to
-      resource.attached_to = attached_to
-    end
-  rescue ActiveFedora::ObjectNotFoundError
-    resource.errors.add(:attached_to_id, "Object to attach to having PID #{params[:attached_to_id]} was not found.")
-  end
-
-  def set_admin_policy
-    if params[:admin_policy_id].present?
-      admin_policy = AdminPolicy.find(params[:admin_policy_id])
-      resource.admin_policy = admin_policy
-    end
-  rescue ActiveFedora::ObjectNotFoundError
-    resource.errors.add(:admin_policy_id, "AdminPolicy object having PID #{params[:admin_policy_id]} was not found")
-  end
-
-  def set_content
-    if resource.respond_to?(:set_content) and params[:content].present?
-      file = params[:content] 
-      if file.respond_to?(:path) # Sanitize user input
-        resource.set_content(file)
-      end
-    end
-  end
-
-  def creation_event
-    if resource.persisted? and resource.can_have_preservation_events?
-      PreservationEvent.creation!(resource, current_user)
-    end
-  end
-
   def log_event
-    if resource.errors.empty?
-      resource.event_log_for_action(user: current_user, action: params[:action], comment: params[:comment])
+    if current_object.errors.empty?
+      current_object.log_event(action: params[:action], comment: params[:comment], user: current_user)
     end
   end
   
@@ -156,15 +100,6 @@ class ObjectsController < ApplicationController
     permitted_attributes = resource.terms_for_editing.each_with_object({}) { |key, attrs| attrs[key] = raw_attributes[key] if raw_attributes[key] }
     # removes attributes that were only changed by initialize_fields
     permitted_attributes.reject { |key, value| resource[key].empty? and value == [""] }
-  end
-
-  def redirect_after_create
-    case resource.class.to_s
-    when "AdminPolicy"
-      default_permissions_path(resource)
-    else
-      object_path(resource)
-    end
   end
 
   def redirect_after_update

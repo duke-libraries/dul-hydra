@@ -42,6 +42,7 @@ describe Attachment, attachments: true do
       it_behaves_like "an attached Attachment"
     end
   end
+
   context "validations" do
     subject { described_class.new }
     before { subject.valid? }
@@ -55,55 +56,4 @@ describe Attachment, attachments: true do
       subject.errors.messages.should have_key(:attached_to)
     end
   end
-  context "#set_initial_permissions" do
-    let(:attachment) { FactoryGirl.build(:attached_attachment) }
-    after { attachment.attached_to.destroy }
-    context "attached to object with admin policy" do
-      let(:apo) { FactoryGirl.create(:admin_policy) }
-      before do
-        attachment.attached_to.admin_policy = apo
-        attachment.set_initial_permissions
-      end
-      after { apo.destroy }
-      it "should have the attached to object's admin policy" do
-        expect(attachment.admin_policy).to eq(apo)        
-      end
-      context "attached to object with individual permissions" do
-        let(:permissions_attributes) { [ { type: 'user', name: 'person1', access: 'read' } ] }
-        before do
-          attachment.attached_to.permissions_attributes = permissions_attributes
-          attachment.set_initial_permissions
-        end
-        it "should have no individual permissions" do
-          expect(attachment.permissions).to be_empty
-        end
-      end
-      context "attached to object without individual permissions" do
-        it "should have no individual permissions" do
-          expect(attachment.permissions).to be_empty
-        end
-      end
-    end
-    context "attached to object without admin policy" do
-      it "should not have an admin policy" do
-        expect(attachment.admin_policy).to be_nil        
-      end
-      context "attached to object with individual permissions" do
-        let(:permissions_attributes) { [ { type: 'user', name: 'person1', access: 'read' } ] }
-        before do
-          attachment.attached_to.permissions_attributes = permissions_attributes
-          attachment.set_initial_permissions
-        end
-        it "should have no admin policy and the attached to object's individual permissions" do
-          expect(attachment.permissions).to eq(attachment.attached_to.permissions)
-        end
-      end
-      context "attached to object without individual permissions" do
-        it "should have no admin policy and no individual permissions" do
-          expect(attachment.permissions).to be_empty
-        end          
-      end
-    end
-  end
-
 end

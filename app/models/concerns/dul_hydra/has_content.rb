@@ -25,11 +25,6 @@ module DulHydra
       terms.delete(:source) # source is reserved for original file name
       terms
     end
-
-    def set_content(str_or_io)
-      self.content.content = str_or_io
-      self.source = str_or_io.original_filename if str_or_io.respond_to?(:original_filename)
-    end
       
   end
 end

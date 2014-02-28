@@ -1,65 +1,65 @@
 <h3>Metadata Update File</h3>
 
-<%= content_tag(:table, :id => 'form_data', :class => 'table-bordered') do %>
+<table id="form_data" class="table_bordered">
 
-	<%= content_tag(:tr) do %>
-		<%= content_tag(:th, I18n.t('activerecord.attributes.metadata_file.metadata')) %>
-		<%= content_tag(:th, I18n.t('activerecord.attributes.metadata_file.profile')) %>
-		<%= content_tag(:th, I18n.t('activerecord.attributes.metadata_file.rows')) %>
-		<%= content_tag(:th, I18n.t('activerecord.attributes.metadata_file.collection_pid')) %>	
-	<% end %>
+	<tr>
+		<th><%= t('activerecord.attributes.metadata_file.metadata') %></th>
+		<th><%= t('activerecord.attributes.metadata_file.profile') %></th>
+		<th><%= t('activerecord.attributes.metadata_file.rows') %></th>
+		<th><%= t('activerecord.attributes.metadata_file.collection_pid') %></th>	
+	</tr>
 
-	<%= content_tag(:tr) do %>
-		<%= content_tag(:td, @metadata_file.metadata_file_name) %>
-		<%= content_tag(:td, metadata_file_profile_name(@metadata_file.profile)) %>
-		<%= content_tag(:td, metadata_file_rows(@metadata_file)) %>
-		<%= content_tag(:td, object_display_title(@metadata_file.collection_pid)) %>
-	<% end %>
+	<tr>
+		<td><%= @metadata_file.metadata_file_name %></td>
+		<td><%= metadata_file_profile_name(@metadata_file.profile) %></td>
+		<td><%= metadata_file_rows(@metadata_file) %></td>
+		<td><%= object_display_title(@metadata_file.collection_pid) %></td>
+	</tr>
 	
-<% end %>
+</table>
 
-<%= content_tag(:table, :class => 'table-bordered') do %>
+<table class"table-bordered">
 
-	<%= content_tag(:caption, I18n.t('batch.metadata_file.fields')) %>
-	<%= content_tag(:thead, :id => 'headers') do %>
-		<%= content_tag(:tr) do %>
+	<caption><%= t('batch.metadata_file.fields') %></caption>
+	<thead id="headers">
+		<tr>
 			<% @metadata_file.as_csv_table.headers.each do |header| %>
-				<%= content_tag(:th, header)%>
+				<th><%= header %></th>
 			<% end %>
-		<% end %>
+		</tr>
 		<% if @metadata_file.effective_options[:parse][:repeatable_fields].present? %>
-		<%= content_tag(:tr) do %>
-			<% @metadata_file.as_csv_table.headers.each do |header| %>
-				<%= content_tag(:th) do %>
-					<% if @metadata_file.effective_options[:parse][:repeatable_fields].include?(header) %>
-						<%= content_tag(:emp, 'multi') %>
-					<% end %>
+			<tr>
+				<% @metadata_file.as_csv_table.headers.each do |header| %>
+					<th>
+						<% if @metadata_file.effective_options[:parse][:repeatable_fields].include?(header) %>
+							multi
+						<% end %>
+					</th>
 				<% end %>
-			<% end %>
-		<% end %>
+			</tr>
 		<% end %>
 		<% if @metadata_file.effective_options[:schema_map].present? %>
-			<%= content_tag(:tr) do %>
+			<tr>
 				<% @metadata_file.as_csv_table.headers.each do |header| %>
-					<%= content_tag(:th, @metadata_file.canonical_attribute_name(header)) %>
+					<th><%= @metadata_file.canonical_attribute_name(header) %></th>
 				<% end %>
-			<% end %>
+			</tr>
 		<% end %>
-	<% end %>
-	<%= content_tag(:tbody, :id => 'rows') do %>
+	</thead>
+	<tbody id="rows">
 		<% row_count = 0 %>
 		<% @metadata_file.as_csv_table.each do |row| %>
 			<% row_count += 1 %>
 			<% if row_count <= 10 %>
-				<%= content_tag(:tr) do %>
+				<tr>
 					<% row.each do |col| %>
-						<%= content_tag(:td, (col[1].truncate(30) if col[1].present?)) %>
+						<td><%= col[1].truncate(30) if col[1].present? %></td>
 					<% end %>
-				<% end %>
+				</tr>
 			<% end %>
 		<% end %>
-	<% end %>
+	</tbody>
 
-<% end %>
+</table>
 
-<%= link_to I18n.t('batch.metadata_file.create_batch'), procezz_metadata_file_path(@metadata_file), :class => "btn btn-primary" %>
+<a href="<%= procezz_metadata_file_path(@metadata_file) %>" class="btn btn-primary"><%= t('batch.metadata_file.create_batch')%></a>

@@ -1,0 +1,4 @@
+  <div class="form-actions">
+	<%= f.submit data: {confirm: "This action will create a new #{new_object.class.to_s} in the repository. Continue?"}, class: "btn btn-primary" %>
+	<%= link_to "Cancel", :back, data: {confirm: "Cancel creating a new #{new_object.class.to_s}?" }, class: "btn" %>
+  </div>
