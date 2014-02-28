@@ -1,1 +1,19 @@
-Upload form
+<h2>Upload Content</h2>
+
+<% if current_object.has_content? %>
+  <div class="alert alert-danger">
+	<%= t('dul_hydra.upload.alerts.has_content') %>
+  </div>
+<% end %>
+
+<%= form_tag upload_object_path, method: "patch", multipart: true do %>
+  <%= render 'select_content_file' %>
+
+  <%= label_tag "comment" %>
+  <%= text_area_tag "comment" %>
+
+  <div class="form-actions">
+	<%= submit_tag "Upload", data: {confirm: current_object.has_content? ? "#{t('dul_hydra.upload.alerts.has_content')} Continue?" : "Upload new content?"}, class: "btn btn-primary" %>
+	<%= cancel_button %>
+  </div>
+<% end %>

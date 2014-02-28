@@ -249,6 +249,10 @@ module ApplicationHelper
     current_ability.can_create_models.reject { |m| m == "Attachment" }
   end
 
+  def cancel_button
+    link_to "Cancel", :back, class: "btn"
+  end
+
   private
 
   def render_label(text, label)

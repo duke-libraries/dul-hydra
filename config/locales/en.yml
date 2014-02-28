@@ -3,6 +3,9 @@ en:
     form:
       title: 'Edit Descriptive Metadata'
   dul_hydra:
+    upload:
+      alerts:
+        has_content: "Uploading new content will supersede the existing content with a new version."
     event_logs:
       alerts:
         action:

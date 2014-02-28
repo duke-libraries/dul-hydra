@@ -8,8 +8,6 @@ class ObjectsController < ApplicationController
   before_action :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
   before_action :configure_blacklight_for_related_objects, only: :show
 
-  after_action :log_event, only: [:update, :upload]
-
   helper_method :object_children
   helper_method :object_attachments
   helper_method :object_preservation_events
@@ -24,11 +22,27 @@ class ObjectsController < ApplicationController
     object_children # lazy loading doesn't seem to work
   end
 
+  # hydra-editor
+  def update
+    set_attributes
+    if resource.save
+      log_event
+      flash[:notice] = "Descriptive metadata updated."
+      redirect_to redirect_after_update
+    else
+      render 'records/edit'
+    end
+  end
+
   def upload
     authorize! :upload, current_object
     if request.patch?
-      set_content
+      file = params[:content]
+      current_object.content.content = file
+      current_object.content.mimeType = file.content_type
+      current_object.source = file.original_filename
       if current_object.save
+        log_event
         flash[:notice] = "Content successfully uploaded."
         redirect_to action: :show, id: current_object
       end
@@ -86,9 +100,7 @@ class ObjectsController < ApplicationController
   protected
 
   def log_event
-    if current_object.errors.empty?
-      current_object.log_event(action: params[:action], comment: params[:comment], user: current_user)
-    end
+    current_object.log_event(action: params[:action], comment: params[:comment], user: current_user)
   end
   
   #

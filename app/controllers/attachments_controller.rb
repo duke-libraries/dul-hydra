@@ -12,9 +12,10 @@ class AttachmentsController < ApplicationController
   end
 
   def create
-    file = params.require(:content)
     @attachment = Attachment.new(params.require(:attachment).permit(:title, :description))
+    file = params[:content]
     @attachment.content.content = file
+    @attachment.content.mimeType = file.content_type
     @attachment.source = file.original_filename
     @attachment.attached_to = current_object
     @attachment.set_initial_permissions(current_user)
@@ -24,7 +25,6 @@ class AttachmentsController < ApplicationController
       @attachment.copy_permissions_from(current_object)
     end
     if @attachment.save
-      # PreservationEvent.creation!(@attachment, current_user)
       @attachment.log_event(action: "create", user: current_user)
       flash[:success] = "New attachment added."
       redirect_to controller: 'objects', action: 'show', id: current_object, tab: 'attachments'
