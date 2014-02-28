@@ -95,7 +95,7 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def collection_permissions_attributes
-    collection.permissions.collect { |p| p.vals }
+    collection.permissions.collect { |p| p.to_hash }
   end
   
   def scan
