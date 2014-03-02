@@ -16,7 +16,7 @@ module DulHydra
       end
     end
 
-    self.deprecation_horizon = "DulHydra 2.0"
+    self.deprecation_horizon = "DulHydra 1.5"
 
     def thumbnail_changed?
       self.thumbnail.content_changed?

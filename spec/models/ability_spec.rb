@@ -54,7 +54,7 @@ describe Ability do
     end
   end
 
-  describe "#upload_permissions" do
+  describe "#upload_permissions", uploads: true do
     let(:obj) { FactoryGirl.build(:component_with_content) }
     context "user has edit permission" do
       before { subject.can(:edit, obj) }

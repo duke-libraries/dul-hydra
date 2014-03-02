@@ -3,6 +3,7 @@ en:
     form:
       title: 'Edit Descriptive Metadata'
   dul_hydra:
+    errors: "The action could not be completed due to the following errors:"
     upload:
       alerts:
         has_content: "Uploading new content will supersede the existing content with a new version."

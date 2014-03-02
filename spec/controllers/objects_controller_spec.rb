@@ -51,48 +51,4 @@ describe ObjectsController, objects: true do
       end
     end
   end
-  describe "#upload" do
-    context "via GET" do
-      context "when user can upload" do
-        before { controller.current_ability.can(:upload, object) }
-        it "should render the upload template" do
-          expect(get :upload, id: object).to render_template(:upload)
-        end
-      end
-      context "when user cannot upload" do
-        before { controller.current_ability.cannot(:upload, object) }
-        it "should be unauthorized" do
-          get :upload, id: object
-          expect(response.response_code).to eq(403)
-        end
-      end
-    end
-    context "via PATCH" do
-      context "when user can upload" do
-        after { EventLog.destroy_all }
-        before do
-          object.edit_users = [user.user_key]
-          object.save!
-        end
-        it "should upload the content" do
-          patch :upload, id: object, content: fixture_file_upload('sample.pdf', 'application/pdf'), comment: "Corrected version"
-          object.reload
-          expect(object.source).to eq(['sample.pdf'])
-          expect(object.content.size).to eq(83777)
-          expect(object.content.mimeType).to eq("application/pdf")
-        end
-        it "should create an event log" do
-          patch :upload, id: object, content: fixture_file_upload('sample.pdf'), comment: "Corrected version"
-          expect(object.event_logs.count).to eq(1)
-          expect(object.event_logs.first.comment).to eq("Corrected version")
-        end
-      end
-      context "when user cannot upload" do
-        it "should be unauthorized" do
-          patch :upload, id: object, content: fixture_file_upload('sample.pdf'), comment: "Corrected version"
-          expect(response.response_code).to eq(403)
-        end
-      end
-    end
-  end
 end

@@ -34,21 +34,6 @@ class ObjectsController < ApplicationController
     end
   end
 
-  def upload
-    authorize! :upload, current_object
-    if request.patch?
-      file = params[:content]
-      current_object.content.content = file
-      current_object.content.mimeType = file.content_type
-      current_object.source = file.original_filename
-      if current_object.save
-        log_event
-        flash[:notice] = "Content successfully uploaded."
-        redirect_to action: :show, id: current_object
-      end
-    end
-  end
-
   # Intended for tab content loaded via ajax
   def preservation_events
     render layout: false
@@ -98,10 +83,6 @@ class ObjectsController < ApplicationController
   end
 
   protected
-
-  def log_event
-    current_object.log_event(action: params[:action], comment: params[:comment], user: current_user)
-  end
   
   #
   # Overrides of RecordsControllerBehavior

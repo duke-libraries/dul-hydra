@@ -20,8 +20,8 @@ DulHydra::Application.routes.draw do
       get 'preservation_events', constraints: XhrRequestConstraint
       get 'thumbnail' => 'thumbnail#show'
       get 'datastreams/:datastream_id' => 'downloads#show', as: 'download_datastream'
-      get 'upload'
-      patch 'upload'
+      get 'upload' => 'uploads#show'
+      patch 'upload' => 'uploads#update'
     end
   end
 

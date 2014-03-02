@@ -35,11 +35,12 @@ describe "object routes", objects: true do
       expect(:get => '/objects/duke:1/download').to route_to(@route)
       expect(:get => download_object_path('duke:1')).to route_to(@route)
     end
-    it "should have an 'upload' route" do
-      @route = {controller: 'objects', action: 'upload', id: 'duke:1'}
+    it "should have an 'upload' route", uploads: true do
+      @route = {controller: 'uploads', action: 'show', id: 'duke:1'}
       expect(:get => '/objects/duke:1/upload').to route_to(@route)
-      expect(:patch => '/objects/duke:1/upload').to route_to(@route)
       expect(:get => upload_object_path('duke:1')).to route_to(@route)
+      @route = {controller: 'uploads', action: 'update', id: 'duke:1'}
+      expect(:patch => '/objects/duke:1/upload').to route_to(@route)
       expect(:patch => upload_object_path('duke:1')).to route_to(@route)
     end
     it "should have a 'thumbnail' route" do

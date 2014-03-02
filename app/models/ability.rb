@@ -101,8 +101,8 @@ class Ability
   end
 
   def upload_permissions
-    can :upload, DulHydra::HasContent do |obj|
-      can? :edit, obj
+    can :upload, ActiveFedora::Base do |obj|
+      obj.can_have_content? and can?(:edit, obj)
     end
   end
 
