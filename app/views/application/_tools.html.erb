@@ -4,9 +4,18 @@
     <li>
 	  <%= render_show_doc_actions current_document %>
     </li>
-	<% if can?(:add_attachment, current_object) %>
+	<% if current_object.can_have_attachments? and can?(:add_attachment, current_object) %>
 	  <li>
-		<%= link_to "Add Attachment", new_attachment_path(current_object) %>
+		<%= link_to new_attachment_path(current_object) do %>
+		  <i class="icon-file"></i> Add Attachment
+		<% end %>
+	  </li>
+	<% end %>
+	<% if current_object.can_have_content? and can?(:upload, current_object) %>
+	  <li>
+		<%= link_to upload_object_path(current_object) do %>
+		  <i class="icon-upload"></i> Upload Content
+		<% end %>
 	  </li>
 	<% end %>
   </ul>

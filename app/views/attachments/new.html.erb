@@ -1,15 +1,16 @@
-<h2>New Attachment</h2>
+<div class="well">
+  <h4>New Attachment</h4>
+  <%= form_for @attachment, html: {enctype: "multipart/form-data"} do |f| %>
+    <%= render partial: 'form_errors', locals: {form: f} %>
 
-<%= render partial: 'new_errors', locals: {new_object: @attachment} %>
+    <%= f.label :title %>
+    <%= text_field_tag "attachment[title]", nil, required: true %>
 
-<%= form_for @attachment, html: {enctype: "multipart/form-data"} do |f| %>
-  <%= f.label :title %>
-  <%= text_field_tag "attachment[title]", nil, required: true %>
+    <%= f.label :description %>
+    <%= text_area_tag "attachment[description]" %>
 
-  <%= f.label :description %>
-  <%= text_area_tag "attachment[description]" %>
+	<%= render 'select_content_file' %>
 
-  <%= render 'select_content_file' %>
-
-  <%= render partial: 'new_form_actions', locals: {f: f, new_object: @attachment} %>
-<% end %>
+    <%= render partial: 'new_form_actions', locals: {form: f} %>
+  <% end %>
+</div>

@@ -54,6 +54,18 @@ describe Ability do
     end
   end
 
+  describe "#upload_permissions", uploads: true do
+    let(:obj) { FactoryGirl.build(:component_with_content) }
+    context "user has edit permission" do
+      before { subject.can(:edit, obj) }
+      it { should be_able_to(:upload, obj) }
+    end
+    context "user does not have edit permission" do
+      before { subject.cannot(:edit, obj) }
+      it { should_not be_able_to(:upload, obj) }
+    end
+  end
+
   describe "#download_permissions" do
     context "on an object" do
       context "which is a Component" do

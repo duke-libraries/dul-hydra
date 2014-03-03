@@ -8,8 +8,6 @@ class ObjectsController < ApplicationController
   before_action :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
   before_action :configure_blacklight_for_related_objects, only: :show
 
-  after_action :log_event, only: :update
-
   helper_method :object_children
   helper_method :object_attachments
   helper_method :object_preservation_events
@@ -22,6 +20,18 @@ class ObjectsController < ApplicationController
 
   def show
     object_children # lazy loading doesn't seem to work
+  end
+
+  # hydra-editor
+  def update
+    set_attributes
+    if resource.save
+      log_event
+      flash[:notice] = "Descriptive metadata updated."
+      redirect_to redirect_after_update
+    else
+      render 'records/edit'
+    end
   end
 
   # Intended for tab content loaded via ajax
@@ -73,12 +83,6 @@ class ObjectsController < ApplicationController
   end
 
   protected
-
-  def log_event
-    if resource.errors.empty?
-      resource.log_event(action: params[:action], comment: params[:comment], user: current_user)
-    end
-  end
   
   #
   # Overrides of RecordsControllerBehavior

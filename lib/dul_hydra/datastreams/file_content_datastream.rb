@@ -13,9 +13,5 @@ module DulHydra::Datastreams
       end
     end
 
-    def image?
-      mimeType.start_with? "image/"
-    end
-
   end
 end
