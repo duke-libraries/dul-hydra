@@ -30,7 +30,7 @@ module DulHydra
     end
 
     def set_thumbnail_from_content
-      if has_content? and self.content.image?
+      if has_content?
         transform_datastream :content, { thumbnail: { size: "100x100>", datastream: "thumbnail" } }
       end
     end

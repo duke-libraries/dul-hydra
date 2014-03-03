@@ -37,6 +37,11 @@ describe UploadsController, uploads: true do
         expect(object.content.size).to eq(83777)
         expect(object.content.mimeType).to eq("application/pdf")
       end
+      it "should update the thumbnail" do
+        patch :update, id: object, content: fixture_file_upload('sample.pdf', 'application/pdf'), comment: "Corrected version"
+        object.reload
+        expect(object.thumbnail.mimeType).to eq("image/png")
+      end
       it "should create an event log" do
         patch :update, id: object, content: fixture_file_upload('sample.pdf'), comment: "Corrected version"
         expect(object.event_logs.count).to eq(1)
