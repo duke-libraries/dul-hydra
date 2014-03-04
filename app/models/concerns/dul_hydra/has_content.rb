@@ -3,13 +3,16 @@ module DulHydra
     extend ActiveSupport::Concern
 
     included do
-      has_file_datastream :name => DulHydra::Datastreams::CONTENT, 
-                          :type => DulHydra::Datastreams::FileContentDatastream,
-                          :versionable => true, 
-                          :label => "Content file for this object", 
-                          :control_group => 'M'
+      has_file_datastream name: DulHydra::Datastreams::CONTENT, 
+                          type: DulHydra::Datastreams::FileContentDatastream,
+                          versionable: true, 
+                          label: "Content file for this object", 
+                          control_group: 'M'
 
       include Hydra::Derivatives
+
+      # Original file name of content file should be stored in this property
+      has_attributes :original_filename, datastream: DulHydra::Datastreams::PROPERTIES, multiple: false
     end
 
     def content_type
@@ -18,13 +21,14 @@ module DulHydra
 
     def set_thumbnail
       set_thumbnail_from_content
+    end      
+
+    def image?
+      content_type =~ /image\//
     end
 
-    def terms_for_editing
-      terms = super
-      terms.delete(:source) # source is reserved for original file name
-      terms
+    def pdf?
+      content_type == "application/pdf"
     end
-      
   end
 end
