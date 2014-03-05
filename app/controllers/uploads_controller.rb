@@ -14,7 +14,7 @@ class UploadsController < ApplicationController
   end
 
   def update
-    upload current_object, thumbnail: true
+    upload current_object
     if current_object.save
       log_event
       flash[:notice] = "Content successfully uploaded."

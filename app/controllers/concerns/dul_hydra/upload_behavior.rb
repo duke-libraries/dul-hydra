@@ -5,8 +5,7 @@ module DulHydra
       file = params.require(:content)
       obj.content.content = file
       obj.content.mimeType = file.content_type
-      obj.source = file.original_filename
-      obj.set_thumbnail if opts[:thumbnail]
+      obj.original_filename = file.original_filename
     end
 
   end
