@@ -15,8 +15,4 @@ class Component < DulHydra::Base
     self.parent.parent rescue nil
   end
 
-  def terms_for_editing
-    [:creator, :identifier, :source]
-  end
-
 end

@@ -104,10 +104,4 @@ describe Component do
     end
   end # relationships
 
-  context "#terms_for_editing" do
-    it "should be a subset of the DC11 terms" do
-      Component.new.terms_for_editing.should eq([:creator, :identifier, :source])
-    end
-  end
-
 end
