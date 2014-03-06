@@ -1,10 +1,11 @@
 class AttachmentsController < ApplicationController
 
   include DulHydra::ObjectsControllerBehavior
-  include DulHydra::UploadBehavior
+  include DulHydra::EventLogBehavior
+  log_actions :create
 
-  before_filter :enforce_show_permissions
-  before_filter :authorize_add_attachment
+  before_action :enforce_show_permissions
+  before_action :authorize_add_attachment
 
   layout 'objects'
 
@@ -14,12 +15,11 @@ class AttachmentsController < ApplicationController
 
   def create
     @attachment = Attachment.new(params.require(:attachment).permit(:title, :description))
-    upload @attachment
+    @attachment.upload params.require(:content)
     @attachment.attached_to = current_object
     @attachment.set_initial_permissions current_user
     @attachment.copy_admin_policy_or_permissions_from current_object
     if @attachment.save
-      @attachment.log_event action: "create", user: current_user
       flash[:success] = "New attachment added."
       redirect_to controller: 'objects', action: 'show', id: current_object, tab: 'attachments'
     else

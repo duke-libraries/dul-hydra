@@ -1,8 +1,9 @@
 class AdminPoliciesController < ApplicationController
 
-  before_action do |controller|
-    authorize! :create, AdminPolicy
-  end
+  include DulHydra::EventLogBehavior
+  log_actions :create
+
+  before_action { |controller| authorize! :create, AdminPolicy }
 
   def new
     @admin_policy = AdminPolicy.new
@@ -12,7 +13,7 @@ class AdminPoliciesController < ApplicationController
     @admin_policy = AdminPolicy.new(params.require(:admin_policy).permit(:title, :description))
     @admin_policy.set_initial_permissions(current_user)
     if @admin_policy.save
-      @admin_policy.log_event(action: "create", user: current_user)
+      # @admin_policy.log_event(action: "create", user: current_user)
       flash[:success] = "New AdminPolicy created."
       redirect_to controller: 'objects', action: 'show', id: @admin_policy
     else

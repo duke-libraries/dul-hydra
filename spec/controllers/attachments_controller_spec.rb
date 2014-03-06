@@ -68,6 +68,10 @@ describe AttachmentsController, attachments: true do
         create_attachment
         expect(response).to redirect_to(controller: 'objects', action: 'show', id: obj, tab: 'attachments')
       end
+      it "should create an event log" do
+        create_attachment
+        expect(assigns(:attachment).event_logs(action: "create").count).to eq(1)
+      end
       context "attached_to object is governed by an admin policy" do
         let(:apo) { FactoryGirl.create(:admin_policy) }
         before do 

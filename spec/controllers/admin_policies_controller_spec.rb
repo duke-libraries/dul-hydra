@@ -22,7 +22,7 @@ describe AdminPoliciesController do
       expect(assigns(:admin_policy).edit_users).to include(user.user_key)
     end
     it "should create an event log" do
-      expect(assigns(:admin_policy).event_logs.count).to eq(1)
+      expect(assigns(:admin_policy).event_logs(action: "create").count).to eq(1)
     end
   end
 

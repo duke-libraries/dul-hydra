@@ -26,6 +26,16 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # Copied from hydra-editor's ResourceControllerBehavior
+  def resource_instance_name
+    self.class.name.sub("Controller", "").underscore.split('/').last.singularize
+  end
+
+  # Copied from hydra-editor's ResourceControllerBehavior
+  def get_resource_ivar
+    instance_variable_get("@#{resource_instance_name}")
+  end
+
   # Override Hydra::PolicyAwareAccessControlsEnforcement
   def gated_discovery_filters
     return [] if current_user.superuser?

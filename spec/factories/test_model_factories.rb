@@ -61,10 +61,10 @@ FactoryGirl.define do
     title "DulHydra Test Content Object"
     sequence(:identifier) { |n| "testcontent%05d" % n }
     after(:build) do |c|
-      file = File.new(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb")
-      c.content.content = file
-      c.save
-      file.close      
+      File.open(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb") do |f|
+        c.upload f
+        c.save
+      end
     end
       
     factory :test_content_with_fixity_check do

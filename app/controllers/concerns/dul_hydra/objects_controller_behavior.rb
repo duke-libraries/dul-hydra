@@ -11,10 +11,6 @@ module DulHydra
 
     protected 
 
-    def log_event
-      current_object.log_event(action: params[:action], comment: params[:comment], user: current_user)
-    end
-
     def current_object
       @object ||= current_document ? ActiveFedora::SolrService.reify_solr_result(current_document) : ActiveFedora::Base.find(params[:id], cast: true)
     end

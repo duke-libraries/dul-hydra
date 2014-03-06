@@ -23,7 +23,7 @@ describe CollectionsController do
       expect(assigns(:collection).edit_users).to include(user.user_key)
     end
     it "should create an event log" do
-      expect(assigns(:collection).event_logs.count).to eq(1)
+      expect(assigns(:collection).event_logs(action: "create").count).to eq(1)
     end
   end
 

@@ -1,7 +1,10 @@
 class ObjectsController < ApplicationController
 
   include DulHydra::ObjectsControllerBehavior
-  include RecordsControllerBehavior 
+  include RecordsControllerBehavior # hydra-editor
+
+  include DulHydra::EventLogBehavior
+  log_actions :update
 
   copy_blacklight_config_from(CatalogController)
 
@@ -26,7 +29,6 @@ class ObjectsController < ApplicationController
   def update
     set_attributes
     if resource.save
-      log_event
       flash[:notice] = "Descriptive metadata updated."
       redirect_to redirect_after_update
     else
