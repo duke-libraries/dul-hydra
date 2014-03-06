@@ -1,7 +1,8 @@
 class UploadsController < ApplicationController
 
   include DulHydra::ObjectsControllerBehavior
-  include DulHydra::UploadBehavior
+  include DulHydra::EventLogBehavior
+  after_action :log_upload, only: :update
 
   before_action do |controller|
     authorize! :upload, current_object
@@ -14,9 +15,8 @@ class UploadsController < ApplicationController
   end
 
   def update
-    upload current_object
+    current_object.upload params.require(:content)
     if current_object.save
-      log_event
       flash[:notice] = "Content successfully uploaded."
       redirect_to controller: 'objects', action: 'show', id: current_object
     else
@@ -26,6 +26,10 @@ class UploadsController < ApplicationController
   end
 
   protected
+
+  def log_upload
+    log_action object: current_object, action: EventLog::Actions::UPLOAD
+  end
 
   def content_warning
     if current_object.has_content?
