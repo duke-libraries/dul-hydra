@@ -17,16 +17,9 @@ describe Attachment, attachments: true do
   it_behaves_like "an object that has content"
 
   context "relationships" do
-    let(:attachment) do
-      FactoryGirl.build(:attachment_with_content) do |obj| 
-        obj.save(validate: false)
-      end
-    end
+    let(:attachment) { FactoryGirl.create(:attachment_with_content) }
     let(:object) { FactoryGirl.create(:test_model_omnibus) }
-    after do
-      object.delete
-      attachment.delete
-    end
+    after { ActiveFedora::Base.destroy_all }
     context "#attached_to=" do
       before do
         attachment.attached_to = object
@@ -51,9 +44,6 @@ describe Attachment, attachments: true do
     end
     it "should have content" do
       subject.errors.messages.should have_key(:content)
-    end
-    it "should be attached to another object" do
-      subject.errors.messages.should have_key(:attached_to)
     end
   end
 end

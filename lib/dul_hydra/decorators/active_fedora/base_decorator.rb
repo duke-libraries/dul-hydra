@@ -32,7 +32,7 @@ ActiveFedora::Base.class_eval do
   end
     
   def has_content?
-    can_have_content? && self.datastreams[DulHydra::Datastreams::CONTENT].has_content?
+    false # DulHydra::HasContent implements #has_content?
   end
 
   def has_content_metadata?
@@ -61,7 +61,7 @@ ActiveFedora::Base.class_eval do
   end
 
   def has_thumbnail?
-    can_have_thumbnail? && self.datastreams[DulHydra::Datastreams::THUMBNAIL].has_content?
+    false # DulHydra::HasThumbnail implements #has_thumbnail?
   end
 
   def safe_id

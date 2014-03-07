@@ -60,10 +60,9 @@ FactoryGirl.define do
   factory :test_content do
     title "DulHydra Test Content Object"
     sequence(:identifier) { |n| "testcontent%05d" % n }
-    after(:build) do |c|
+    after(:create) do |c|
       File.open(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb") do |f|
-        c.upload f
-        c.save
+        c.upload! f
       end
     end
       
@@ -72,7 +71,7 @@ FactoryGirl.define do
     end
 
     factory :test_content_thumbnail do
-      after(:build) { |c| c.generate_content_thumbnail! }
+      after(:build) { |c| c.set_thumbnail! }
     end
   end
   

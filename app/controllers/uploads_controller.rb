@@ -15,8 +15,7 @@ class UploadsController < ApplicationController
   end
 
   def update
-    current_object.upload params.require(:content)
-    if current_object.save
+    if current_object.upload!(params.require(:content))
       flash[:notice] = "Content successfully uploaded."
       redirect_to controller: 'objects', action: 'show', id: current_object
     else

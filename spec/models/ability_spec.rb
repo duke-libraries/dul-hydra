@@ -142,7 +142,7 @@ describe Ability do
         end
 
         context "and object is not a Component" do
-          let(:obj) { FactoryGirl.build(:test_content) }
+          let(:obj) { FactoryGirl.create(:test_content) }
           context "and user has read permission on the object" do
             before { subject.can(:read, obj.pid) }
             it { should be_able_to(:download, ds) }

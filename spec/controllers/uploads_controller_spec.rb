@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe UploadsController, uploads: true do
-  let(:object) { FactoryGirl.create(:test_content) }
+  let(:object) { FactoryGirl.create(:component) }
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
   after do
@@ -33,7 +33,9 @@ describe UploadsController, uploads: true do
         object.reload
       end
       it "should upload the content" do
-        expect(object.content.size).to eq(83777)
+        expect(object).to have_content
+      end
+      it "should set the content type" do
         expect(object.content.mimeType).to eq("application/pdf")
       end
       it "should store the original file name in a property" do
@@ -42,6 +44,9 @@ describe UploadsController, uploads: true do
       it "should create an event log" do
         expect(object.event_logs.count).to eq(1)
         expect(object.event_logs.first.comment).to eq("Corrected version")
+      end
+      it "should (re-)generate a thumbnail" do
+        expect(object).to have_thumbnail
       end
     end
     context "when user cannot upload" do
