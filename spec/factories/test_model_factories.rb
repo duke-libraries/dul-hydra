@@ -69,10 +69,6 @@ FactoryGirl.define do
     factory :test_content_with_fixity_check do
       after(:create) { |c| c.fixity_check! }
     end
-
-    factory :test_content_thumbnail do
-      after(:build) { |c| c.set_thumbnail! }
-    end
   end
   
   factory :test_content_metadata do
