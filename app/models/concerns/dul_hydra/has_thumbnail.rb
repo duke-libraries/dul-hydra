@@ -1,51 +1,40 @@
 module DulHydra
   module HasThumbnail
     extend ActiveSupport::Concern
-    extend Deprecation
     
     included do
-      has_file_datastream :name => DulHydra::Datastreams::THUMBNAIL, 
-                          :type => DulHydra::Datastreams::FileContentDatastream,
-                          :versionable => true, 
-                          :label => "Thumbnail for this object", 
-                          :control_group => 'M'
-
-      # Abstract thumbnail setting method
-      def set_thumbnail
-        raise NotImplementedError
-      end
+      has_file_datastream name: DulHydra::Datastreams::THUMBNAIL, 
+                          type: DulHydra::Datastreams::FileContentDatastream,
+                          versionable: true, 
+                          label: "Thumbnail for this object", 
+                          control_group: 'M'
     end
 
-    self.deprecation_horizon = "DulHydra 1.5"
+    # Abstract thumbnail setting method
+    def set_thumbnail
+      raise NotImplementedError
+    end
+
+    def set_thumbnail!
+      set_thumbnail 
+      thumbnail_changed? && save
+    end
 
     def thumbnail_changed?
-      self.thumbnail.content_changed?
+      thumbnail.content_changed?
+    end
+
+    def has_thumbnail?
+      thumbnail.has_content?
     end
 
     def copy_thumbnail_from(other)
       if other && other.has_thumbnail?
         self.thumbnail.content = other.thumbnail.content
-        self.thumbnail.mimeType = other.thumbnail.mimeType
+        self.thumbnail.mimeType = other.thumbnail.mimeType if thumbnail_changed?
       end
+      thumbnail_changed?
     end
-
-    def set_thumbnail_from_content
-      if has_content?
-        if image? or pdf?
-          transform_datastream :content, { thumbnail: { size: "100x100>", datastream: "thumbnail" } }
-        end
-      end
-    end
-
-    def set_thumbnail!
-      set_thumbnail 
-      thumbnail_changed? ? save : false
-    end
-
-    def generate_content_thumbnail!(args={})
-      set_thumbnail_from_content
-    end
-    deprecation_deprecate :generate_content_thumbnail!
 
   end  
 end
