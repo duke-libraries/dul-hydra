@@ -1,26 +1,32 @@
+<div id="paginate">
+   <div class="page_links">
+     <%= render 'batch_objects/paginate_compact' %>
+   </div>
+</div>
 <% unless @batch.batch_objects.empty? %>
-<%= content_tag :table, :class => 'table table-bordered table-striped table-condensed' do %>
-<%= content_tag :thead do %>
-<%= content_tag :tr do %>
-<%= content_tag :th, I18n.t('batch.web.column_names.id'), :scope => 'col' %>
-<%= content_tag :th, I18n.t('batch.web.column_names.identifier'), :scope => 'col' %>
-<%= content_tag :th, I18n.t('batch.web.column_names.model'), :scope => 'col' %>
-<%= content_tag :th, I18n.t('batch.web.column_names.pid'), :scope => 'col' %>
-<%= content_tag :th, I18n.t('batch.web.column_names.verified'), :scope => 'col' %>
+	<table class="table table-bordered table-striped table-condensed"
+		<thead>
+			<tr>
+				<th scope="col"><%= t('batch.web.column_names.id') %></th>
+				<th scope="col"><%= t('batch.web.column_names.identifier') %></th>
+				<th scope="col"><%= t('batch.web.column_names.model') %></th>
+				<th scope="col"><%= t('batch.web.column_names.pid') %></th>
+				<th scope="col"><%= t('batch.web.column_names.verified') %></th>
+			</tr>
+		</thead>
+		<tbody>
+			<% @batch_objects.each do |bo| %>
+				<tr>
+					<td><a href="<%= batch_object_path(bo) %>"><%= bo.id %></td>
+					<td><%= bo.identifier %></td>
+					<td><%= bo.model %></td>
+					<td><%= bo.pid %></td>
+					<td><%= bo.verified %></td>
+				</tr>
+			<% end %>
+		</tbody>
+	</table>
 <% end %>
-<% end %>
-<%= content_tag :tbody do %>
-<% @batch.batch_objects.each do |bo| %>
-<%= content_tag :tr do %>
-<%= content_tag :td, link_to(bo.id, batch_object_path(bo)) %>
-<%= content_tag :td, bo.identifier %>
-<%= content_tag :td, bo.model %>
-<%= content_tag :td, bo.pid %>
-<%= content_tag :td, bo.verified %>
-<% end %>
-<% end %>
-<% end %>
-<% end %>
-<% else %>
-<%= content_tag :p, I18n.t('batch.web.no_batch_objects') %>
-<% end %>
+<div class="pagination">
+  <%= paginate @batch_objects, :outer_window => 2, :theme => 'blacklight' %>
+</div>

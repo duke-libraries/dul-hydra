@@ -15,6 +15,7 @@ class BatchesController < ApplicationController
   end
   
   def show
+    @batch_objects = @batch.batch_objects.page params[:page]
   end
   
   def procezz
@@ -35,7 +36,8 @@ class BatchesController < ApplicationController
     if valid && referrer == url_for(action: 'index', only_path: false)
       redirect_to batches_url
     else
-      render :show
+      # render :show
+      redirect_to batch_url(@batch.id)
     end
   end
   
