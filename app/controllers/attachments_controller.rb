@@ -4,7 +4,6 @@ class AttachmentsController < ApplicationController
   include DulHydra::EventLogBehavior
   log_actions :create
 
-  before_action :enforce_show_permissions
   before_action :authorize_add_attachment
 
   layout 'objects'
