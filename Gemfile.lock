@@ -81,9 +81,9 @@ GEM
       railties (>= 3.2.6, < 5)
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
-    devise-remote-user (0.2.0)
+    devise-remote-user (0.3.0)
       devise
-      rails (>= 3.2)
+      rails (>= 3.2, < 5.0)
     diff-lcs (1.2.5)
     ensure_valid_encoding (0.5.3)
     equivalent-xml (0.4.0)
@@ -298,7 +298,7 @@ DEPENDENCIES
   delayed_job_active_record
   deprecation
   devise (~> 3.1.1)
-  devise-remote-user (= 0.2.0)
+  devise-remote-user (= 0.3.0)
   factory_girl_rails (~> 4.0)
   grouper-rest-client
   hydra-derivatives

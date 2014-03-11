@@ -51,6 +51,7 @@ DeviseRemoteUser.configure do |config|
     display_name: 'displayName'
   }
   config.auto_update = true
+  config.logout_url = "/Shibboleth.sso/Logout?return=https://shib.oit.duke.edu/cgi-bin/logout.pl"
 end
 
 # Integration of remote (Grouper) groups via Shibboleth
