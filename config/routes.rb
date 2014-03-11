@@ -54,6 +54,7 @@ DulHydra::Application.routes.draw do
 
   scope '/objects/:id', constraints: pid_constraint do
     resources :attachments, only: [:new, :create]
+    resources :items, only: [:new, :create]
   end
 
   resources :preservation_events, :only => :show, constraints: { id: /[1-9][0-9]*/ }
