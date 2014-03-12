@@ -232,8 +232,6 @@ DulHydra version #{DulHydra::VERSION}
           datastream_file.close
         end
       end
-      # if it's the 'content' datastream, then generate the thumbnail
-      repo_object.set_thumbnail if datastream[:name] == DulHydra::Datastreams::CONTENT
       return repo_object
     end
     
