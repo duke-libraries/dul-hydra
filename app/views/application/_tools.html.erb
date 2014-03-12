@@ -11,6 +11,13 @@
 		<% end %>
 	  </li>
 	<% end %>
+	<% if current_object.is_a?(Item) and can?(:add_children, current_object) %>
+	  <li>
+		<%= link_to new_component_path(current_object) do %>
+		  <i class="icon-plus"></i> Add Component
+		<% end %>
+	  </li>
+	<% end %>
 	<% if current_object.can_have_attachments? and can?(:add_attachment, current_object) %>
 	  <li>
 		<%= link_to new_attachment_path(current_object) do %>

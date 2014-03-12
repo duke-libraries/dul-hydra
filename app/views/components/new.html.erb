@@ -1,0 +1,16 @@
+<div class="well">
+  <h4>New Component</h4>
+  <%= form_for @component, html: {enctype: "multipart/form-data"} do |f| %>
+    <%= render partial: 'form_errors', locals: {form: f} %>
+
+    <%= f.label :title %>
+    <%= text_field_tag "component[title]", nil, required: true %>
+
+    <%= f.label :description %>
+    <%= text_area_tag "component[description]" %>
+
+	<%= render 'select_content_file' %>
+
+    <%= render partial: 'new_form_actions', locals: {form: f} %>
+  <% end %>
+</div>
