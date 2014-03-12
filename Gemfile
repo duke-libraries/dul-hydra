@@ -8,7 +8,7 @@ gem 'blacklight', '4.7.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise', '~> 3.1.1'
-gem 'devise-remote-user', '0.2.0'
+gem 'devise-remote-user', '0.3.0'
 gem 'active-fedora', '6.7.6'
 gem 'grouper-rest-client'
 gem 'hydra-editor', '0.2.2'

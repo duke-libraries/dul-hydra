@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior
   include Hydra::PolicyAwareAccessControlsEnforcement
+  include DeviseRemoteUser::ControllerBehavior
 
   protect_from_forgery
 
@@ -142,11 +143,4 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  private
-  
-  # Cf. https://github.com/plataformatec/devise/wiki/How-To:-Change-the-redirect-path-after-destroying-a-session-i.e.-signing-out
-  def after_sign_out_path_for(resource_or_scope)
-    "/Shibboleth.sso/Logout?return=https://shib.oit.duke.edu/cgi-bin/logout.pl"
-  end
-
 end
