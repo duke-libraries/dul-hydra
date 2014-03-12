@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def find_models_with_gated_discovery(model)
-    solr_results = model.find_with_conditions({}, fq: gated_discovery_filters.join(" OR "))
+    solr_results = model.find_with_conditions({}, fq: gated_discovery_filters.join(" OR "), rows: 9999)
     ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
   end
 
