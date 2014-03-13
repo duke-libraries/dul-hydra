@@ -22,7 +22,7 @@ shared_examples "a Component with a Target" do
   end
 end
 
-describe Component do
+describe Component, components: true do
 
   it_behaves_like "a DulHydra object"
   it_behaves_like "an object that has content"
