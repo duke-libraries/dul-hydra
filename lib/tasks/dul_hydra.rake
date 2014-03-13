@@ -99,5 +99,22 @@ namespace :dul_hydra do
           export_set.save if export_set.changed?
         end
       end
+      desc "Migrates original file names from source to original_filename"
+      task :original_file_names => :environment do
+        [ Component, Target, Attachment ].each do |model|
+          model.find_each do |obj|
+            if obj.source.present?
+              if obj.source.size == 1
+                obj.original_filename = obj.source.first
+                obj.source = []
+                obj.save!
+              else
+                puts "Multiple source attributes: #{obj.pid}"
+                obj.source.each { |s| puts s }
+              end
+            end
+          end
+        end
+      end
     end
 end
