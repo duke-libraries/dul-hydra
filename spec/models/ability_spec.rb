@@ -68,10 +68,14 @@ describe Ability do
 
   describe "#download_permissions" do
     context "on an object" do
-      context "which is a Component" do
+      context "which is a Component", components: true do
         let(:obj) { FactoryGirl.create(:component_with_content) }
         before { DulHydra.stub(:ability_group_map).and_return({"Component" => {download: "component_download"}}.with_indifferent_access) }
         context "and user is NOT a member of the component download ability group" do
+          context "and user has edit permission" do
+            before { subject.can(:edit, obj) }
+            it { should be_able_to(:download, obj) }
+          end
           context "and user has read permission" do
             before { subject.can(:read, obj) }
             it { should_not be_able_to(:download, obj) }
@@ -84,6 +88,10 @@ describe Ability do
 
         context "and user is a member of the component download ability group" do
           before { user.stub(:groups).and_return(["component_download"]) }
+          context "and user has edit permission" do
+            before { subject.can(:edit, obj) }
+            it { should be_able_to(:download, obj) }
+          end
           context "and user has read permission" do
             before { subject.can(:read, obj) }
             it { should be_able_to(:download, obj) }

@@ -79,7 +79,7 @@ class Ability
   def download_permissions
     can :download, ActiveFedora::Base do |obj|
       if obj.class == Component
-        can?(:read, obj) and has_ability_group?(:download, Component)
+        can?(:edit, obj) or (can?(:read, obj) and has_ability_group?(:download, Component))
       else
         can? :read, obj
       end
