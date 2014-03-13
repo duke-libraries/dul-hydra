@@ -31,6 +31,13 @@ shared_examples "a proper set of batch objects" do
     expect(rels.fetch('T001').fetch('collection').object).to eql(ingest_folder.collection_pid)
     expect(rels.fetch('T002').fetch('collection').object).to eql(ingest_folder.collection_pid)
   end
+  it "should not set the source descriptive metadata attribute" do
+    expect(dss.fetch('file01001').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('file01002').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('file01').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('T001').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('T002').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")        
+  end
 end
 
 shared_examples "batch objects without an admin policy" do

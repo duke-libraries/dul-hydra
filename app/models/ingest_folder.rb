@@ -253,7 +253,7 @@ class IngestFolder < ActiveRecord::Base
     add_datastream(
             obj,
             DulHydra::Datastreams::DESC_METADATA,
-            desc_metadata(file_identifier, file_entry, file_creator),
+            desc_metadata(file_identifier, file_creator),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
     add_datastream(
@@ -310,10 +310,9 @@ class IngestFolder < ActiveRecord::Base
     )    
   end
   
-  def desc_metadata(identifier, source=nil, creator=nil)
+  def desc_metadata(identifier, creator=nil)
     base = DulHydra::Base.new
     base.identifier = identifier if identifier.present?
-    base.source = source if source.present?
     base.creator = creator if creator.present?
     base.descMetadata.content
   end
