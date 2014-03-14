@@ -1,8 +1,7 @@
 class AttachmentsController < ApplicationController
 
   include DulHydra::ObjectsControllerBehavior
-  include DulHydra::EventLogBehavior
-  log_actions :create
+  include DulHydra::RepositoryController
 
   before_action :authorize_add_attachment
 

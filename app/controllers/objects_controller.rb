@@ -1,10 +1,8 @@
 class ObjectsController < ApplicationController
 
   include DulHydra::ObjectsControllerBehavior
+  include DulHydra::RepositoryController
   include RecordsControllerBehavior # hydra-editor
-
-  include DulHydra::EventLogBehavior
-  log_actions :update
 
   copy_blacklight_config_from(CatalogController)
 

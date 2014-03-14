@@ -1,7 +1,6 @@
 class CollectionsController < ApplicationController
 
-  include DulHydra::EventLogBehavior
-  log_actions :create
+  include DulHydra::RepositoryController
 
   before_action { |controller| authorize! :create, Collection }
 

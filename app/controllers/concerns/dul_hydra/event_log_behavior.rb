@@ -20,9 +20,7 @@ module DulHydra
         user: current_user
       }
       obj.log_event(defaults.merge(opts))
-    end
-
-    
+    end    
 
   end
 end
