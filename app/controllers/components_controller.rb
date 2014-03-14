@@ -2,13 +2,9 @@ class ComponentsController < ApplicationController
 
   include DulHydra::ObjectsControllerBehavior
   include DulHydra::RepositoryController
+  include DulHydra::UploadBehavior
 
   before_action :authorize_add_component
-
-  rescue_from DulHydra::ChecksumInvalid do |e|
-    flash.now[:error] = "<strong>Component creation failed:</strong> #{e.message}".html_safe
-    render :new    
-  end
 
   layout 'objects'
 
@@ -18,7 +14,7 @@ class ComponentsController < ApplicationController
 
   def create
     @component = Component.new(params.require(:component).permit(:title, :description))
-    @component.upload params.require(:content), checksum: params[:checksum]
+    upload_content_to @component
     @component.item = current_object
     @component.set_initial_permissions current_user
     @component.copy_admin_policy_or_permissions_from current_object
