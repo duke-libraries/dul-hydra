@@ -23,7 +23,7 @@ end
 describe Target do
 
   it_behaves_like "a DulHydra object"
-  it_behaves_like "an object that has content"
+  it_behaves_like "an object that can have content"
 
   context "relationships" do
     let!(:component) { FactoryGirl.create(:component) }

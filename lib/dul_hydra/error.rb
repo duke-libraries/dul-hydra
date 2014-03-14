@@ -1,3 +1,9 @@
 module DulHydra
-  class Error < StandardError; end
+  # Base class for custom exceptions
+  class Error < StandardError
+  end
+  
+  # Invalid checksum
+  class ChecksumInvalid < Error
+  end
 end

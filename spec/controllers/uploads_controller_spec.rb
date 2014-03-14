@@ -29,7 +29,7 @@ describe UploadsController, uploads: true do
       before do
         object.edit_users = [user.user_key]
         object.save!
-        patch :update, id: object, content: fixture_file_upload('sample.pdf', 'application/pdf'), comment: "Corrected version"
+        patch :update, id: object, content: fixture_file_upload('sample.pdf', 'application/pdf'), comment: "Corrected version", checksum: "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd0"
         object.reload
       end
       it "should upload the content" do
@@ -47,6 +47,20 @@ describe UploadsController, uploads: true do
       end
       it "should (re-)generate a thumbnail" do
         expect(object).to have_thumbnail
+      end
+    end
+    context "when the checksum is invalid" do
+      before do
+        object.edit_users = [user.user_key]
+        object.save!
+        patch :update, id: object, content: fixture_file_upload('sample.pdf', 'application/pdf'), comment: "Corrected version", checksum: "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1"
+        object.reload
+      end
+      it "should NOT upload the content" do
+        expect(object.has_content?).to be_false
+      end
+      it "should NOT create an event log" do
+        expect(object.event_logs.count).to eq(0)
       end
     end
     context "when user cannot upload" do
