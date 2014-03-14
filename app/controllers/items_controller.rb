@@ -18,7 +18,7 @@ class ItemsController < ApplicationController
     @item.copy_admin_policy_or_permissions_from current_object
     if @item.save
       flash[:success] = "New item added."
-      redirect_to controller: 'objects', action: 'show', id: current_object, tab: 'items'
+      redirect_to controller: 'objects', action: 'show', id: @item
     else
       render :new
     end
