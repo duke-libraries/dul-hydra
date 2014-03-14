@@ -1,3 +1,5 @@
+require 'digest'
+
 module DulHydra
   module HasContent
     extend ActiveSupport::Concern
@@ -24,14 +26,17 @@ module DulHydra
     end
 
     # Set content to file and return boolean for changed (true)/not changed (false)
-    def upload file
+    # If checksum param is a non-empty string, it must match the SHA-256 digest for the file,
+    # or the upload will raise an exception (DulHydra::ChecksumInvalid).
+    def upload file, checksum = nil
+      validate_checksum! file, checksum unless checksum.blank?
       self.content.content = file
       content_changed?
     end
 
     # Set content to file and save if changed
-    def upload! file
-      upload(file) && save
+    def upload! file, checksum = nil
+      upload(file, checksum) && save
     end
 
     def content_type
@@ -86,6 +91,18 @@ module DulHydra
     def update_thumbnail
       yield
       set_thumbnail!
+    end
+
+    private 
+
+    def validate_checksum! file, checksum
+      digest = Digest::SHA256.new
+      digest << file.read
+      unless digest.to_s == checksum
+        raise DulHydra::ChecksumInvalid, "The checksum provided [#{checksum}] does not match the content digest [#{digest.to_s}]"
+      end
+    ensure
+      file.rewind
     end
 
   end

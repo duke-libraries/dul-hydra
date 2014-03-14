@@ -14,7 +14,7 @@ end
 describe Attachment, attachments: true do
 
   it_behaves_like "a DulHydra object"
-  it_behaves_like "an object that has content"
+  it_behaves_like "an object that can have content"
 
   context "relationships" do
     let(:attachment) { FactoryGirl.create(:attachment_with_content) }

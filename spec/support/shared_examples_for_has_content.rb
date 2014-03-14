@@ -1,14 +1,14 @@
 require 'spec_helper'
 require 'tempfile'
 
-shared_examples "an object that has content" do
+shared_examples "an object that can have content" do
   let(:object) do
     obj = described_class.new(title: "I Have Content!")
     obj.save(validate: false)
     obj
   end
   after { ActiveFedora::Base.destroy_all }
-  context "which is uploaded" do
+  context "after content is uploaded" do
     before do
       object.upload fixture_file_upload("library-devil.tiff", "image/tiff")
       object.save(validate: false)
@@ -43,7 +43,24 @@ shared_examples "an object that has content" do
       end
     end
   end
-  context "object has not uploaded content" do
+  context "after content is uploaded with a checksum" do
+    context "and the checksum matches" do
+      before do
+        object.upload fixture_file_upload("library-devil.tiff", "image/tiff"), "dea56f15b309e47b74fa24797f85245dda0ca3d274644a96804438bbd659555a"      
+        object.save(validate: false)
+      end
+      it "should have content" do
+        expect(object).to have_content
+      end
+    end
+    context "and the checksum doesn't match" do
+      it "should raise an exception" do
+        expect { object.upload fixture_file_upload("library-devil.tiff", "image/tiff"), "dea56f15b309e47b74fa24797f85245dda0ca3d274644a96804438bbd659555b" }.to raise_error(DulHydra::ChecksumInvalid)
+        expect { object.upload! fixture_file_upload("library-devil.tiff", "image/tiff"), "dea56f15b309e47b74fa24797f85245dda0ca3d274644a96804438bbd659555b" }.to raise_error(DulHydra::ChecksumInvalid)
+      end
+    end
+  end
+  context "before content is uploaded" do
     it "should not have content" do
       expect(object).not_to have_content
     end

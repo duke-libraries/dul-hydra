@@ -25,7 +25,7 @@ end
 describe Component, components: true do
 
   it_behaves_like "a DulHydra object"
-  it_behaves_like "an object that has content"
+  it_behaves_like "an object that can have content"
 
   context "#collection" do
     context "orphan component" do
