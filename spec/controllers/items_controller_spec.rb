@@ -29,6 +29,9 @@ describe ItemsController do
     it "should create an event log" do
       expect(assigns(:item).event_logs(action: "create").count).to eq(1)
     end
+    it "should redirect to the item show page" do
+      expect(response).to redirect_to(object_path(assigns(:item)))
+    end
   end
 
 end
