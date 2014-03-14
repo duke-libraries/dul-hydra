@@ -6,6 +6,11 @@ class AttachmentsController < ApplicationController
 
   before_action :authorize_add_attachment
 
+  rescue_from DulHydra::ChecksumInvalid do |e|
+    flash.now[:error] = "<strong>Attachment creation failed:</strong> #{e.message}".html_safe
+    render :new
+  end
+
   layout 'objects'
 
   def new
@@ -14,7 +19,7 @@ class AttachmentsController < ApplicationController
 
   def create
     @attachment = Attachment.new(params.require(:attachment).permit(:title, :description))
-    @attachment.upload params.require(:content)
+    @attachment.upload params.require(:content), checksum: params[:checksum]
     @attachment.attached_to = current_object
     @attachment.set_initial_permissions current_user
     @attachment.copy_admin_policy_or_permissions_from current_object

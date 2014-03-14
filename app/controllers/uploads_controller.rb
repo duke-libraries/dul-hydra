@@ -10,16 +10,20 @@ class UploadsController < ApplicationController
 
   layout 'objects'
 
+  rescue_from DulHydra::ChecksumInvalid do |e|
+    flash.now[:error] = "<strong>Content upload failed:</strong> #{e.message}".html_safe
+    render :show
+  end
+
   def show
     content_warning
   end
 
   def update
-    if current_object.upload!(params.require(:content))
+    if current_object.upload! params.require(:content), checksum: params[:checksum]
       flash[:notice] = "Content successfully uploaded."
       redirect_to controller: 'objects', action: 'show', id: current_object
     else
-      content_warning
       render :show
     end
   end
