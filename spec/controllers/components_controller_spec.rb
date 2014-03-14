@@ -35,6 +35,10 @@ describe ComponentsController, components: true do
       create_component
       expect(assigns(:component).event_logs(action: "create").count).to eq(1)
     end
+    it "should redirect to the component show page" do
+      create_component
+      expect(response).to redirect_to(object_path(assigns(:component)))
+    end
     context "checksum doesn't match" do
       before { post :create, id: item, component: {title: "New Component", description: "Part of an item"}, content: fixture_file_upload('sample.pdf', 'application/pdf'), checksum: "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }
       it "should not create a new object" do

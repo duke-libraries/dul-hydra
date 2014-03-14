@@ -24,7 +24,7 @@ class ComponentsController < ApplicationController
     @component.copy_admin_policy_or_permissions_from current_object
     if @component.save
       flash[:success] = "New component added."
-      redirect_to controller: 'objects', action: 'show', id: current_object, tab: 'components'
+      redirect_to controller: 'objects', action: 'show', id: @component
     else
       render :new
     end
