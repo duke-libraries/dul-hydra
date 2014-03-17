@@ -50,3 +50,26 @@ table.access-controls td ul {
 .small {
 	font-size: smaller;
 }
+
+/* MTD Tweaks */
+
+.table .sub-header {
+	font-style: italic;
+	color: #999;
+}
+
+.table th, .table td {
+	white-space:nowrap;
+}
+
+.table .mappings:empty {
+    background-color: #F2DEDE;
+    color: /*#A94442*/ #db7c7a;
+    font-weight: normal;
+    font-style: italic;
+    text-align: center;
+}
+
+.table .mappings:empty:before {
+	content: 'will not map';
+}
