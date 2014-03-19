@@ -1,6 +1,6 @@
 <div class="controls"<% if index == 0 %> id="additional_<%= key %>_clone"<% end %>>
   <% required = render_req && (index == 0) && f.object.required?(key) %>
-  <%= text_field_tag field_name(key), v, id: field_id(key), class: "span6", required: required %>
+  <%= text_field_tag field_name(key), v, id: field_id(key), class: "span6" %>
   <% unless f.object.class.unique?(key) %>
     <%= render partial: "records/edit_fields/suffix", locals: { key: key, index: index } %>
   <% end %>

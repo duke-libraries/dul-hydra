@@ -4,7 +4,7 @@
     <%= render partial: 'form_errors', locals: {form: f} %>
 
     <%= f.label :title %>
-    <%= text_field_tag "attachment[title]", nil, required: true %>
+    <%= text_field_tag "attachment[title]", nil %>
 
     <%= f.label :description %>
     <%= text_area_tag "attachment[description]" %>
