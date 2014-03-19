@@ -49,6 +49,10 @@ module DulHydra::Batch::Models
         message = "Attempt to update #{model} #{identifier} FAILED"
       end      
     end
+
+    def event_log_comment
+      "Updated by batch process (Batch #{batch.id}, BatchObject #{id})"
+    end
         
     private
     
@@ -64,7 +68,9 @@ module DulHydra::Batch::Models
             end        
           end
         end
-        repo_object.save
+        if repo_object.save
+          repo_object.log_event(action: EventLog::Actions::UPDATE, user: batch.user, comment: event_log_comment)
+        end
       rescue Exception => e
         logger.error("Error in updating repository object #{repo_object.pid} for #{identifier} : : #{e}")
         if batch.present?

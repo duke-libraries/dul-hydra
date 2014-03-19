@@ -70,6 +70,7 @@ module DulHydra::Batch::Models
         let(:repo_object) { TestModel.create(:pid => object.pid) }
         let(:apo) { FactoryGirl.create(:group_edit_policy) }
         before do
+          EventLog.destroy_all
           repo_object.admin_policy = apo
           repo_object.save
           object.process
@@ -78,9 +79,14 @@ module DulHydra::Batch::Models
         after do
           repo_object.destroy
           apo.destroy
+          EventLog.destroy_all
         end
         it "should update the repository object" do
           expect(repo_object.title.first).to eq('Sample updated title')
+        end
+        it "should create an event log for the update" do
+          expect(repo_object.event_logs(action: EventLog::Actions::UPDATE).count).to eq(1)
+          expect(repo_object.event_logs(action: EventLog::Actions::UPDATE).first.comment).to eq("Updated by batch process (Batch #{object.batch.id}, BatchObject #{object.id})")
         end
         
       end
