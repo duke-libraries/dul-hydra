@@ -7,8 +7,9 @@ th { text-align: left; }
 td { text-align: right; }
     </style>
   </head>
+  <title><%= @subject %></title>
   <body>
-    <h1><%= @title %></h1>
+    <h1><%= @subject %></h1>
 	<p>
 	  Host: <%= @host %><br />
 	  Run at: <%= @bfc.summary[:at] %>
