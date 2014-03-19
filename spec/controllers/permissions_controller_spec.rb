@@ -11,6 +11,7 @@ describe PermissionsController do
     object.delete
     sign_out user
     user.delete
+    EventLog.destroy_all
   end
   describe "#edit" do
     context "permissions" do
@@ -48,6 +49,10 @@ describe PermissionsController do
         put :update, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
         response.should redirect_to(permissions_path(object))
       end
+      it "should create an event log entry for the update action" do
+        put :update, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
+        expect(object.event_logs(action: "update").count).to eq(1)
+      end
     end
     context "default permissions" do
       let(:object) { AdminPolicy.create(title: "Test Policy") }
@@ -67,6 +72,10 @@ describe PermissionsController do
       it "should redirect to the show view" do
         put :update, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}, default_permissions: true
         response.should redirect_to(default_permissions_path(object))
+      end
+      it "should create an event log entry for the update action" do
+        put :update, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}, default_permissions: true
+        expect(object.event_logs(action: "update").count).to eq(1)
       end
     end
   end
