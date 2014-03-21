@@ -6,6 +6,7 @@
                         <%= content_tag :th, t('batch.web.column_names.action'), :scope => 'col' %>
                         <%= content_tag :th, t('batch.web.column_names.name'), :scope => 'col' %>
                         <%= content_tag :th, t('batch.web.column_names.description'), :scope => 'col' %>
+						<%= content_tag :th, t('batch.web.column_names.creation_date'), :scope => 'col'%>
                         <%= content_tag :th, t('batch.web.column_names.objects'), :scope => 'col' %>
                         <%= content_tag :th, t('batch.web.column_names.start'), :scope => 'col' %>
                         <%= content_tag :th, t('batch.web.column_names.status'), :scope => 'col' %>
@@ -24,6 +25,7 @@
                                 <%= content_tag :td, batch_action(b) %>
                                 <%= content_tag :td, b.name %>
                                 <%= content_tag :td, b.description %>
+								<%= content_tag :td, b.created_at.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
                                 <%= content_tag :td, b.batch_objects.count %>
                                 <%= content_tag :td, b.start.nil? ? '--' : b.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
                                 <%= content_tag :td, b.status.nil? ? '--' : b.status %>
