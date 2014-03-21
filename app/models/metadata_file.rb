@@ -9,7 +9,6 @@ class MetadataFile < ActiveRecord::Base
   
   def validate_data
     begin
-      # csv_table = CSV.read(metadata.path, effective_options[:csv])
       valid_headers = [ :pid, :model ].concat(ActiveFedora::QualifiedDublinCoreDatastream::DCTERMS)
       as_csv_table.headers.each do |header|
         if effective_options[:schema_map].present?
@@ -33,11 +32,6 @@ class MetadataFile < ActiveRecord::Base
   
   def self.default_options
     {
-      # :csv => {
-      #   :col_sep => ",",
-      #   :quote_char => '"',
-      #   :headers => true
-      # },
       :csv => DulHydra.csv_options,
       :parse => {
         :include_empty_fields => false,
