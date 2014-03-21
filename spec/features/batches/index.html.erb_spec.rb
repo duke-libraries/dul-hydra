@@ -94,14 +94,18 @@ describe "batches/index.html.erb" do
         context "not yet validated" do
           before { visit batches_path }
           it "should have a link to validate the batch" do
-            within tab_id do
-              expect(page).to have_link(I18n.t('batch.web.action_names.validate'), :href => validate_batch_path(batch))
+            pending "reworking of separate validate action" do
+              within tab_id do
+                expect(page).to have_link(I18n.t('batch.web.action_names.validate'), :href => validate_batch_path(batch))
+              end
             end
           end
           it "should return to the index page" do
-            within tab_id do
-              click_link I18n.t('batch.web.action_names.validate')
-              expect(current_path).to eq(batches_path)
+            pending "reworking of separate validate action" do
+              within tab_id do
+                click_link I18n.t('batch.web.action_names.validate')
+                expect(current_path).to eq(batches_path)
+              end
             end
           end
         end
