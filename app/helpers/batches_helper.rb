@@ -2,12 +2,12 @@ module BatchesHelper
 
   def batch_action(batch)
     case batch.status
-    # Temporarily remove the functionality requiring a separate validation step before processing
-    # cf. issue #760
-    # when nil
-    #   link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
-    # when DulHydra::Batch::Models::Batch::STATUS_VALIDATED
-    when nil ||  DulHydra::Batch::Models::Batch::STATUS_VALIDATED
+    when nil
+      # Temporarily remove the functionality requiring a separate validation step before processing
+      # cf. issue #760
+      #   link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
+      link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
+    when DulHydra::Batch::Models::Batch::STATUS_VALIDATED
       link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
     when DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
       link_to(I18n.t('batch.web.action_names.restart'), procezz_batch_path(batch))
