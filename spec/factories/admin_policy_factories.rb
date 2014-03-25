@@ -2,8 +2,6 @@ FactoryGirl.define do
 
   factory :admin_policy do
     title "Admin Policy"
-    permissions_attributes [DulHydra::Permissions::EDITOR_GROUP_ACCESS]
-    default_permissions DulHydra::Permissions::DEFAULT_PERMISSIONS
 
     trait :public_discover do
       title "Public discover policy"

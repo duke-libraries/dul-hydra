@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe "AdminPolicy routes", admin_policies: true do
-  it "should have a new route" do
-    expect(get: '/admin_policies/new').to route_to(controller: 'admin_policies', action: 'new')
-    expect(get: new_admin_policy_path).to route_to(controller: 'admin_policies', action: 'new')
+describe "AdminPolicy router", admin_policies: true do
+  # see also repository_router_spec
+  it "should not have events routes" do
+    expect(get: "/admin_policies/duke:1/preservation_events").not_to be_routable
   end
-  it "should have a create route" do
-    expect(post: '/admin_policies').to route_to(controller: 'admin_policies', action: 'create')
-    expect(post: admin_policies_path).to route_to(controller: 'admin_policies', action: 'create')
+  it "should have default_permissions routes" do
+    expect(get: "/admin_policies/duke:1/default_permissions").to route_to(controller: "admin_policies", action: "default_permissions", id: "duke:1")
+    expect(patch: "/admin_policies/duke:1/default_permissions").to route_to(controller: "admin_policies", action: "default_permissions", id: "duke:1")
   end
 end

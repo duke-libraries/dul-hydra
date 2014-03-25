@@ -1,7 +1,15 @@
 <div class="well">
   <h4>New Component</h4>
+  <dl>
+	<dt>Collection</dt>
+	<dd><%= collection.title_display %> (<%= collection.pid %>)</dd>
+	<dt>Part of Item</dt>
+	<dd><%= parent.title_display %> (<%= parent.pid %>)</dd>
+  <dl>
   <%= form_for @component, html: {enctype: "multipart/form-data"} do |f| %>
     <%= render partial: 'form_errors', locals: {form: f} %>
+
+	<%= hidden_field_tag "parent", parent.pid %>
 
     <%= f.label :title %>
     <%= text_field_tag "component[title]", nil %>

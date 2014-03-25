@@ -1,36 +1,34 @@
 class AttachmentsController < ApplicationController
 
-  include DulHydra::ObjectsControllerBehavior
-  include DulHydra::RepositoryController
-  include DulHydra::UploadBehavior
+  include DulHydra::Controller::RepositoryBehavior
+  include DulHydra::Controller::HasContentBehavior
 
-  before_action :authorize_add_attachment
+  prepend_before_action :authorize_add_attachment!, only: [:new, :create]
+  before_action :attach, only: :create
+  before_action :copy_admin_policy_or_permissions, only: :create
 
-  layout 'objects'
-
-  def new
-    @attachment = Attachment.new
-  end
-
-  def create
-    @attachment = Attachment.new(params.require(:attachment).permit(:title, :description))
-    upload_content_to @attachment
-    @attachment.attached_to = current_object
-    @attachment.set_initial_permissions current_user
-    @attachment.copy_admin_policy_or_permissions_from current_object
-    if @attachment.save
-      flash[:success] = "New attachment added."
-      redirect_to controller: 'objects', action: 'show', id: current_object, tab: 'attachments'
-    else
-      render :new
-    end
-  end
+  helper_method :attach_to
 
   protected
 
-  def authorize_add_attachment
-    authorize! :create, Attachment
-    authorize! :add_attachment, current_object
+  def attach
+    current_object.attached_to = attach_to
+  end
+
+  def attach_to
+    @attach_to ||= ActiveFedora::Base.find(params.require(attach_to_param), cast: true)
+  end
+
+  def attach_to_param
+    :attach_to
+  end
+
+  def authorize_add_attachment!
+    authorize! :add_attachment, attach_to
+  end
+
+  def copy_admin_policy_or_permissions
+    current_object.copy_admin_policy_or_permissions_from attach_to
   end
 
 end

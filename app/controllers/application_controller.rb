@@ -9,10 +9,9 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
 
-  before_filter :authenticate_user!
-  before_filter :configure_permitted_parameters, if: :devise_controller?
+  before_action :authenticate_user!
+  before_action :configure_permitted_parameters, if: :devise_controller?
 
-  helper_method :current_tabs
   helper_method :group_service
   helper_method :all_permissions
   helper_method :find_models_with_gated_discovery
@@ -27,16 +26,6 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  # Copied from hydra-editor's ResourceControllerBehavior
-  def resource_instance_name
-    self.class.name.sub("Controller", "").underscore.split('/').last.singularize
-  end
-
-  # Copied from hydra-editor's ResourceControllerBehavior
-  def get_resource_ivar
-    instance_variable_get("@#{resource_instance_name}")
-  end
-
   # Override Hydra::PolicyAwareAccessControlsEnforcement
   def gated_discovery_filters
     return [] if current_user.superuser?
@@ -44,9 +33,7 @@ class ApplicationController < ActionController::Base
   end
 
   def configure_permitted_parameters
-      devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :password, :password_confirmation, :remember_me) }
-      devise_parameter_sanitizer.for(:sign_in) { |u| u.permit(:username, :email, :password, :remember_me) }
-      devise_parameter_sanitizer.for(:account_update) { |u| u.permit(:username, :email, :password, :password_confirmation, :current_password) }
+    devise_parameter_sanitizer.for(:sign_in) { |u| u.permit(:username, :email, :password, :remember_me) }
   end
   
   def find_models_with_gated_discovery(model)
@@ -69,78 +56,6 @@ class ApplicationController < ActionController::Base
       unwanted << "-#{ActiveFedora::SolrService.solr_name(:has_model, :symbol)}:\"info:fedora/afmodel:#{model}\""
     end
     solr_parameters[:fq] << "(#{unwanted.join(' AND ')})"
-  end
-
-  #
-  # tabs
-  #
-
-  def current_tabs
-    return Tabs.new(self) unless self.respond_to?(:tabs)
-    @current_tabs ||= self.tabs
-  end
-
-  class Tab
-    attr_reader :id, :href, :guard, :actions
-
-    def initialize(id, opts={})
-      @id = id
-      @href = opts[:href]
-      @guard = opts.fetch(:guard, true)
-      @actions = opts.fetch(:actions, [])
-    end
-
-    def authorized_actions
-      @authorized_actions ||= actions.select {|a| a.guard}
-    end
-
-    def css_id
-      "tab_#{id}"
-    end
-
-    def partial
-      href ? 'tab_ajax_content': id
-    end
-
-    def label
-      I18n.t("dul_hydra.tabs.#{id}.label")
-    end
-  end # Tab
-
-  class TabAction
-    attr_reader :id, :href, :guard
-
-    def initialize(id, href, guard=true)
-      @id = id
-      @href = href
-      @guard = guard
-    end
-  end
-
-  class Tabs < ActiveSupport::OrderedHash
-    attr_reader :active_tab
-
-    def initialize(controller, *methods)
-      super()
-      @active_tab = controller.params[:tab]
-      methods.each {|m| self << controller.send(m)}
-    end
-    
-    def << (tab)
-      self[tab.id] = tab if tab.guard
-    end
-
-    def active
-      active_tab && self.key?(active_tab) ? self[active_tab] : self.default
-    end
-
-    def default?(tab)
-      self.default ? tab.id == self.default.id : false
-    end
-
-    def default
-      self.first[1] unless self.empty?
-    end
   end
   
 end

@@ -29,6 +29,7 @@ module DulHydra
     # If :checksum option is a non-empty string, it must match the SHA-256 digest for the file,
     # or the upload will raise an exception (DulHydra::ChecksumInvalid).
     def upload file, opts = Hash.new
+      return false unless file
       validate_file_checksum! file, opts[:checksum] if opts[:checksum].present?
       self.content.content = file
       content_changed?
