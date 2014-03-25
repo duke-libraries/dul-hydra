@@ -246,7 +246,7 @@ module ApplicationHelper
   end
 
   def create_menu_models
-    current_ability.can_create_models.reject { |m| m == "Attachment" }
+    current_ability.can_create_models & ["AdminPolicy", "Collection"]
   end
 
   def cancel_button
