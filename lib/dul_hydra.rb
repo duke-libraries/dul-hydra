@@ -4,4 +4,8 @@ module DulHydra
   autoload :ChecksumInvalid, 'dul_hydra/error'
 
   include DulHydra::Configurable
+
+  def self.creatable_models
+    @@creatable_models ||= ability_group_map.select {|k, v| v.key? :create}.keys
+  end
 end
