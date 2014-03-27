@@ -221,7 +221,7 @@ describe Ability do
 
   describe "#superuser_permissions" do
     before do
-      DulHydra.creatable_models = ["AdminPolicy", "Collection"]
+      DulHydra.stub(:creatable_models).and_return(["AdminPolicy", "Collection"])
       DulHydra.stub(:superuser_group).and_return("superusers")
       user.stub(:groups).and_return(["superusers"])
     end
