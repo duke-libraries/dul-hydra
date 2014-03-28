@@ -15,7 +15,7 @@ DulHydra::Application.routes.draw do
 
   resources :objects, only: [:show], constraints: pid_constraint do
     member do
-      get 'collection_info', constraints: XhrRequestConstraint
+      get 'collection_info'
       get 'download' => 'downloads#show'
       get 'preservation_events', constraints: XhrRequestConstraint
       get 'thumbnail' => 'thumbnail#show'
