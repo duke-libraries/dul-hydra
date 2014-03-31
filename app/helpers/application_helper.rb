@@ -228,7 +228,7 @@ module ApplicationHelper
   end
 
   def link_to_create_model(model)
-    link_to model, controller: model.underscore.pluralize, action: 'new'
+    link_to model, send("new_#{model.underscore}_path")
   end
 
   def model_options_for_select(model, access=nil)
@@ -246,7 +246,7 @@ module ApplicationHelper
   end
 
   def create_menu_models
-    current_ability.can_create_models.reject { |m| m == "Attachment" }
+    current_ability.can_create_models & ["AdminPolicy", "Collection"]
   end
 
   def cancel_button

@@ -15,8 +15,7 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :username, :case_sensitive => false
   validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/
 
-  devise :remote_user_authenticatable, :database_authenticatable, :registerable,
-         :rememberable, :trackable, :validatable
+  devise :remote_user_authenticatable, :database_authenticatable, :rememberable, :trackable, :validatable
 
   attr_writer :group_service
 

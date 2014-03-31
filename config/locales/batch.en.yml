@@ -93,6 +93,7 @@ en:
                 user: "User"
                 name: "Name"
                 description: "Description"
+                creation_date: Created
                 objects: "Objects"
                 start: "Start"
                 stop: "Stop"
