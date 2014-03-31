@@ -7,9 +7,9 @@ describe "catalog/index.html.erb" do
   before(:each) { login user }
   after(:each) do
     logout user
+    user.delete
     object.delete
   end
-  after(:all) { user.delete }
   context "search options" do
     before do
       object.discover_groups = ["public"]
@@ -63,6 +63,17 @@ describe "catalog/index.html.erb" do
         pending "Figure out why this test is failing"
         page.should have_xpath("//a[@href = \"#{object_path(object)}\"]")
         page.should have_xpath("//a[@href = \"#{download_object_path(object)}\"]")
+      end
+    end
+    context "user is superuser" do
+      before do
+        User.any_instance.stub(:superuser?).and_return(true)
+        visit catalog_index_path
+        fill_in "q", :with => object.title.first
+        click_button "search"
+      end
+      it "should discover the object" do
+        page.should have_content(object.pid)
       end
     end
   end

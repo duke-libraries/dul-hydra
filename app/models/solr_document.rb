@@ -31,6 +31,6 @@ class SolrDocument
                          :format => "format"
                          )
 
-  include DulHydra::Models::SolrDocument
+  include DulHydra::SolrDocument
 
 end

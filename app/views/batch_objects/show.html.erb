@@ -1,0 +1,86 @@
+<%= content_tag :h3, t('batch.web.page_titles.batch_object', :id => @batch_object.id) %>
+
+<%= content_tag :table, :class => 'table-condensed' do %>
+	<%= content_tag :tr do%>
+		<%= content_tag :td, t('batch.web.column_names.part_of_batch') %>
+		<%= content_tag :td, render_link_to_batch_with_name(@batch_object.batch) %>
+	<% end %>
+	<%= content_tag :tr do%>
+		<%= content_tag :td, t('batch.web.column_names.identifier') %>
+		<%= content_tag :td, @batch_object.identifier %>
+	<% end %>
+	<%= content_tag :tr do%>
+		<%= content_tag :td, t('batch.web.column_names.model') %>
+		<%= content_tag :td, @batch_object.model %>
+	<% end %>
+	<%= content_tag :tr do%>
+		<%= content_tag :td, t('batch.web.column_names.pid') %>
+		<%= content_tag :td, @batch_object.pid %>
+	<% end %>
+	<%= content_tag :tr do%>
+		<%= content_tag :td, t('batch.web.column_names.verified_in_repository') %>
+		<%= content_tag :td, @batch_object.verified %>
+	<% end %>
+<% end%>
+
+<%= content_tag :h4, "Relationships" %>
+<% if @batch_object.batch_object_relationships.present? %>
+	<%= content_tag :table, :class => 'table-bordered' do %>
+		<%= content_tag :thead do %>
+			<%= content_tag :th, t('batch.web.column_names.id') %>
+			<%= content_tag :th, t('batch.web.column_names.name') %>
+			<%= content_tag :th, t('batch.web.column_names.operation') %>
+			<%= content_tag :th, t('batch.web.column_names.related_object') %>
+			<%= content_tag :th, t('batch.web.column_names.related_object_type') %>
+		<% end %>
+		<% @batch_object.batch_object_relationships.each do |rel| %>
+			<%= content_tag :tr do %>
+				<%= content_tag :td, rel.id %>
+				<%= content_tag :td, rel.name %>
+				<%= content_tag :td, rel.operation %>
+				<%= content_tag :td, rel.object %>
+				<%= content_tag :td, rel.object_type %>
+			<% end %>
+		<% end %>
+	<% end %>
+<% else %>
+	<%= content_tag :div, "No relationships in this batch object" %>
+<% end %>
+
+<%= content_tag :h4, "Datastreams" %>
+<% if @batch_object.batch_object_datastreams.present? %>
+	<% @batch_object.batch_object_datastreams.each do |ds| %>
+		<%= content_tag :table, :class => 'table-bordered' do %>
+			<%= content_tag :tr do %>
+				<%= content_tag :td, t('batch.web.column_names.id') %>
+				<%= content_tag :td, ds.id %>
+			<% end %>
+			<%= content_tag :tr do %>
+				<%= content_tag :td, t('batch.web.column_names.name') %>
+				<%= content_tag :td, ds.name %>
+			<% end %>
+			<%= content_tag :tr do %>
+				<%= content_tag :td, t('batch.web.column_names.operation') %>
+				<%= content_tag :td, ds.operation %>
+			<% end %>
+			<%= content_tag :tr do %>
+				<%= content_tag :td, t('batch.web.column_names.payload') %>
+				<%= content_tag :td, ds.payload %>
+			<% end %>
+			<%= content_tag :tr do %>
+				<%= content_tag :td, t('batch.web.column_names.payload_type') %>
+				<%= content_tag :td, ds.payload_type %>
+			<% end %>
+			<%= content_tag :tr do %>
+				<%= content_tag :td, t('batch.web.column_names.checksum') %>
+				<%= content_tag :td, ds.checksum.present? ? ds.checksum : '--' %>
+			<% end %>
+			<%= content_tag :tr do %>
+				<%= content_tag :td, t('batch.web.column_names.checksum_type') %>
+				<%= content_tag :td, ds.checksum_type.present? ? ds.checksum_type : '--' %>
+			<% end %>
+		<% end %>
+	<% end %>
+<% else %>
+	<%= content_tag :div, "No datastreams in this batch object" %>
+<% end %>

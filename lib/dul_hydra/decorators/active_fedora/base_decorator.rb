@@ -1,38 +1,50 @@
 ActiveFedora::Base.class_eval do
 
-  def self.add_association_methods
-    [:attachments, :children, :parent].each do |a|
-      define_method("has_#{a}?".to_sym) do
-        # ActiveFedora 7.0 will add an #association(name) instance method to AF::Base
-        # so this can be rewritten as:
-        #
-        # !association(a).nil?
-        #
-        !self.class.reflect_on_association(a).nil?
-      end
-    end
+  def can_have_attachments?
+    # XXX Should probably test existence of association on :attachments
+    self.is_a? DulHydra::HasAttachments
   end
 
-  add_association_methods
+  def has_attachments?
+    can_have_attachments? && attachments.size > 0
+  end
+
+  def can_have_children?
+    # DulHydra::HasChildren doesn't implement the has_many :children association
+    # In active-fedora 7, we can write !association(:children).nil?
+    !self.class.reflect_on_association(:children).nil?
+  end
+
+  def has_children?
+    can_have_children? and children.size > 0
+  end
+
+  def can_have_preservation_events?
+    self.is_a? DulHydra::HasPreservationEvents
+  end
 
   def has_preservation_events?
-    self.is_a?(DulHydra::Models::HasPreservationEvents)
+    can_have_preservation_events? && preservation_events.size > 0
+  end
+
+  def can_have_content?
+    self.is_a? DulHydra::HasContent
   end
     
   def has_content?
-    self.is_a?(DulHydra::Models::HasContent) && self.datastreams[DulHydra::Datastreams::CONTENT].has_content?
+    false # DulHydra::HasContent implements #has_content?
   end
 
   def has_content_metadata?
-    self.is_a?(DulHydra::Models::HasContentMetadata) && self.datastreams[DulHydra::Datastreams::CONTENT_METADATA].has_content?
+    self.is_a?(DulHydra::HasContentMetadata) && self.datastreams[DulHydra::Datastreams::CONTENT_METADATA].has_content?
   end
 
   def describable?
-    self.is_a?(DulHydra::Models::Describable)
+    self.is_a? DulHydra::Describable
   end
 
   def governable?
-    self.is_a?(DulHydra::Models::Governable)
+    self.is_a? DulHydra::Governable
   end
 
   def has_admin_policy?
@@ -44,8 +56,12 @@ ActiveFedora::Base.class_eval do
     ds && ds.size && ds.size > 0
   end
   
+  def can_have_thumbnail?
+    self.is_a? DulHydra::HasThumbnail
+  end
+
   def has_thumbnail?
-    self.is_a?(DulHydra::Models::HasThumbnail) && self.datastreams[DulHydra::Datastreams::THUMBNAIL].has_content?
+    false # DulHydra::HasThumbnail implements #has_thumbnail?
   end
 
   def safe_id

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'helpers/user_helper'
 
-describe "objects/show.html.erb" do
+describe "objects/show.html.erb", objects: true do
   let(:user) { FactoryGirl.create(:user) }
   before do
     object.read_users = [user.to_s]
@@ -10,9 +10,9 @@ describe "objects/show.html.erb" do
   end
   after(:each) do
     logout user
+    user.delete
     object.delete
   end
-  after(:all) { user.delete }
   context "object is describable" do
     let(:object) { FactoryGirl.create(:item) }
     it "should display the descriptive metadata" do
@@ -54,5 +54,8 @@ describe "objects/show.html.erb" do
       page.should have_css("div#tab_components")
       page.should have_xpath("//a[@href=\"#{object_path(child)}\"]")
     end
+  end
+  context "object can have attachments", attachments: true do
+    # TODO
   end
 end

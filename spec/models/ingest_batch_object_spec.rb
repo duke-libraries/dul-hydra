@@ -15,19 +15,14 @@ module DulHydra::Batch::Models
   end
   
   shared_examples "a successful ingest" do
-    # let(:results) { object.process }
     before { object.process }
     it "should result in a verified repository object" do
-      # expect(results.repository_object).to_not be_nil
-      # expect(results.verified).to be_true
-      # results.verifications.each { |condition, result| expect(result).to eq(BatchObject::VERIFICATION_PASS) }
-      # expect(object.pid).to eq(results.repository_object.pid)
       expect(object.verified).to be_true
       expect(object.pid).to eq(assigned_pid) if assigned_pid.present?
     end
   end
   
-  describe IngestBatchObject do
+  describe IngestBatchObject, batch: true, ingest: true do
     
     context "validate" do
     
@@ -42,13 +37,16 @@ module DulHydra::Batch::Models
             AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
             Collection.find(r.object).destroy if r.name.eql?("collection")
           end
+          object.batch.user.delete if object.batch.present? && object.batch.user.present?
+          object.batch.delete if object.batch.present?
+          object.destroy
         end
         context "generic object" do
-          let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
+          let(:object) { FactoryGirl.create(:generic_ingest_batch_object, :has_batch) }
           it_behaves_like "a valid ingest object"
         end
         context "target object" do
-          let(:object) { FactoryGirl.create(:target_ingest_batch_object) }
+          let(:object) { FactoryGirl.create(:target_ingest_batch_object, :has_batch) }
           it_behaves_like "a valid ingest object"
         end
         context "object related to an uncreated object with pre-assigned PID" do
@@ -77,7 +75,8 @@ module DulHydra::Batch::Models
               ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
               AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
               Collection.find(r.object).destroy if r.name.eql?("collection")
-            end            
+            end
+            parent.destroy
           end
           it_behaves_like "a valid ingest object"
         end
@@ -85,6 +84,7 @@ module DulHydra::Batch::Models
   
       context "invalid object" do
         let(:error_prefix) { "#{object.identifier} [Database ID: #{object.id}]:"}
+        after { object.destroy }
         context "missing model" do
           let(:object) { FactoryGirl.create(:ingest_batch_object) }
           let(:error_message) { "#{error_prefix} Model required for INGEST operation" }
@@ -105,7 +105,11 @@ module DulHydra::Batch::Models
           it_behaves_like "an invalid ingest object"
         end
         context "invalid admin policy" do
-          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_model) }
+          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_batch, :has_model) }
+          after do
+            object.batch.user.delete
+            object.batch.delete
+          end
           context "admin policy pid object does not exist" do
             let(:admin_policy_pid) { "bogus:AdminPolicy" }
             let(:error_message) { "#{error_prefix} admin_policy relationship object does not exist: #{admin_policy_pid}" }
@@ -178,7 +182,11 @@ module DulHydra::Batch::Models
           end
         end
         context "invalid parent" do
-          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_model) }
+          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_batch, :has_model) }
+          after do
+            object.batch.user.delete
+            object.batch.delete
+          end
           context "parent pid object does not exist" do
             let(:parent_pid) { "bogus:TestParent" }
             let(:error_message) { "#{error_prefix} parent relationship object does not exist: #{parent_pid}" }
@@ -202,7 +210,11 @@ module DulHydra::Batch::Models
           end
         end
         context "invalid target_for" do
-          let(:object) { FactoryGirl.create(:ingest_batch_object) }
+          let(:object) { FactoryGirl.create(:ingest_batch_object, :has_batch) }
+          after do
+            object.batch.user.delete
+            object.batch.delete
+          end
           context "target_for pid object does not exist" do
             let(:collection_pid) { "bogus:Collection" }
             let(:error_message) { "#{error_prefix} collection relationship object does not exist: #{collection_pid}" }
@@ -232,16 +244,18 @@ module DulHydra::Batch::Models
   
     context "ingest" do
       
-      context "successful ingest" do
-        let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
-        after do
-          object.batch_object_relationships.each do |r|
-            ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
-            AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
-            Collection.find(r.object).destroy if r.name.eql?("collection")
-          end
-          ActiveFedora::Base.find(object.pid, :cast => true).destroy
+      let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
+      after do
+        object.batch_object_relationships.each do |r|
+          ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
+          AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
+          Collection.find(r[:object]).destroy if r[:name].eql?("collection")
         end
+        ActiveFedora::Base.find(object.pid, :cast => true).destroy if object.pid.present?
+        object.destroy
+      end
+
+      context "successful ingest" do
         context "object without a pre-assigned PID" do
           let(:assigned_pid) { nil }
           it_behaves_like "a successful ingest"
@@ -263,6 +277,25 @@ module DulHydra::Batch::Models
             object.model.constantize.create(:pid => assigned_pid)
           end
           it_behaves_like "a successful ingest"          
+        end
+      end
+      
+      context "exception during ingest" do
+        before { DulHydra::Batch::Models::IngestBatchObject.any_instance.stub(:populate_datastream).and_raise(RuntimeError) }
+        context "error during processing" do
+          it "should log a fatal message and re-raise the exception" do
+            Rails.logger.should_receive(:fatal).with(/Error in creating repository object/)
+            expect { object.process }.to raise_error(RuntimeError)
+          end
+        end
+        context "error while destroying repository object" do
+          before { TestModelOmnibus.any_instance.stub(:destroy).and_raise(RuntimeError) }
+          after { TestModelOmnibus.any_instance.unstub(:destroy) }
+          it "should log two fatal messages and re-raise the initial exception" do
+            Rails.logger.should_receive(:fatal).with(/Error in creating repository object/)
+            Rails.logger.should_receive(:fatal).with(/Error deleting repository object/)
+            expect { object.process }.to raise_error(RuntimeError)
+          end
         end
       end
       

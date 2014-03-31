@@ -1,6 +1,6 @@
 class PermissionsController < ApplicationController
 
-  include DulHydra::Controller::ObjectsControllerBehavior
+  include DulHydra::ObjectsControllerBehavior
 
   layout 'objects'
 
@@ -33,9 +33,13 @@ class PermissionsController < ApplicationController
       notice = "Permissions updated."
       redirect_after_update = permissions_path(object)
     end
-    object.save
-    flash[:notice] = notice
-    redirect_to redirect_after_update
+    if object.save
+      object.log_event(action: params[:action], user: current_user)
+      flash[:notice] = notice
+      redirect_to redirect_after_update
+    else
+      render :edit
+    end
   end
 
   protected

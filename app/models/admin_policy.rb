@@ -1,23 +1,19 @@
 #
-# AdminPolicy does not subclass DulHydra::Models::Base
+# AdminPolicy does not subclass DulHydra::Base
 # b/c Hydra::AdminPolicy provides all the datastreams it needs.
 #
 class AdminPolicy < Hydra::AdminPolicy
 
   include ActiveFedora::Auditable
-  include DulHydra::Models::Licensable
+  include DulHydra::Licensable
+  include DulHydra::EventLoggable
+  include DulHydra::AccessControllable
 
-  delegate :default_license_title, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
-  delegate :default_license_description, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
-  delegate :default_license_url, to: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :url], multiple: false
+  has_attributes :default_license_title, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
+  has_attributes :default_license_description, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
+  has_attributes :default_license_url, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :url], multiple: false
 
-  validates :title, presence: true
-
-  APO_NAMESPACE = "duke-apo"
-
-  def self.create_pid(suffix)
-    "#{APO_NAMESPACE}:#{suffix}"
-  end
+  validates_presence_of :title
 
   def default_license
     if default_license_title.present? or default_license_description.present? or default_license_url.present?
@@ -49,11 +45,9 @@ class AdminPolicy < Hydra::AdminPolicy
   end
 
   def set_initial_permissions(creator_user = nil)
-    initial_permissions = [DulHydra::Permissions::REGISTERED_READ_ACCESS]
-    if creator_user
-      initial_permissions << {type: "user", access: "edit", name: creator_user.to_s}
-    end
-    self.permissions = initial_permissions
+    super
+    # Grant read to authenticated users
+    self.permissions_attributes = [{name: "registered", type: "group", access: "read"}]
   end
 
   def default_entities_for_permission(type, access)

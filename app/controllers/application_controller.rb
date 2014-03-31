@@ -5,10 +5,12 @@ class ApplicationController < ActionController::Base
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior
   include Hydra::PolicyAwareAccessControlsEnforcement
+  include DeviseRemoteUser::ControllerBehavior
 
   protect_from_forgery
 
   before_filter :authenticate_user!
+  before_filter :configure_permitted_parameters, if: :devise_controller?
 
   helper_method :current_tabs
   helper_method :group_service
@@ -25,6 +27,28 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # Copied from hydra-editor's ResourceControllerBehavior
+  def resource_instance_name
+    self.class.name.sub("Controller", "").underscore.split('/').last.singularize
+  end
+
+  # Copied from hydra-editor's ResourceControllerBehavior
+  def get_resource_ivar
+    instance_variable_get("@#{resource_instance_name}")
+  end
+
+  # Override Hydra::PolicyAwareAccessControlsEnforcement
+  def gated_discovery_filters
+    return [] if current_user.superuser?
+    super
+  end
+
+  def configure_permitted_parameters
+      devise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:username, :email, :password, :password_confirmation, :remember_me) }
+      devise_parameter_sanitizer.for(:sign_in) { |u| u.permit(:username, :email, :password, :remember_me) }
+      devise_parameter_sanitizer.for(:account_update) { |u| u.permit(:username, :email, :password, :password_confirmation, :current_password) }
+  end
+  
   def find_models_with_gated_discovery(model)
     solr_results = model.find_with_conditions({}, fq: gated_discovery_filters.join(" OR "), rows: 9999)
     ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
@@ -119,11 +143,4 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  private
-  
-  # Cf. https://github.com/plataformatec/devise/wiki/How-To:-Change-the-redirect-path-after-destroying-a-session-i.e.-signing-out
-  def after_sign_out_path_for(resource_or_scope)
-    "/Shibboleth.sso/Logout?return=https://shib.oit.duke.edu/cgi-bin/logout.pl"
-  end
-
 end

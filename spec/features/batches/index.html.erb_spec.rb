@@ -15,7 +15,7 @@ describe "batches/index.html.erb" do
           visit batches_path
         end
         it "should not include a link to create an ingest folder" do
-          expect(page).to_not have_button(I18n.t('batch.ingest_folder.create'))
+          expect(page).to_not have_link(I18n.t('batch.ingest_folder.create'))
         end
       end
       context "user has permitted ingest folders" do
@@ -28,6 +28,33 @@ describe "batches/index.html.erb" do
         end
       end
     end
+  end
+  context "metadata files", :metadata_file => true do
+    let(:user) { FactoryGirl.create(:user) }
+    context "logged in user" do
+      before do
+        DulHydra.ability_group_map = { "MetadataFile" => { :create => "metadata_file_creator" } }
+        login user
+      end
+      after { user.delete }
+      context "user is not permitted to upload metadata files" do
+        before do
+          visit batches_path
+        end
+        it "should not include a link to upload a metadata file" do
+          expect(page).to_not have_link(I18n.t('batch.metadata_file.new'))
+        end
+      end
+      context "user is permitted to upload metadata files" do
+        before do
+          User.any_instance.stub(:groups).and_return( [ "public", "registered", "metadata_file_creator" ] )
+          visit batches_path
+        end
+        it "should include a link to upload a metadata file" do
+          expect(page).to have_link(I18n.t('batch.metadata_file.new'))
+        end
+      end
+    end    
   end
   context "batches" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
@@ -67,14 +94,18 @@ describe "batches/index.html.erb" do
         context "not yet validated" do
           before { visit batches_path }
           it "should have a link to validate the batch" do
-            within tab_id do
-              expect(page).to have_link(I18n.t('batch.web.action_names.validate'), :href => validate_batch_path(batch))
+            pending "reworking of separate validate action" do
+              within tab_id do
+                expect(page).to have_link(I18n.t('batch.web.action_names.validate'), :href => validate_batch_path(batch))
+              end
             end
           end
           it "should return to the index page" do
-            within tab_id do
-              click_link I18n.t('batch.web.action_names.validate')
-              expect(current_path).to eq(batches_path)
+            pending "reworking of separate validate action" do
+              within tab_id do
+                click_link I18n.t('batch.web.action_names.validate')
+                expect(current_path).to eq(batches_path)
+              end
             end
           end
         end

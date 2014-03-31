@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'support/shared_examples_for_dul_hydra_objects'
 require 'support/shared_examples_for_has_content'
-require 'support/shared_examples_for_has_thumbnail'
 
 shared_examples "a Target related to a Component" do
   it "should have the component as its first component" do
@@ -24,17 +23,14 @@ end
 describe Target do
 
   it_behaves_like "a DulHydra object"
-  it_behaves_like "an object that has content"
-  it_behaves_like "an object that has a thumbnail"
+  it_behaves_like "an object that can have content"
 
   context "relationships" do
     let!(:component) { FactoryGirl.create(:component) }
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:target) { FactoryGirl.create(:target) }
     after do
-      collection.delete
-      target.delete
-      component.delete
+      ActiveFedora::Base.destroy_all
     end
     context "#collection=" do
       before do 

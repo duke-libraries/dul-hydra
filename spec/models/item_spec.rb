@@ -30,12 +30,10 @@ describe Item do
   context "relationships" do
     let!(:item) { FactoryGirl.create(:item) }
     after do
-      item.reload
-      item.delete
+      ActiveFedora::Base.destroy_all
     end
     context "with a collection" do
       let!(:collection) { FactoryGirl.create(:collection) }
-      after { collection.delete }
       context "#collection=" do
         before do
           item.collection = collection
@@ -53,7 +51,6 @@ describe Item do
     end
     context "with components" do
       let!(:component) { FactoryGirl.create(:component) }
-      after { component.delete }
       context "#parts.<<" do
         before { item.parts << component }
         it_behaves_like "an Item related to a Component"

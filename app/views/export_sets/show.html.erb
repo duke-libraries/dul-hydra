@@ -1,32 +1,33 @@
-<h1>Export Set</h1>
+<h1><%= export_set_show_title %></h1>
 
 <p>
-  <%= link_to "Edit", {:action => 'edit', :id => @export_set}, :method => 'get', :class => "btn btn-primary" %> 
-  <%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :confirm => "Are you sure you want to delete the export set?", :class => "btn btn-danger" %>
+  <%= render 'show_actions' %>
 </p>
 
-<table class="table table-condensed table-bordered" style="width: auto">
+<table class="table" style="width: auto">
   <tr>
-    <th scope="row">Title:</th>
+    <th scope="row">Title</th>
     <td><%= @export_set.title %></td>
   </tr>
   <tr>
-    <th scope="row">Created:</th>
+	<th scope="row">Export Type</th>
+	<td><%= @export_set.export_type_label %></td>
+  </tr>
+  <% if @export_set.export_descriptive_metadata? %>
+  <tr>
+	<th scope="row">CSV Column Separator</th>
+	<td><%= @export_set.csv_col_sep %></td>
+  <% end %>
+  <tr>
+    <th scope="row">Created</th>
     <td><%= @export_set.created_at.localtime %></td>
   </tr>
   <tr>
-    <th scope="row">Archive:</th>
-    <td>
-      <% if @export_set.archive_file_name %>
-        <%= link_to @export_set.archive_file_name, @export_set.archive.url %>
-	<%= link_to content_tag(:i, "", :class => "icon-trash"), {:action => 'archive', :id => @export_set}, :method => 'delete', :id => "export_set_archive_delete", :confirm => "Are you sure you want to delete the archive file?" %>
-      <% else %>
-        <%= link_to "Create Archive", {:action => 'archive', :id => @export_set}, :method => 'post', :class => "btn", :id => "export_set_archive_create" %>
-      <% end %>
-    </td>
+    <th scope="row">Archive</th>
+    <td><%= render 'archive' %></td>
   </tr>
 </table>
 
-<h3>Exported Objects: Metadata</h3>
+<h3>Objects</h3>
 
-<%= render :partial => 'object_metadata', :locals => {:documents => @documents} %>
+<%= render 'object_list' %>

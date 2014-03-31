@@ -1,7 +1,7 @@
 module DulHydra::Batch::Models
 
   class BatchObjectDatastream < ActiveRecord::Base
-    attr_accessible :name, :operation, :payload, :payload_type, :checksum, :checksum_type, :batch_object
+#    attr_accessible :name, :operation, :payload, :payload_type, :checksum, :checksum_type, :batch_object
     belongs_to :batch_object, :inverse_of => :batch_object_datastreams
     
     DATASTREAMS = [ DulHydra::Datastreams::CONTENT,

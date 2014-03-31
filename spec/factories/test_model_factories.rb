@@ -1,12 +1,12 @@
-class TestModel < DulHydra::Models::Base
+class TestModel < DulHydra::Base
 end
 
 class TestContent < TestModel
-  include DulHydra::Models::HasContent
+  include DulHydra::HasContent
 end
 
 class TestParent < TestModel
-  include DulHydra::Models::HasChildren
+  include DulHydra::HasChildren
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true 
 end
 
@@ -15,13 +15,14 @@ class TestChild < TestModel
 end
 
 class TestContentMetadata < TestParent
-  include DulHydra::Models::HasContentMetadata
+  include DulHydra::HasContentMetadata
 end
 
 class TestModelOmnibus < TestModel
-  include DulHydra::Models::Governable
-  include DulHydra::Models::HasContent
-  include DulHydra::Models::HasContentMetadata
+  include DulHydra::Governable
+  include DulHydra::HasContent
+  include DulHydra::HasContentMetadata
+  include DulHydra::HasAttachments
   has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true
   belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
 end
@@ -59,19 +60,14 @@ FactoryGirl.define do
   factory :test_content do
     title "DulHydra Test Content Object"
     sequence(:identifier) { |n| "testcontent%05d" % n }
-    after(:build) do |c|
-      file = File.new(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb")
-      c.content.content = file
-      c.save
-      file.close      
+    after(:create) do |c|
+      File.open(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff"), "rb") do |f|
+        c.upload! f
+      end
     end
       
     factory :test_content_with_fixity_check do
       after(:create) { |c| c.fixity_check! }
-    end
-
-    factory :test_content_thumbnail do
-      after(:build) { |c| c.generate_content_thumbnail! }
     end
   end
   

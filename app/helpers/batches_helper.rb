@@ -3,7 +3,10 @@ module BatchesHelper
   def batch_action(batch)
     case batch.status
     when nil
-      link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
+      # Temporarily remove the functionality requiring a separate validation step before processing
+      # cf. issue #760
+      #   link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
+      link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
     when DulHydra::Batch::Models::Batch::STATUS_VALIDATED
       link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
     when DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
@@ -44,6 +47,18 @@ module BatchesHelper
       if batch.status.nil?
         link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
       end
+    end
+    
+    def render_link_to_batch_with_name(batch)
+      text = batch.id.to_s
+      if batch.name.present? || batch.description.present?
+        text << " ("
+        text << batch.name if batch.name.present?
+        text << " - " if batch.name.present? && batch.description.present?
+        text << batch.description if batch.description.present?
+        text << ")"
+      end
+      link_to(text, batch_path(batch))
     end
   
 end

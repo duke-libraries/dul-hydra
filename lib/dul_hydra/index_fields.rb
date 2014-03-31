@@ -26,6 +26,7 @@ module DulHydra::IndexFields
   OBJECT_STATE = ActiveFedora::SolrService.solr_name(:object_state, :stored_sortable)
   OBJECT_CREATE_DATE = ActiveFedora::SolrService.solr_name(:system_create, :stored_sortable, type: :date)
   OBJECT_MODIFIED_DATE = ActiveFedora::SolrService.solr_name(:system_modified, :stored_sortable, type: :date)
+  ORIGINAL_FILENAME = ActiveFedora::SolrService.solr_name(:original_filename, :symbol)
   TITLE = ActiveFedora::SolrService.solr_name(:title, :stored_sortable)
 
 end

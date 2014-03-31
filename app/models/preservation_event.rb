@@ -1,8 +1,5 @@
 class PreservationEvent < ActiveRecord::Base
 
-  attr_accessible :event_detail, :event_date_time, :event_type, :event_outcome, :event_outcome_detail_note, 
-                  :linking_object_id_type, :linking_object_id_value
-  
   after_initialize :set_event_id
   after_initialize :set_event_date_time
 
@@ -10,7 +7,8 @@ class PreservationEvent < ActiveRecord::Base
   FIXITY_CHECK = "fixity check" # http://id.loc.gov/vocabulary/preservationEvents/fixityCheck
   INGESTION    = "ingestion"    # http://id.loc.gov/vocabulary/preservationEvents/ingestion
   VALIDATION   = "validation"   # http://id.loc.gov/vocabulary/preservationEvents/validation
-  EVENT_TYPES = [FIXITY_CHECK, INGESTION, VALIDATION]
+  CREATION     = "creation"     # http://id.loc.gov/vocabulary/preservationEvents/creation
+  EVENT_TYPES = [FIXITY_CHECK, INGESTION, VALIDATION, CREATION]
 
   # Outcomes
   SUCCESS = "success"
@@ -45,7 +43,8 @@ class PreservationEvent < ActiveRecord::Base
   validates :linking_object_id_type, inclusion: {in: LINKING_OBJECT_ID_TYPES, message: "%{value} is not a valid linking object identifier type"}, if: "linking_object_id_value.present?"
   validates :linking_object_id_value, presence: true, if: "linking_object_id_type.present?"
   validate :for_object_must_exist_and_have_preservation_events
-  
+
+  # Return a new fixity check PreservationEvent for the object
   def self.fixity_check(object)
     outcome, results = object.validate_checksums
     outcome_detail_note = ["Datastream checksum validation results:"]
@@ -61,10 +60,29 @@ class PreservationEvent < ActiveRecord::Base
     pe
   end
 
+  # Return a persisted fixity check PreservationEvent for the object
   def self.fixity_check!(object)
     pe = PreservationEvent.fixity_check(object)
     pe.save
     pe
+  end
+
+  # Return a new creation PreservationEvent for the object, user
+  def self.creation(object, user=nil)
+    event_detail = "New #{object.class.to_s} object created"
+    event_detail << " by #{user.user_key}" if user
+    event_detail << ".\n#{version_note}"
+    event_date_time = DateTime.strptime(object.create_date, DATE_TIME_FORMAT)
+    pe = new(event_detail: event_detail,
+             event_date_time: event_date_time,
+             event_type: CREATION)
+    pe.for_object = object
+    pe
+  end
+
+  # Return a persisted creation PreservationEvent for the object, user
+  def self.creation!(object, user=nil)
+    factory!(:creation, object, user)
   end
 
   def save(*)
@@ -103,7 +121,7 @@ class PreservationEvent < ActiveRecord::Base
   def for_object_must_exist_and_have_preservation_events
     if for_object?
       begin
-        errors.add(:linking_object_id_value, "Object does not support preservation events") unless for_object.is_a?(DulHydra::Models::HasPreservationEvents)
+        errors.add(:linking_object_id_value, "Object does not support preservation events") unless for_object.is_a?(DulHydra::HasPreservationEvents)
       rescue ArgumentError => e
         errors.add(:linking_object_id_value, e.message)
       rescue ActiveFedora::ObjectNotFoundError => e
@@ -114,12 +132,12 @@ class PreservationEvent < ActiveRecord::Base
 
   def self.events_for(object_or_pid, event_type=nil)
     raise TypeError, 'Invalid event type' unless event_type.nil? || EVENT_TYPES.include?(event_type)
-    if object_or_pid.is_a?(DulHydra::Models::HasPreservationEvents)
+    if object_or_pid.is_a?(DulHydra::HasPreservationEvents)
       pid = object_or_pid.pid
     elsif object_or_pid.is_a?(String)
       pid = object_or_pid
     else
-      raise TypeError, "First argument must be a DulHydra::Models::HasPreservationEvents or a PID string."
+      raise TypeError, "First argument must be a DulHydra::HasPreservationEvents or a PID string."
     end
     params = {
       linking_object_id_type: OBJECT,
@@ -155,6 +173,12 @@ class PreservationEvent < ActiveRecord::Base
 
   private
 
+  def self.factory!(method, *args)
+    pe = PreservationEvent.send(method, *args)
+    pe.save!
+    pe
+  end
+
   def set_event_id
     self.event_id_type = UUID
     self.event_id_value = SecureRandom.uuid
@@ -162,6 +186,10 @@ class PreservationEvent < ActiveRecord::Base
 
   def set_event_date_time
     self.event_date_time = Time.now.utc unless self.event_date_time
+  end
+
+  def self.version_note
+    "DulHydra version #{DulHydra::VERSION}"
   end
 
 end

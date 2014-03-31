@@ -4,7 +4,26 @@ class Ability
 
   include Hydra::PolicyAwareAbility
 
-  self.ability_logic += DulHydra.extra_ability_logic if DulHydra.extra_ability_logic
+  def hydra_default_permissions
+    if current_user.superuser?
+      can :manage, :all
+    else
+      super
+    end
+  end
+
+  def custom_permissions
+    download_permissions unless self.ability_logic.include?(:download_permissions)
+    discover_permissions
+    export_sets_permissions
+    preservation_events_permissions
+    batches_permissions
+    ingest_folders_permissions
+    metadata_files_permissions
+    attachment_permissions
+    children_permissions
+    upload_permissions
+  end
 
   def create_permissions
     super # Permits :create for :all if user is authenticated
@@ -42,6 +61,9 @@ class Ability
   
   def batches_permissions
     can :manage, DulHydra::Batch::Models::Batch, :user_id => current_user.id
+    can :manage, DulHydra::Batch::Models::BatchObject do |batch_object|
+      can? :manage, batch_object.batch
+    end
   end
 
   def ingest_folders_permissions
@@ -49,11 +71,15 @@ class Ability
     can [:show, :procezz], IngestFolder, :user => current_user
   end
   
-  # Hydra::Ability adds #download_permissions in hydra-head 7.0
+  def metadata_files_permissions
+    cannot :create, MetadataFile unless has_ability_group?(:create, MetadataFile)
+    can [:show, :procezz], MetadataFile, :user => current_user
+  end
+  
   def download_permissions
     can :download, ActiveFedora::Base do |obj|
       if obj.class == Component
-        can?(:read, obj) and has_ability_group?(:download, Component)
+        can?(:edit, obj) or (can?(:read, obj) and has_ability_group?(:download, Component))
       else
         can? :read, obj
       end
@@ -74,6 +100,18 @@ class Ability
     end
   end
 
+  def upload_permissions
+    can :upload, DulHydra::HasContent do |obj|
+      can?(:edit, obj)
+    end
+  end
+
+  def children_permissions
+    can :add_children, DulHydra::HasChildren do |obj|
+      can?(:edit, obj)
+    end
+  end
+
   # Mimics Hydra::Ability#read_permissions
   def discover_permissions
     can :discover, String do |pid|
@@ -88,6 +126,12 @@ class Ability
       cache.put(obj.id, obj)
       test_discover(obj.id)
     end 
+  end
+
+  def attachment_permissions
+    can :add_attachment, DulHydra::HasAttachments do |obj|
+      can?(:edit, obj)
+    end
   end
 
   # Mimics Hydra::Ability#test_read + Hydra::PolicyAwareAbility#test_read in one method

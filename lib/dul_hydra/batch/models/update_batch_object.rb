@@ -28,7 +28,7 @@ module DulHydra::Batch::Models
         
     def process(opts = {})
       unless verified
-        update_repository_object(opts)
+        repo_object = update_repository_object(opts)
         verifications = verify_repository_object
         verification_outcome_detail = []
         verified = true
@@ -37,6 +37,7 @@ module DulHydra::Batch::Models
           verified = false if value.eql?(VERIFICATION_FAIL)
         end
         update_attributes(:verified => verified)
+        repo_object
       end
     end
     
@@ -48,20 +49,36 @@ module DulHydra::Batch::Models
         message = "Attempt to update #{model} #{identifier} FAILED"
       end      
     end
+
+    def event_log_comment
+      "Updated by batch process (Batch #{batch.id}, BatchObject #{id})"
+    end
         
     private
     
     def update_repository_object(opts = {})
-      repo_object = ActiveFedora::Base.find(pid, :cast => true)
-      if batch_object_datastreams
-        batch_object_datastreams.each do |d|
-          repo_object = case
-          when d.operation.eql?(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
-            populate_datastream(repo_object, d, false)
-          end        
+      repo_object = nil
+      begin
+        repo_object = ActiveFedora::Base.find(pid, :cast => true)
+        if batch_object_datastreams
+          batch_object_datastreams.each do |d|
+            repo_object = case
+            when d.operation.eql?(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
+              populate_datastream(repo_object, d)
+            end        
+          end
         end
+        if repo_object.save
+          repo_object.log_event(action: EventLog::Actions::UPDATE, user: batch.user, comment: event_log_comment)
+        end
+      rescue Exception => e
+        logger.error("Error in updating repository object #{repo_object.pid} for #{identifier} : : #{e}")
+        if batch.present?
+          batch.status = DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
+          batch.save
+        end
+        raise e
       end
-      repo_object.save
       repo_object
     end
 

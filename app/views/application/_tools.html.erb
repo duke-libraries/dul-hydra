@@ -4,5 +4,34 @@
     <li>
 	  <%= render_show_doc_actions current_document %>
     </li>
+	<% if current_object.is_a?(Collection) and can?(:create, Item) and can?(:add_children, current_object) %>
+	  <li>
+		<%= link_to new_item_path(current_object) do %>
+		  <i class="icon-plus"></i> Add Item
+		<% end %>
+	  </li>
+	<% end %>
+	<% if current_object.is_a?(Item) and can?(:create, Component) and can?(:add_children, current_object) %>
+	  <li>
+		<%= link_to new_component_path(current_object) do %>
+		  <i class="icon-plus"></i> Add Component
+		<% end %>
+	  </li>
+	<% end %>
+	<% if current_object.can_have_attachments? and can?(:create, Attachment) and can?(:add_attachment, current_object) %>
+	  <li>
+		<%= link_to new_attachment_path(current_object) do %>
+		  <%= image_tag "silk/attach.png", size: "16x16", alt: "attach" %>
+		  Add Attachment
+		<% end %>
+	  </li>
+	<% end %>
+	<% if current_object.can_have_content? and can?(:upload, current_object) %>
+	  <li>
+		<%= link_to upload_object_path(current_object) do %>
+		  <i class="icon-upload"></i> Upload Content
+		<% end %>
+	  </li>
+	<% end %>
   </ul>
 </div>

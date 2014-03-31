@@ -1,0 +1,7 @@
+<% paginate_compact ||= nil %>
+<% response = paginate_compact || @batch_objects %>
+<% if response.total_pages > 1 %>
+	<%= paginate response, :pagination_info_cache => page_entries_info(response), :theme => :blacklight_compact %>
+<% else %>
+	<%= page_entries_info(response) %>
+<% end %>

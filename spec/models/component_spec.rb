@@ -22,10 +22,10 @@ shared_examples "a Component with a Target" do
   end
 end
 
-describe Component do
+describe Component, components: true do
 
   it_behaves_like "a DulHydra object"
-  it_behaves_like "an object that has content"
+  it_behaves_like "an object that can have content"
 
   context "#collection" do
     context "orphan component" do
@@ -103,11 +103,5 @@ describe Component do
       it_behaves_like "a Component with a Target"
     end
   end # relationships
-
-  context "#terms_for_editing" do
-    it "should be a subset of the DC11 terms" do
-      Component.new.terms_for_editing.should eq([:creator, :identifier, :source])
-    end
-  end
 
 end

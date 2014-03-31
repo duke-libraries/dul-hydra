@@ -14,26 +14,25 @@ module DulHydra::Batch::Models
     end
   end
   
-  describe UpdateBatchObject do
+  describe UpdateBatchObject, batch: true do
 
     let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
     let(:object) { batch.batch_objects.first }
+
+    after do
+      batch.user.destroy
+      batch.destroy
+    end
     
     context "validate" do
-      after do
-        batch.user.destroy
-        batch.destroy
-      end
       context "valid object" do
         let(:repo_object) { TestModel.create(:pid => object.pid) }
-        let(:apo) { FactoryGirl.create(:group_edit_policy) }
         before do
-          repo_object.admin_policy = apo
+          repo_object.edit_users = [ batch.user.user_key ]
           repo_object.save
         end
         after do
           repo_object.destroy
-          apo.destroy
         end
         context "generic object" do
           it_behaves_like "a valid update object"
@@ -71,6 +70,7 @@ module DulHydra::Batch::Models
         let(:repo_object) { TestModel.create(:pid => object.pid) }
         let(:apo) { FactoryGirl.create(:group_edit_policy) }
         before do
+          EventLog.destroy_all
           repo_object.admin_policy = apo
           repo_object.save
           object.process
@@ -79,9 +79,14 @@ module DulHydra::Batch::Models
         after do
           repo_object.destroy
           apo.destroy
+          EventLog.destroy_all
         end
         it "should update the repository object" do
           expect(repo_object.title.first).to eq('Sample updated title')
+        end
+        it "should create an event log for the update" do
+          expect(repo_object.event_logs(action: EventLog::Actions::UPDATE).count).to eq(1)
+          expect(repo_object.event_logs(action: EventLog::Actions::UPDATE).first.comment).to eq("Updated by batch process (Batch #{object.batch.id}, BatchObject #{object.id})")
         end
         
       end

@@ -1,26 +1,33 @@
 require 'dul_hydra'
 require 'dul_hydra/decorators/active_fedora/base_decorator'
 require 'dul_hydra/decorators/active_fedora/datastream_decorator'
+require 'dul_hydra/decorators/blacklight/solr_helper_decorator'
+require 'dul_hydra/decorators/hydra_access_controls/permission_decorator'
 
 DulHydra.configure do |config|
-  config.export_set_manifest_file_name = "README.txt"
   config.collection_report_fields = [:pid, :identifier, :content_size]
+
   config.remote_groups_env_key = "ismemberof"
+
   config.remote_groups_env_value_delim = ";"
+
   config.remote_groups_env_value_sub = [/^urn:mace:duke\.edu:groups/, "duke"]
+
   config.remote_groups_name_filter = "duke:library:repository:ddr:"
-  config.terms_for_creating = [:title, :description]
-  config.extra_ability_logic = [:discover_permissions, 
-                                :export_sets_permissions, 
-                                :preservation_events_permissions,
-                                :batches_permissions,
-                                :ingest_folders_permissions,
-                                :download_permissions
-                               ]
+
   if File.exists? "#{Rails.root}/config/ability_group_map.yml"
     config.ability_group_map = YAML.load_file("#{Rails.root}/config/ability_group_map.yml").with_indifferent_access
   end
-  config.creatable_models = ["AdminPolicy", "Collection"]
+
+  config.superuser_group = ENV['SUPERUSER_GROUP']
+
+  config.csv_options = { 
+    encoding: "UTF-8",
+    col_sep: "\t",
+    headers: true,
+    write_headers: true,
+    header_converters: :symbol
+  }
 end
 
 # Load configuration for Grouper service, if present
@@ -42,6 +49,7 @@ DeviseRemoteUser.configure do |config|
     display_name: 'displayName'
   }
   config.auto_update = true
+  config.logout_url = "/Shibboleth.sso/Logout?return=https://shib.oit.duke.edu/cgi-bin/logout.pl"
 end
 
 # Integration of remote (Grouper) groups via Shibboleth

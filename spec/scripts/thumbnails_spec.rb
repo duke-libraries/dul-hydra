@@ -8,28 +8,17 @@ module DulHydra::Scripts
     let(:thumbnails_script) { DulHydra::Scripts::Thumbnails.new(collection.pid) }
     
     after do
-      collection.children.each do |item|
-        item.children.each do |component|
-          component.admin_policy.delete if component.admin_policy
-          component.delete
-        end
-        item.reload
-        item.admin_policy.delete if item.admin_policy
-        item.delete
-      end
-      collection.reload
-      collection.admin_policy.delete if collection.admin_policy
-      collection.delete
+      ActiveFedora::Base.destroy_all
     end
     
     context "thumbnail does not exist" do
       
       context "child has thumbnail" do
-        let(:collection) { FactoryGirl.create(:collection_has_apo_with_items_and_components) }
+        let(:collection) { FactoryGirl.create(:collection_with_items_and_components) }
         let(:items) { collection.children }
+        let(:item) { items[0] }
+        let(:children) { item.children }
         context "contentMetadata" do
-          let(:item) { items[0] }
-          let(:children) { item.children }
           before do
             contentMetadata = <<-EOD
 <?xml version="1.0"?>
@@ -68,11 +57,16 @@ module DulHydra::Scripts
         end
         context "no contentMetadata" do
           before do
+            iden = children[0].identifier
+            children[0].identifier = children[1].identifier
+            children[0].save
+            children[1].identifier = iden
+            children[1].save
             thumbnails_script.execute
-            items.each { |item| item.reload }
+            item.reload
           end
-          it "should populate the thumbnail datastream from the first child" do
-            items.each { |item| expect(item.datastreams["thumbnail"].content).to eq(item.children[0].datastreams["thumbnail"].content) }
+          it "should populate the thumbnail datastream from the first child (sorted by identifier)" do
+            expect(item.datastreams["thumbnail"].content).to eq(children[1].datastreams["thumbnail"].content)
           end
         end
       end
@@ -95,19 +89,17 @@ module DulHydra::Scripts
     end
     
     context "thumbnail already exists" do
-        let(:collection) { FactoryGirl.create(:collection_has_apo_with_items_and_components) }
-        let(:item) { collection.children[0] }
+      let(:collection) { FactoryGirl.create(:collection_with_items_and_components) }
+      let(:item) { collection.children[0] }
+      let(:content) { StringIO.new("awesome image") }
       before do
-        file = File.open(File.join(Rails.root, 'spec', 'fixtures', 'sample.pdf'))
-        item.generate_thumbnail!(file)
-        item.save
-        file.close
-        @thumbnail = item.datastreams["thumbnail"].content
+        item.datastreams["thumbnail"].content = content
+        item.save!
         thumbnails_script.execute
         item.reload
       end
       it "should not alter the existing thumbnail" do
-        expect(item.datastreams["thumbnail"].content).to eq(@thumbnail)
+        expect(item.datastreams["thumbnail"].content).to eq("awesome image")
       end
     end
     

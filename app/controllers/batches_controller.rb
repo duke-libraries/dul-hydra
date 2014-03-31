@@ -15,11 +15,11 @@ class BatchesController < ApplicationController
   end
   
   def show
+    @batch_objects = @batch.batch_objects.page params[:page]
   end
   
   def procezz
     Delayed::Job.enqueue DulHydra::Batch::Jobs::BatchProcessorJob.new(@batch.id)
-    @batch.update_attributes(:status => DulHydra::Batch::Models::Batch::STATUS_QUEUED)
     flash[:notice] = I18n.t('batch.web.batch_queued', :id => @batch.id)
     redirect_to batches_url
   end
@@ -33,11 +33,11 @@ class BatchesController < ApplicationController
       @batch.save
     end
     flash[:notice] = "Batch is #{valid ? '' : 'not '}valid"
-    case referrer
-    when url_for(action: 'index', only_path: false)
+    if valid && referrer == url_for(action: 'index', only_path: false)
       redirect_to batches_url
     else
-      render :show
+      # render :show
+      redirect_to batch_url(@batch.id)
     end
   end
   

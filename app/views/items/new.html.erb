@@ -1,0 +1,14 @@
+<div class="well">
+  <h4>New Item</h4>
+  <%= form_for @item do |f| %>
+    <%= render partial: 'form_errors', locals: {form: f} %>
+
+    <%= f.label :title %>
+    <%= text_field_tag "item[title]", nil %>
+
+    <%= f.label :description %>
+    <%= text_area_tag "item[description]" %>
+
+    <%= render partial: 'new_form_actions', locals: {form: f} %>
+  <% end %>
+</div>

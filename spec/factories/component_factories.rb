@@ -18,9 +18,7 @@ FactoryGirl.define do
 
     factory :component_with_content do
       after(:build) do |c|
-        c.content.content = File.new("#{Rails.root}/spec/fixtures/library-devil.tiff", "rb")
-        c.save
-        c.generate_content_thumbnail!
+        c.upload! File.new("#{Rails.root}/spec/fixtures/library-devil.tiff", "rb")
       end
 
       factory :component_with_content_has_apo,              :traits => [:has_admin_policy]
@@ -31,30 +29,22 @@ FactoryGirl.define do
     factory :component_has_apo,              :traits => [:has_admin_policy] do
       factory :component_has_apo_with_content_image1 do      
         after(:build) do |c|
-          c.content.content = File.new(File.join(Rails.root, 'spec', 'fixtures', 'image1.tiff'))
-          c.save
-          c.generate_content_thumbnail!
+          c.upload! File.new(File.join(Rails.root, 'spec', 'fixtures', 'image1.tiff'))
         end
       end      
       factory :component_has_apo_with_content_image2 do      
         after(:build) do |c|
-          c.content.content = File.new(File.join(Rails.root, 'spec', 'fixtures', 'image2.tiff'))
-          c.save
-          c.generate_content_thumbnail!
+          c.upload! File.new(File.join(Rails.root, 'spec', 'fixtures', 'image2.tiff'))
         end
       end      
       factory :component_has_apo_with_content_image3 do      
         after(:build) do |c|
-          c.content.content = File.new(File.join(Rails.root, 'spec', 'fixtures', 'image3.tiff'))
-          c.save
-          c.generate_content_thumbnail!
+          c.upload! File.new(File.join(Rails.root, 'spec', 'fixtures', 'image3.tiff'))
         end
       end      
       factory :component_has_apo_with_content_image4 do      
         after(:build) do |c|
-          c.content.content = File.new(File.join(Rails.root, 'spec', 'fixtures', 'image4.tiff'))
-          c.save
-          c.generate_content_thumbnail!
+          c.upload! File.new(File.join(Rails.root, 'spec', 'fixtures', 'image4.tiff'))
         end
       end      
     end

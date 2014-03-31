@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'helpers/ingest_folder_helper'
 
 shared_examples "an invalid ingest folder" do
   it "should not be valid" do
@@ -7,7 +8,55 @@ shared_examples "an invalid ingest folder" do
   end  
 end
 
-describe IngestFolder do
+shared_examples "a proper set of batch objects" do
+  it "should have the appropriate attributes, datastreams, and relationships" do
+    expect(user.batches.count).to eql(1)
+    expect(user.batches.first.name).to eql(I18n.t('batch.ingest_folder.batch_name'))
+    expect(user.batches.first.description).to eql(ingest_folder.abbreviated_path)
+    expect(objects.fetch('f').model).to eql(parent_model)
+    expect(objects.fetch('file01001').model).to eql(IngestFolder.default_file_model)
+    expect(objects.fetch('file01002').model).to eql(IngestFolder.default_file_model)
+    expect(objects.fetch('file01').model).to eql(IngestFolder.default_file_model)
+    expect(objects.fetch('T001').model).to eql(IngestFolder.default_target_model)
+    expect(objects.fetch('T002').model).to eql(IngestFolder.default_target_model)
+    expect(dss.fetch('file01001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01001.tif"))
+    expect(dss.fetch('file01002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01002.tif"))
+    expect(dss.fetch('file01').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "pdf/file01.pdf"))
+    expect(dss.fetch('T001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T001.tiff"))
+    expect(dss.fetch('T002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T002.tiff"))    
+    expect(rels.fetch('f').fetch('parent').object).to eql(ingest_folder.collection_pid)
+    expect(rels.fetch('file01001').fetch('parent').object).to eql(objects.fetch('f').pid)
+    expect(rels.fetch('file01002').fetch('parent').object).to eql(objects.fetch('f').pid)
+    expect(rels.fetch('file01').fetch('parent').object).to eql(objects.fetch('f').pid)
+    expect(rels.fetch('T001').fetch('collection').object).to eql(ingest_folder.collection_pid)
+    expect(rels.fetch('T002').fetch('collection').object).to eql(ingest_folder.collection_pid)
+  end
+  it "should not set the source descriptive metadata attribute" do
+    expect(dss.fetch('file01001').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('file01002').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('file01').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('T001').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('T002').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")        
+  end
+end
+
+shared_examples "batch objects without an admin policy" do
+  it "should not have admin_policy relationship" do
+    user.batches.first.batch_objects.each do |obj|
+      expect { rels.fetch(obj.identifier).fetch('admin_policy') }.to raise_error(KeyError)
+    end
+  end
+end
+
+shared_examples "batch objects without individual permissions" do
+  it "should not have rightsMetadata datastream" do
+    user.batches.first.batch_objects.each do |obj|
+      expect { dss.fetch(obj.identifier).fetch('rightsMetadata') }.to raise_error(KeyError)
+    end
+  end
+end
+
+describe IngestFolder, ingest: true do
 
   let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user) }
   let(:mount_point_name) { "base" }
@@ -18,26 +67,10 @@ describe IngestFolder do
   let(:user) { FactoryGirl.create(:user) }
   before do
     File.stub(:readable?).and_return(true)
-    config = <<-EOS
-    config:
-        file_model: TestChild
-        target_model: Target
-        target_folder: targets
-        checksum_file:
-            location: #{checksum_directory}
-            type: #{checksum_type}
-        file_creators:
-            ABC: Alpha Bravo Charlie
-    files:
-        mount_points:
-            #{mount_point_name}: #{mount_point_path}
-        permissions:
-            #{user.user_key}:
-            - #{mount_point_name}/path/
-    EOS
-    IngestFolder.stub(:load_configuration).and_return(YAML.load(config).with_indifferent_access)
+    IngestFolder.stub(:load_configuration).and_return(YAML.load(test_ingest_folder_config).with_indifferent_access)
   end
   after do
+    ingest_folder.destroy
     user.destroy
   end
   context "initialization" do
@@ -72,11 +105,6 @@ describe IngestFolder do
     context "collection pid missing" do
       let(:error_field) { :collection_pid }
       before { ingest_folder.collection_pid = "" }
-      it_behaves_like "an invalid ingest folder"
-    end
-    context "admin policy pid missing" do
-      let(:error_field) { :admin_policy_pid }
-      before { ingest_folder.admin_policy_pid = "" }
       it_behaves_like "an invalid ingest folder"
     end
     context "checksum file unreadable" do
@@ -115,7 +143,8 @@ describe IngestFolder do
     end
   end
   context "operations" do
-    let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user) }
+    let(:collection) { FactoryGirl.create(:collection) }
+    let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user, :collection_pid => collection.pid) }
     before do
       Dir.stub(:foreach).with("/mount/base/path/subpath").and_return(
         Enumerator.new { |y| y << "Thumbs.db" << "file01001.tif" << "file01002.tif" << "pdf" << "targets" }
@@ -130,9 +159,11 @@ describe IngestFolder do
       File.stub(:directory?).with("/mount/base/path/subpath/pdf").and_return(true)
       File.stub(:directory?).with("/mount/base/path/subpath/targets").and_return(true)
     end
+    after { ActiveFedora::Base.destroy_all }
     context "scan" do
       let(:scan_results) { ingest_folder.scan }
       it "should report the correct scan results" do
+        expect(scan_results.total_count).to eql(7)
         expect(scan_results.file_count).to eql(3)
         expect(scan_results.parent_count).to eql(1)
         expect(scan_results.target_count).to eql(2)
@@ -144,38 +175,58 @@ describe IngestFolder do
       let(:dss) { {} }
       let(:rels) { {} }
       let(:parent_model) { DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
-      before do
-        IngestFolder.any_instance.stub(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) 
-        ingest_folder.procezz
-        user.batches.first.batch_objects.each do |obj|
-          objects[obj.identifier] = obj
-          obj.batch_object_datastreams.each { |ds| dss[obj.identifier] = { ds.name => ds } }
-          obj.batch_object_relationships.each { |rel| rels[obj.identifier] = { rel.name => rel } }
+      before { IngestFolder.any_instance.stub(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) }
+      after { user.batches.first.destroy }
+      
+      context "collection has admin policy" do
+        before do
+          ingest_folder.procezz
+          objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
         end
+        it_behaves_like "a proper set of batch objects"
+        it_behaves_like "batch objects without individual permissions"
+        it "should have an admin_policy relationship" do
+          user.batches.first.batch_objects.each do |obj|
+            expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.admin_policy.pid)
+          end
+        end  
       end
-      it "should create the correct batch objects" do
-        expect(user.batches.count).to eql(1)
-        expect(user.batches.first.name).to eql(I18n.t('batch.ingest_folder.batch_name'))
-        expect(user.batches.first.description).to eql(ingest_folder.abbreviated_path)
-        expect(objects.fetch('f').model).to eql(parent_model)
-        expect(objects.fetch('file01001').model).to eql(IngestFolder.default_file_model)
-        expect(objects.fetch('file01002').model).to eql(IngestFolder.default_file_model)
-        expect(objects.fetch('file01').model).to eql(IngestFolder.default_file_model)
-        expect(objects.fetch('T001').model).to eql(IngestFolder.default_target_model)
-        expect(objects.fetch('T002').model).to eql(IngestFolder.default_target_model)
-        expect(dss.fetch('file01001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01001.tif"))
-        expect(dss.fetch('file01002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01002.tif"))
-        expect(dss.fetch('file01').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "pdf/file01.pdf"))
-        expect(dss.fetch('T001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T001.tiff"))
-        expect(dss.fetch('T002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T002.tiff"))
-        expect(rels.fetch('f').fetch('parent').object).to eql(ingest_folder.collection_pid)
-        expect(rels.fetch('file01001').fetch('parent').object).to eql(objects.fetch('f').pid)
-        expect(rels.fetch('file01002').fetch('parent').object).to eql(objects.fetch('f').pid)
-        expect(rels.fetch('file01').fetch('parent').object).to eql(objects.fetch('f').pid)
-        expect(rels.fetch('T001').fetch('collection').object).to eql(ingest_folder.collection_pid)
-        expect(rels.fetch('T002').fetch('collection').object).to eql(ingest_folder.collection_pid)
+      
+      context "collection has no admin policy" do
+        before do
+          collection.admin_policy = nil
+          collection.save(validate: false)
+        end
+        context "collection has individual permissions" do
+          before do
+            collection.permissions_attributes = [ { type: 'user', name: 'person1', access: 'read' } ]
+            collection.save(validate: false)
+            ingest_folder.procezz
+            objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
+          end
+          it_behaves_like "a proper set of batch objects"
+          it_behaves_like "batch objects without an admin policy"
+          it "should have rightsMetadata datatream" do
+            user.batches.first.batch_objects.each do |obj|
+              expect(dss.fetch(obj.identifier).fetch('rightsMetadata').payload).to eql(collection.rightsMetadata.content)
+            end
+          end
+        end
+
+        context "collection has no individual permissions" do
+          before do
+            ingest_folder.procezz
+            objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
+          end
+          it_behaves_like "a proper set of batch objects"
+          it_behaves_like "batch objects without an admin policy"
+          it_behaves_like "batch objects without individual permissions"        
+        end
+
       end
+     
     end
+
   end
 
 end

@@ -1,0 +1,35 @@
+:csv:
+    :col_sep: "\t"
+:parse:
+    :local_identifier: Identifier-Local
+    :repeatable_fields:
+        - Contributor
+        - Creator
+        - Date
+        - Subject-Name
+        - Subject-Topic
+        - Type-AAT
+:schema_map:
+    Abstract: abstract
+    Audience: audience
+    Contributor: contributor
+    Creator: creator
+    Date: date
+    Description: description
+    Digital Collection: isPartOf
+    Extent: extent
+    Identifier-Other: identifier
+    Language: language
+    Medium: medium
+    Publisher: publisher
+    Record Type: type
+    Rights: rights
+    Series: isPartOf
+    Source: source
+    Spatial: spatial
+    Subject-Name: subject
+    Subject-Topic: subject
+    Temporal: temporal
+    Title: title
+    Title-Alternative: alternative
+    Type-AAT: type

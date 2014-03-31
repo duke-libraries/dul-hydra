@@ -1,0 +1,65 @@
+<h3>Metadata Update File</h3>
+
+<table id="form_data" class="table table_bordered">
+
+	<tr>
+		<th><%= t('activerecord.attributes.metadata_file.metadata') %></th>
+		<th><%= t('activerecord.attributes.metadata_file.profile') %></th>
+		<th><%= t('activerecord.attributes.metadata_file.rows') %></th>
+		<th><%= t('activerecord.attributes.metadata_file.collection_pid') %></th>	
+	</tr>
+
+	<tr>
+		<td><%= @metadata_file.metadata_file_name %></td>
+		<td><%= metadata_file_profile_name(@metadata_file.profile) %></td>
+		<td><%= metadata_file_rows(@metadata_file) %></td>
+		<td><%= object_display_title(@metadata_file.collection_pid) %></td>
+	</tr>
+	
+</table>
+
+<table class="table table-bordered table-striped">
+
+	<caption><%= t('batch.metadata_file.fields') %></caption>
+	<thead id="headers">
+		<tr>
+			<% @metadata_file.as_csv_table.headers.each do |header| %>
+				<th><%= header %></th>
+			<% end %>
+		</tr>
+		<% if @metadata_file.effective_options[:parse][:repeatable_fields].present? %>
+			<tr>
+				<% @metadata_file.as_csv_table.headers.each do |header| %>
+					<th class="sub-header">
+						<% if @metadata_file.effective_options[:parse][:repeatable_fields].include?(header) %>
+							multi
+						<% end %>
+					</th>
+				<% end %>
+			</tr>
+		<% end %>
+		<% if @metadata_file.effective_options[:schema_map].present? %>
+			<tr>
+				<% @metadata_file.as_csv_table.headers.each do |header| %>
+					<th class="mappings"><%= @metadata_file.canonical_attribute_name(header) %></th>
+				<% end %>
+			</tr>
+		<% end %>
+	</thead>
+	<tbody id="rows">
+		<% row_count = 0 %>
+		<% @metadata_file.as_csv_table.each do |row| %>
+			<% row_count += 1 %>
+			<% if row_count <= 10 %>
+				<tr>
+					<% row.each do |col| %>
+						<td><%= col[1].truncate(30) if col[1].present? %></td>
+					<% end %>
+				</tr>
+			<% end %>
+		<% end %>
+	</tbody>
+
+</table>
+
+<a href="<%= procezz_metadata_file_path(@metadata_file) %>" class="btn btn-primary"><%= t('batch.metadata_file.create_batch')%></a>

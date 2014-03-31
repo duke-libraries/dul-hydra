@@ -8,6 +8,12 @@ module DulHydra::Batch::Jobs
       bp.execute
     end
     
+    def enqueue(job)
+      batch = DulHydra::Batch::Models::Batch.find(batch_id)
+      batch.status = DulHydra::Batch::Models::Batch::STATUS_QUEUED
+      batch.save
+    end
+    
     def error(job, exception)
       Rails.logger.error "Delayed Job #{job.id}: #{exception}"
       Rails.logger.error exception.backtrace.join("\n")

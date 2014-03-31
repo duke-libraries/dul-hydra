@@ -5,7 +5,9 @@ class User < ActiveRecord::Base
 
   has_many :batches, :inverse_of => :user, :class_name => DulHydra::Batch::Models::Batch
   has_many :ingest_folders, :inverse_of => :user
+  has_many :metadata_files, :inverse_of => :user
   has_many :export_sets, :dependent => :destroy
+  has_many :event_logs, :inverse_of => :user
 
   delegate :can?, :cannot?, to: :ability
   delegate :can_create_model?, :can_create_models?, :can_create_models, to: :ability
@@ -13,10 +15,7 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :username, :case_sensitive => false
   validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/
 
-  devise :remote_user_authenticatable, :database_authenticatable, :registerable,
-         :rememberable, :trackable, :validatable
-
-  attr_accessible :username, :email, :password, :password_confirmation, :remember_me
+  devise :remote_user_authenticatable, :database_authenticatable, :rememberable, :trackable, :validatable
 
   attr_writer :group_service
 
@@ -41,6 +40,10 @@ class User < ActiveRecord::Base
 
   def member_of?(group)
     group ? self.groups.include?(group) : false
+  end
+  
+  def superuser?
+    member_of? group_service.superuser_group
   end
 
 end

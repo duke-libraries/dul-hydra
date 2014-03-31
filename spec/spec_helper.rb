@@ -5,6 +5,7 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'capybara/rails'
 require 'capybara/rspec'
+require 'dul_hydra'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -20,6 +21,7 @@ RSpec.configure do |config|
   # config.mock_with :rr
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
+  config.include ActionDispatch::TestProcess
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
@@ -39,9 +41,14 @@ RSpec.configure do |config|
   config.order = "random"
   
   # Devise helpers
-  config.include Devise::TestHelpers, :type => :controller
+  config.include Devise::TestHelpers, type: :controller
 
   # Warden helpers
-  config.include Warden::Test::Helpers
-  
+  config.include Warden::Test::Helpers, type: :feature
+  Warden.test_mode!
+
+  config.before(:suite) do
+    User.destroy_all
+    ActiveFedora::Base.destroy_all
+  end
 end

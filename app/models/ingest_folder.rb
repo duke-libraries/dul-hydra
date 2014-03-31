@@ -4,11 +4,9 @@ class IngestFolder < ActiveRecord::Base
   
   after_initialize :init
   
-  attr_accessible :admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path,
-                  :checksum_file, :checksum_type, :add_parents, :parent_id_length
   belongs_to :user, :inverse_of => :ingest_folders
   
-  validates_presence_of :admin_policy_pid, :collection_pid, :sub_path
+  validates_presence_of :collection_pid, :sub_path
   validate :path_must_be_permitted
   validate :path_must_be_readable
   
@@ -16,7 +14,7 @@ class IngestFolder < ActiveRecord::Base
   
   DEFAULT_INCLUDED_FILE_EXTENSIONS = ['.pdf', '.tif', '.tiff']
   
-  ScanResults = Struct.new(:file_count, :parent_count, :target_count, :excluded_files)
+  ScanResults = Struct.new(:total_count, :file_count, :parent_count, :target_count, :excluded_files)
   
   def init
     if self.new_record?
@@ -88,14 +86,27 @@ class IngestFolder < ActiveRecord::Base
     end
   end
   
+  def collection
+    @collection ||= Collection.find(collection_pid) if collection_pid
+  end
+  
+  def collection_admin_policy
+    collection.admin_policy
+  end
+  
+  def collection_permissions_attributes
+    collection.permissions.collect { |p| p.to_hash }
+  end
+  
   def scan
     @parent_hash = {} if add_parents
+    @total_count = 0
     @file_count = 0
     @parent_count = 0
     @target_count = 0
     @excluded_files = []
     scan_files(full_path, false)
-    return ScanResults.new(@file_count, @parent_count, @target_count, @excluded_files)
+    return ScanResults.new(@total_count, @file_count, @parent_count, @target_count, @excluded_files)
   end
   
   def procezz
@@ -104,12 +115,18 @@ class IngestFolder < ActiveRecord::Base
                 :name => I18n.t('batch.ingest_folder.batch_name'),
                 :description => abbreviated_path
                 )
+    @total_count = 0
     @file_count = 0
     @parent_count = 0
     @target_count = 0
     @excluded_files = []
     @parent_hash = {} if add_parents
     @checksum_hash = checksums if checksum_file.present?
+    if collection_admin_policy.blank? && collection_permissions_attributes.present?
+      temp_surrogate = DulHydra::Base.new
+      temp_surrogate.permissions_attributes = collection_permissions_attributes
+      @rights_metadata_content = temp_surrogate.rightsMetadata.content
+    end
     scan_files(full_path, true)
   end
   
@@ -144,6 +161,7 @@ class IngestFolder < ActiveRecord::Base
         if File.directory?(file_loc)
           scan_files(file_loc, create_batch_objects)
         else
+          @total_count += 1
           if DEFAULT_INCLUDED_FILE_EXTENSIONS.include?(File.extname(entry))
             case target?(dirpath)
             when true
@@ -185,11 +203,17 @@ class IngestFolder < ActiveRecord::Base
             desc_metadata(parent_identifier),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
+    add_datastream(
+            obj,
+            DulHydra::Datastreams::RIGHTS_METADATA,
+            @rights_metadata_content,
+            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES            
+            ) if @rights_metadata_content
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
-            admin_policy_pid
-            ) if admin_policy_pid
+            collection_admin_policy.pid
+            ) if collection_admin_policy
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
@@ -229,7 +253,7 @@ class IngestFolder < ActiveRecord::Base
     add_datastream(
             obj,
             DulHydra::Datastreams::DESC_METADATA,
-            desc_metadata(file_identifier, file_entry, file_creator),
+            desc_metadata(file_identifier, file_creator),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
     add_datastream(
@@ -240,11 +264,17 @@ class IngestFolder < ActiveRecord::Base
             checksum_file.present? ? file_checksum(File.join(dirpath, file_entry)) : nil,
             checksum_file.present? ? checksum_type : nil
             )
+    add_datastream(
+            obj,
+            DulHydra::Datastreams::RIGHTS_METADATA,
+            @rights_metadata_content,
+            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES            
+            ) if @rights_metadata_content
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
-            admin_policy_pid
-            ) if admin_policy_pid
+            collection_admin_policy.pid
+            ) if collection_admin_policy
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
@@ -280,10 +310,9 @@ class IngestFolder < ActiveRecord::Base
     )    
   end
   
-  def desc_metadata(identifier, source=nil, creator=nil)
-    base = DulHydra::Models::Base.new
+  def desc_metadata(identifier, creator=nil)
+    base = DulHydra::Base.new
     base.identifier = identifier if identifier.present?
-    base.source = source if source.present?
     base.creator = creator if creator.present?
     base.descMetadata.content
   end

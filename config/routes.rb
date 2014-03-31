@@ -6,25 +6,27 @@ DulHydra::Application.routes.draw do
 
   # http://railsadventures.wordpress.com/2012/10/07/routing-only-ajax-requests-in-ror/
   class XhrRequestConstraint
-    def matches?(request)
+    def self.matches?(request)
       request.xhr?
     end
   end
 
   pid_constraint = {id: /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/}
 
-  resources :objects, only: [:create, :show], constraints: pid_constraint do
+  resources :objects, only: [:show], constraints: pid_constraint do
     member do
-      get 'collection_info', constraints: XhrRequestConstraint
+      get 'collection_info'
       get 'download' => 'downloads#show'
       get 'preservation_events', constraints: XhrRequestConstraint
       get 'thumbnail' => 'thumbnail#show'
       get 'datastreams/:datastream_id' => 'downloads#show', as: 'download_datastream'
+      get 'upload' => 'uploads#show'
+      patch 'upload' => 'uploads#update'
     end
   end
 
-  model_params = DulHydra.creatable_models.map { |m| m.constantize.model_name.singular }
-  get '/objects/new/:model' => 'objects#new', constraints: {model: /#{model_params.join("|")}/}, as: 'new_object'
+  resources :collections, only: [:new, :create]
+  resources :admin_policies, only: [:new, :create]
 
   # other object tabs
   get '/objects/:id/:tab' => 'objects#show', 
@@ -35,7 +37,7 @@ DulHydra::Application.routes.draw do
   scope '/objects/:id/descriptive_metadata', constraints: pid_constraint, as: 'record' do
     get '/' => 'objects#show', defaults: {tab: 'descriptive_metadata'}
     get 'edit' => 'objects#edit'
-    put '/' => 'objects#update'
+    patch '/' => 'objects#update'
   end
 
   scope '/objects/:id/permissions', constraints: pid_constraint, as: 'permissions' do
@@ -50,27 +52,42 @@ DulHydra::Application.routes.draw do
     put '/' => 'permissions#update', defaults: {default_permissions: true}
   end
 
+  scope '/objects/:id', constraints: pid_constraint do
+    resources :attachments, only: [:new, :create]
+    resources :items, only: [:new, :create]
+    resources :components, only: [:new, :create]
+  end
+
   resources :preservation_events, :only => :show, constraints: { id: /[1-9][0-9]*/ }
 
   resources :export_sets do
     member do
-      post 'archive'
+      get 'archive', as: 'download'
+      patch 'archive'
       delete 'archive'
     end
   end
   
-  resources :batches do
+  resources :batches, :only => [:index, :show] do
     member do
       get 'procezz'
       get 'validate'
     end
-    resources :batch_objects do
-      resources :batch_object_datastreams
-      resources :batch_object_relationships
+    resources :batch_objects, :only => :index
+  end
+  
+  resources :batch_objects, :only => :show do
+    resources :batch_object_datastreams, :only => :index
+    resources :batch_object_relationships, :only => :index
+  end
+  
+  resources :ingest_folders, :only => [:new, :create, :show] do
+    member do
+      get 'procezz'
     end
   end
 
-  resources :ingest_folders, :only => [:new, :create, :show] do
+  resources :metadata_files, :only => [:new, :create, :show] do
     member do
       get 'procezz'
     end

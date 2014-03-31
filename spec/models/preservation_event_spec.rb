@@ -69,7 +69,7 @@ describe PreservationEvent do
       it "should validate the existence and proper type of object referenced in the linking_object_id_value if the linking_object_id_type is 'object'" do
         pe.should be_valid
         pe.linking_object_id_type.should == PreservationEvent::OBJECT
-        pe.for_object.should be_kind_of(DulHydra::Models::HasPreservationEvents)
+        pe.for_object.should be_kind_of(DulHydra::HasPreservationEvents)
         pe.linking_object_id_value = "foo:bar"
         pe.should_not be_valid
       end
@@ -132,6 +132,40 @@ describe PreservationEvent do
       before { ds_checksum_valid_false(obj.datastreams["content"]) }
       let(:obj) { FactoryGirl.create(:component_with_content) }
       it_should_behave_like "a fixity check failure preservation event"
+    end
+  end
+
+  describe ".creation" do
+    let(:obj) { FactoryGirl.create(:item) }
+    after { obj.destroy }
+    context "without a user" do
+      subject { PreservationEvent.creation(obj) }
+      it_should_behave_like "a valid object preservation event"
+    end
+    context "with a user" do
+      subject { PreservationEvent.creation(obj, user) }
+      let(:user) { FactoryGirl.build(:user) }
+      it_should_behave_like "a valid object preservation event"
+    end
+  end
+
+  describe ".creation!" do
+    let(:obj) { FactoryGirl.create(:item) }
+    after { obj.destroy }
+    context "without a user" do
+      subject { PreservationEvent.creation!(obj) }
+      it_should_behave_like "a valid object preservation event"
+      it "should have event_date_time set to the object creation date/time" do
+        expect(PreservationEvent.to_event_date_time(subject.event_date_time)).to eq(obj.create_date)
+      end
+    end
+    context "with a user" do
+      subject { PreservationEvent.creation!(obj, user) }
+      let(:user) { FactoryGirl.build(:user) }
+      it_should_behave_like "a valid object preservation event"
+      it "should have event_date_time set to the object creation date/time" do
+        expect(PreservationEvent.to_event_date_time(subject.event_date_time)).to eq(obj.create_date)
+      end
     end
   end
 

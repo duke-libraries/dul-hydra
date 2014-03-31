@@ -90,4 +90,31 @@ namespace :dul_hydra do
           end
         end        
     end
+    namespace :upgrade do
+      desc "Upgrades existing export sets to new schema"
+      task :export_sets => :environment do
+        for export_set in ExportSet.all
+          export_set.export_type = ExportSet::Types::CONTENT if export_set.export_type.blank?
+          export_set.csv_col_sep = "tab" if export_set.csv_col_sep.blank? && export_set.export_descriptive_metadata?
+          export_set.save if export_set.changed?
+        end
+      end
+      desc "Migrates original file names from source to original_filename"
+      task :original_file_names => :environment do
+        [ Component, Target, Attachment ].each do |model|
+          model.find_each do |obj|
+            if obj.source.present?
+              if obj.source.size == 1
+                obj.original_filename = obj.source.first
+                obj.source = []
+                obj.save!
+              else
+                puts "Multiple source attributes: #{obj.pid}"
+                obj.source.each { |s| puts s }
+              end
+            end
+          end
+        end
+      end
+    end
 end

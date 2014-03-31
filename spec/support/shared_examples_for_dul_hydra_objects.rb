@@ -3,7 +3,6 @@ require 'support/shared_examples_for_governables'
 require 'support/shared_examples_for_access_controllables'
 require 'support/shared_examples_for_has_preservation_events'
 require 'support/shared_examples_for_has_properties'
-require 'support/shared_examples_for_has_thumbnail'
 
 shared_examples "a DulHydra object" do
 
@@ -12,7 +11,6 @@ shared_examples "a DulHydra object" do
   it_behaves_like "an access controllable object"
   it_behaves_like "an object that has preservation events"
   it_behaves_like "an object that has properties"
-  it_behaves_like "an object that has a thumbnail"
 
   context "#title_display" do
     subject { object.title_display }
@@ -31,7 +29,12 @@ shared_examples "a DulHydra object" do
   end
   
   context "#validate_checksums" do
-    let(:object) { described_class.create(:title => 'Title') }
+    let(:object) do
+      described_class.new.tap do |obj|
+        obj.title = 'Title'
+        obj.save(validate: false)
+      end
+    end
     after { object.destroy }
     it "should return a boolean success/failure flag and hash of datastream profiles" do
       outcome, detail = object.validate_checksums

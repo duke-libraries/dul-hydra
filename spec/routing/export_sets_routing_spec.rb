@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "export sets routing" do
+describe "export sets routing", export_sets: true do
   describe "RESTful routes" do
     it "should have an index route" do
       @route = {controller: 'export_sets', action: 'index'}
@@ -39,11 +39,18 @@ describe "export sets routing" do
     end
   end
   describe "non-RESTful routes" do
+    before do
+      @route = {controller: 'export_sets', action: 'archive', id: '1'} 
+      @path = '/export_sets/1/archive'
+    end
     it "should have a route for creating an archive" do
-      expect(:post => '/export_sets/1/archive').to route_to(controller: 'export_sets', action: 'archive', id: '1')
+      expect(:patch => @path).to route_to(@route)
+    end
+    it "should have a route for downloading an archive" do
+      expect(:get => @path).to route_to(@route)
     end
     it "should have a route for destroying an archive" do
-      expect(:delete => '/export_sets/1/archive').to route_to(controller: 'export_sets', action: 'archive', id: '1')
+      expect(:delete => @path).to route_to(@route)
     end
   end
 end

@@ -9,7 +9,7 @@ module ApplicationHelper
     # Depends on Blacklight::SolrHelper#get_solr_response_for_doc_id 
     # having been added as a helper method to CatalogController
     response, doc = get_solr_response_for_doc_id(pid)
-    # XXX This is not consistent with DulHydra::Models::Base#title_display
+    # XXX This is not consistent with DulHydra::Base#title_display
     title = doc.nil? ? pid : doc.fetch(DulHydra::IndexFields::TITLE, pid)
     link_to(title, catalog_path(pid), :class => "parent-link").html_safe
   end
@@ -18,6 +18,19 @@ module ApplicationHelper
     current_object.title_display rescue "#{current_object.class.to_s} #{current_object.pid}"
   end
 
+  def object_display_title(pid)
+    if pid.present?
+      begin
+        object = ActiveFedora::Base.find(pid, :cast => true)
+        if object.respond_to?(:title_display)
+          object.title_display
+        end
+      rescue ActiveFedora::ObjectNotFoundError
+        log.error("Unable to find #{pid} in repository")
+      end
+    end
+  end
+  
   def bootstrap_icon(icon)
     if icon == :group
       (bootstrap_icon(:user)*2).html_safe
@@ -67,7 +80,7 @@ module ApplicationHelper
   end
 
   def render_object_date(date)
-    format_date(DateTime.strptime(date, "%Y-%m-%dT%H:%M:%S.%LZ"))
+    format_date(DateTime.strptime(date, "%Y-%m-%dT%H:%M:%S.%LZ").to_time.localtime)
   end
 
   def render_breadcrumb(crumb)
@@ -142,7 +155,7 @@ module ApplicationHelper
   end
 
   def render_document_thumbnail(document, linked = false)
-    src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail
+    src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail(document)
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
     if linked && can?(:read, document)
       link_to thumbnail, object_path(document)
@@ -215,12 +228,29 @@ module ApplicationHelper
   end
 
   def link_to_create_model(model)
-    link_to model, new_object_path(model.underscore)
+    link_to model, send("new_#{model.underscore}_path")
   end
 
-  def model_options_for_select(model)
-    options = find_models_with_gated_discovery(model).collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
+  def model_options_for_select(model, access=nil)
+    models = find_models_with_gated_discovery(model)
+    if access
+      models = models.select { |m| can? access, m }
+    end
+    options = models.collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
     options_for_select options
+  end
+
+  def required?(obj, attr)
+    target = (obj.class == Class) ? obj : obj.class
+    target.validators_on(attr).map(&:class).include?(ActiveModel::Validations::PresenceValidator)
+  end
+
+  def create_menu_models
+    current_ability.can_create_models & ["AdminPolicy", "Collection"]
+  end
+
+  def cancel_button
+    link_to "Cancel", :back, class: "btn"
   end
 
   private
@@ -229,8 +259,40 @@ module ApplicationHelper
     content_tag :span, text, :class => "label label-#{label}"
   end
 
-  def default_thumbnail
-    'dul_hydra/no_thumbnail.png'
+  def default_thumbnail(document)
+    if document.content_mime_type
+      default_mime_type_thumbnail(document.content_mime_type)
+    else
+      default_model_thumbnail(document.active_fedora_model)
+    end
+  end
+  
+  def default_mime_type_thumbnail(mime_type)
+    case mime_type
+    when /^image/
+      'crystal-clear/image2.png'
+    when /^video/
+      'crystal-clear/video.png'
+    when /^audio/
+      'crystal-clear/sound.png'
+    when /^application\/(x-)?pdf/
+      'crystal-clear/document.png'
+    when /^application/
+      'crystal-clear/binary.png'
+    else
+      'crystal-clear/misc.png'
+    end
+  end
+
+  def default_model_thumbnail(model)
+    case model
+    when 'AdminPolicy'
+      'crystal-clear/lists.png'
+    when 'Collection'
+      'crystal-clear/kmultiple.png'
+    else
+      'crystal-clear/misc.png'
+    end
   end
 
 end

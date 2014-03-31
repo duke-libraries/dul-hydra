@@ -1,6 +1,7 @@
-class Collection < DulHydra::Models::Base
+class Collection < DulHydra::Base
   
-  include DulHydra::Models::HasChildren
+  include DulHydra::HasChildren
+  include DulHydra::HasAttachments
 
   has_many :children, :property => :is_member_of_collection, :inbound => true, :class_name => 'Item'
   has_many :targets, :property => :is_external_target_for, :inbound => true, :class_name => 'Target'
@@ -9,6 +10,7 @@ class Collection < DulHydra::Models::Base
   alias_method :item_ids, :child_ids
 
   validates :title, presence: true
+  validates :admin_policy, presence: true
 
   def components_query
     {

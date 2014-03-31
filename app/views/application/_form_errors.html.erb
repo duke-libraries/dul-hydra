@@ -1,0 +1,12 @@
+<% if form.object.errors.any? %>
+  <div class="alert alert-danger">
+	<p>
+	  <strong><%= t 'dul_hydra.errors' %></strong>
+	</p>
+	<ul>
+	  <% form.object.errors.full_messages.each do |message| %>
+	    <li><%= message %></li>
+	  <% end %>
+	</ul>
+  </div>
+<% end %>

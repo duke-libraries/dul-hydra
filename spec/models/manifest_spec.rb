@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Models
 
-  describe Manifest do
+  describe Manifest, batch: true do
   
     shared_examples "a valid manifest" do
       it "should be valid" do
@@ -208,7 +208,10 @@ module DulHydra::Batch::Models
                 manifest.manifest_hash[Manifest::MODEL] = model
                 manifest.manifest_hash[key] = { subkey => object.identifier.first }
               end
-              after { object.destroy }
+              after do
+                object.destroy
+                batch_object.destroy
+              end
               it_behaves_like "an invalid manifest"
             end
           end

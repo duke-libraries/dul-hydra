@@ -1,9 +1,8 @@
 module DulHydra::Batch::Models
   
   class Batch < ActiveRecord::Base
-    attr_accessible :description, :name, :user, :details, :failure, :logfile, :outcome, :start, :status, :stop, :success, :version
     belongs_to :user, :inverse_of => :batches
-    has_many :batch_objects, :inverse_of => :batch, :dependent => :destroy, :order => 'id ASC'
+    has_many :batch_objects, -> { order("id ASC") }, :inverse_of => :batch, :dependent => :destroy
     has_attached_file :logfile
 
     OUTCOME_SUCCESS = "SUCCESS"
@@ -18,12 +17,24 @@ module DulHydra::Batch::Models
 
     def validate
       errors = []
-      batch_objects.each do |object|
-        unless object.verified
-          errors << object.validate
+      begin
+        batch_objects.each do |object|
+          unless object.verified
+            errors << object.validate
+          end
         end
+      rescue Exception => e
+        errors << "Exception raised during batch validation: #{e}"
       end
       errors.flatten
+    end
+    
+    def found_pids
+      @found_pids ||= {}
+    end
+    
+    def add_found_pid(pid, model)
+      @found_pids[pid] = model
     end
     
     def pre_assigned_pids

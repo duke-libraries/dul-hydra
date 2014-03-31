@@ -1,0 +1,7 @@
+<div id="export-set-archive">
+<% if @export_set.has_archive? %>
+  <%= render 'archive_show' %>
+<% else %>
+  <%= render 'archive_create' %>
+<% end %>
+</div>

@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe BatchProcessorRunMailer do
+describe BatchProcessorRunMailer, batch: true do
   let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
   let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id) }
   before { bp.execute }
@@ -11,6 +11,8 @@ describe BatchProcessorRunMailer do
         repo_object.destroy
       end
     end
+    batch.user.destroy
+    batch.destroy
   end
   it "should send a notification" do
     ActionMailer::Base.deliveries.should_not be_empty

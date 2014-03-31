@@ -1,7 +1,7 @@
 <div id="sortAndPerPage">
    <div class="page_links">
-     <%= render partial: 'children/paginate_compact', locals: {pagination_params: pagination_params} %>
+     <%= render 'catalog/paginate_compact' %>
    </div>
-    <%= render partial: 'children/sort_widget', locals: {pagination_params: pagination_params} %>
-    <%= render partial: 'children/per_page_widget', locals: {pagination_params: pagination_params} %>
+    <%= render 'catalog/sort_widget' %>
+    <%= render 'catalog/per_page_widget' %>
 </div>

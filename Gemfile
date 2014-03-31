@@ -1,17 +1,20 @@
 source 'http://rubygems.org'
 
-gem 'rails', '~> 3.2.16'
+gem 'rails', '~> 4.0.3'
 
 gem 'sqlite3'
-gem 'hydra-head', '~> 6.4'
-gem 'blacklight', '4.5.0'
+gem 'hydra-head', '6.5.0'
+gem 'blacklight', '4.7.0'
 gem 'bootstrap-sass' # blacklight 4.0
 gem 'unicode'        # blacklight 4.0
 gem 'devise', '~> 3.1.1'
-gem 'devise-remote-user', '0.2.0'
-gem 'active-fedora', '~> 6.6'
+gem 'devise-remote-user', '0.3.0'
+gem 'active-fedora', '6.7.6'
 gem 'grouper-rest-client'
-gem 'hydra-editor', '0.1.1'
+gem 'hydra-editor', '0.2.2'
+gem 'hydra-derivatives'
+gem 'deprecation'
+gem 'rubydora', '1.7.4'
 
 gem 'log4r'
 
@@ -25,13 +28,10 @@ gem 'mime-types', '~> 1.19'
 
 # Export sets
 gem 'rubyzip', '< 1.0.0'
-gem 'paperclip', '~> 3.0'
-
-# Image manipulation
-gem 'mini_magick'
+gem 'paperclip', '~> 3.4.2'
 
 group :development, :test do
-  gem 'rspec-rails' #, '~> 2.12.0'
+  gem 'rspec-rails', '~> 2.14.1'
   gem 'capybara', '~> 2.0'
   gem 'jettywrapper', '~> 1.5'
   gem 'factory_girl_rails', '~> 4.0'
@@ -43,13 +43,9 @@ group :production do
   gem 'mysql2'
 end
 
-# Gems used only for assets and not required
-# in production environments by default.
-group :assets do
-  gem 'sass-rails', '~> 3.2.3'
-  gem 'jquery-rails'
-  gem 'uglifier', '~> 1.3.0'
-end
+gem 'sass-rails', '~> 4.0.1'
+gem 'jquery-rails'
+gem 'uglifier', '~> 1.3.0'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

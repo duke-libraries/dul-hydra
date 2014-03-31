@@ -10,6 +10,12 @@ en:
                 file_creator: File Creator
                 parent_id_length: Length of Item Identifier
                 sub_path: Folder Sub-Path
+                total_files_scanned: Files Scanned
+            metadata_file:
+                collection_pid: Collection
+                metadata: Metadata File
+                profile: Metadata File Type
+                rows: Rows (excludes header row)
     batch:
         ingest_folder:
             create: New Ingest Folder
@@ -24,6 +30,17 @@ en:
             scan_folder: Scan Folder
             help:
                 parent_id_length: Leave blank or set to 0 to create a separate Item for each file.
+        metadata_file:
+            batch_name: Metadata Update File
+            create_batch: Create Update Batch
+            fields: Fields
+            new: Upload Metadata File
+            upload_file: Upload File
+            uploaded_file: Uploaded File
+            error:
+                parse_error: Error parsing the file
+                attribute_name: Invalid attribute name
+                mapped_attribute_name: Attribute mapped to invalid name
         manifest:
             validation_failed: "Did not process manifest due to manifest validation errors"
             validation_skipped: "Skipped validation"
@@ -69,11 +86,14 @@ en:
                 batch: "Batch %{id}"
                 batches: "Batches"
                 batch_runs: "Batch Runs"
+                batch_object: "Batch Object %{id}"
                 batch_objects: "Objects in Batch"
             column_names:
                 id: "ID"
+                user: "User"
                 name: "Name"
                 description: "Description"
+                creation_date: Created
                 objects: "Objects"
                 start: "Start"
                 stop: "Stop"
@@ -83,14 +103,19 @@ en:
                 model: "Model"
                 pid: "PID"
                 verified: "Verified"
+                verified_in_repository: "Verified in Repository?"
                 operation: "Operation"
                 action: "Action"
                 log: "Log"
+                operation: "Operation"
+                payload: "Payload"
+                payload_type: "Payload Type"
+                checksum: "Checksum"
+                checksum_type: "Checksum Type"
+                related_object: "Related Object"
+                related_object_type: "Related Object Type"
+                part_of_batch: "Part of Batch"
             action_names:
                 procezz: "Process"
                 restart: "Restart"
                 validate: "Validate"
-            tab_names:
-                batch_info: "Batch Info"
-                batch_objects: "Batch Objects"
-                batch_runs: "Batch Runs"

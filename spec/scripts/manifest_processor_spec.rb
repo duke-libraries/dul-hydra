@@ -8,6 +8,7 @@ module DulHydra::Batch::Scripts
     let(:batch_object) { batch_objects.first }
     let(:batch_object_datastreams) { batch_object.batch_object_datastreams }
     let(:batch_object_relationships) { batch_object.batch_object_relationships }
+    after { batch.destroy }
     it "should create a new batch" do
       expect(batch.created_at).to be > 3.minutes.ago
       expect(batch.name).to eq(@manifest.batch_name)
@@ -54,7 +55,7 @@ module DulHydra::Batch::Scripts
     end
   end
   
-  describe ManifestProcessor do
+  describe ManifestProcessor, batch: true do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:manifest_file) { File.join(test_dir, 'manifest.yml') }
     let(:log_dir) { test_dir }
@@ -69,6 +70,7 @@ module DulHydra::Batch::Scripts
         FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml'), manifest_file
         @manifest = DulHydra::Batch::Models::Manifest.new(manifest_file)
       end
+      after { parent_batch_object.destroy }
       context "successful processing run" do
         before do
           @manifest.manifest_hash[DulHydra::Batch::Models::Manifest::BASEPATH] = test_dir
@@ -98,6 +100,7 @@ module DulHydra::Batch::Scripts
         mp = DulHydra::Batch::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir)
         mp.execute
       end
+      after { attached_to_batch_object.destroy }
       it_behaves_like "a successful manifest processing run"      
     end
   end

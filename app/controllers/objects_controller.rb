@@ -1,36 +1,37 @@
 class ObjectsController < ApplicationController
 
-  include DulHydra::Controller::ObjectsControllerBehavior
-  include RecordsControllerBehavior # hydra-editor plugin for descriptive metadata editing
+  include DulHydra::ObjectsControllerBehavior
+  include DulHydra::RepositoryController
+  include RecordsControllerBehavior # hydra-editor
 
   copy_blacklight_config_from(CatalogController)
 
-  before_filter :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
-  before_filter :configure_blacklight_for_related_objects, only: :show
-  before_filter :load_and_authorize_new_object, only: [:new, :create]
+  before_action :enforce_show_permissions, only: [:show, :preservation_events, :collection_info]
+  before_action :configure_blacklight_for_related_objects, only: :show
 
   helper_method :object_children
   helper_method :object_attachments
   helper_method :object_preservation_events
 
-  layout 'application', only: [:new, :create]
+  helper_method :resource_instance_name # RecordsControllerBehavior method
 
-  def new
-    # Overriding RecordsControllerBehavior
-  end
+  #
+  # #edit, and #update actions acquired from RecordsControllerBehavior
+  #
 
-  def create
-    @object.attributes = params[:object].reject {|key, value| value.blank?}
-    set_initial_permissions
-    if @object.save
-      redirect_to redirect_after_create, notice: "New #{@model} successfully created."
-    else
-      render :action => 'new'
-    end
-  end
-  
   def show
     object_children # lazy loading doesn't seem to work
+  end
+
+  # hydra-editor
+  def update
+    set_attributes
+    if resource.save
+      flash[:notice] = "Descriptive metadata updated."
+      redirect_to redirect_after_update
+    else
+      render 'records/edit'
+    end
   end
 
   # Intended for tab content loaded via ajax
@@ -82,28 +83,20 @@ class ObjectsController < ApplicationController
   end
 
   protected
-
-  def set_initial_permissions
-    if @object.respond_to?(:set_initial_permissions)
-      @object.set_initial_permissions(current_user)
-    end
+  
+  #
+  # Overrides of RecordsControllerBehavior
+  #
+  def collect_form_attributes
+    raw_attributes = params[resource_instance_name]
+    # we could probably do this with strong parameters if the gemspec depends on Rails 4+
+    permitted_attributes = resource.terms_for_editing.each_with_object({}) { |key, attrs| attrs[key] = raw_attributes[key] if raw_attributes[key] }
+    # removes attributes that were only changed by initialize_fields
+    permitted_attributes.reject { |key, value| resource[key].empty? and value == [""] }
   end
 
-  def load_and_authorize_new_object
-    @model = params[:model].camelize.constantize
-    authorize! :create, @model
-    @object = @model.new
-  rescue NameError # This shouldn't happen, but what the hell
-    raise CanCan::AccessDenied    
-  end
-
-  def redirect_after_create
-    case @object.class.to_s
-    when "AdminPolicy"
-      default_permissions_path(@object)
-    else
-      object_path(@object)
-    end
+  def redirect_after_update
+    record_path(resource)
   end
 
   def object_preservation_events
@@ -114,8 +107,8 @@ class ObjectsController < ApplicationController
 
   def object_children
     return @object_children if @object_children
-    if current_object.has_children?
-      @object_children = SolrResult.new(*get_search_results(params, {q: current_object.children_query}))
+    if current_object.can_have_children?
+      @object_children = SolrResult.new(*get_search_results(params, children_query_params))
       # For compatibility with Blacklight partials and helpers that paginate results
       @response = @object_children.response
       @documents = @object_children.documents
@@ -124,10 +117,26 @@ class ObjectsController < ApplicationController
     @object_children
   end
 
+  def has_children?
+    current_object.can_have_children? and query_count(params, children_query_params) > 0
+  end
+
+  def children_query_params
+    {q: current_object.children_query}
+  end
+
+  def has_attachments?
+    current_object.can_have_attachments? and query_count(params, attachments_query_params) > 0
+  end
+
+  def attachments_query_params
+    {q: current_object.attachments.send(:construct_query)}
+  end
+
   def object_attachments
     return @object_attachments if @object_attachments
-    if current_object.has_attachments?
-      @object_attachments = SolrResult.new(*get_search_results(params, {q: current_object.attachments.send(:construct_query)}))
+    if current_object.can_have_attachments?
+      @object_attachments = SolrResult.new(*get_search_results(params, attachments_query_params))
       # For compatibility with Blacklight partials and helpers
       @partial_path_templates = ["catalog/index_default"]
     end
@@ -171,15 +180,11 @@ class ObjectsController < ApplicationController
     end
   end
 
-  # Override RecordsControllerBehavior
-  def redirect_after_update
-    record_path(current_object)
-  end
-
-  # tabs
-  
+  #
+  # Tabs
+  #
   def tab_children(id)
-    Tab.new(id, guard: object_children && object_children.response.total > 0)
+    Tab.new(id, guard: has_children?)
   end
 
   def tab_items
@@ -236,7 +241,7 @@ class ObjectsController < ApplicationController
   end
 
   def tab_attachments
-    Tab.new("attachments", guard: object_attachments && object_attachments.response.total > 0)
+    Tab.new("attachments", guard: has_attachments?)
   end
 
   def tab_collection_info

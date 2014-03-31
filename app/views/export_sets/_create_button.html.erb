@@ -1,0 +1,13 @@
+<div class="btn-group">
+  <button class="btn dropdown-toggle" data-toggle="dropdown">
+    New Export Set
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+	<% ExportSet::Types.values.each do |export_type| %>
+	<li>
+	  <%= link_to ExportSet.export_type_label(export_type), new_export_set_path(export_type: export_type) %>
+	</li>
+	<% end %>
+  </ul>
+</div>
