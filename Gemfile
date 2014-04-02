@@ -15,7 +15,11 @@ gem 'deprecation'
 
 gem 'sqlite3'
 gem 'log4r'
-gem 'delayed_job_active_record'
+
+# Background processing
+gem 'resque', '1.25.2'
+gem 'resque-pool', '0.3.0'
+gem 'nest', '1.1.2'
 
 # ExecJS runtime
 gem 'therubyracer', '~> 0.11.3', :require => 'v8'

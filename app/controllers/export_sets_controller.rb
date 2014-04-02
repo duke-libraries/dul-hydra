@@ -67,8 +67,6 @@ class ExportSetsController < ApplicationController
         status = case
                  when result.is_a?(ExportSet)
                    204
-                 when result.is_a?(Delayed::Job)
-                   202
                  when result.is_a?(Exception)
                    500
                  when !result
@@ -79,8 +77,6 @@ class ExportSetsController < ApplicationController
         case
         when result.is_a?(ExportSet)
           flash[:notice] = "Archive created."
-        when result.is_a?(Delayed::Job)
-          flash[:notice] = "The archive is being generated ..."
         when result.is_a?(Exception)
           flash[:error] = "Archive creation failed due to a server error."
         when !result
@@ -103,7 +99,7 @@ class ExportSetsController < ApplicationController
 
   def create_archive
     result = @export_set.create_archive
-    result ? (result.is_a?(Delayed::Job) ? result.id : true) : false
+    result ? true : false
   end
 
   def new_export_set

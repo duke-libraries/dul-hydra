@@ -22,7 +22,8 @@ class BatchesController < ApplicationController
   end
   
   def procezz
-    Delayed::Job.enqueue DulHydra::Batch::Jobs::BatchProcessorJob.new(@batch.id)
+    # Delayed::Job.enqueue DulHydra::Batch::Jobs::BatchProcessorJob.new(@batch.id)
+    Resque.enqueue(DulHydra::Batch::Jobs::BatchProcessorJob, @batch.id)
     flash[:notice] = I18n.t('batch.web.batch_queued', :id => @batch.id)
     redirect_to batches_url
   end
