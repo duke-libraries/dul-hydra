@@ -1,9 +1,9 @@
 module RecordsHelper
   include RecordsHelperBehavior
 
-  # Override RecordsHelperBehavior
-  def record_form_action_url(record)
-    record.new_record? ? objects_path(record) : object_path(record)
+  # override
+  def record_form_action_url record
+    url_for record
   end
 
   def field_name(key)

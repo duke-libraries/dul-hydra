@@ -2,6 +2,9 @@ class BatchesController < ApplicationController
   
   load_and_authorize_resource :class => DulHydra::Batch::Models::Batch
 
+  include DulHydra::Controller::TabbedViewBehavior
+  self.tabs = [:tab_pending_batches, :tab_finished_batches]
+
   def index
     @pending = []
     @finished = []
@@ -40,11 +43,8 @@ class BatchesController < ApplicationController
       redirect_to batch_url(@batch.id)
     end
   end
-  
-  def tabs
-    methods = [:tab_pending_batches, :tab_finished_batches]
-    Tabs.new(self, *methods)
-  end
+
+  protected
   
   def tab_pending_batches
     Tab.new("pending_batches")

@@ -1,7 +1,13 @@
 <div class="well">
   <h4>New Attachment</h4>
+  <dl>
+	<dt>Attach To</dt>
+	<dd><%= attach_to.title_display %> (<%= attach_to.class.to_s %> <%= attach_to.pid %>)<dd>
+  </dl>
   <%= form_for @attachment, html: {enctype: "multipart/form-data"} do |f| %>
     <%= render partial: 'form_errors', locals: {form: f} %>
+
+	<%= hidden_field_tag "attach_to", attach_to.pid %>
 
     <%= f.label :title %>
     <%= text_field_tag "attachment[title]", nil %>

@@ -1,0 +1,8 @@
+<p class="alert">
+  Loading ...
+</p>
+<script type="text/javascript">
+  $('a[href="#tab_preservation_events"]').on('show', function(e) {
+    $('#tab_preservation_events').load("<%= url_for action: 'preservation_events' %>");
+  });
+</script>

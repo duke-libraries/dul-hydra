@@ -9,15 +9,16 @@ class Collection < DulHydra::Base
   alias_method :items, :children
   alias_method :item_ids, :child_ids
 
-  validates :title, presence: true
-  validates :admin_policy, presence: true
+  validates_presence_of :title
 
-  def components_query
-    {
-      q: "{!join to=#{DulHydra::IndexFields::IS_PART_OF} from=#{DulHydra::IndexFields::INTERNAL_URI}}#{ActiveFedora::SolrService.construct_query_for_rel(:is_member_of_collection => internal_uri)}",
-      fq: ActiveFedora::SolrService.construct_query_for_rel(:has_model => Component.to_class_uri),
-      rows: 10000
-    }
+  def components_from_solr
+    outer = DulHydra::IndexFields::IS_PART_OF
+    inner = DulHydra::IndexFields::INTERNAL_URI
+    where = ActiveFedora::SolrService.construct_query_for_rel(:is_member_of_collection => internal_uri)
+    query = "{!join to=#{outer} from=#{inner}}#{where}"
+    filter = ActiveFedora::SolrService.construct_query_for_rel(:has_model => Component.to_class_uri)
+    results = ActiveFedora::SolrService.query(query, fq: filter, rows: 100000)
+    results.lazy.map {|doc| SolrDocument.new(doc)}
   end
-  
+
 end

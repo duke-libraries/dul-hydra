@@ -1,7 +1,13 @@
 <div class="well">
   <h4>New Item</h4>
+  <dl>
+	<dt>Member of Collection</dt>
+	<dd><%= parent.title.first %></dd>
+  </dl>
   <%= form_for @item do |f| %>
     <%= render partial: 'form_errors', locals: {form: f} %>
+
+	<%= hidden_field_tag "parent", parent.pid %>
 
     <%= f.label :title %>
     <%= text_field_tag "item[title]", nil %>

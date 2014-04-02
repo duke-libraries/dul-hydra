@@ -1,0 +1,44 @@
+<%= form_tag url_for(action: params[:action]), method: "patch", class: "rights-form" do %>
+  <fieldset>
+	<legend>Access Controls</legend>
+	<% all_permissions.each do |permission| %>
+	<div class="access-level">
+      <label for="permissions_<%= permission %>">
+        <span class="access-level-label"><%= permission %></span>
+        <span class="access-level-description"><%= t("dul_hydra.permissions.descriptions.#{permission}") %></span>
+	  </label>
+	  <select name="permissions[<%= permission %>][]" id="permissions_<%= permission %>" multiple="multiple" data-placeholder="Select users/groups to grant <%= permission.upcase %>" style="width:auto">
+		<optgroup label="GROUPS">
+		  <%= group_options_for_select permission %>
+		</optgroup>
+		<optgroup label="USERS">
+		  <%= user_options_for_select permission %>
+		</optgroup>
+	  </select>
+	</div>
+    <% end %>
+  </fieldset>
+  <fieldset>
+	<legend>License</legend>
+	<% license ||= {} %>
+	<%= label_tag "license_title", "License Title" %>
+	<%= text_field_tag "license[title]", license[:title], size: "50" %>
+	<%= label_tag "license_description", "License Description" %>
+	<textarea name="license[description]" id="license_description" cols="50" rows="5"><%= license[:description] %></textarea>
+	<%= label_tag "license_url", "License URL" %>
+	<%= text_field_tag "license[url]", license[:url], size: "50" %>
+  </fieldset>
+  <p>
+	<%= submit_tag "Save", data: {confirm: "TODO: PUT I18N HERE"}, class: "btn btn-primary" %>
+	<%= cancel_button %>
+  </p>
+<% end %>
+
+<script type="text/javascript">
+  $(function() {
+    $(".rights-form select").chosen({
+      placeholder_text_multiple: $(this).attr("data-placeholder")
+    });
+  });
+</script>
+

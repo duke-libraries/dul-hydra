@@ -1,0 +1,10 @@
+<%= form_tag url_for(action: "default_permissions"), method: "patch", class: "permissions-form" do %>
+  <%= render 'permissions_form_access_controls' %>
+  <%= render partial: 'permissions_form_license', locals: {license: license} %>
+  <p>
+	<%= submit_tag "Save", data: {confirm: "The default permissions will be overwritten with your selections and be applied to all objects governed by this policy. Continue?"}, class: "btn btn-primary" %>
+	<%= link_to "Cancel", :back, data: {confirm: "All changes will be lost! Are you sure?"}, class: "btn btn-danger" %>
+  </p>
+<% end %>
+
+<%= render 'permissions_form_script' %>
