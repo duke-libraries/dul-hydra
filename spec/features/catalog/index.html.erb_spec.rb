@@ -33,7 +33,7 @@ describe "catalog/index.html.erb" do
       end
       it "should display the thumbnail" do
         pending
-        page.should have_xpath("//img[@src = '/#{object.controller_name}/#{object.pid}/thumbnail']")
+        page.should have_xpath("//img[@src = '#{thumbnail_path(object)}']")
       end
       it "should display the title and identifier" do
         page.should have_content(object.identifier.first)

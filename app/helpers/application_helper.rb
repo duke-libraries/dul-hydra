@@ -152,7 +152,7 @@ module ApplicationHelper
   end
 
   def render_thumbnail(document_or_object, linked = false)
-    src = document_or_object.has_thumbnail? ? thumbnail_url_for(document_or_object) : default_thumbnail(document_or_object)
+    src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object) : default_thumbnail(document_or_object)
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
     if linked && can?(:read, document_or_object)
       link_to thumbnail, document_or_object_url(document_or_object)
@@ -234,10 +234,6 @@ module ApplicationHelper
 
   def download_url_for(document_or_object)
     url_for controller: "downloads", action: "show", id: document_or_object
-  end
-
-  def thumbnail_url_for(document_or_object)
-    url_for controller: "thumbnail", action: "show", id: document_or_object
   end
 
   def model_options_for_select(model, access=nil)
