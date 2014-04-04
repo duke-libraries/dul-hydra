@@ -9,8 +9,4 @@ class ThumbnailController < ApplicationController
     asset.datastreams[DulHydra::Datastreams::THUMBNAIL]
   end  
 
-  def can_download?
-    can? :discover, datastream.pid
-  end
-
 end

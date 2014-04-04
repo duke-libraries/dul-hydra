@@ -16,10 +16,9 @@
 // Required by Blacklight
 //= require blacklight/blacklight
 //
-// Extra bootstrap plugins loaded by bootstrap-sass
-//= require bootstrap-tab
-//= require bootstrap-dropdown
-//= require bootstrap-button
+// Bootstrap
+//= require bootstrap/tab
+//= require bootstrap/button
 //
 // hydra-editor
 //= require hydra-editor/hydra-editor

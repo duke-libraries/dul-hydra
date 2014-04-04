@@ -44,7 +44,7 @@ describe "export_sets/new.html.erb", export_sets: true do
       object_discover.save
       user.bookmarks.create(:document_id => object_read.pid)
       user.bookmarks.create(:document_id => object_discover.pid)
-      login user
+      login_as user
     end
     after do
       object_read.delete 

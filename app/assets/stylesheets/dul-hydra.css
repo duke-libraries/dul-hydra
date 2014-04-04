@@ -1,4 +1,8 @@
-#header-navbar-fixed-top .brand { /* BL override */
+/* BEGIN Blacklight */
+#header-navbar {
+	padding-top: 8px;
+}
+#header-navbar .navbar-brand { 
 	background-image: url(/assets/dul_hydra/ddr_logo.png);
 	min-height: 42px;
 	min-width: 200px;
@@ -7,6 +11,8 @@
 form.bookmark_toggle {
 	display: inline;
 }
+/* END Blacklight */
+
 .rights-form legend {
 	font-size: medium;
 	font-weight: bold;
@@ -14,24 +20,17 @@ form.bookmark_toggle {
 .rights-form fieldset {
 	margin-bottom: 1em;
 }
-.rights-form textarea,
-.rights-form input[type="text"],
-.rights-form select {
-	width: auto;
-}
 .rights-form .access-level {
 	margin-bottom: 1.5em;
 }
-.rights-form .access-level-label {
+.rights-form .access-level label {
 	font-weight: bold;
 	text-transform: uppercase;
 }
-.rights-form .access-level-description {
-	font-weight: normal;
+.rights-form .help-block {
+	font-size: smaller;
 }
-.rights-form .access-level-description:before {
-	content: " - "
-}
+
 table.access-controls {
 	width: auto;
 }
@@ -42,24 +41,16 @@ table.access-controls .access-level-label {
 table.access-controls td ul {
 	margin: 0;
 }
+
 .field_with_errors {
 	padding: 2px;
 	background-color: red;
 	display: table;
 }
-.small {
-	font-size: smaller;
-}
-
-/* MTD Tweaks */
 
 .table .sub-header {
 	font-style: italic;
 	color: #999;
-}
-
-.table th, .table td {
-	white-space:nowrap;
 }
 
 .table .mappings:empty {
@@ -72,4 +63,17 @@ table.access-controls td ul {
 
 .table .mappings:empty:before {
 	content: 'will not map';
+}
+
+#object-info .list-group-item-heading {
+	font-weight: bold;
+}
+#object-info .list-group-item-text {
+	font-size: smaller;
+}
+#object-info .list-group-item-text .label {
+	font-size: small;
+}
+#object-sidebar .panel-heading {
+	font-weight: bold;
 }

@@ -27,10 +27,18 @@ module DulHydra
 
       def upload_content
         current_object.upload content, checksum: checksum
+      rescue ArgumentError => e
+        content_missing && false
       end
 
       def upload_content!
         current_object.upload! content, checksum: checksum
+      rescue ArgumentError => e
+        content_missing && false
+      end
+
+      def content_missing
+        current_object.errors.add(:content, "is required")
       end
 
       def content_warning

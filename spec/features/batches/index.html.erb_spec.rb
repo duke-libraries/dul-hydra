@@ -1,60 +1,59 @@
 require 'spec_helper'
-require 'helpers/user_helper'
 
 describe "batches/index.html.erb" do
   context "ingest folders" do
     let(:user) { FactoryGirl.create(:user) }
-    context "logged in user" do
+    before { login_as user }
+    after do
+      user.destroy
+      Warden.test_reset!
+    end
+    context "user has no permitted ingest folders" do
       before do
-        login user
+        IngestFolder.stub(:permitted_folders).with(user).and_return(nil)
+        visit batches_path
       end
-      after { user.delete }
-      context "user has no permitted ingest folders" do
-        before do
-          IngestFolder.stub(:permitted_folders).with(user).and_return(nil)
-          visit batches_path
-        end
-        it "should not include a link to create an ingest folder" do
-          expect(page).to_not have_link(I18n.t('batch.ingest_folder.create'))
-        end
+      it "should not include a link to create an ingest folder" do
+        expect(page).to_not have_link(I18n.t('batch.ingest_folder.create'))
       end
-      context "user has permitted ingest folders" do
-        before do
-          IngestFolder.stub(:permitted_folders).with(user).and_return(["/base/path/"])
-          visit batches_path
-        end
-        it "should include a link to create an ingest folder" do
-          expect(page).to have_link(I18n.t('batch.ingest_folder.create'))
-        end
+    end
+    context "user has permitted ingest folders" do
+      before do
+        IngestFolder.stub(:permitted_folders).with(user).and_return(["/base/path/"])
+        visit batches_path
+      end
+      it "should include a link to create an ingest folder" do
+        expect(page).to have_link(I18n.t('batch.ingest_folder.create'))
       end
     end
   end
   context "metadata files", :metadata_file => true do
     let(:user) { FactoryGirl.create(:user) }
-    context "logged in user" do
+    before do
+      allow(DulHydra).to receive(:ability_group_map) { { "MetadataFile" => { :create => "metadata_file_creator" } } }
+      login_as user
+    end
+    after do
+      user.destroy
+      Warden.test_reset!
+    end
+    context "user is not permitted to upload metadata files" do
       before do
-        DulHydra.ability_group_map = { "MetadataFile" => { :create => "metadata_file_creator" } }
-        login user
+        visit batches_path
       end
-      after { user.delete }
-      context "user is not permitted to upload metadata files" do
-        before do
-          visit batches_path
-        end
-        it "should not include a link to upload a metadata file" do
-          expect(page).to_not have_link(I18n.t('batch.metadata_file.new'))
-        end
+      it "should not include a link to upload a metadata file" do
+        expect(page).to_not have_link(I18n.t('batch.metadata_file.new'))
       end
-      context "user is permitted to upload metadata files" do
-        before do
-          User.any_instance.stub(:groups).and_return( [ "public", "registered", "metadata_file_creator" ] )
-          visit batches_path
-        end
-        it "should include a link to upload a metadata file" do
-          expect(page).to have_link(I18n.t('batch.metadata_file.new'))
-        end
+    end
+    context "user is permitted to upload metadata files" do
+      before do
+        User.any_instance.stub(:groups).and_return( [ "public", "registered", "metadata_file_creator" ] )
+        visit batches_path
       end
-    end    
+      it "should include a link to upload a metadata file" do
+        expect(page).to have_link(I18n.t('batch.metadata_file.new'))
+      end
+    end
   end
   context "batches" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
@@ -63,12 +62,13 @@ describe "batches/index.html.erb" do
       other_user.delete
       batch.user.delete
       batch.destroy
+      Warden.test_reset!
     end
     context "pending batches" do
       let(:tab_id) { '#tab_pending_batches' }
       context "user has no pending batches" do
         before do
-          login other_user
+          login_as other_user
           visit batches_path
         end
         it "should display an appropriate message" do
@@ -79,7 +79,7 @@ describe "batches/index.html.erb" do
       end
       context "user has some pending batches" do
         before do
-          login batch.user
+          login_as batch.user
           visit batches_path
         end
         after { batch.destroy }
@@ -90,7 +90,7 @@ describe "batches/index.html.erb" do
         end
       end
       context "validate action" do
-        before { login batch.user }
+        before { login_as batch.user }
         context "not yet validated" do
           before { visit batches_path }
           it "should have a link to validate the batch" do
@@ -127,7 +127,7 @@ describe "batches/index.html.erb" do
       let(:tab_id) { '#tab_finished_batches' }
       context "user has no finished batches" do
         before do
-          login other_user
+          login_as other_user
           visit batches_path
         end
         it "should display an appropriate message" do
@@ -140,7 +140,7 @@ describe "batches/index.html.erb" do
         before do
           batch.status = DulHydra::Batch::Models::Batch::STATUS_FINISHED
           batch.save
-          login batch.user
+          login_as batch.user
           visit batches_path
         end
         after { batch.destroy }

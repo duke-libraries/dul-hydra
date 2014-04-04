@@ -1,7 +1,7 @@
 <% if grantees[:users].empty? and grantees[:groups].empty? -%>
 -
 <% else -%>
-<ul class="unstyled">
+<ul class="list-unstyled">
   <% grantees[:groups].each do |group| -%>
   <li>
 	<%= group_icon group %> <%= group_display_name group %>

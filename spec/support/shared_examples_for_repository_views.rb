@@ -21,7 +21,7 @@ shared_examples "a repository object show view" do
       expect(find("#object-title")).to have_content(object.title_display)
     end
     it "should display the thumbnail" do
-      expect(page).to have_css("#object-thumbnail img.thumbnail")
+      expect(page).to have_css("#object-thumbnail img.img-thumbnail")
     end
     it "should display the PID" do
       expect(find("#object-summary")).to have_content(object.pid)
@@ -103,7 +103,7 @@ shared_examples "a repository object show view" do
     end
     it "should display the last fixity check" do
       visit url_for(object)
-      expect(find("#object-info")).to have_content("Last Fixity Check")
+      expect(find("#object-info")).to have_content("Fixity Check")
     end
     it "should display the events" do
       visit url_for(object)

@@ -1,10 +1,10 @@
 <button id="export-set-archive-create-button" class="btn btn-primary" data-loading-text="Creating ..." data-complete-text="Download">Create</button>
 <script type="text/javascript">
-  var archive_url = "<%= url_for(action: 'archive', id: @export_set) %>";
+  var archive_url = "<%= url_for action: 'archive' %>";
   var create_button = $("#export-set-archive-create-button");
 
   $(create_button).click(function() {
-    $(".flash_messages").html('<div class="alert">Creating archive ... please wait.</div>');
+    $(".flash_messages").html('<div class="alert alert-info">Creating archive ... please wait.</div>');
     $(create_button).button('loading');
     $.ajax({
       type: "PATCH",

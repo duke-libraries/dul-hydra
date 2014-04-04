@@ -55,7 +55,7 @@ DulHydra::Application.routes.draw do
   end
 
   def no_repository_routes_for name
-    no_routes = [:index, :destory]
+    no_routes = [:index, :destroy]
     no_routes += [:new, :create] if name == :targets
   end
 

@@ -13,48 +13,32 @@
       <meta http-equiv="cleartype" content="on">
     <![endif]-->
 
-    <title><%= h(@page_title || application_name) %></title>
+    <title><%= render_page_title %></title>
     <%= favicon_link_tag asset_path('favicon.ico') %>
     <%= stylesheet_link_tag    "application" %>
     <%= javascript_include_tag "application" %>
     <%= csrf_meta_tags %>
+    <%= content_for(:head) %> 
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
   </head>
   <body class="<%= render_body_class %>">
-	<!-- Shared header/navbar -->
-    <%= render :partial => 'shared/header_navbar' %>
-	<!-- /Shared header/navbar -->
+  <%= render 'shared/header_navbar' %>
 
-	<div id="ajax-modal" class="modal hide fade" tabindex="-1"></div>
+  <%= render 'shared/ajax_modal' %>
 
-    <!-- main-container -->
-	<div id="main-container" class="container">
-	  
-	  <!-- Flash messages -->
-      <div class="row">
-		<div class="span12">
-          <div id="main-flashes">
-			<%= render :partial=>'/flash_msg' %>
-          </div>
-		</div>    
-      </div>              
-	  <!-- /Flash messages -->
-	
-	  <!-- main content + sidebar -->
-	  <div class="row" id="main-content">
-		<%= content_for?(:main_content) ? yield(:main_content) : yield %>
-	  </div>
-	  <!-- /main content + sidebar -->
+  <div id="main-container" class="container">
+    <%= render partial: '/flash_msg', layout: 'shared/flash_messages' %>
 
-	</div> 
-    <!-- main-container -->
+    <div class="row">
+	  <%= content_for?(:main_content) ? yield(:main_content) : yield %>
+    </div>
+  </div>
 
-	<!-- Shared footer -->
-	<%= render :partial => 'shared/footer' %>
-	<!-- /Shared footer -->
+  <%= render 'shared/footer' %>
   </body>
 </html>

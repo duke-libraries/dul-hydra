@@ -1,13 +1,10 @@
-<%= form_tag url_for(action: params[:action]), method: "patch", class: "rights-form" do %>
+<%= form_tag url_for(action: params[:action]), method: "patch", class: "rights-form", role: "form" do %>
   <fieldset>
-	<legend>Access Controls</legend>
+	<legend>Permissions</legend>
 	<% all_permissions.each do |permission| %>
-	<div class="access-level">
-      <label for="permissions_<%= permission %>">
-        <span class="access-level-label"><%= permission %></span>
-        <span class="access-level-description"><%= t("dul_hydra.permissions.descriptions.#{permission}") %></span>
-	  </label>
-	  <select name="permissions[<%= permission %>][]" id="permissions_<%= permission %>" multiple="multiple" data-placeholder="Select users/groups to grant <%= permission.upcase %>" style="width:auto">
+	<div class="access-level form-group">
+      <label for="permissions_<%= permission %>" class="control-label"><%= permission %></label>
+	  <select name="permissions[<%= permission %>][]" id="permissions_<%= permission %>" multiple="multiple" data-placeholder="Select users/groups to grant <%= permission.upcase %>" class="form-control">
 		<optgroup label="GROUPS">
 		  <%= group_options_for_select permission %>
 		</optgroup>
@@ -15,23 +12,30 @@
 		  <%= user_options_for_select permission %>
 		</optgroup>
 	  </select>
+	  <p class="help-block"><%= t("dul_hydra.permissions.descriptions.#{permission}") %></p>
 	</div>
-    <% end %>
+	<% end %>
   </fieldset>
   <fieldset>
 	<legend>License</legend>
 	<% license ||= {} %>
-	<%= label_tag "license_title", "License Title" %>
-	<%= text_field_tag "license[title]", license[:title], size: "50" %>
-	<%= label_tag "license_description", "License Description" %>
-	<textarea name="license[description]" id="license_description" cols="50" rows="5"><%= license[:description] %></textarea>
-	<%= label_tag "license_url", "License URL" %>
-	<%= text_field_tag "license[url]", license[:url], size: "50" %>
+	<div class="form-group">
+	  <%= label_tag "license_title", "License Title", class: "control-label" %>
+	  <%= text_field_tag "license[title]", license[:title], class: "form-control" %>
+	</div>
+	<div class="form-group">
+	  <%= label_tag "license_description", "License Description", class: "control-label" %>
+	  <textarea name="license[description]" id="license_description" class="form-control"><%= license[:description] %></textarea>
+	</div>
+	<div class="form-group">
+	  <%= label_tag "license_url", "License URL", class: "control-label" %>
+	  <%= text_field_tag "license[url]", license[:url], class: "form-control" %>
+	</div>
   </fieldset>
-  <p>
+  <div class="form-group">
 	<%= submit_tag "Save", data: {confirm: "TODO: PUT I18N HERE"}, class: "btn btn-primary" %>
 	<%= cancel_button %>
-  </p>
+  </div>
 <% end %>
 
 <script type="text/javascript">

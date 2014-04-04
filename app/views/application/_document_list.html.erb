@@ -1,0 +1,5 @@
+<div id="documents">
+<% documents.each_with_index do |document, document_counter| %>
+  <%= render partial: 'document', locals: {document: document, document_counter: document_counter} %>
+<% end %>
+</div>

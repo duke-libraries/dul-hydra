@@ -1,11 +1,13 @@
-<div class="well well-small" id="sidebar-nav">
-  <ul class="nav nav-list">
-	<li><%= link_to_unless_current I18n.t('batch.web.page_titles.batches'), batches_path %></li>
+<div class="panel panel-default">
+  <div class="panel-heading">
+	<strong><%= link_to_unless_current I18n.t('batch.web.page_titles.batches'), batches_path %></strong>
+  </div>
+  <div class="list-group">
 	<% if can? :create, IngestFolder %>
-    	<li><%= ingest_folder_create_link %></li>
+    	<div class="list-group-item"><%= ingest_folder_create_link %></div>
 	<% end %>
 	<% if can? :create, MetadataFile %>
-		<li><%= new_metadata_file_link %></li>
+		<div class="list-group-item"><%= new_metadata_file_link %></div>
 	<% end %>
-  </ul>
+  </div>
 </div>

@@ -1,6 +1,4 @@
-<div class="control-group">  
-  <%= label_tag :admin_policy_id, "Admin Policy", class: "control-label" %>
-  <div class="controls">
-	<%= select_tag :admin_policy_id, model_options_for_select(AdminPolicy), class: "span6", prompt: "Select an Admin Policy ..." %>
-  </div>
+<div class="form-group">  
+  <%= label_tag :admin_policy_id, "Admin Policy" %>
+  <%= select_tag :admin_policy_id, model_options_for_select(AdminPolicy), class: "form-control", prompt: "Select an Admin Policy ..." %>
 </div>

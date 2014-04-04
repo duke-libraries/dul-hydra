@@ -1,13 +1,1 @@
-<h2>New AdminPolicy</h2>
-
-<%= form_for @admin_policy do |f| %>
-  <%= render partial: 'form_errors', locals: {form: f} %>
-
-  <%= f.label :title %>
-  <%= text_field_tag "admin_policy[title]", nil %>
-
-  <%= f.label :description %>
-  <%= text_area_tag "admin_policy[description]" %>
-
-  <%= render partial: 'new_form_actions', locals: {form: f} %>
-<% end %>
+<%# defaults only %>

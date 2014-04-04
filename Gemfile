@@ -2,22 +2,17 @@ source 'http://rubygems.org'
 
 gem 'rails', '~> 4.0.3'
 
-gem 'sqlite3'
-gem 'hydra-head', '6.5.0'
-gem 'blacklight', '4.7.0'
-gem 'bootstrap-sass' # blacklight 4.0
-gem 'unicode'        # blacklight 4.0
+gem 'hydra-head', github: 'projecthydra/hydra-head'
+gem 'active-fedora', github: 'projecthydra/active_fedora'
 gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user', '0.3.0'
-gem 'active-fedora', '6.7.6'
 gem 'grouper-rest-client'
 gem 'hydra-editor', '0.2.2'
 gem 'hydra-derivatives'
 gem 'deprecation'
-gem 'rubydora', '1.7.4'
 
+gem 'sqlite3'
 gem 'log4r'
-
 gem 'delayed_job_active_record'
 
 # ExecJS runtime

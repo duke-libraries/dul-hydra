@@ -11,6 +11,7 @@ module DulHydra
 
         def new
           # Not using HydraEditor's :new action or template
+          render layout: 'new'
         end
 
         def create

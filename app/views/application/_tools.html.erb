@@ -1,37 +1,39 @@
-<div class="well well-small" id="sidebar-nav">
-  <ul class="nav nav-list">
-    <li class="nav-header">Tools</li>
-    <li>
+<div class="panel panel-default">
+  <div class="panel-heading">Tools</div>
+  <div class="list-group">
+    <div class="list-group-item">
 	  <%= render_show_doc_actions current_document %>
-    </li>
+    </div>
 	<% if current_object.is_a?(Collection) and can?(:create, Item) and can?(:add_children, current_object) %>
-	  <li>
-		<%= link_to new_item_path(parent: current_object.pid), id: "add-item-link" do %>
-		  <i class="icon-plus"></i> Add Item
-		<% end %>
-	  </li>
+	<div class="list-group-item">
+	  <%= link_to new_item_path(parent: current_object.pid), id: "add-item-link" do %>
+	  <i class="glyphicon glyphicon-plus"></i> Add Item
+	  <% end %>
+	</div>
 	<% end %>
 	<% if current_object.is_a?(Item) and can?(:create, Component) and can?(:add_children, current_object) %>
-	  <li>
-		<%= link_to new_component_path(parent: current_object.pid), id: "add-component-link" do %>
-		  <i class="icon-plus"></i> Add Component
-		<% end %>
-	  </li>
+	<div class="list-group-item">
+	  <%= link_to new_component_path(parent: current_object.pid), id: "add-component-link" do %>
+	  <i class="glyphicon glyphicon-plus"></i> Add Component
+	  <% end %>
+	</div>
 	<% end %>
 	<% if current_object.can_have_attachments? and can?(:create, Attachment) and can?(:add_attachment, current_object) %>
-	  <li>
-		<%= link_to new_attachment_path(attach_to: current_object.pid), id: "add-attachment-link" do %>
-		  <%= image_tag "silk/attach.png", size: "16x16", alt: "attach" %>
-		  Add Attachment
-		<% end %>
-	  </li>
+	<div class="list-group-item">
+	  <%= link_to new_attachment_path(attach_to: current_object.pid), id: "add-attachment-link" do %>
+	  <%= image_tag "silk/attach.png", size: "16x16", alt: "attach" %>
+	  Add Attachment
+	  <% end %>
+	</div>
 	<% end %>
 	<% if current_object.has_content? and can?(:upload, current_object) %>
-	  <li>
-		<%= link_to url_for(action: "upload"), id: "upload-content-link" do %>
-		  <i class="icon-upload"></i> Upload Content
-		<% end %>
-	  </li>
+	<div class="list-group-item">
+	  <%= link_to url_for(action: "upload"), id: "upload-content-link" do %>
+	  <i class="glyphicon glyphicon-upload"></i> Upload Content
+	  <% end %>
+	</div>
 	<% end %>
-  </ul>
+  </div>
 </div>
+
+

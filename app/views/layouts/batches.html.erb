@@ -1,10 +1,8 @@
 <% content_for :main_content do %>
-<div class="span9">
-	<div>
-  		<%= yield %>
-	</div>
+<div class="col-md-9">
+  <%= yield %>
 </div>
-<div class="span3">
+<div class="col-md-3">
   <%= render 'batches_sidebar' %>
 </div>
 <% end %>

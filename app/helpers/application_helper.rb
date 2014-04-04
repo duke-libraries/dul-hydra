@@ -143,8 +143,8 @@ module ApplicationHelper
   end
   
   def render_download_icon(args = {})
-    label = content_tag(:i, "", :class => "icon-download-alt")
-    render_download_link args.merge(:label => label)
+    label = content_tag(:span, "", class: "glyphicon glyphicon-download-alt")
+    render_download_link args.merge(label: label)
   end
 
   def render_document_title
@@ -152,8 +152,8 @@ module ApplicationHelper
   end
 
   def render_thumbnail(document_or_object, linked = false)
-    src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object) : default_thumbnail(document_or_object)
-    thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
+    src = document_or_object.has_thumbnail? ? thumbnail_url_for(document_or_object) : default_thumbnail(document_or_object)
+    thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
     if linked && can?(:read, document_or_object)
       link_to thumbnail, document_or_object_url(document_or_object)
     else
@@ -254,8 +254,9 @@ module ApplicationHelper
     current_ability.can_create_models & ["AdminPolicy", "Collection"]
   end
 
-  def cancel_button
-    link_to "Cancel", :back, class: "btn"
+  def cancel_button args={}
+    opts = {class: "btn btn-danger"}.merge(args)
+    link_to "Cancel", :back, opts
   end
 
   def object_preservation_events

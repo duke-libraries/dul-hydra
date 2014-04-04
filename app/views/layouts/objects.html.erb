@@ -1,12 +1,12 @@
 <% content_for :main_content do %>
-<div class="span9">
+<div class="col-md-9">
   <div id="document" class="<%= render_document_class %>">
 	<h3 id="object-title"><%= render_object_title %></h3>
 	<div class="row" style="margin-bottom:1em">
-	  <div class="span2" id="object-thumbnail">
+	  <div class="col-md-2" id="object-thumbnail">
 		<%= render_thumbnail current_object %>
 	  </div>
-	  <div class="span7" id="object-summary">
+	  <div class="col-md-7" id="object-summary">
 		<%= render_document_summary current_document %>
 	  </div>
 	</div>
@@ -15,7 +15,7 @@
 	</div>
   </div>
 </div>
-<div class="span3">
+<div class="col-md-3" id="object-sidebar">
   <%= render 'sidebar' %>
 </div>
 <% end %>

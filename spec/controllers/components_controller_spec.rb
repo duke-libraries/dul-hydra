@@ -1,8 +1,8 @@
 require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
-def create_component checksum = "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd0"
-  post :create, parent: item, component: {title: "New Component", description: "Part of an item"}, content: fixture_file_upload('sample.pdf', 'application/pdf'), checksum: checksum
+def create_component checksum = "bda5fda452d0047c27e9e0048ed59428cb9e6d5d46fe9c27dff5c8e39b75a59e"
+  post :create, parent: item, component: {title: "New Component", description: "Part of an item"}, content: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum
 end
 
 describe ComponentsController, components: true do
@@ -58,9 +58,29 @@ describe ComponentsController, components: true do
         it "should create a new object" do
           expect{ create_component }.to change{ Component.count }.by(1)
         end
+        it "should have content" do
+          create_component
+          expect(assigns(:component)).to have_content
+        end
+        it "should correctly set the MIME type" do
+          create_component
+          expect(assigns(:component).content_type).to eq("image/tiff")
+        end
+        it "should store the original file name" do
+          create_component
+          expect(assigns(:component).original_filename).to eq("image1.tiff")
+        end
         it "should grant edit permission to the user" do
           create_component
           expect(assigns(:component).edit_users).to include(user.user_key)
+        end
+        it "should have a parent" do
+          create_component
+          expect(assigns(:component).parent).to eq(item)
+        end
+        it "should have a thumbnail (if it's an image)" do
+          create_component
+          expect(assigns(:component)).to have_thumbnail
         end
         it "should create an event log" do
           expect{ create_component }.to change{ EventLog.where(model: "Component", action: "create").count }.by(1)
@@ -68,6 +88,12 @@ describe ComponentsController, components: true do
         it "should redirect to the component show page" do
           create_component
           expect(response).to redirect_to(action: "show", id: assigns(:component))
+        end
+        context "when the parent is governed by an admin policy" do
+          it "should copy the admin policy to the object"
+        end
+        context "when the parent is not governed by an admin policy" do
+          it "should copy the parent's permissions"
         end
         context "checksum doesn't match" do
           let(:bad_checksum) { "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }
