@@ -1,8 +1,6 @@
 require 'spec_helper'
 require 'dul_hydra'
 
-Warden.test_mode!
-
 describe "Grouper integration" do
   let(:user) { FactoryGirl.create(:user) }
   let(:object) { FactoryGirl.create(:collection) }
@@ -21,7 +19,7 @@ describe "Grouper integration" do
     Warden.test_reset!
   end
   it "should honor Grouper group access control" do
-    visit object_path(object)
+    visit url_for(object)
     page.should have_content("Grouper Works!")
   end
   

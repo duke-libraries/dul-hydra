@@ -101,6 +101,8 @@ module DulHydra
     def content_mime_type
       content_ds["dsMIME"] rescue nil
     end
+    # For duck-typing with DulHydra::HasContent
+    alias_method :content_type, :content_mime_type
 
     def content_size
       content_ds["dsSize"] rescue nil
@@ -128,6 +130,10 @@ module DulHydra
 
     def association(name)
       get_pid(ActiveFedora::SolrService.solr_name(name, :symbol))
+    end
+
+    def controller_name
+      active_fedora_model.tableize
     end
 
     private

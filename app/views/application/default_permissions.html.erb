@@ -1,0 +1,5 @@
+<h4><%= t('dul_hydra.permissions.page_titles.edit_default_permissions') %></h4>
+<p class="alert">
+  <%= t('dul_hydra.permissions.alerts.default_permissions').html_safe %>
+</p>
+<%= render partial: 'rights_form', locals: {license: current_object.default_license} %>

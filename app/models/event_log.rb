@@ -19,6 +19,8 @@ class EventLog < ActiveRecord::Base
     UPLOAD = "upload"
     DELETE = "delete"
     DESTROY = "destroy"
+    MODIFY_RIGHTS = "modify rights"
+    MODIFY_POLICY = "modify policy"
     def self.all
       constants(false)
     end

@@ -5,7 +5,7 @@ module BlacklightHelper
     opts[:label] ||= blacklight_config.index.show_link.to_sym
     label = render_document_index_label doc, opts
     if can? :read, doc
-      link_to label, object_path(doc.id)
+      link_to label, document_or_object_url(doc)
     else
       content_tag :span, label
     end

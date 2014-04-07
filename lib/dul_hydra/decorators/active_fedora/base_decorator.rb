@@ -68,4 +68,13 @@ ActiveFedora::Base.class_eval do
     id.sub(/:/, "-")
   end
 
+  # For duck-typing with SolrDocument
+  def active_fedora_model
+    self.class.to_s
+  end
+
+  def controller_name
+    self.class.to_s.tableize
+  end
+
 end

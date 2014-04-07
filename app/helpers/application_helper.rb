@@ -137,12 +137,9 @@ module ApplicationHelper
   end
 
   def render_download_link(args = {})
-    document = args[:document]
-    return unless document
+    return unless args[:document]
     label = args.fetch(:label, "Download")
-    css_class = args.fetch(:css_class, "")
-    css_id = args.fetch(:css_id, "download-#{document.safe_id}")
-    link_to label, download_object_path(document.id), :class => css_class, :id => css_id
+    link_to label, download_url_for(args[:document]), class: args[:css_class], id: args[:css_id]
   end
   
   def render_download_icon(args = {})
@@ -154,11 +151,11 @@ module ApplicationHelper
     current_document.title
   end
 
-  def render_document_thumbnail(document, linked = false)
-    src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail(document)
+  def render_thumbnail(document_or_object, linked = false)
+    src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object) : default_thumbnail(document_or_object)
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
-    if linked && can?(:read, document)
-      link_to thumbnail, object_path(document)
+    if linked && can?(:read, document_or_object)
+      link_to thumbnail, document_or_object_url(document_or_object)
     else
       thumbnail
     end
@@ -228,7 +225,15 @@ module ApplicationHelper
   end
 
   def link_to_create_model(model)
-    link_to model, send("new_#{model.underscore}_path")
+    link_to model, controller: model.underscore.pluralize, action: "new"
+  end
+
+  def document_or_object_url(document_or_object)
+    url_for controller: document_or_object.controller_name, action: "show", id: document_or_object
+  end
+
+  def download_url_for(document_or_object)
+    url_for controller: "downloads", action: "show", id: document_or_object
   end
 
   def model_options_for_select(model, access=nil)
@@ -253,17 +258,91 @@ module ApplicationHelper
     link_to "Cancel", :back, class: "btn"
   end
 
+  def object_preservation_events
+    @object_preservation_events ||= current_object.preservation_events
+  end
+
+  def user_options_for_select(permission)
+    options_for_select all_user_options, selected_user_options(permission)
+  end
+
+  def group_options_for_select(permission)
+    options_for_select all_group_options, selected_group_options(permission)
+  end
+
+  def all_user_options
+    @all_user_options ||= user_options(User.order(:last_name, :first_name))
+  end
+
+  def selected_user_options(permission)
+    users = case params[:action]
+             when "permissions" then current_object.send "#{permission}_users"
+             when "default_permissions" then current_object.send "default_#{permission}_users"
+             end
+    users.collect { |u| user_option_value(u) }
+  end
+
+  def group_options(groups)
+    groups.collect { |g| [group_option_text(g), group_option_value(g)] }
+  end
+
+  def all_group_options
+    # TODO: List public first, then registered, then rest in alpha order (?)
+    @all_group_options ||= group_options(group_service.groups)
+  end
+
+  def selected_group_options(permission)
+    groups = case params[:action]
+             when "permissions" then current_object.send "#{permission}_groups"
+             when "default_permissions" then current_object.send "default_#{permission}_groups"
+             end
+    groups.collect { |g| group_option_value(g) }
+  end
+
+  def group_option_text(group_name)
+    case group_name
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+      "Public"
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
+      "Duke Community"
+    else
+      group_name
+    end
+  end
+
+  def group_option_value(group_name)
+    "group:#{group_name}"
+  end
+
+  def user_options(users)
+    users.collect { |u| [user_option_text(u), user_option_value(u)] }
+  end
+
+  def user_option_text(user)
+    user.display_name or user.user_key
+  end
+
+  def user_option_value(user_name)
+    "user:#{user_name}"
+  end
+
+  def inherited_permissions_alert
+    apo_link = link_to(current_object.admin_policy_id, default_permissions_path(current_object.admin_policy_id))
+    alert = I18n.t('dul_hydra.permissions.alerts.inherited') % apo_link
+    alert.html_safe
+  end
+
   private
 
   def render_label(text, label)
     content_tag :span, text, :class => "label label-#{label}"
   end
 
-  def default_thumbnail(document)
-    if document.content_mime_type
-      default_mime_type_thumbnail(document.content_mime_type)
+  def default_thumbnail(document_or_object)
+    if document_or_object.has_content?
+      default_mime_type_thumbnail(document_or_object.content_type)
     else
-      default_model_thumbnail(document.active_fedora_model)
+      default_model_thumbnail(document_or_object.active_fedora_model)
     end
   end
   

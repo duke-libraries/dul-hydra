@@ -7,29 +7,29 @@
 form.bookmark_toggle {
 	display: inline;
 }
-.permissions-form legend {
+.rights-form legend {
 	font-size: medium;
 	font-weight: bold;
 }
-.permissions-form fieldset {
+.rights-form fieldset {
 	margin-bottom: 1em;
 }
-.permissions-form textarea,
-.permissions-form input[type="text"],
-.permissions-form select {
+.rights-form textarea,
+.rights-form input[type="text"],
+.rights-form select {
 	width: auto;
 }
-.permissions-form .access-level {
+.rights-form .access-level {
 	margin-bottom: 1.5em;
 }
-.permissions-form .access-level-label {
+.rights-form .access-level-label {
 	font-weight: bold;
 	text-transform: uppercase;
 }
-.permissions-form .access-level-description {
+.rights-form .access-level-description {
 	font-weight: normal;
 }
-.permissions-form .access-level-description:before {
+.rights-form .access-level-description:before {
 	content: " - "
 }
 table.access-controls {

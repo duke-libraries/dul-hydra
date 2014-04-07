@@ -1,12 +1,8 @@
 require 'spec_helper'
 
-describe "Collection routes" do
-  it "should have a new route" do
-    expect(get: '/collections/new').to route_to(controller: 'collections', action: 'new')
-    expect(get: new_collection_path).to route_to(controller: 'collections', action: 'new')
-  end
-  it "should have a create route" do
-    expect(post: '/collections').to route_to(controller: 'collections', action: 'create')
-    expect(post: collections_path).to route_to(controller: 'collections', action: 'create')
+describe "collections router" do
+  # see also repository_routing_spec
+  it "should have a collection_info route" do
+    expect(get: "/collections/duke:1/collection_info").to route_to(controller: "collections", action: "collection_info", id: "duke:1")
   end
 end
