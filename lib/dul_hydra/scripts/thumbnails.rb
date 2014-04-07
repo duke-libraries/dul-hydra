@@ -10,13 +10,18 @@ module DulHydra::Scripts
     end
     
     def execute
-      @collection.items.each do |item|
+      items = ActiveFedora::SolrService.lazy_reify_solr_results(
+                  ActiveFedora::SolrService.query(@collection.children_query,
+                  rows: @collection.items.size))
+      items.each do |item|
         unless item.has_thumbnail?
           component = item.first_child
           if component.has_thumbnail?
             item.thumbnail.content = component.thumbnail.content
             item.thumbnail.mimeType = component.thumbnail.mimeType
-            item.save
+            unless item.save
+              puts "Thumbnails script unable to save item #{item.pid}"
+            end
           end
         end
       end
@@ -24,12 +29,15 @@ module DulHydra::Scripts
       if item.has_thumbnail?
         @collection.thumbnail.content = item.thumbnail.content
         @collection.thumbnail.mimeType = item.thumbnail.mimeType
-        @collection.save
+        unless @collection.save
+          puts "Thumbnails script unable to save collection #{collection.pid}"          
+        end
       end
     end
     
     def collection
-      @collection
+          @collection
     end
+    
   end
 end
