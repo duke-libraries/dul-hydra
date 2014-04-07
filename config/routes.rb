@@ -45,7 +45,6 @@ DulHydra::Application.routes.draw do
   end
 
   def repository_routes
-    thumbnail_routes
     rights_routes
     event_log_routes
     datastream_routes
@@ -89,12 +88,12 @@ DulHydra::Application.routes.draw do
   repository_content_resource :targets
   resources :admin_policies, repository_options(:admin_policies) do
     member do
-      thumbnail_routes
       rights_routes
       policy_routes
       datastream_routes
     end
   end
+  resources :thumbnail, only: :show, constraints: {id: pid_constraint}
 
   resources :preservation_events, :only => :show, constraints: {id: /[1-9][0-9]*/}
 

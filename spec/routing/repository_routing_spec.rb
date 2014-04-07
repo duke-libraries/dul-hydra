@@ -24,7 +24,7 @@ shared_examples "a repository object router" do
     expect(get: "/#{controller}/duke:1/preservation_events").to route_to(controller: controller, action: "preservation_events", id: "duke:1") unless controller == "admin_policies"
   end
   it "should have a thumbnail route" do
-    expect(:get => "/#{controller}/duke:1/thumbnail").to route_to(controller: "thumbnail", action: "show", id: "duke:1")
+    expect(:get => "/thumbnail/duke:1").to route_to(controller: "thumbnail", action: "show", id: "duke:1")
   end
   it "should have datastream routes" do
     expect(:get => "/#{controller}/duke:1/datastreams/descMetadata").to route_to(controller: "downloads", action: "show", id: "duke:1", datastream_id: "descMetadata")
