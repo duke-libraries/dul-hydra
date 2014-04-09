@@ -5,7 +5,7 @@ require 'dul_hydra/decorators/blacklight/solr_helper_decorator'
 require 'dul_hydra/decorators/hydra_access_controls/permission_decorator'
 
 DulHydra.configure do |config|
-  config.collection_report_fields = [:pid, :identifier, :content_size]
+  config.collection_report_fields = [:pid, :identifier, :content_size, :content_checksum]
 
   config.remote_groups_env_key = "ismemberof"
 
