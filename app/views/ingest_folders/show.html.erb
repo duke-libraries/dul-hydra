@@ -1,5 +1,17 @@
 <h1>Ingest Folder</h1>
 
+<% if @ingest_folder.errors.any? %>
+  <div class="alert alert-danger">
+    <h2><%= pluralize(@ingest_folder.errors.count, "warning") %> for this ingest folder:</h2>
+ 
+    <ul>
+    <% @ingest_folder.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <%= content_tag(:table, :class => 'table-bordered') do %>
 
 	<%= content_tag(:tr) do %>

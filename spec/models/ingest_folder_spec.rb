@@ -161,13 +161,27 @@ describe IngestFolder, ingest: true do
     end
     after { ActiveFedora::Base.destroy_all }
     context "scan" do
-      let(:scan_results) { ingest_folder.scan }
-      it "should report the correct scan results" do
-        expect(scan_results.total_count).to eql(7)
-        expect(scan_results.file_count).to eql(3)
-        expect(scan_results.parent_count).to eql(1)
-        expect(scan_results.target_count).to eql(2)
-        expect(scan_results.excluded_files).to eql(["Thumbs.db", "targets/Thumbs.db"])
+      context "no warnings" do
+        let(:scan_results) { ingest_folder.scan }
+        it "should report the correct scan results" do
+          expect(scan_results.total_count).to eql(7)
+          expect(scan_results.file_count).to eql(3)
+          expect(scan_results.parent_count).to eql(1)
+          expect(scan_results.target_count).to eql(2)
+          expect(scan_results.excluded_files).to eql(["Thumbs.db", "targets/Thumbs.db"])
+          expect(ingest_folder.errors).to be_empty
+        end
+      end
+      context "checksum warnings" do
+        before do
+          ingest_folder.checksum_file = "test.txt"
+          IngestFolder.any_instance.stub(:checksums).and_return({})
+          ingest_folder.scan
+        end
+        it "should have mising checksum warnings" do
+          expect(ingest_folder.errors.size).to eql(5)
+          expect(ingest_folder.errors.messages[:base]).to include(I18n.t('batch.ingest_folder.checksum_missing', :entry => '/mount/base/path/subpath/file01001.tif'))
+        end
       end
     end
     context "procezz" do
