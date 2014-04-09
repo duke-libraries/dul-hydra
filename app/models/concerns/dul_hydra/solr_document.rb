@@ -108,6 +108,10 @@ module DulHydra
       content_ds["dsSize"] rescue nil
     end
     
+    def content_checksum
+      content_ds["dsChecksum"] rescue nil
+    end
+    
     def targets
       @targets ||= ActiveFedora::SolrService.query(targets_query)
     end
