@@ -22,10 +22,11 @@ en:
             batch_name: Folder Ingest
             base_path:
                 forbidden: "%{path} is not permitted for folder ingest"
+            checksum_missing: "Unable to find checksum for %{entry}"
             create_batch: Create Ingest Batch
             excluded_files: Excluded Files
             folder: Folder
-            not_readable: "%{path} does not exist or is not readable" 
+            not_readable: "%{path} does not exist or is not readable"
             objects_to_ingest: Objects to be Ingested
             scan_folder: Scan Folder
             help:

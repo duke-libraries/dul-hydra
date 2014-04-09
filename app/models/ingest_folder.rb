@@ -100,6 +100,7 @@ class IngestFolder < ActiveRecord::Base
   
   def scan
     @parent_hash = {} if add_parents
+    @checksum_hash = checksums if checksum_file.present?
     @total_count = 0
     @file_count = 0
     @parent_count = 0
@@ -131,7 +132,7 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def file_checksum(file_entry)
-    @checksum_hash.fetch(checksum_hash_key(file_entry))
+    @checksum_hash.fetch(checksum_hash_key(file_entry), nil)
   end
   
   def checksums
@@ -175,6 +176,9 @@ class IngestFolder < ActiveRecord::Base
                   @parent_hash[parent_id] = nil
                 end
               end
+            end
+            if checksum_file.present? && file_checksum(File.join(dirpath, entry)).blank?
+              errors.add(:base, I18n.t('batch.ingest_folder.checksum_missing', :entry => File.join(dirpath, entry)))
             end
             create_batch_object_for_file(dirpath, entry) if create_batch_objects
           else
