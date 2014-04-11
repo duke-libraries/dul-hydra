@@ -37,10 +37,22 @@ describe CollectionsController do
 
   describe "#collection_info" do
     let(:collection) { FactoryGirl.create(:collection) }
+    let(:items) { FactoryGirl.create_list(:item, 3) }
+    before do
+      items.each do |item|
+        item.children = FactoryGirl.create_list(:component_with_content, 2)
+        item.parent = collection
+        item.save
+      end
+    end
     context "when the user can read the collection" do
       before { controller.current_ability.can(:read, collection) }
-      it "should render the collection_info template" do
-        expect(get :collection_info, id: collection).to render_template(:collection_info)
+      it "should report the statistics" do
+        get :collection_info, id: collection
+        expect(response).to render_template(:collection_info)
+        expect(controller.send(:collection_report)[:components]).to eq(6)
+        expect(controller.send(:collection_report)[:items]).to eq(3)
+        expect(controller.send(:collection_report)[:total_file_size]).to eq(60192)
       end
     end
     context "when the user cannot read the collection" do

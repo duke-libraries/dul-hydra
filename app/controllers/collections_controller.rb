@@ -31,7 +31,7 @@ class CollectionsController < ApplicationController
   def collection_report
     return @collection_report if @collection_report
     components = current_object.components_from_solr
-    total_file_size = components.each_with_object(0) { |doc, tot| tot += (doc.content_size || 0) }
+    total_file_size = components.map(&:content_size).reduce(0, :+)
     @collection_report = {
       components: components.size,
       items: current_object.children.size,
