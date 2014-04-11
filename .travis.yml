@@ -1,6 +1,8 @@
 language: ruby
 rvm:
   - 2.0.0
+before_script:
+  - "cp config/log4r.yml.sample config/log4r.yml"
 script: "bundle exec rake dul_hydra:ci:build"
 notifications:
   email:
