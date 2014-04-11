@@ -1,13 +1,15 @@
-<h1>Editing Export Set</h1>
+<h1>Edit Export Set <%= @export_set.id %></h1>
 
-<%= form_for @export_set do |f| %>
-  <%= render :partial => 'title_field', :locals => {:f => f} %>
+<%= form_for @export_set, html: {role: "form"} do |f| %>
+  <%= render partial: 'title_field', locals: {f: f} %>
   <% if @export_set.export_descriptive_metadata? -%>
-    <%= f.label :csv_col_sep, "CSV Column Separator" %>
-    <%= f.select :csv_col_sep, csv_col_sep_options %>
-	<%= t('dul_hydra.export_sets.alerts.warn_change_csv_col_sep') %>
+    <div class-"form-group">
+      <%= f.label :csv_col_sep, "CSV Column Separator" %>
+      <%= f.select :csv_col_sep, csv_col_sep_options %>
+	</div>
+	<p class="help-block">
+	  <%= t('dul_hydra.export_sets.alerts.warn_change_csv_col_sep') %>
+	</p>
   <% end -%>
-  <div>
-	<%= f.submit :id => "update_export_set_button", :class => "btn btn-primary" %>
-  </div>
+  <%= f.submit :id => "update_export_set_button", :class => "btn btn-primary" %>
 <% end %>

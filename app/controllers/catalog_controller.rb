@@ -26,13 +26,12 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
-    config.index.show_link = DulHydra::IndexFields::TITLE
-    config.index.record_display_type = DulHydra::IndexFields::ACTIVE_FEDORA_MODEL
+    config.index.title_field = DulHydra::IndexFields::TITLE
+    config.index.display_type_field = DulHydra::IndexFields::ACTIVE_FEDORA_MODEL
 
     # solr field configuration for document/show views
-    config.show.html_title = DulHydra::IndexFields::TITLE
-    config.show.heading = DulHydra::IndexFields::TITLE
-    config.show.display_type = DulHydra::IndexFields::HAS_MODEL
+    config.show.title_field = DulHydra::IndexFields::TITLE
+    config.show.display_type_field = DulHydra::IndexFields::HAS_MODEL
 
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display

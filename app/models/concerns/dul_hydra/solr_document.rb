@@ -8,6 +8,10 @@ module DulHydra
       alias_method :pid, :id
     end
 
+    def to_partial_path
+      'document'
+    end
+
     def safe_id
       id.sub(/:/, "-")
     end

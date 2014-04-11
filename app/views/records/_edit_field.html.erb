@@ -1,13 +1,11 @@
 <% render_req ||= true # render_req is true for single file edit, false for batch edit %>
-<div class="control-group">
   <% vals =  f.object[key] %>
   <% if render_req && f.object.required?(key) %>
     <%= label_tag field_id(key), "#{field_label(key)} (required)", class: "control-label" %>
   <% else %>
     <%= label_tag field_id(key), field_label(key), class: "control-label" %>
   <% end %>
-
   <% vals.to_ary.each_with_index do |v, index| %>
     <%= render_edit_field_partial(key, f: f,  v: v, index: index, render_req: render_req) %>
   <% end %>
- </div> <!-- /control-group -->
+

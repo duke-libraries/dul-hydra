@@ -4,20 +4,17 @@ module DulHydra
     module RepositoryBehavior
       extend ActiveSupport::Concern
 
-      include Blacklight::Base
-
       included do
         # The order of included modules is important!
+        include Blacklight::Base
         include DulHydra::Controller::Authorization
         include DulHydra::Controller::EventLogBehavior
         include DulHydra::Controller::TabbedViewBehavior
         include DulHydra::Controller::DescribableBehavior
         include DulHydra::Controller::RightsBehavior
-        include DulHydra::Controller::Associations
 
         # Default show tabs
         self.tabs = [:tab_descriptive_metadata,
-                     :tab_attachments,
                      :tab_permissions,
                      :tab_preservation_events]
 
@@ -28,6 +25,7 @@ module DulHydra
 
         helper_method :current_object
         helper_method :current_document
+        helper_method :get_solr_response_for_field_values
       end
 
       def show

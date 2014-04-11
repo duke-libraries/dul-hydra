@@ -1,24 +1,16 @@
-<div class="well">
-  <h4>New Component</h4>
-  <dl>
-	<dt>Collection</dt>
-	<dd><%= collection.title_display %> (<%= collection.pid %>)</dd>
-	<dt>Part of Item</dt>
-	<dd><%= parent.title_display %> (<%= parent.pid %>)</dd>
-  <dl>
-  <%= form_for @component, html: {enctype: "multipart/form-data"} do |f| %>
-    <%= render partial: 'form_errors', locals: {form: f} %>
+<% content_for :form_top do %>
+  <div class="form-group">
+	<label class="control-label">Collection <%= collection.pid %></label>
+	<p class="form-control-static">
+	  <%= link_to collection.title_display, url_for(collection) %>
+	<p>
+  </div>
+  <div class="form-group">
+	<label class="control-label">Add to Item <%= parent.pid %></label>
+	<p class="form-control-static">
+	  <%= link_to parent.title_display, url_for(parent) %>
+	<p>
+  </div>
+  <%= hidden_field_tag "parent", parent.pid %>
+<% end %>
 
-	<%= hidden_field_tag "parent", parent.pid %>
-
-    <%= f.label :title %>
-    <%= text_field_tag "component[title]", nil %>
-
-    <%= f.label :description %>
-    <%= text_area_tag "component[description]" %>
-
-	<%= render 'select_content_file' %>
-
-    <%= render partial: 'new_form_actions', locals: {form: f} %>
-  <% end %>
-</div>

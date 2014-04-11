@@ -1,9 +1,9 @@
-<div class="btn-group pull-right">
-  <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+<div class="btn-group pull-right" style="margin-left: 1em">
+  <a class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" href="#">
 	Create
 	<span class="caret"></span>
   </a>
-  <ul class="dropdown-menu">
+  <ul class="dropdown-menu" role="menu">
 	<% create_menu_models.each do |model| %>
 	<li>
 	  <%= link_to_create_model model %>

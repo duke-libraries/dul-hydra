@@ -13,7 +13,6 @@ class Ability
   end
 
   def custom_permissions
-    download_permissions unless self.ability_logic.include?(:download_permissions)
     discover_permissions
     export_sets_permissions
     preservation_events_permissions
@@ -26,10 +25,7 @@ class Ability
   end
 
   def create_permissions
-    super # Permits :create for :all if user is authenticated
-    # First block repository object creation ...
-    cannot :create, ActiveFedora::Base 
-    # ... then permit members of authorized groups on a per-model basis
+    super 
     DulHydra.creatable_models.each do |model|
       can :create, model.constantize if has_ability_group?(:create, model)
     end
@@ -50,6 +46,7 @@ class Ability
   end
 
   def export_sets_permissions
+    can :create, ExportSet if authenticated_user?
     can :manage, ExportSet, :user_id => current_user.id
   end
 
@@ -67,12 +64,12 @@ class Ability
   end
 
   def ingest_folders_permissions
-    cannot :create, IngestFolder unless IngestFolder.permitted_folders(current_user).present?
+    can :create, IngestFolder if IngestFolder.permitted_folders(current_user).present?
     can [:show, :procezz], IngestFolder, :user => current_user
   end
   
   def metadata_files_permissions
-    cannot :create, MetadataFile unless has_ability_group?(:create, MetadataFile)
+    can :create, MetadataFile if has_ability_group?(:create, MetadataFile)
     can [:show, :procezz], MetadataFile, :user => current_user
   end
   
@@ -225,6 +222,10 @@ class Ability
 
   def model_class(model)
     model.respond_to?(:constantize) ? model.constantize : model
+  end
+
+  def authenticated_user?
+    current_user.persisted?
   end
 
 end

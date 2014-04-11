@@ -1,11 +1,12 @@
-<% if current_user %>
-  <strong><%= t('dul_hydra.user.welcome.authenticated') %></strong>
-  <%= render 'user_menu' %>
-<% else %>
-  <strong><%= t('dul_hydra.user.welcome.guest') %></strong>
-  <%= link_to t('blacklight.header_links.login'), new_user_session_path, class: "btn btn-primary" %>
-<% end %>
-
-<% if current_ability.can_create_models? %>
-  <%= render 'create_menu' %>
-<% end %>
+<div class="pull-right">
+  <% if current_ability.can_create_models? %>
+    <%= render 'create_menu' %>
+  <% end %>
+  <% if current_user %>
+    <strong><%= t('dul_hydra.user.welcome.authenticated') %></strong>
+    <%= render 'user_menu' %>
+  <% else %>
+    <strong><%= t('dul_hydra.user.welcome.guest') %></strong>
+    <%= link_to t('blacklight.header_links.login'), new_user_session_path, class: "btn btn-primary" %>
+  <% end %>
+</div>

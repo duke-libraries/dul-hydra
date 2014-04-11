@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'helpers/user_helper'
 
 describe "batches/show.html.erb" do
 
@@ -8,10 +7,11 @@ describe "batches/show.html.erb" do
     after do
       batch.user.delete
       batch.destroy
+      Warden.test_reset!
     end
     context "batch info" do
       context "validate action" do
-        before { login batch.user }
+        before { login_as batch.user }
         context "not yet validated" do
           before { visit batch_path(batch) }
           it "should have a link to validate the batch" do

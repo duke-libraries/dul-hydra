@@ -1,8 +1,9 @@
 <div style="padding: 3em;" class="text-center">
-  <%= image_tag "dul_hydra/spinner_30x30.gif", alt: "Loading content ...", size: "30x30" %>
+  <div class="text-muted"><em>Loading</em></div>
+  <div><%= image_tag "dul_hydra/spinner_30x30.gif", alt: "Loading content ...", size: "30x30" %></div>
 </div>
 <script type="text/javascript">
-  $('a[href="#<%= tab.css_id %>"]').on('show', function(e) {
+  $('a[href="#<%= tab.css_id %>"]').on('show.bs.tab', function(e) {
     $('#<%= tab.css_id %>').load("<%= tab.href %>");
   });
 </script>

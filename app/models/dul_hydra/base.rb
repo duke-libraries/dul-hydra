@@ -47,5 +47,10 @@ module DulHydra
       copy_permissions_from(other) unless copy_admin_policy_from(other)
     end
 
+    def association_query(association)
+      # XXX Ideally we would include a clause to limit by AF model, but this should suffice
+      ActiveFedora::SolrService.construct_query_for_rel(reflections[association].options[:property] => internal_uri)
+    end
+
   end
 end

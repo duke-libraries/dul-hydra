@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'helpers/user_helper'
 
 describe "batch_objects/show.html.erb", batch: true do
   
@@ -34,9 +33,11 @@ describe "batch_objects/show.html.erb", batch: true do
           @parent_pid = r.object
         end
       end      
-      login batch.user
+      login_as batch.user
       visit(batch_object_path(batch_object))
     end
+
+    after { Warden.test_reset! }
     
     it "should display information about the batch object" do
       expect(page).to have_text("Batch Object #{batch_object.id}")

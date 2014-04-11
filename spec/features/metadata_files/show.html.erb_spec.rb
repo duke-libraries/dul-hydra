@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'helpers/user_helper'
 require "#{Rails.root}/app/helpers/metadata_files_helper"
 
 include MetadataFilesHelper
@@ -39,13 +38,14 @@ describe "metadata_files/show.html.erb", :metadata_file => true do
   }
   
   before do
-    login metadata_file.user
+    login_as metadata_file.user
     visit(metadata_file_path(metadata_file))
   end
   
   after do
     metadata_file.user.destroy
     metadata_file.destroy
+    Warden.test_reset!
   end
   
   context "factory version" do

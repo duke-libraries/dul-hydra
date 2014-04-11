@@ -3,8 +3,8 @@ class Collection < DulHydra::Base
   include DulHydra::HasChildren
   include DulHydra::HasAttachments
 
-  has_many :children, :property => :is_member_of_collection, :inbound => true, :class_name => 'Item'
-  has_many :targets, :property => :is_external_target_for, :inbound => true, :class_name => 'Target'
+  has_many :children, property: :is_member_of_collection, class_name: 'Item'
+  has_many :targets, property: :is_external_target_for, class_name: 'Target'
 
   alias_method :items, :children
   alias_method :item_ids, :child_ids

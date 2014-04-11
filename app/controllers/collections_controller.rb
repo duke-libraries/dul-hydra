@@ -2,6 +2,7 @@ class CollectionsController < ApplicationController
 
   include DulHydra::Controller::RepositoryBehavior
   include DulHydra::Controller::HasChildrenBehavior
+  include DulHydra::Controller::HasAttachmentsBehavior
 
   self.tabs.unshift :tab_items
   self.tabs << :tab_collection_info

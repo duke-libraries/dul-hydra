@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-def create_attachment checksum = "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd0"
-  post :create, attach_to: attach_to, attachment: {title: "Attachment", description: "Sample file"}, content: fixture_file_upload('sample.pdf', 'application/pdf'), checksum: checksum
+def create_attachment checksum = "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18"
+  post :create, attach_to: attach_to, attachment: {title: "Attachment", description: "Sample file"}, content: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum
 end
 
 def new_attachment 
@@ -59,17 +59,20 @@ describe AttachmentsController, attachments: true do
       before { controller.current_ability.can(:create, Attachment) }
       describe "when user can add attachments to object" do
         before { controller.current_ability.can(:add_attachment, attach_to) }
+        it "should create a new object" do
+          expect{ create_attachment }.to change{ Attachment.count }.by(1)
+        end
         it "should have content" do
           create_attachment
           expect(assigns(:attachment)).to have_content
         end
         it "should correctly set the MIME type" do
           create_attachment
-          expect(assigns(:attachment).content_type).to eq("application/pdf")
+          expect(assigns(:attachment).content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
         end
         it "should store the original file name" do
           create_attachment
-          expect(assigns(:attachment).original_filename).to eq("sample.pdf")
+          expect(assigns(:attachment).original_filename).to eq("sample.docx")
         end
         it "should be attached to the object" do
           create_attachment
