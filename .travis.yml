@@ -3,19 +3,7 @@ rvm:
   - 2.0.0
 before_script:
   - "cp config/log4r.yml.sample config/log4r.yml"
-  - "cp config/log4r_batch_processor.yml.sample config/log4r_batch_processor.yml"
-  - "cp config/log4r_fixity_check.yml.sample config/log4r_fixity_check.yml"
-  - "cp config/database.yml.sample config/database.yml"
-  - "cp config/folder_ingest.yml.sample config/folder_ingest.yml"
-  - "cp config/role_map.yml.sample config/role_map.yml"
-  - "cp config/solr.yml.sample config/solr.yml"
-  - "cp config/fedora.yml.sample config/fedora.yml"
-  - "cp config/environments/test.rb.sample config/environments/test.rb"
-  - "rake db:migrate"
-  - "rake db:test:prepare"
-  - "rake jetty:clean"
-  - "rake jetty:config"
-script: "rake dul_hydra:ci"
+script: "bundle exec rake dul_hydra:ci:build"
 notifications:
   email:
     - lib-drs@duke.edu

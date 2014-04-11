@@ -152,7 +152,7 @@ module ApplicationHelper
   end
 
   def render_thumbnail(document_or_object, linked = false)
-    src = document_or_object.has_thumbnail? ? thumbnail_url_for(document_or_object) : default_thumbnail(document_or_object)
+    src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object) : default_thumbnail(document_or_object)
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
     if linked && can?(:read, document_or_object)
       link_to thumbnail, document_or_object_url(document_or_object)
