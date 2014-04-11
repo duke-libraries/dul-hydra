@@ -1,4 +1,11 @@
-:admin_policy_creators: admin_policy_creators
-:admin_policy_editors: admin_policy_editors
-:collection_creators: collection_creators
-:collection_editors: collection_editors
+AdminPolicy:
+  create: admin_policy_creators
+Collection:
+  create: collection_creators
+Item:
+  create: item_creators
+Component:
+  download: component_download
+  create: component_creators
+Attachment:
+  create: attachment_creators
