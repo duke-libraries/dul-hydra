@@ -20,6 +20,9 @@ class CatalogController < ApplicationController
   CatalogController.solr_search_params_logic += [:exclude_unwanted_models] unless DulHydra.unwanted_models.blank?
 
   configure_blacklight do |config|
+
+    config.http_method = :post
+
     config.default_solr_params = { 
       :qt => 'search',
       :rows => 10 
