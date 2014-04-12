@@ -66,7 +66,7 @@ module DulHydra
 
     def admin_policy_pid
       uri = admin_policy_uri
-      uri &&= ActiveFedora::Base.pids_from_uris(uri)
+      uri &&= ActiveFedora::Base.pid_from_uri(uri)
     end
 
     def has_children?
@@ -167,7 +167,7 @@ module DulHydra
     end
 
     def get_pid(field)
-      ActiveFedora::Base.pids_from_uris(get(field))
+      ActiveFedora::Base.pid_from_uri(get(field))
     end
 
   end
