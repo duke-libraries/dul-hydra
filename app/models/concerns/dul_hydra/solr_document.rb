@@ -167,7 +167,7 @@ module DulHydra
     end
 
     def get_pid(field)
-      ActiveFedora::Base.pid_from_uri(get(field))
+      ActiveFedora::Base.pid_from_uri(get(field)) rescue nil
     end
 
   end
