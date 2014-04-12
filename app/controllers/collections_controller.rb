@@ -48,5 +48,14 @@ class CollectionsController < ApplicationController
     end
   end
 
+  # tabs
+
+  def tab_items
+    tab_children("items")
+  end
+
+  def tab_collection_info
+    Tab.new("collection_info", href: url_for(action: "collection_info"))
+  end
 
 end

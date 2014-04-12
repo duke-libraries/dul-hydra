@@ -6,4 +6,10 @@ class ItemsController < ApplicationController
 
   self.tabs.unshift :tab_components
 
+  protected
+
+  def tab_components
+    tab_children("components")
+  end
+
 end

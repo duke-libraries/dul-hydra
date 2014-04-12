@@ -50,8 +50,22 @@ module DulHydra
         resource_params.permit(:title, :description)
       end
 
-    end
+      # tabs
 
+      def tab_descriptive_metadata
+        Tab.new("descriptive_metadata",
+                actions: [
+                          TabAction.new("edit",
+                                        url_for(action: "edit"),
+                                        can?(:edit, current_object)),
+                          TabAction.new("download",
+                                        datastream_download_url_for("descMetadata"),
+                                        show_ds_download_link?(current_object.descMetadata))
+                         ]
+                )
+      end
+
+    end
   end
 end
 
