@@ -25,6 +25,10 @@ module DulHydra
         end
       end
 
+      def tab_children(id)
+        Tab.new(id, guard: current_object.has_children?)
+      end
+
     end
   end
 end

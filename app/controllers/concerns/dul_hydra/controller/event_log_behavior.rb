@@ -44,6 +44,12 @@ module DulHydra
         [:post, :put, :patch, :delete].include? request.request_method_symbol
       end
 
+      def tab_preservation_events
+        Tab.new("preservation_events", 
+                href: url_for(action: "preservation_events"),
+                guard: current_object.has_preservation_events?)
+      end
+
       private
 
       def log_defaults

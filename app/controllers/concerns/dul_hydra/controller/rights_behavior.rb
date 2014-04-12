@@ -28,6 +28,21 @@ module DulHydra
         end        
       end
 
+      protected
+
+      def tab_permissions
+        Tab.new("permissions",
+                actions: [
+                          TabAction.new("edit", 
+                                        url_for(action: "permissions"),
+                                        can?(:edit, current_object)),
+                          TabAction.new("download",
+                                        datastream_download_url_for("rightsMetadata"),
+                                        show_ds_download_link?(current_object.rightsMetadata))
+                         ]
+                )
+      end
+
     end
   end
 end

@@ -7,9 +7,9 @@ module DulHydra
       included do
         # The order of included modules is important!
         include Blacklight::Base
+        include DulHydra::Controller::TabbedViewBehavior
         include DulHydra::Controller::Authorization
         include DulHydra::Controller::EventLogBehavior
-        include DulHydra::Controller::TabbedViewBehavior
         include DulHydra::Controller::DescribableBehavior
         include DulHydra::Controller::RightsBehavior
 

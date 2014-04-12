@@ -13,6 +13,12 @@ module DulHydra
         response, @attachments = get_search_results(params, {q: query})        
       end
 
+      protected
+
+      def tab_attachments
+        Tab.new("attachments", guard: current_object.has_attachments?)
+      end
+
     end
   end
 end
