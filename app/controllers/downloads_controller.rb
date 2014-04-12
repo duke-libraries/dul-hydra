@@ -3,7 +3,7 @@ class DownloadsController < ApplicationController
 
   def show
     authorize! :download, datastream
-    send_content(asset)
+    send_content
   end
 
   def load_asset
