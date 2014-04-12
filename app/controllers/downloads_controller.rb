@@ -1,14 +1,6 @@
 class DownloadsController < ApplicationController
+
   include Hydra::Controller::DownloadBehavior
-
-  def show
-    authorize! :download, datastream
-    send_content
-  end
-
-  def load_asset
-    @asset = ActiveFedora::Base.find(params[asset_param_key], cast: true)
-  end
 
   def datastream_name
     if datastream.dsid == DulHydra::Datastreams::CONTENT
