@@ -1,7 +1,7 @@
 module ApplicationHelper
 
   def internal_uri_to_pid(args)
-    ActiveFedora::Base.pids_from_uris(args[:document][args[:field]])
+    ActiveFedora::Base.pid_from_uri(args[:document][args[:field]])
   end
 
   def internal_uri_to_link(args)
