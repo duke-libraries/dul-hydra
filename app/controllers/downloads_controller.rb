@@ -2,6 +2,11 @@ class DownloadsController < ApplicationController
 
   include Hydra::Controller::DownloadBehavior
 
+  def load_asset
+    # XXX Loading instance from solr doesn't work with customized datastream_name (below).
+    @asset = ActiveFedora::Base.find(params[asset_param_key], cast: true)
+  end
+
   def datastream_name
     if datastream.dsid == DulHydra::Datastreams::CONTENT
       return asset.original_filename if asset.original_filename.present?
