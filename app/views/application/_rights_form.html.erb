@@ -34,7 +34,7 @@
   </fieldset>
   <div class="form-group">
 	<%= submit_tag "Save", data: {confirm: "TODO: PUT I18N HERE"}, class: "btn btn-primary" %>
-	<%= cancel_button %>
+	<%= cancel_button return_to: url_for(action: "show", tab: "permissions") %>
   </div>
 <% end %>
 
