@@ -255,8 +255,9 @@ module ApplicationHelper
   end
 
   def cancel_button args={}
+    return_to = args.delete(:return_to) || :back
     opts = {class: "btn btn-danger"}.merge(args)
-    link_to "Cancel", :back, opts
+    link_to "Cancel", return_to, opts
   end
 
   def object_preservation_events
