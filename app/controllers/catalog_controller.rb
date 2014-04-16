@@ -21,8 +21,6 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
 
-    config.http_method = :post
-
     config.default_solr_params = { 
       :qt => 'search',
       :rows => 10 
