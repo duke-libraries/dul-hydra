@@ -194,3 +194,28 @@ shared_examples "a repository object rights editing view" do
     expect(object.license_description).to eq("No one can get to it")
   end
 end
+
+shared_examples "a governable repository object rights editing view" do
+
+  it_behaves_like "a repository object rights editing view"
+
+  context "when the object is governed by an admin policy" do
+    let(:admin_policy) { FactoryGirl.create(:admin_policy) }
+    let(:user) { FactoryGirl.create(:user) }
+    before do
+      setup
+      admin_policy.default_permissions = [{type: "user", name: "Bob", access: "read"},
+                                          {type: "group", name: "Special People", access: "edit"}]
+      admin_policy.save
+      object.edit_users = [user.user_key]
+      object.admin_policy = admin_policy
+      object.save
+    end
+    after { teardown }
+    it "should display the inherited permissions" do
+      visit url_for(controller: object.controller_name, action: "permissions", id: object)
+      expect(find('#access-level-read')).to have_content("Bob")
+      expect(find('#access-level-edit')).to have_content("Special People")
+    end
+  end
+end

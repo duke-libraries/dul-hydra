@@ -2,7 +2,7 @@
   <fieldset>
 	<legend>Permissions</legend>
 	<% all_permissions.each do |permission| %>
-	<div class="access-level form-group">
+	<div class="access-level form-group" id="access-level-<%= permission %>">
       <label for="permissions_<%= permission %>" class="control-label"><%= permission %></label>
 	  <select name="permissions[<%= permission %>][]" id="permissions_<%= permission %>" multiple="multiple" data-placeholder="Select users/groups to grant <%= permission.upcase %>" class="form-control">
 		<optgroup label="GROUPS">
@@ -12,6 +12,10 @@
 		  <%= user_options_for_select permission %>
 		</optgroup>
 	  </select>
+	  <% if params[:action] == "permissions" %>
+	    <%= render_inherited_groups permission %>
+		<%= render_inherited_users permission %>
+	  <% end %>
 	  <p class="help-block"><%= t("dul_hydra.permissions.descriptions.#{permission}") %></p>
 	</div>
 	<% end %>

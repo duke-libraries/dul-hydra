@@ -10,7 +10,7 @@ describe "Collections views" do
   end
 
   describe "rights editing" do
-    it_behaves_like "a repository object rights editing view" do
+    it_behaves_like "a governable repository object rights editing view" do
       let(:object) { FactoryGirl.create(:collection) }
     end
   end
