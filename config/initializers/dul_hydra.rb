@@ -55,3 +55,5 @@ end
 Warden::Manager.after_set_user do |user, auth, opts|
   user.group_service = DulHydra::Services::RemoteGroupService.new(auth.env)
 end
+
+Blacklight::Configuration.default_values[:http_method] = :post
