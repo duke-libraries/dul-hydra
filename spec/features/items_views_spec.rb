@@ -7,6 +7,6 @@ describe "Items views" do
     it_behaves_like "a repository object show view"
   end
   describe "rights editing" do
-    it_behaves_like "a repository object rights editing view"
+    it_behaves_like "a governable repository object rights editing view"
   end
 end
