@@ -2,8 +2,10 @@ source 'http://rubygems.org'
 
 gem 'rails', '~> 4.0.3'
 
-gem 'hydra-head', github: 'projecthydra/hydra-head'
-gem 'active-fedora', github: 'projecthydra/active_fedora'
+# gem 'hydra-head', github: 'projecthydra/hydra-head'
+gem 'hydra-head', '7.0.1'
+# gem 'active-fedora', github: 'projecthydra/active_fedora'
+gem 'active-fedora', '7.0.2'
 gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user', '0.3.0'
 gem 'grouper-rest-client'
