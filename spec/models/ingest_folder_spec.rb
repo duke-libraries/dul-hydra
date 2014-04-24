@@ -147,10 +147,10 @@ describe IngestFolder, ingest: true do
     let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user, :collection_pid => collection.pid) }
     before do
       Dir.stub(:foreach).with("/mount/base/path/subpath").and_return(
-        Enumerator.new { |y| y << "Thumbs.db" << "file01001.tif" << "file01002.tif" << "pdf" << "targets" }
+        Enumerator.new { |y| y << "Thumbs.db" << "movie.mp4" << "file01001.tif" << "file01002.tif" << "pdf" << "targets" }
       )
       Dir.stub(:foreach).with("/mount/base/path/subpath/pdf").and_return(
-        Enumerator.new { |y| y << "file01.pdf" }
+        Enumerator.new { |y| y << "file01.pdf" << "track01.wav" }
       )
       Dir.stub(:foreach).with("/mount/base/path/subpath/targets").and_return(
         Enumerator.new { |y| y << "Thumbs.db" << "T001.tiff" << "T002.tiff"}
@@ -164,9 +164,9 @@ describe IngestFolder, ingest: true do
       context "no warnings" do
         let(:scan_results) { ingest_folder.scan }
         it "should report the correct scan results" do
-          expect(scan_results.total_count).to eql(7)
-          expect(scan_results.file_count).to eql(3)
-          expect(scan_results.parent_count).to eql(1)
+          expect(scan_results.total_count).to eql(9)
+          expect(scan_results.file_count).to eql(5)
+          expect(scan_results.parent_count).to eql(3)
           expect(scan_results.target_count).to eql(2)
           expect(scan_results.excluded_files).to eql(["Thumbs.db", "targets/Thumbs.db"])
           expect(ingest_folder.errors).to be_empty
@@ -179,7 +179,7 @@ describe IngestFolder, ingest: true do
           ingest_folder.scan
         end
         it "should have mising checksum warnings" do
-          expect(ingest_folder.errors.size).to eql(5)
+          expect(ingest_folder.errors.size).to eql(7)
           expect(ingest_folder.errors.messages[:base]).to include(I18n.t('batch.ingest_folder.checksum_missing', :entry => '/mount/base/path/subpath/file01001.tif'))
         end
       end

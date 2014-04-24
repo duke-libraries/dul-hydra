@@ -55,6 +55,10 @@ class IngestFolder < ActiveRecord::Base
     self.load_configuration.fetch(:files).fetch(:permissions).fetch(user.user_key, [])
   end
   
+  def included_extensions
+    IngestFolder.load_configuration.fetch(:files).fetch(:included_extensions, DEFAULT_INCLUDED_FILE_EXTENSIONS)
+  end
+  
   def mount_point
     base_key = base_path.split(File::Separator).first
     IngestFolder.load_configuration.fetch(:files).fetch(:mount_points).fetch(base_key, nil)
@@ -163,7 +167,7 @@ class IngestFolder < ActiveRecord::Base
           scan_files(file_loc, create_batch_objects)
         else
           @total_count += 1
-          if DEFAULT_INCLUDED_FILE_EXTENSIONS.include?(File.extname(entry))
+          if included_extensions.include?(File.extname(entry))
             case target?(dirpath)
             when true
               @target_count += 1
