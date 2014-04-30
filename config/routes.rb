@@ -139,5 +139,7 @@ DulHydra::Application.routes.draw do
       get 'procezz'
     end
   end
+
+  resources :roles
   
 end

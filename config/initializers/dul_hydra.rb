@@ -14,10 +14,6 @@ DulHydra.configure do |config|
 
   config.remote_groups_name_filter = "duke:library:repository:ddr:"
 
-  if File.exists? "#{Rails.root}/config/ability_group_map.yml"
-    config.ability_group_map = YAML.load_file("#{Rails.root}/config/ability_group_map.yml").with_indifferent_access
-  end
-
   config.superuser_group = ENV['SUPERUSER_GROUP']
 
   config.csv_options = { 
@@ -27,6 +23,8 @@ DulHydra.configure do |config|
     write_headers: true,
     header_converters: :symbol
   }
+
+  config.create_menu_models = ["AdminPolicy", "Collection", "Role"]
 end
 
 # Load configuration for Grouper service, if present

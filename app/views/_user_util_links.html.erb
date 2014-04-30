@@ -1,8 +1,6 @@
 <div class="pull-right">
-  <% if current_ability.can_create_models? %>
-    <%= render 'create_menu' %>
-  <% end %>
   <% if current_user %>
+    <%= render 'create_menu' %>
     <strong><%= t('dul_hydra.user.welcome.authenticated') %></strong>
     <%= render 'user_menu' %>
   <% else %>

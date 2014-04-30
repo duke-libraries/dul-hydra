@@ -116,9 +116,8 @@ shared_examples "a content-bearing object show view" do
   let(:user) { FactoryGirl.create(:user) }
   before do
     setup
-    # required for Components
-    allow(DulHydra).to receive(:ability_group_map) { {"Component" => {download: "downloaders"}}.with_indifferent_access }
-    allow(user).to receive(:groups) { ["public", "registered", "downloaders"] }
+    allow(user).to receive(:has_role?).with("Component Downloader") { true } # required for Components
+    allow(user).to receive(:groups) { ["public", "registered"] }
   end
   after { teardown }
   it "should have a download link" do

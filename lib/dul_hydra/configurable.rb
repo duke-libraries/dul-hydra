@@ -23,15 +23,15 @@ module DulHydra
       # Filter for getting list of remote groups for the repository - String, not Regexp
       mattr_accessor :remote_groups_name_filter
 
-      # Ability-Group mappings
-      mattr_accessor :ability_group_map
-      self.ability_group_map = {}
-
       # Superuser group
       mattr_accessor :superuser_group
 
       # Default CSV options
       mattr_accessor :csv_options
+
+      # List of models that may appear on a "create" menu (if user has ability)
+      mattr_accessor :create_menu_models
+      self.create_menu_models = []
     end
 
     module ClassMethods

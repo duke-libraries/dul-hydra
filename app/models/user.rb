@@ -9,8 +9,9 @@ class User < ActiveRecord::Base
   has_many :export_sets, :dependent => :destroy
   has_many :event_logs, :inverse_of => :user
 
+  has_and_belongs_to_many :roles
+
   delegate :can?, :cannot?, to: :ability
-  delegate :can_create_model?, :can_create_models?, :can_create_models, to: :ability
 
   validates_uniqueness_of :username, :case_sensitive => false
   validates_format_of :email, with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/
@@ -44,6 +45,28 @@ class User < ActiveRecord::Base
   
   def superuser?
     member_of? group_service.superuser_group
+  end
+
+  def effective_roles
+    @effective_roles ||= (roles | Role.where.not(groups: nil).reject { |r| (r.groups & groups).empty? })
+  end
+
+  def role_names
+    effective_roles.map(&:name)
+  end
+
+  def role_abilities
+    effective_roles.map(&:ability_params).compact
+  end
+
+  def has_role? role
+    if role.is_a? Role
+      effective_roles.include? role
+    elsif role.is_a? String
+      role_names.include? role
+    else
+      raise ArgumentError, "role must be a Role or a String"
+    end
   end
 
 end
