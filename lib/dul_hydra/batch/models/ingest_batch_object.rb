@@ -36,7 +36,7 @@ module DulHydra::Batch::Models
     
     def ingest(opts = {})
       repo_object = create_repository_object
-      if !repo_object.nil? && !repo_object.new?
+      if !repo_object.nil? && !repo_object.new_record?
         ingest_outcome_detail = []
         ingest_outcome_detail << "Ingested #{model} #{identifier} into #{repo_object.pid}"
         create_preservation_event(PreservationEvent::INGESTION,
@@ -75,7 +75,7 @@ module DulHydra::Batch::Models
       rescue Exception => e1
         logger.fatal("Error in creating repository object #{repo_object.pid} for #{identifier} : #{e1}")
         repo_clean = false
-        if repo_object && !repo_object.new?
+        if repo_object && !repo_object.new_record?
           begin
             logger.info("Deleting potentially incomplete #{repo_object.pid} due to error in ingest batch processing")
             repo_object.destroy
