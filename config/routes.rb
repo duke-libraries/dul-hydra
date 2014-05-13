@@ -1,3 +1,5 @@
+require 'resque/server'
+
 DulHydra::Application.routes.draw do
 
   root :to => "catalog#index"
@@ -10,6 +12,14 @@ DulHydra::Application.routes.draw do
   
   def tab_constraint
     /attachments|items|components|descriptive_metadata|permissions|default_permissions/
+  end
+
+  if defined?(DulHydra::ResqueAdmin)
+    namespace :admin do
+      constraints DulHydra::ResqueAdmin do
+        mount Resque::Server, at: '/queues'
+      end
+    end
   end
 
   def rights_routes
