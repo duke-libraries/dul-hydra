@@ -1,0 +1,49 @@
+<div class="row">
+<div class="col-md-6">
+  <% if @role.errors.any? %>
+  <div class="alert alert-danger">
+	<p>
+	  <strong>The role could not be <%= params[:action] %>d due to the following errors:</strong>
+	</p>
+	<ul>
+	  <% @role.errors.full_messages.each do |message| %>
+	    <li><%= message %></li>
+	  <% end %>
+	</ul>
+  </div>
+  <% end %>
+  <%= form_for @role, role: "form" do |f| %>
+    <div class="form-group">
+	  <%= f.label :name %>
+	  <%= f.text_field :name, required: true, class: "form-control" %>
+	</div>
+	<div class="form-group">
+	  <%= f.label :model %>
+	  <%= f.select :model, Role::MODELS, include_blank: true, class: "form-control" %>
+	  <span class="help-block">Model class to which the role applies, if any *</span>
+	</div>
+	<div class="form-group">
+	  <%= f.label :ability %>
+	  <%= f.select :ability, Role::ABILITIES, include_blank: true, class: "form-control" %>
+	  <span class="help-block">Ability associated with the role, if any *</span>
+	</div>
+	<div class="form-group">
+	  <%= f.label :user_ids, "Users" %>
+	  <span class="help-block">Selected users are granted the role</span>
+	  <%= f.collection_select :user_ids, User.all, :id, :user_key, {include_blank: true}, {multiple: true, class: "form-control"} %>
+	</div>
+	<div class="form-group">
+	  <%= label_tag "role[groups]", "Groups" %>
+	  <span class="help-block">Groups granted the role (one per line)</span>
+	  <%= text_area_tag "role[groups]", @role.groups_text, rows: 5, class: "form-control" %>
+	</div>
+	<div class="form-group">
+	  <%= f.submit nil, class: "btn btn-primary" %>
+	  <%= cancel_button %>
+	</div>
+  <% end %>
+  <div class="alert alert-info">
+	<strong>*</strong> If an ability is selected <em>and no model is selected</em>, then the model is implicitly <strong>all</strong>, i.e., the ability applies to all models.
+  </div>
+</div> <!-- /col -->
+</div> <!-- /row -->

@@ -11,45 +11,29 @@ describe Ability do
     ActiveFedora::Base.destroy_all
   end
 
-  describe "create permissions" do
-    context "on ActiveFedora::Base" do
-      it { should_not be_able_to(:create, ActiveFedora::Base) }
+  describe "#role_permissions", roles: true do
+    after { Role.destroy_all }
+    let!(:role) do
+      Role.new.tap do |role|
+        role.name = "Manager"
+        role.model = "Collection"
+        role.ability = "create"
+        role.user_ids = [user.id]
+        role.save
+      end
     end
-    context "on creatable models" do
+    context "role specifies an ability and a model" do
+      it "should have that ability on that model" do
+        expect(subject).to be_able_to(:create, Collection)
+      end
+    end
+    context "role specifies an ability but no model" do
       before do
-        DulHydra.stub(:creatable_models).and_return(["AdminPolicy", "Collection"])
-        DulHydra.stub(:ability_group_map).and_return({"AdminPolicy" => {create: "admins"}, "Collection" => {create: "collection_admins"}}.with_indifferent_access)
+        role.model = nil
+        role.save
       end
-      context "where user is a member of the model creators group" do
-        before { user.stub(:groups).and_return(["admins", "collection_admins"]) }
-        it "should PERMIT creation" do
-          DulHydra.creatable_models.each do |model|
-            subject.should be_able_to(:create, model.constantize)
-          end
-        end
-        it "should have a non-empty list of can_create_models" do
-          subject.can_create_models.map{|m| m.to_s}.should == DulHydra.creatable_models
-        end
-        it "should return true for :can_create_model? on granted models" do
-          DulHydra.creatable_models.each do |model|
-            subject.can_create_model?(model).should be_true
-          end
-        end
-        its(:can_create_models?) { should be_true }
-      end
-      context "where user is NOT member of model creators group" do
-        its(:can_create_models) { should be_empty }
-        its(:can_create_models?) { should be_false }
-        it "should DENY creation" do
-          DulHydra.creatable_models.each do |model|
-            subject.should_not be_able_to(:create, model.constantize)
-          end
-        end
-        it "should return false for :can_create_model? on all models" do
-          DulHydra.creatable_models.each do |model|
-            subject.can_create_model?(model).should be_false
-          end
-        end
+      it "should have the ability on all models" do
+        expect(subject).to be_able_to(:create, :all)
       end
     end
   end
@@ -70,8 +54,7 @@ describe Ability do
     context "on an object" do
       context "which is a Component", components: true do
         let(:obj) { FactoryGirl.create(:component_with_content) }
-        before { DulHydra.stub(:ability_group_map).and_return({"Component" => {download: "component_download"}}.with_indifferent_access) }
-        context "and user is NOT a member of the component download ability group" do
+        context "and user does NOT have the Component Downloader role" do
           context "and user has edit permission" do
             before { subject.can(:edit, obj) }
             it { should be_able_to(:download, obj) }
@@ -86,8 +69,10 @@ describe Ability do
           end
         end
 
-        context "and user is a member of the component download ability group" do
-          before { user.stub(:groups).and_return(["component_download"]) }
+        context "and user has the Component Downloader role" do
+          before do
+            allow(subject).to receive(:has_role?).with("Component Downloader") { true }
+          end
           context "and user has edit permission" do
             before { subject.can(:edit, obj) }
             it { should be_able_to(:download, obj) }
@@ -123,9 +108,7 @@ describe Ability do
 
         context "and object is a Component" do
           let(:obj) { FactoryGirl.build(:component_with_content) }
-          before { DulHydra.stub(:ability_group_map).and_return({"Component" => {download: "component_download"}}.with_indifferent_access) }
-
-          context "and user is NOT a member of the component download ability group" do
+          context "and user does not have the Component Downloader role" do
             context "and user has read permission on the object" do
               before { subject.can(:read, obj.pid) }
               it { should_not be_able_to(:download, ds) }
@@ -136,7 +119,8 @@ describe Ability do
             end
           end
 
-          context "and user is a member of the component download ability group" do
+          context "and user has the Component Downloader role" do
+          before { allow(subject).to receive(:has_role?).with("Component Downloader") { true } }
             before { user.stub(:groups).and_return(["component_download"]) }
             context "and user has read permission on the object" do
               before { subject.can(:read, obj.pid) }
@@ -221,7 +205,6 @@ describe Ability do
 
   describe "#superuser_permissions" do
     before do
-      DulHydra.stub(:creatable_models).and_return(["AdminPolicy", "Collection"])
       DulHydra.stub(:superuser_group).and_return("superusers")
       user.stub(:groups).and_return(["superusers"])
     end

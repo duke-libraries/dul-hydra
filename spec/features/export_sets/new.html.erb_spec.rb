@@ -19,8 +19,7 @@ describe "export_sets/new.html.erb", export_sets: true do
       object_discover.save
       user.bookmarks.create(:document_id => object_read.pid)
       user.bookmarks.create(:document_id => object_discover.pid)
-      DulHydra.ability_group_map = {"Component" => {download: "component_download"}}.with_indifferent_access
-      user.stub(:groups).and_return(["component_download"])
+      allow(user).to receive(:has_role?).with("Component Downloader") { true }
       login_as user
     end
     after do

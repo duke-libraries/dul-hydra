@@ -4,6 +4,8 @@ class Ability
 
   include Hydra::PolicyAwareAbility
 
+  delegate :role_abilities, :has_role?, to: :current_user
+
   def hydra_default_permissions
     if current_user.superuser?
       can :manage, :all
@@ -22,13 +24,11 @@ class Ability
     attachment_permissions
     children_permissions
     upload_permissions
+    role_permissions
   end
 
-  def create_permissions
-    super 
-    DulHydra.creatable_models.each do |model|
-      can :create, model.constantize if has_ability_group?(:create, model)
-    end
+  def role_permissions
+    role_abilities.each { |role_ability| can(*role_ability) }
   end
 
   def read_permissions
@@ -69,28 +69,27 @@ class Ability
   end
   
   def metadata_files_permissions
-    can :create, MetadataFile if has_ability_group?(:create, MetadataFile)
     can [:show, :procezz], MetadataFile, :user => current_user
   end
   
   def download_permissions
     can :download, ActiveFedora::Base do |obj|
       if obj.class == Component
-        can?(:edit, obj) or (can?(:read, obj) and has_ability_group?(:download, Component))
+        can?(:edit, obj) or (can?(:read, obj) and has_role?("Component Downloader"))
       else
         can? :read, obj
       end
     end
     can :download, SolrDocument do |doc|
       if doc.active_fedora_model == "Component"
-        can?(:read, doc) and has_ability_group?(:download, Component)
+        can?(:read, doc) and has_role?("Component Downloader")
       else
         can? :read, doc
       end
     end
     can :download, ActiveFedora::Datastream do |ds|
       if ds.dsid == DulHydra::Datastreams::CONTENT and ds.digital_object.original_class == Component
-        can?(:read, ds) and has_ability_group?(:download, Component)
+        can?(:read, ds) and has_role?("Component Downloader")
       else
         can? :read, ds
       end
@@ -196,33 +195,7 @@ class Ability
     Hydra.config[:permissions][:discover][:group]
   end
 
-  def can_create_models
-    DulHydra.creatable_models.select { |model| can_create_model? model }
-  end
-
-  def can_create_model?(model)
-    can? :create, model_class(model)
-  end
-
-  def can_create_models?
-    can_create_models.present?
-  end
-
-  protected
-
-  def has_ability_group?(action, model)
-    current_user.member_of?(ability_group(action, model))
-  end
-
-  def ability_group(action, model)
-    DulHydra.ability_group_map[model.to_s][action] rescue nil
-  end
-  
   private
-
-  def model_class(model)
-    model.respond_to?(:constantize) ? model.constantize : model
-  end
 
   def authenticated_user?
     current_user.persisted?

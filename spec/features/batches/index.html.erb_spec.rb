@@ -29,8 +29,8 @@ describe "batches/index.html.erb" do
   end
   context "metadata files", :metadata_file => true do
     let(:user) { FactoryGirl.create(:user) }
+    let(:metadata_file_creator) { Role.create("Metadata File Creator", ability: "create", model: "MetadataFile") }
     before do
-      allow(DulHydra).to receive(:ability_group_map) { { "MetadataFile" => { :create => "metadata_file_creator" } } }
       login_as user
     end
     after do
@@ -47,10 +47,12 @@ describe "batches/index.html.erb" do
     end
     context "user is permitted to upload metadata files" do
       before do
-        User.any_instance.stub(:groups).and_return( [ "public", "registered", "metadata_file_creator" ] )
-        visit batches_path
+        user.roles << Role.create(name: "Metadata File Uploader", ability: "create", model: "MetadataFile")
+        user.save!
       end
+      after { Role.destroy_all }
       it "should include a link to upload a metadata file" do
+        visit batches_path
         expect(page).to have_link(I18n.t('batch.metadata_file.new'))
       end
     end

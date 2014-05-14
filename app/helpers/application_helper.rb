@@ -225,7 +225,7 @@ module ApplicationHelper
   end
 
   def link_to_create_model(model)
-    link_to model, controller: model.underscore.pluralize, action: "new"
+    link_to model, controller: model.tableize, action: "new"
   end
 
   def document_or_object_url(document_or_object)
@@ -251,7 +251,7 @@ module ApplicationHelper
   end
 
   def create_menu_models
-    current_ability.can_create_models & ["AdminPolicy", "Collection"]
+    session[:create_menu_models] ||= DulHydra.create_menu_models.select { |model| can? :create, model.constantize }
   end
 
   def cancel_button args={}
@@ -278,9 +278,9 @@ module ApplicationHelper
 
   def selected_user_options(permission)
     users = case params[:action]
-             when "permissions" then current_object.send "#{permission}_users"
-             when "default_permissions" then current_object.send "default_#{permission}_users"
-             end
+            when "permissions" then current_object.send "#{permission}_users"
+            when "default_permissions" then current_object.send "default_#{permission}_users"
+            end
     users.collect { |u| user_option_value(u) }
   end
 

@@ -1,0 +1,40 @@
+<h2>Roles</h2>
+
+<% if can? :create, Role %>
+<div class="btn-group">
+  <%= link_to new_role_path, class: "btn btn-success" do %>
+    <span class="glyphicon glyphicon-plus"></span> Create Role
+  <% end %>
+</div>
+<% end %>
+
+<% if @roles.present? %>
+  <table class="table">
+	<thead>
+	  <tr>
+		<th scope="col">#</th>
+		<th scope="col">Role</th>
+		<th scope="col">Model</th>
+		<th scope="col">Ability</th>
+		<th scope="col">Users</th>
+		<th scope="col">Groups</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <% @roles.each do |role| %>
+	  <tr>
+		<td><%= role.id %></td>
+		<td><%= link_to role.name, role_path(role) %></td>
+		<td><%= role.model_display %></td>
+		<td><%= role.ability %></td>
+		<td><%= role.users_string %></td>
+		<td><%= role.groups_string %></td>
+	  </tr>
+	  <% end %>
+	</tbody>
+  </table>
+<% else %>
+  <p>
+	No roles have been defined.
+  </p>
+<% end %>
