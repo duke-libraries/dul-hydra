@@ -8,9 +8,6 @@ class Component < DulHydra::Base
   alias_method :item, :parent
   alias_method :item=, :parent=
 
-  alias_method :container, :parent
-  alias_method :container=, :parent=
-
   def collection
     self.parent.parent rescue nil
   end

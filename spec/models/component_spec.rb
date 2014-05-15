@@ -6,8 +6,7 @@ shared_examples "a Component related to an Item" do
   it "should be the first part of the item" do
     expect(item.parts.first).to eq(component)
   end
-  it "should have the item as container, parent and item" do
-    expect(component.container).to eq(item)
+  it "should have the item as parent and item" do
     expect(component.parent).to eq(item)
     expect(component.item).to eq(item)
   end
@@ -37,7 +36,12 @@ describe Component, components: true do
     end
     context "belongs to orphan item" do
       subject { component }
-      let(:component) { FactoryGirl.create(:component_part_of_item) }
+      let(:component) { FactoryGirl.create(:component) }
+      let(:item) { FactoryGirl.create(:item) }
+      before do
+        component.parent = item
+        component.save!
+      end
       its(:collection) { should be_nil }
     end
     context "belongs to item in collection" do
@@ -60,13 +64,6 @@ describe Component, components: true do
     let!(:component) { FactoryGirl.create(:component) }
     let!(:item) { FactoryGirl.create(:item) }
     let!(:target) { FactoryGirl.create(:target) }
-    context "#container=" do
-      before do 
-        component.container = item
-        component.save!
-      end
-      it_behaves_like "a Component related to an Item"
-    end
     context "#parent=" do
       before do
         component.parent = item
