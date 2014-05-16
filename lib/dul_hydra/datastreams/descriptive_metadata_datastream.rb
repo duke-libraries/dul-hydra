@@ -1,6 +1,6 @@
 module DulHydra
   module Datastreams
-    class DescriptiveMetadataDatastream < ActiveFedora::QualifiedDublinCoreDatastream
+    class DescriptiveMetadataDatastream < ActiveFedora::OmDatastream
    
       # TODO Add DukeCore terms
 
