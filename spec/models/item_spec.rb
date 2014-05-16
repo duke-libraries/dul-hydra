@@ -18,9 +18,6 @@ shared_examples "an Item related to a Component" do
     expect(item.children.first).to eq(component)
     expect(item.components.first).to eq(component)
   end
-  it "should be the component's container" do
-    expect(item).to eq(component.container)
-  end
 end
 
 describe Item do
