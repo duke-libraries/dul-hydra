@@ -20,11 +20,11 @@ module DulHydra
                     ]
 
     included do
-      has_metadata :name => DulHydra::Datastreams::DESC_METADATA, 
-                   :type => ActiveFedora::QualifiedDublinCoreDatastream,
-                   :versionable => true, 
-                   :label => "Descriptive Metadata for this object", 
-                   :control_group => 'M'
+      has_metadata name: DulHydra::Datastreams::DESC_METADATA, 
+                   type: DulHydra::Datastreams::DescriptiveMetadataDatastream,
+                   versionable: true, 
+                   label: "Descriptive Metadata for this object", 
+                   control_group: 'M'
       DC11_ELEMENTS.each do |element|
         has_attributes element, datastream: DulHydra::Datastreams::DESC_METADATA, multiple: true
       end
