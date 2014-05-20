@@ -2,6 +2,7 @@
 <%= content_tag :table, :class => 'table table-bordered table-striped table-condensed' do %>
         <%= content_tag :thead do %>
                 <%= content_tag :tr do %>
+						<%= content_tag :th, '', :scope => 'col' %>
                         <%= content_tag :th, t('batch.web.column_names.id'), :scope => 'col' %>
                         <%= content_tag :th, t('batch.web.column_names.action'), :scope => 'col' %>
                         <%= content_tag :th, t('batch.web.column_names.name'), :scope => 'col' %>
@@ -21,6 +22,7 @@
         <%= content_tag :tbody do %>
                 <% batches.each do |b| %>
                         <%= content_tag :tr do %>
+								<%= content_tag :td, render_batch_delete_link(b) %>
                                 <%= content_tag :td, link_to(b.id, batch_path(b)) %>
                                 <%= content_tag :td, batch_action(b) %>
                                 <%= content_tag :td, b.name %>
