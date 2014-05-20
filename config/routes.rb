@@ -115,7 +115,7 @@ DulHydra::Application.routes.draw do
     end
   end
   
-  resources :batches, :only => [:index, :show] do
+  resources :batches, :only => [:index, :show, :destroy] do
     member do
       get 'procezz'
       get 'validate'
