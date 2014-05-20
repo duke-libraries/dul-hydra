@@ -1,133 +1,107 @@
 require 'spec_helper'
 
 describe DulHydra::Datastreams::DescriptiveMetadataDatastream do
-  DC_ELEMENTS = [:contributor, :coverage, :creator, :date, :description, :identifier, :language, :publisher, :relation, :rights, :source]
-
-  before(:all) do
-    @dc_terms = []
+  let(:content) do
+    <<-EOS
+      <dc xmlns:dcterms="http://purl.org/dc/terms/" xmlns:duke="http://library.duke.edu/metadata/terms">
+        <dcterms:title>Mother and son waiting outside court room, 1981 Jan. (Understandings)</dcterms:title>
+        <dcterms:creator>Kwilecki, Paul, 1928-</dcterms:creator>
+        <dcterms:type>black-and-white photographs</dcterms:type>
+        <dcterms:type>documentary photographs</dcterms:type>
+        <dcterms:type>photographs</dcterms:type>
+        <dcterms:type>Image</dcterms:type>
+        <dcterms:type>Still Image</dcterms:type>
+        <dcterms:spatial>Georgia</dcterms:spatial>
+        <dcterms:spatial>Decatur County (Ga.)</dcterms:spatial>
+        <dcterms:spatial>Bainbridge (Ga.)</dcterms:spatial>
+        <dcterms:provenance>The Paul Kwilecki Photographs and Papers were purchased by the Rare Book, Manuscript, and Special Collections Library from 1991 to 2010.</dcterms:provenance>
+        <dcterms:extent>11 x 14 in.</dcterms:extent>
+        <dcterms:date>1981-01</dcterms:date>
+        <dcterms:temporal>1981-01</dcterms:temporal>
+        <dcterms:rights>The copyright in the materials included in the Paul Kwilecki Photographs and Papers collection are owned by the photographer's heirs. The photographs are made available by Duke University Libraries, with permission, for the purpose of research, teaching, and private study. For these purposes users may reproduce single copies of the images from this website without prior permission, on the condition that proper attribution is provided on all such copies. For all other uses, and especially for any proposed commercial uses, researchers must contact the Library to request permission.</dcterms:rights>
+        <duke:print_number>12-181-3</duke:print_number>
+        <duke:box_number>Box PHO 1</duke:box_number>
+        <duke:series>Photographic Materials Series</duke:series>
+        <duke:subseries>Decatur County Court House</duke:subseries>
+     </dc>
+EOS
   end
-  
-  before(:each) do
-    @sample_xml =  "<dc xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:dcterms='http://purl.org/dc/terms/'>
-          <dcterms:type xsi:type='DCMITYPE'>sound</dcterms:type>
-          <dcterms:medium>medium</dcterms:medium>
-          <dcterms:rights>rights</dcterms:rights>
-          <dcterms:language>English</dcterms:language>
-          <dcterms:temporal>tmp</dcterms:temporal>
-          <dcterms:subject>kw1</dcterms:subject>
-          <dcterms:subject>kw2</dcterms:subject>
-          <dcterms:creator>creator</dcterms:creator>
-          <dcterms:creator>creator</dcterms:creator>
-          <dcterms:contributor>contributor</dcterms:contributor>
-          <dcterms:coverage>coverage</dcterms:coverage>
-          <dcterms:identifier>identifier</dcterms:identifier>
-          <dcterms:relation>relation</dcterms:relation>
-          <dcterms:source>source</dcterms:source>
-          <dcterms:title>title</dcterms:title>
-          <dcterms:extent>extent</dcterms:extent>
-          <dcterms:format>audio/x-wav</dcterms:format>
-          <dcterms:subject xsi:type='LCSH'>sh1</dcterms:subject>
-          <dcterms:subject xsi:type='LCSH'>sh2</dcterms:subject>
-          <dcterms:spatial>sp1</dcterms:spatial>
-          <dcterms:spatial>sp2</dcterms:spatial>
-          <dcterms:publisher>jwa</dcterms:publisher>
-          <dcterms:alternative>alt</dcterms:alternative>
-          <dcterms:description>desc</dcterms:description>
-          <dcterms:date>datestr</dcterms:date>
-        </dc>"
-     @test_ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.from_xml(@sample_xml )
-
-  end
-  it "from_xml should parse everything correctly" do
-    @test_ds.ng_xml.should be_equivalent_to @sample_xml
-  end
-
-  it "should create the right number of fields" do
-    DulHydra::Datastreams::DescriptiveMetadataDatastream::DCTERMS.size.should == 54
-  end
-
-  it "should have unmodifiable constants" do
-    proc {DulHydra::Datastreams::DescriptiveMetadataDatastream::DCTERMS<<:foo}.should raise_error((TypeError if RUBY_VERSION < "1.9.0") || RuntimeError, /can't modify frozen array/i)
-
-  end
-
-  it "should default dc elements to :multiple=>true" do
-    @test_ds.fields.values.each do |s|
-      s.has_key?(:multiple).should == true
+  context "terminology" do
+    subject { described_class.terminology.terms.reject {|key, term| term.is_root_term?}.keys }
+    it "should have a term for each term name in the DCTerms vocab" do
+      expect(subject).to include(*DulHydra::Metadata::DCTerms.term_names)
+    end
+    it "should have a term for each term name in the DukeTerms vocab" do
+      expect(subject).to include(*DulHydra::Metadata::DukeTerms.term_names)
     end
   end
-  
-  after(:each) do
-  end
-  
-  describe '#new' do
-    it 'should provide #new' do
-      DulHydra::Datastreams::DescriptiveMetadataDatastream.should respond_to(:new)
+  context "xml template" do
+    subject { described_class.xml_template }
+    it "should have the DCTerms namespace" do
+      expect(subject.namespaces).to include("xmlns:#{DulHydra::Metadata::DCTerms.namespace_prefix}" => DulHydra::Metadata::DCTerms.xmlns)
     end
-    
-    
-    describe "model methods" do 
-
-      DC_ELEMENTS.each do |el|
-        it "should respond to getters and setters for #{el} element" do
-          pending if el == :type
-          value = "Hey #{el}"
-          @test_ds.send("#{el.to_s}=", value) 
-          @test_ds.send(el).first.should == value  #Looking at first because creator has 2 nodes
-        end
-      end
+    it "should have the DukeTerms namespace" do
+      expect(subject.namespaces).to include("xmlns:#{DulHydra::Metadata::DukeTerms.namespace_prefix}" => DulHydra::Metadata::DukeTerms.xmlns)
     end
   end
-  
-  describe '.to_xml' do
-    it 'should output the fields hash as Qualified Dublin Core XML' do
-      #@test_ds.should_receive(:new?).and_return(true).twice
-      sample_xml = "<dc xmlns:dcterms='http://purl.org/dc/terms/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><dcterms:title>title1</dcterms:title><dcterms:publisher>publisher1</dcterms:publisher><dcterms:creator>creator1</dcterms:creator><dcterms:creator>creator2</dcterms:creator></dc>"
-      @test_ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new(nil, 'qdc' )
-
-      @test_ds.field :publisher
-      @test_ds.field :creator
-      @test_ds.field :title
-      
-      @test_ds.publisher= ["publisher1"]
-      @test_ds.creator= ["creator1", "creator2"]
-      @test_ds.title= ["title1"]
-
-      @test_ds.to_xml.should be_equivalent_to('
-        <dc xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                 <dcterms:publisher>publisher1</dcterms:publisher>
-                 <dcterms:creator>creator1</dcterms:creator>
-                 <dcterms:creator>creator2</dcterms:creator>
-                 <dcterms:title>title1</dcterms:title>
-              </dc>')
+  context "raw content" do
+    let(:ds) { described_class.new(nil, 'descMetadata') }
+    before { ds.content = content }
+    it "should retrieve the content using the terminology" do
+      expect(ds.title).to eq(["Mother and son waiting outside court room, 1981 Jan. (Understandings)"])
+      expect(ds.creator).to eq(["Kwilecki, Paul, 1928-"])
+      expect(ds.type).to eq(["black-and-white photographs", "documentary photographs", "photographs", "Image", "Still Image"])
+      expect(ds.spatial).to eq(["Georgia", "Decatur County (Ga.)", "Bainbridge (Ga.)"])
+      expect(ds.provenance).to eq(["The Paul Kwilecki Photographs and Papers were purchased by the Rare Book, Manuscript, and Special Collections Library from 1991 to 2010."])
+      expect(ds.extent).to eq(["11 x 14 in."])
+      expect(ds.date).to eq(["1981-01"])
+      expect(ds.temporal).to eq(["1981-01"])
+      expect(ds.rights).to eq(["The copyright in the materials included in the Paul Kwilecki Photographs and Papers collection are owned by the photographer's heirs. The photographs are made available by Duke University Libraries, with permission, for the purpose of research, teaching, and private study. For these purposes users may reproduce single copies of the images from this website without prior permission, on the condition that proper attribution is provided on all such copies. For all other uses, and especially for any proposed commercial uses, researchers must contact the Library to request permission."])
+      expect(ds.print_number).to eq(["12-181-3"])
+      expect(ds.box_number).to eq(["Box PHO 1"])
+      expect(ds.series).to eq(["Photographic Materials Series"])
+      expect(ds.subseries).to eq(["Decatur County Court House"])
     end
   end
-
-  describe "#to_solr" do
-    it "should have title" do
-      @test_ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new(nil, 'qdc' )
-      @test_ds.title = "War and Peace"
-      solr = @test_ds.to_solr
-      solr[ActiveFedora::SolrService.solr_name('title', type: :string)].should == "War and Peace"
+  context "using the terminology setters" do
+    let(:ds) { described_class.new(nil, 'descMetadata') }
+    before do
+      ds.title = "Mother and son waiting outside court room, 1981 Jan. (Understandings)"
+      ds.creator = "Kwilecki, Paul, 1928-"
+      ds.type = ["black-and-white photographs", "documentary photographs", "photographs", "Image", "Still Image"]
+      ds.spatial = ["Georgia", "Decatur County (Ga.)", "Bainbridge (Ga.)"]
+      ds.provenance = "The Paul Kwilecki Photographs and Papers were purchased by the Rare Book, Manuscript, and Special Collections Library from 1991 to 2010."
+      ds.extent = "11 x 14 in."
+      ds.date = "1981-01"
+      ds.temporal = "1981-01"
+      ds.rights = "The copyright in the materials included in the Paul Kwilecki Photographs and Papers collection are owned by the photographer's heirs. The photographs are made available by Duke University Libraries, with permission, for the purpose of research, teaching, and private study. For these purposes users may reproduce single copies of the images from this website without prior permission, on the condition that proper attribution is provided on all such copies. For all other uses, and especially for any proposed commercial uses, researchers must contact the Library to request permission."
+      ds.print_number = "12-181-3"
+      ds.box_number = "Box PHO 1"
+      ds.series = "Photographic Materials Series"
+      ds.subseries = "Decatur County Court House"
     end
-
-  end
-
-  describe 'custom fields' do
-    it 'should grab the term' do
-      sample_xml = "<dc xmlns:dcterms='http://purl.org/dc/terms/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'><dcterms:cust>custom</dcterms:cust></dc>"
-      test_ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.from_xml(sample_xml )
-      test_ds.field :cust
-      test_ds.cust.should == ['custom']
-    end
-  end
-
-  describe "#field should accept :path option" do
-    it "should be able to map :dc_type to the path 'type'" do
-      test_ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.from_xml(@sample_xml)
-      test_ds.field :dc_type, :string, path: "type", multiple: true
-      test_ds.dc_type.should == ['sound']
+    it "should create equivalent XML to the raw version" do
+      expect(ds.ng_xml).to be_equivalent_to(Nokogiri::XML(content))
     end
   end
-
+  context "solrization" do
+    let(:ds) { described_class.new(nil, 'descMetadata') }
+    subject { ds.to_solr }
+    before { ds.content = content }
+    it "should create fields for all the terms that have non-empty values" do
+      expect(subject).to include("title_tesim" => ["Mother and son waiting outside court room, 1981 Jan. (Understandings)"])
+      expect(subject).to include("creator_tesim" => ["Kwilecki, Paul, 1928-"])
+      expect(subject).to include("type_tesim" => ["black-and-white photographs", "documentary photographs", "photographs", "Image", "Still Image"])
+      expect(subject).to include("spatial_tesim" => ["Georgia", "Decatur County (Ga.)", "Bainbridge (Ga.)"])
+      expect(subject).to include("provenance_tesim" => ["The Paul Kwilecki Photographs and Papers were purchased by the Rare Book, Manuscript, and Special Collections Library from 1991 to 2010."])
+      expect(subject).to include("extent_tesim" => ["11 x 14 in."])
+      expect(subject).to include("date_tesim" => ["1981-01"])
+      expect(subject).to include("temporal_tesim" => ["1981-01"])
+      expect(subject).to include("rights_tesim" => ["The copyright in the materials included in the Paul Kwilecki Photographs and Papers collection are owned by the photographer's heirs. The photographs are made available by Duke University Libraries, with permission, for the purpose of research, teaching, and private study. For these purposes users may reproduce single copies of the images from this website without prior permission, on the condition that proper attribution is provided on all such copies. For all other uses, and especially for any proposed commercial uses, researchers must contact the Library to request permission."])
+      expect(subject).to include("print_number_tesim" => ["12-181-3"])
+      expect(subject).to include("box_number_tesim" => ["Box PHO 1"])
+      expect(subject).to include("series_tesim" => ["Photographic Materials Series"])
+      expect(subject).to include("subseries_tesim" => ["Decatur County Court House"])
+    end
+  end
 end
