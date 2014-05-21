@@ -12,6 +12,7 @@ gem 'grouper-rest-client'
 gem 'hydra-editor', '0.2.2'
 gem 'hydra-derivatives'
 gem 'deprecation'
+gem 'clamav'
 
 gem 'sqlite3'
 gem 'log4r'

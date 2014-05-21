@@ -60,6 +60,7 @@ GEM
       xpath (~> 2.0)
     childprocess (0.5.2)
       ffi (~> 1.0, >= 1.0.11)
+    clamav (0.4.1)
     climate_control (0.0.3)
       activesupport (>= 3.0)
     cocaine (0.5.3)
@@ -370,6 +371,7 @@ PLATFORMS
 DEPENDENCIES
   active-fedora (= 7.0.2)
   capybara (~> 2.0)
+  clamav
   deprecation
   devise (~> 3.1.1)
   devise-remote-user (= 0.3.0)
