@@ -81,6 +81,8 @@ en:
             no_batch_runs: "No runs found for this batch."
             no_batch_objects: "No objects in this batch."
             batch_queued: "Batch %{id} queued for processing."
+            batch_deleted: "Batch %{id} deleted."
+            batch_not_deletable: "Cannot delete %{status} batch %{id}."
             headings:
                 object_validation_errors: "Batch Object Validation Errors"
             page_titles:

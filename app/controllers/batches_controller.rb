@@ -21,6 +21,17 @@ class BatchesController < ApplicationController
     @batch_objects = @batch.batch_objects.page params[:page]
   end
   
+  def destroy
+    case @batch.status
+    when nil, DulHydra::Batch::Models::Batch::STATUS_VALIDATED
+      @batch.destroy
+      flash[:notice] = I18n.t('batch.web.batch_deleted', :id => @batch.id)
+    else
+      flash[:notice] = I18n.t('batch.web.batch_not_deletable', :id => @batch.id, :status => @batch.status)
+    end
+    redirect_to action: :index
+  end
+  
   def procezz
     # Delayed::Job.enqueue DulHydra::Batch::Jobs::BatchProcessorJob.new(@batch.id)
     Resque.enqueue(DulHydra::Batch::Jobs::BatchProcessorJob, @batch.id)

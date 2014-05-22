@@ -61,4 +61,10 @@ module BatchesHelper
       link_to(text, batch_path(batch))
     end
   
+    def render_batch_delete_link(batch)
+      case batch.status
+      when nil, DulHydra::Batch::Models::Batch::STATUS_VALIDATED
+        link_to content_tag(:span, "", :class => "glyphicon glyphicon-trash"), {:action => 'destroy', :id => batch}, :method => 'delete', :id => "batch_delete_#{batch.id}", :data => { :confirm => "You are about to delete batch #{batch.id}. Continue?" }
+      end
+    end
 end
