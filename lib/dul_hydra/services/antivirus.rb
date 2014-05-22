@@ -1,3 +1,5 @@
+require 'clamav'
+
 module DulHydra
   module Services
     class Antivirus
@@ -23,27 +25,14 @@ module DulHydra
         end
 
         def load!
-          raise DulHydra::Error, "Antivirus is not installed." unless installed?
           load
+          loaded!
         end
 
         def version
-          # ClamAV sigtool may be installed on system,
-          # but we require that clamav gem is installed.
-          return unless installed?
           # Engine and database versions
           # E.g., ClamAV 0.98.3/19010/Tue May 20 21:46:01 2014
           `sigtool --version`.strip
-        end
-
-        def installed?
-          @installed ||= begin
-                           require 'clamav'
-                         rescue LoadError
-                           false
-                         else
-                           true
-                         end
         end
 
         private
@@ -58,7 +47,6 @@ module DulHydra
 
         def load
           engine.loaddb
-          loaded!
         end
 
         def get_file_path(file)

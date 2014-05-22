@@ -55,3 +55,5 @@ Warden::Manager.after_set_user do |user, auth, opts|
 end
 
 Blacklight::Configuration.default_values[:http_method] = :post
+
+DulHydra::Services::Antivirus.load!
