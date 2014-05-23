@@ -1,22 +1,39 @@
 require 'spec_helper'
 
 shared_examples "an object that can have content" do
-  let(:object) do
-    described_class.new(title: "I Have Content!")
-    # obj = described_class.new(title: "I Have Content!")
-    # obj.save(validate: false)
-    # obj
+  let(:object) { described_class.new(title: "I Have Content!") }
+  after do
+    ActiveFedora::Base.destroy_all
+    PreservationEvent.destroy_all
   end
-  after { ActiveFedora::Base.destroy_all }
-  context "before new content is saved" do
-    context "when the content is a file" do
-      it "should run a virus scan"
+  context "when new content is saved" do
+    context "and the content is a file" do
+      let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+      before { object.content.content = file }
+      it "should run a virus scan" do
+        expect(DulHydra::Services::Antivirus).to receive(:scan).with(file).and_call_original
+        object.save
+      end
       context "and a virus is found" do
-        it "should not save the object"
+        before { allow(DulHydra::Services::Antivirus).to receive(:scan).with(file).and_raise(DulHydra::Services::Antivirus::VirusFoundError) }
+        it "should not persist the object" do
+          expect { object.save }.to raise_error
+          expect(object).to be_new_record
+        end
+      end
+      context "and no virus is found" do
+        before { object.save }
+        it "should create a 'virus check' preservation event for the object" do
+          expect(PreservationEvent.events_for(object, PreservationEvent::VIRUS_CHECK).count).to eq(1)
+        end
       end
     end
-    context "when the content is not a file" do
-      it "should not run a virus scan"
+    context "and the content is not a file" do
+      before { object.content.content = "A string" }
+      it "should not run a virus scan" do
+        expect(DulHydra::Services::Antivirus).not_to receive(:scan)
+        object.save!
+      end
     end
   end
   context "after content is uploaded" do

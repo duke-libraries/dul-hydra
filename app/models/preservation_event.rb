@@ -8,7 +8,8 @@ class PreservationEvent < ActiveRecord::Base
   INGESTION    = "ingestion"    # http://id.loc.gov/vocabulary/preservationEvents/ingestion
   VALIDATION   = "validation"   # http://id.loc.gov/vocabulary/preservationEvents/validation
   CREATION     = "creation"     # http://id.loc.gov/vocabulary/preservationEvents/creation
-  EVENT_TYPES = [FIXITY_CHECK, INGESTION, VALIDATION, CREATION]
+  VIRUS_CHECK  = "virus check"  # http://id.loc.gov/vocabulary/preservation/eventType/vir.html
+  EVENT_TYPES = [FIXITY_CHECK, INGESTION, VALIDATION, CREATION, VIRUS_CHECK]
 
   # Outcomes
   SUCCESS = "success"
@@ -64,6 +65,24 @@ class PreservationEvent < ActiveRecord::Base
   def self.fixity_check!(object)
     pe = PreservationEvent.fixity_check(object)
     pe.save
+    pe
+  end
+
+  def self.virus_check(object, result)
+    outcome = result.ok? ? SUCCESS : FAILURE
+    detail = "Content file scanned for viruses\n#{version_note}"
+    pe = new(event_detail: detail,
+             event_date_time: result.scanned_at,
+             event_type: VIRUS_CHECK,
+             event_outcome: outcome,
+             event_outcome_detail_note: result.to_s)
+    pe.for_object = object
+    pe
+  end
+
+  def self.virus_check!(object, result)
+    pe = virus_check(object, result)
+    pe.save!
     pe
   end
 

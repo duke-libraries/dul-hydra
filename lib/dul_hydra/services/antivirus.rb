@@ -86,9 +86,15 @@ module DulHydra
         def status
           if has_virus?
             "FOUND #{virus_found}"
+          elsif error?
+            "ERROR"
           else
             "OK"
           end
+        end
+
+        def ok?
+          !(has_virus? || error?)
         end
 
         def error?
