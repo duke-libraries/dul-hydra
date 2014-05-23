@@ -1,10 +1,6 @@
 require 'spec_helper'
 
-def installed?
-  DulHydra::Services::Antivirus.installed?
-end
-
-describe DulHydra::Services::Antivirus, if: installed? do
+describe DulHydra::Services::Antivirus, antivirus: true do
   let(:file) { fixture_file_upload "library-devil.tiff" }
   it "should report whether a file is infected" do
     expect(described_class.scan(file)).not_to have_virus

@@ -16,6 +16,7 @@ module DulHydra
       # Original file name of content file should be stored in this property
       has_attributes :original_filename, datastream: DulHydra::Datastreams::PROPERTIES, multiple: false
 
+      around_save :virus_check, if: :content_is_new_file?
       before_save :set_original_filename, if: :content_changed?, unless: :original_filename_changed?
       before_save :set_content_type, if: :content_changed?
       around_save :update_thumbnail, if: :content_changed?
@@ -75,6 +76,16 @@ module DulHydra
     end
 
     protected
+
+    def content_is_new_file?
+      content_changed? && content.content.respond_to?(:path)
+    end
+
+    def virus_check
+      result = DulHydra::Services::Antivirus.scan(content.content)
+      yield
+      PreservationEvent.virus_check! self, result
+    end
 
     def set_original_filename
       file = content.content

@@ -19,9 +19,9 @@ module DulHydra::Batch::Scripts
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
         batch_obj_rs = batch_obj.batch_object_relationships
         batch_obj_rs.each { |r| expect(obj.send(r.name).pid).to eq(r.object) }
-        expect(obj.preservation_events.count).to eq(3)
+        expect(obj.preservation_events.count).to eq(4)
         obj.preservation_events.each do |pe|
-          expect([PreservationEvent::FIXITY_CHECK, PreservationEvent::INGESTION, PreservationEvent::VALIDATION]).to include(pe.event_type)
+          expect([PreservationEvent::FIXITY_CHECK, PreservationEvent::INGESTION, PreservationEvent::VALIDATION, PreservationEvent::VIRUS_CHECK]).to include(pe.event_type)
           expect(pe.event_outcome).to eq(PreservationEvent::SUCCESS)
           expect(pe.linking_object_id_type).to eq(PreservationEvent::OBJECT)
           expect(pe.linking_object_id_value).to eq(obj.pid)
