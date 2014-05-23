@@ -32,6 +32,7 @@ module DulHydra
       # Add terms from the vocabularies to the terminology
       vocabularies.each do |vocab|
         vocab.term_names.each do |t|
+          next if terminology.has_term? t
           opts = om_term_opts(vocab).merge(index_as: indexers_for(t))
           term = OM::XML::Term.new t, opts
           terminology.add_term term.generate_xpath_queries!

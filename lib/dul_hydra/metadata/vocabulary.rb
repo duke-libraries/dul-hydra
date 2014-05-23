@@ -5,10 +5,16 @@ module DulHydra
   module Metadata
     class Vocabulary
 
-      class_attribute :xmlns, :namespace_prefix
+      def self.xmlns
+        const_get(:XMLNS)
+      end
+
+      def self.namespace_prefix
+        const_get(:NAMESPACE_PREFIX)
+      end
 
       def self.term_names
-        raise NotImplementedError
+        const_get(:TERMS)
       end
 
     end

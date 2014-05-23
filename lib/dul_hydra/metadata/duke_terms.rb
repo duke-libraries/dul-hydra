@@ -1,16 +1,78 @@
 module DulHydra
   module Metadata
-    class DukeTerms < RDFVocabulary
+    class DukeTerms < Vocabulary
 
-      self.xmlns = "http://library.duke.edu/metadata/terms".freeze
+      XMLNS = "http://library.duke.edu/metadata/terms".freeze
 
-      self.namespace_prefix = "duke".freeze
+      NAMESPACE_PREFIX = "duke".freeze
 
-      self.source = File.join(Rails.root, 'config', 'duketerms.rdf.xml')
-
-      def self.term_prefix
-        "#{xmlns}/"
-      end
+      TERMS = [:arranger,
+               :artist,
+               :awards,
+               :box_number,
+               :call_number,
+               :category,
+               :chimpanzee,
+               :choreographer,
+               :company,
+               :composer,
+               :dcmitype,
+               :dedicatee,
+               :digitized,
+               :duke_opponent,
+               :engraver,
+               :first_line,
+               :folder,
+               :genre,
+               :headline,
+               :illustrated,
+               :illustrator,
+               :instrumentation,
+               :interview_date,
+               :interview_location,
+               :interview_number,
+               :interview_state,
+               :interviewee_birthplace,
+               :interviewee_date_of_birth,
+               :interviewee_gender,
+               :interviewee_occupation,
+               :interviewee_residence,
+               :interviewee_state_of_birth,
+               :interviewer_name,
+               :issue_date,
+               :issue_number,
+               :lithographer,
+               :lyricist,
+               :negative_number,
+               :oclc_number,
+               :people,
+               :performer,
+               :placement_company,
+               :print_number,
+               :producer,
+               :product,
+               :pubcity,
+               :pubcountry,
+               :publication,
+               :pubregion,
+               :pubstate,
+               :race,
+               :record_type,
+               :refrain,
+               :roll_number,
+               :season,
+               :series,
+               :setting,
+               :site_alignment,
+               :source_collection,
+               :sponsor,
+               :staging,
+               :subseries,
+               :tag,
+               :time_of_photo,
+               :tone,
+               :venue,
+               :volume].freeze
 
     end
   end
