@@ -124,12 +124,11 @@ class ExportSet < ActiveRecord::Base
       Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |zip_file|
         logger.debug "Created zip file #{zip_path} for export set content archive."
         objects.each do |object|
-          content_ds = object.datastreams[DulHydra::Datastreams::CONTENT]
           # use guaranteed unique file name based on PID and dsID 
-          temp_file_path = File.join(tmpdir, content_ds.default_file_name)
+          temp_file_path = File.join(tmpdir, object.content.default_file_name)
           # write content to file
           File.open(temp_file_path, 'wb', :encoding => 'ascii-8bit') do |f|
-            content_ds.write_content(f)
+            f.write object.content.content
             logger.debug "Wrote object #{object.pid} content to file."
           end
           # Use original source file name, if available; otherwise the generated file name
