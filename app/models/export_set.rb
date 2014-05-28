@@ -131,11 +131,11 @@ class ExportSet < ActiveRecord::Base
             f.write object.content.content
             logger.debug "Wrote object #{object.pid} content to file."
           end
-          # Use original source file name, if available; otherwise the generated file name
-          # Note that we keep the path of the source file in order to reduce likelihood
-          # name conflicts, and since it is easy to flatten zip contents on extraction.
+          # Use original source file name, if available, or the generated file name.
+          # Note that we keep the path of the source file in order to reduce the likelihood
+          # of name conflicts, and since it is easy to flatten zip contents on extraction.
           # However, we don't want the path of the generated temp file, just the basename.
-          file_name = object.source.first || File.basename(temp_file_path)
+          file_name = object.original_filename || File.basename(temp_file_path)
           # discard leading slash, if present
           file_name = file_name[1..-1] if file_name.start_with? '/'
           # add file to archive
