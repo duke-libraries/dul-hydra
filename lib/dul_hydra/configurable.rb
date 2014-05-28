@@ -26,6 +26,12 @@ module DulHydra
       # Superuser group
       mattr_accessor :superuser_group
 
+      # Contact email address
+      mattr_accessor :contact_email
+
+      # Help URL
+      mattr_accessor :help_url
+
       # Default CSV options
       mattr_accessor :csv_options
 
