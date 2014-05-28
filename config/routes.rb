@@ -142,4 +142,6 @@ DulHydra::Application.routes.draw do
 
   resources :roles
   
+  get '/help', to: redirect("http://library.duke.edu/about/depts/repositoryservices/ddr")
+
 end
