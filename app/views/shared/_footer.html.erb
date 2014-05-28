@@ -1,3 +1,4 @@
 <div class="well well-sm text-center">
-  <small class="text-muted">DulHydra v<%= DulHydra::VERSION %></small>
+	<div><%= link_to t('dul_hydra.help.label'), help_path %> | <%= mail_to DulHydra.contact_email, t('dul_hydra.contact.label'), subject: t('dul_hydra.contact.subject') %></div>
+	<small class="text-muted">DulHydra v<%= DulHydra::VERSION %></small>
 </div>
