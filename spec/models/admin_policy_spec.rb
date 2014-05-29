@@ -16,8 +16,24 @@ describe AdminPolicy do
   end
 
   context "validation" do
-    it "should require a title" do
-      expect { AdminPolicy.create! }.to raise_error(ActiveFedora::RecordInvalid)
+    let(:apo) { AdminPolicy.new }
+    context "of title attribute" do
+      context "presence" do
+        it "should be required" do
+          expect(apo).not_to be_valid
+          expect(apo.errors[:title]).to include("can't be blank")
+        end
+      end
+      context "uniqueness" do
+        before do
+          allow(AdminPolicy).to receive(:where).with(title: "My Title") { [AdminPolicy.new(title: "My Title")] }
+          apo.title = "My Title"
+        end
+        it "should be required" do
+          expect(apo).not_to be_valid
+          expect(apo.errors[:title]).to include("has already been taken")
+        end
+      end
     end
   end
 

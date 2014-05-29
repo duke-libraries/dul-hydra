@@ -10,6 +10,7 @@ module DulHydra
     include HasThumbnail
     include ActiveFedora::Auditable
     include EventLoggable
+    include Validations
 
     def to_solr(solr_doc=Hash.new, opts={})
       solr_doc = super(solr_doc, opts)
