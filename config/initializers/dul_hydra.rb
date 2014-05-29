@@ -24,7 +24,7 @@ DulHydra.configure do |config|
     header_converters: :symbol
   }
 
-  config.create_menu_models = ["AdminPolicy", "Collection", "Role"]
+  config.create_menu_models = ["AdminPolicy", "Collection", "Role", "IngestFolder", "MetadataFile"]
 end
 
 # Load configuration for Grouper service, if present

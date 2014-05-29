@@ -18,7 +18,6 @@ en:
                 rows: Rows (excludes header row)
     batch:
         ingest_folder:
-            create: New Ingest Folder
             batch_name: Folder Ingest
             base_path:
                 forbidden: "%{path} is not permitted for folder ingest"
@@ -35,7 +34,6 @@ en:
             batch_name: Metadata Update File
             create_batch: Create Update Batch
             fields: Fields
-            new: Upload Metadata File
             upload_file: Upload File
             uploaded_file: Uploaded File
             error:
