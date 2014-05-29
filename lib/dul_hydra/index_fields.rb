@@ -20,6 +20,8 @@ module DulHydra::IndexFields
   IS_PRESERVATION_EVENT_FOR = ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol)
   LAST_FIXITY_CHECK_ON = ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :stored_sortable, type: :date)
   LAST_FIXITY_CHECK_OUTCOME = ActiveFedora::SolrService.solr_name(:last_fixity_check_outcome, :symbol)
+  LAST_VIRUS_CHECK_ON = ActiveFedora::SolrService.solr_name(:last_virus_check_on, :stored_sortable, type: :date)
+  LAST_VIRUS_CHECK_OUTCOME = ActiveFedora::SolrService.solr_name(:last_virus_check_outcome, :symbol)
   LINKING_OBJECT_ID_TYPE = ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol)
   LINKING_OBJECT_ID_VALUE = ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol)
   OBJECT_PROFILE = ActiveFedora::SolrService.solr_name(:object_profile, :displayable)

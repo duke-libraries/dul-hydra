@@ -10,6 +10,48 @@ end
 
 describe PreservationEvent do
 
+  describe "callbacks" do
+    subject { described_class.new }
+    describe "after_initialize" do
+      it "should set event id type and value" do
+        expect(subject.event_id_type).to eq(PreservationEvent::UUID)
+        expect(subject.event_id_value).not_to be_nil
+      end
+      it "should set event_date_time if nil" do
+        expect(subject.event_date_time).to be_a Time
+      end
+    end
+    describe "after_save" do
+      let(:obj) { FactoryGirl.create(:component_with_content) }
+      before { subject.for_object = obj }
+      after do
+        ActiveFedora::Base.destroy_all
+        PreservationEvent.destroy_all
+      end
+      context "for a fixity check" do
+        before { subject.event_type = PreservationEvent::FIXITY_CHECK }
+        it "should update_index on the for_object" do
+          expect(subject).to receive(:update_index_for_object)
+          subject.save
+        end
+      end
+      context "for a virus check" do
+        before { subject.event_type = PreservationEvent::VIRUS_CHECK }
+        it "should update_index on the for_object" do
+          expect(subject).to receive(:update_index_for_object)
+          subject.save
+        end
+      end
+      context "for other events" do
+        before { subject.event_type = PreservationEvent::CREATION }
+        it "should not update_index on the for_object" do
+          expect(subject).not_to receive(:update_index_for_object)
+          subject.save
+        end
+      end
+    end
+  end
+
   describe "validations" do
     let!(:obj) { FactoryGirl.create(:component_with_content) }
     let!(:pe) { PreservationEvent.fixity_check(obj) }

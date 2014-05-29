@@ -75,6 +75,24 @@ module DulHydra
       end
     end
 
+    def virus_checks
+      PreservationEvent.events_for(self, PreservationEvent::VIRUS_CHECK)
+    end
+
+    def last_virus_check_to_solr
+      e = virus_checks.last
+      e ? {
+        DulHydra::IndexFields::LAST_VIRUS_CHECK_ON => PreservationEvent.to_event_date_time(e.event_date_time),
+        DulHydra::IndexFields::LAST_VIRUS_CHECK_OUTCOME => e.event_outcome
+      } : {}
+    end
+
+    def to_solr(solr_doc=Hash.new, opts={})
+      solr_doc = super(solr_doc, opts)
+      solr_doc.merge!(last_virus_check_to_solr)
+      solr_doc
+    end
+
     protected
 
     def content_is_new_file?

@@ -1,7 +1,8 @@
 class PreservationEvent < ActiveRecord::Base
 
   after_initialize :set_event_id
-  after_initialize :set_event_date_time
+  after_initialize :set_event_date_time, if: "event_date_time.nil?"
+  after_save :update_index_for_object, if: :update_index?
 
   # Event types
   FIXITY_CHECK = "fixity check" # http://id.loc.gov/vocabulary/preservationEvents/fixityCheck
@@ -104,14 +105,12 @@ class PreservationEvent < ActiveRecord::Base
     factory!(:creation, object, user)
   end
 
-  def save(*)
-    super
-    # Update ActiveFedora object in the Solr index
-    for_object.update_index if for_object? && fixity_check?
-  end
-
   def fixity_check?
     event_type == FIXITY_CHECK
+  end
+
+  def virus_check?
+    event_type == VIRUS_CHECK
   end
 
   def success?
@@ -190,6 +189,17 @@ class PreservationEvent < ActiveRecord::Base
     as_premis.to_xml
   end
 
+  protected
+
+  def update_index_for_object
+    for_object.update_index
+  end
+
+  # Whether we should update the index of the related object after save
+  def update_index?
+    for_object? && (fixity_check? || virus_check?)
+  end
+
   private
 
   def self.factory!(method, *args)
@@ -204,7 +214,7 @@ class PreservationEvent < ActiveRecord::Base
   end
 
   def set_event_date_time
-    self.event_date_time = Time.now.utc unless self.event_date_time
+    self.event_date_time = Time.now.utc
   end
 
   def self.version_note
