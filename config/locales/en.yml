@@ -3,6 +3,10 @@ en:
     form:
       title: 'Edit Descriptive Metadata'
   dul_hydra:
+    ingest_folder:
+      new_menu: "Folder Ingest"
+    metadata_file:
+      new_menu: "Metadata File Upload"
     upload:
       alerts:
         has_content: "Uploading new content will supersede the existing content with a new version."

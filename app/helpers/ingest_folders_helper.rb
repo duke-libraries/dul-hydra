@@ -1,9 +1,5 @@
 module IngestFoldersHelper
   
-  def ingest_folder_create_link
-    link_to I18n.t('batch.ingest_folder.create'), new_ingest_folder_path
-  end
-  
   def permitted_folder_bases
     IngestFolder.permitted_folders(current_user)
   end

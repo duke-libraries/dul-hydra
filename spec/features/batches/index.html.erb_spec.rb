@@ -3,6 +3,7 @@ require 'spec_helper'
 describe "batches/index.html.erb" do
   context "ingest folders" do
     let(:user) { FactoryGirl.create(:user) }
+    let(:menu_label) { I18n.t('dul_hydra.ingest_folder.new_menu') }
     before { login_as user }
     after do
       user.destroy
@@ -14,7 +15,7 @@ describe "batches/index.html.erb" do
         visit batches_path
       end
       it "should not include a link to create an ingest folder" do
-        expect(page).to_not have_link(I18n.t('batch.ingest_folder.create'))
+        expect(page).to_not have_link(menu_label, new_ingest_folder_path)
       end
     end
     context "user has permitted ingest folders" do
@@ -23,12 +24,13 @@ describe "batches/index.html.erb" do
         visit batches_path
       end
       it "should include a link to create an ingest folder" do
-        expect(page).to have_link(I18n.t('batch.ingest_folder.create'))
+        expect(page).to have_link(menu_label, new_ingest_folder_path)
       end
     end
   end
   context "metadata files", :metadata_file => true do
     let(:user) { FactoryGirl.create(:user) }
+    let(:menu_label) { I18n.t('dul_hydra.metadata_file.new_menu') }
     let(:metadata_file_creator) { Role.create("Metadata File Creator", ability: "create", model: "MetadataFile") }
     before do
       login_as user
@@ -42,7 +44,7 @@ describe "batches/index.html.erb" do
         visit batches_path
       end
       it "should not include a link to upload a metadata file" do
-        expect(page).to_not have_link(I18n.t('batch.metadata_file.new'))
+        expect(page).to_not have_link(menu_label, new_metadata_file_path)
       end
     end
     context "user is permitted to upload metadata files" do
@@ -53,7 +55,7 @@ describe "batches/index.html.erb" do
       after { Role.destroy_all }
       it "should include a link to upload a metadata file" do
         visit batches_path
-        expect(page).to have_link(I18n.t('batch.metadata_file.new'))
+        expect(page).to have_link(menu_label, new_metadata_file_path)
       end
     end
   end
