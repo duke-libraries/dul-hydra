@@ -39,6 +39,7 @@ group :development, :test do
   gem 'factory_girl_rails', '~> 4.0'
   gem 'orderly'
   gem 'launchy'
+  gem 'database_cleaner'
 end
 
 group :production do

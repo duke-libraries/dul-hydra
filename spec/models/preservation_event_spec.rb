@@ -24,10 +24,6 @@ describe PreservationEvent do
     describe "after_save" do
       let(:obj) { FactoryGirl.create(:component_with_content) }
       before { subject.for_object = obj }
-      after do
-        ActiveFedora::Base.destroy_all
-        PreservationEvent.destroy_all
-      end
       context "for a fixity check" do
         before { subject.event_type = PreservationEvent::FIXITY_CHECK }
         it "should update_index on the for_object" do
@@ -55,7 +51,6 @@ describe PreservationEvent do
   describe "validations" do
     let!(:obj) { FactoryGirl.create(:component_with_content) }
     let!(:pe) { PreservationEvent.fixity_check(obj) }
-    after { obj.destroy }
     it "should validate event_date_time" do
       pe.should be_valid
       pe.event_date_time = nil
@@ -141,7 +136,6 @@ describe PreservationEvent do
 
   describe "#for_object" do
     before { pe.for_object = obj }
-    after { obj.delete }
     let(:obj) { Component.create }
     let(:pe) { PreservationEvent.new }
     it "should return the object associated with the PreservationEvent" do
@@ -151,7 +145,6 @@ describe PreservationEvent do
 
   describe ".fixity_check" do
     subject { PreservationEvent.fixity_check(obj) }
-    after { obj.destroy }
     context "success" do
       let(:obj) { FactoryGirl.create(:component_with_content) }
       it_should_behave_like "a fixity check success preservation event"
@@ -165,7 +158,6 @@ describe PreservationEvent do
 
   describe ".fixity_check!" do
     subject { PreservationEvent.fixity_check!(obj) }
-    after { obj.destroy }
     context "success" do
       let(:obj) { FactoryGirl.create(:component_with_content) }
       it_should_behave_like "a fixity check success preservation event"
@@ -179,7 +171,6 @@ describe PreservationEvent do
 
   describe ".creation" do
     let(:obj) { FactoryGirl.create(:item) }
-    after { obj.destroy }
     context "without a user" do
       subject { PreservationEvent.creation(obj) }
       it_should_behave_like "a valid object preservation event"
@@ -193,7 +184,6 @@ describe PreservationEvent do
 
   describe ".creation!" do
     let(:obj) { FactoryGirl.create(:item) }
-    after { obj.destroy }
     context "without a user" do
       subject { PreservationEvent.creation!(obj) }
       it_should_behave_like "a valid object preservation event"
@@ -214,7 +204,6 @@ describe PreservationEvent do
   describe ".events_for" do
     let(:obj) { FactoryGirl.create(:component_with_content) }
     let(:pe) { obj.fixity_check! }
-    after { obj.destroy }
     context "object_or_pid" do
       it "should return preservation events associated with that object" do
         PreservationEvent.events_for(obj).should include(pe)

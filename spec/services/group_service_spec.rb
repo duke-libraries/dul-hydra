@@ -41,7 +41,6 @@ describe DulHydra::Services::GroupService do
     end
     describe "when the user is persisted" do
       let(:user) { FactoryGirl.create(:user) }
-      after { user.destroy }
       it "should include the 'public' and 'registered' groups" do
         expect(subject.user_groups(user)).to include("public", "registered")
       end

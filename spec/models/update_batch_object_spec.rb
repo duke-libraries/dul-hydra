@@ -19,20 +19,12 @@ module DulHydra::Batch::Models
     let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
     let(:object) { batch.batch_objects.first }
 
-    after do
-      batch.user.destroy
-      batch.destroy
-    end
-    
     context "validate" do
       context "valid object" do
         let(:repo_object) { TestModel.create(:pid => object.pid) }
         before do
           repo_object.edit_users = [ batch.user.user_key ]
           repo_object.save
-        end
-        after do
-          repo_object.destroy
         end
         context "generic object" do
           it_behaves_like "a valid update object"
@@ -59,7 +51,6 @@ module DulHydra::Batch::Models
         context "batch user not permitted to edit repository object" do
           let!(:repo_object) { TestModel.create(:pid => object.pid) }
           let(:error_message) { "#{error_prefix} #{batch.user.user_key} not permitted to edit #{object.pid}" }
-          after { repo_object.destroy }
           it_behaves_like "an invalid update object"          
         end
       end
@@ -69,15 +60,10 @@ module DulHydra::Batch::Models
       context "successful update" do
         let(:repo_object) { TestModel.create(:pid => object.pid) }
         before do
-          EventLog.destroy_all
           repo_object.edit_users = [batch.user.user_key]
           repo_object.save!
           object.process
           repo_object.reload
-        end
-        after do
-          repo_object.destroy
-          EventLog.destroy_all
         end
         it "should update the repository object" do
           expect(repo_object.title.first).to eq('Sample updated title')

@@ -3,11 +3,6 @@ require 'spec_helper'
 describe "roles views" do
   let(:user) { FactoryGirl.create(:user) }
   before { login_as user }
-  after do
-    User.destroy_all
-    Role.destroy_all
-    Warden.test_reset!
-  end
   describe "index" do
     let!(:role) { Role.create(name: "Manager") }
     it "should list the roles" do

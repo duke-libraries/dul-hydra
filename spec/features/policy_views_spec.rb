@@ -12,12 +12,6 @@ describe "policy view" do
     object.save
     login_as user
   end
-  after do
-    User.destroy_all
-    ActiveFedora::Base.destroy_all
-    EventLog.destroy_all
-    Warden.test_reset!
-  end
   it "should be idempotent" do
     original_default_permissions = object.default_permissions
     visit url_for(controller: object.controller_name, action: "default_permissions", id: object)

@@ -6,13 +6,8 @@ describe Ability do
 
   subject { described_class.new(user) }
   let(:user) { FactoryGirl.create(:user) }
-  after do
-    User.destroy_all
-    ActiveFedora::Base.destroy_all
-  end
 
   describe "#role_permissions", roles: true do
-    after { Role.destroy_all }
     let!(:role) do
       Role.new.tap do |role|
         role.name = "Manager"

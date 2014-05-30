@@ -2,10 +2,6 @@ require 'spec_helper'
 
 describe DownloadsController do
   let(:user) { FactoryGirl.create(:user) }
-  after do
-    user.destroy
-    obj.destroy
-  end
   before do
     obj.read_users = [user.user_key]
     obj.save

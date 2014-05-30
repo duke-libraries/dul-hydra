@@ -26,9 +26,6 @@ describe Item do
 
   context "relationships" do
     let!(:item) { FactoryGirl.create(:item) }
-    after do
-      ActiveFedora::Base.destroy_all
-    end
     context "with a collection" do
       let!(:collection) { FactoryGirl.create(:collection) }
       context "#collection=" do

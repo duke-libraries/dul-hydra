@@ -13,11 +13,6 @@ describe "Grouper integration" do
       proxy.set_user user
     end
   end
-  after do
-    object.delete
-    user.delete
-    Warden.test_reset!
-  end
   it "should honor Grouper group access control" do
     visit url_for(object)
     page.should have_content("Grouper Works!")

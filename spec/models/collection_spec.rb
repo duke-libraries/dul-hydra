@@ -24,8 +24,6 @@ describe Collection do
 
   it_behaves_like "a DulHydra object"
 
-  after { ActiveFedora::Base.destroy_all }
-  
   context "collection-item relationships" do
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:item) { FactoryGirl.create(:item) }

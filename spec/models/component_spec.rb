@@ -26,8 +26,6 @@ describe Component, components: true do
   it_behaves_like "a DulHydra object"
   it_behaves_like "an object that can have content"
 
-  after { ActiveFedora::Base.destroy_all }
-
   context "#collection" do
     context "orphan component" do
       subject { component }

@@ -4,11 +4,6 @@ describe ThumbnailController do
   let(:object) { FactoryGirl.create(:component_with_content) }
   let(:user) { FactoryGirl.create(:user) }
   before(:each) { sign_in user }
-  after(:each) do
-    sign_out user
-    user.delete
-    object.delete
-  end
   context "user with discover permssion but not read permission on asset" do
     before do
       object.read_groups = ["registered"]
@@ -29,7 +24,6 @@ describe ThumbnailController do
       object.admin_policy = policy
       object.save
     end
-    after { policy.delete }
     it "should allow user to download thumbnail" do
       get :show, :id => object
       response.should be_successful

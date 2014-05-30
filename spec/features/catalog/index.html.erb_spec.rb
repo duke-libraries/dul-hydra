@@ -4,11 +4,6 @@ describe "catalog/index.html.erb" do
   let(:user) { FactoryGirl.create(:user) }
   let(:object) { FactoryGirl.create(:component_with_content) }
   before(:each) { login_as user }
-  after(:each) do
-    User.destroy_all
-    ActiveFedora::Base.destroy_all
-    Warden.test_reset!
-  end
   describe "footer" do
     before { visit catalog_index_path }
     it "has a help link" do

@@ -20,7 +20,6 @@ module DulHydra::Batch::Models
       let(:admin_policy_pid) { "duke-apo:adminPolicy" }
       context "valid" do
         let!(:admin_policy) { AdminPolicy.create(:pid => admin_policy_pid, :title => "Test Policy") }
-        after { admin_policy.destroy }
         context "manifest with files" do
           let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
           before { manifest.manifest_hash['basepath'] = File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous') }
@@ -177,7 +176,6 @@ module DulHydra::Batch::Models
                 manifest.manifest_hash[Manifest::MODEL] = model
                 manifest.manifest_hash[key] = object.pid
               end
-              after { object.destroy }
               it_behaves_like "an invalid manifest"
             end
           end
@@ -195,7 +193,6 @@ module DulHydra::Batch::Models
               let(:error_message) { I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => key, :pid => pid) }
               let!(:batch_object) { BatchObject.create(:identifier => id, :pid => pid) }
               before { manifest.manifest_hash[key] = { subkey => id } }
-              after { batch_object.destroy }
               it_behaves_like "an invalid manifest"
             end
             context "repository object not correct model" do
@@ -207,10 +204,6 @@ module DulHydra::Batch::Models
               before do
                 manifest.manifest_hash[Manifest::MODEL] = model
                 manifest.manifest_hash[key] = { subkey => object.identifier.first }
-              end
-              after do
-                object.destroy
-                batch_object.destroy
               end
               it_behaves_like "an invalid manifest"
             end
@@ -254,7 +247,6 @@ module DulHydra::Batch::Models
                 }
               }
           end
-          after { user.destroy }
           it "should return the correct values" do
             expect(manifest.batch_name).to eq(batch_name)
             expect(manifest.batch_description).to eq(batch_description)
@@ -264,7 +256,6 @@ module DulHydra::Batch::Models
         context "existing batch" do
           let(:batch) { Batch.create }
           before { manifest.manifest_hash = { "batch" => { "id" => batch.id } } }
-          after { batch.destroy }
           it "should return the correct value" do
             expect(manifest.batch_id).to eq(batch.id)
           end

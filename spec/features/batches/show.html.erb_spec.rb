@@ -4,11 +4,6 @@ describe "batches/show.html.erb" do
 
   context "batch" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
-    after do
-      batch.user.delete
-      batch.destroy
-      Warden.test_reset!
-    end
     context "batch info" do
       before { login_as batch.user }
       context "validate action" do

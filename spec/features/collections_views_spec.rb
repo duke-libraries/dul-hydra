@@ -26,11 +26,6 @@ describe "Collections views" do
       admin_policy.save!
       login_as user
     end
-    after do 
-      ActiveFedora::Base.destroy_all
-      user.destroy
-      Warden.test_reset!
-    end
     it "should create a collection" do
       pending "Figuring out how to write the test"
       visit new_collection_path

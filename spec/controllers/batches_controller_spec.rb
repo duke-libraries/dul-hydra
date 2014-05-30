@@ -21,11 +21,6 @@ describe BatchesController, batch: true do
   describe "#destroy" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
     before { sign_in batch.user }
-    after do
-      batch.user.delete
-      # The following ensures that the batch is deleted even if the test fails
-      DulHydra::Batch::Models::Batch.all.each { |obj| obj.destroy }
-    end
     context "batch is pending (nil)" do
       it_behaves_like "a delete-able batch"
     end
@@ -81,10 +76,6 @@ describe BatchesController, batch: true do
       sign_in batch.user
       get :procezz, :id => batch.id
       batch.reload
-    end
-    after do
-      batch.user.delete
-      batch.destroy
     end
     it "should set the status of the batch to QUEUED" do
       expect(batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_QUEUED)

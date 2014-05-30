@@ -10,7 +10,6 @@ describe Attachment, attachments: true do
   context "relationships" do
     let(:attachment) { FactoryGirl.create(:attachment) }
     let(:object) { FactoryGirl.create(:collection) }
-    after { ActiveFedora::Base.destroy_all }
     context "#attached_to=" do
       before do
         attachment.attached_to = object

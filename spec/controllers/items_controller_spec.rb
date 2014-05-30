@@ -8,14 +8,7 @@ end
 describe ItemsController do
 
   let(:user) { FactoryGirl.create(:user) }
-
   before { sign_in user }
-
-  after do
-    ActiveFedora::Base.destroy_all
-    User.destroy_all
-    EventLog.destroy_all
-  end
   
   it_behaves_like "a repository object controller" do
     let(:collection) { FactoryGirl.create(:collection) }
