@@ -7,6 +7,11 @@ en:
       new_menu: "Folder Ingest"
     metadata_file:
       new_menu: "Metadata File Upload"
+    help:
+        label: "Help"
+    contact:
+        label: "Contact Us"
+        subject: "Duke Digital Repository Email Contact"
     upload:
       alerts:
         has_content: "Uploading new content will supersede the existing content with a new version."

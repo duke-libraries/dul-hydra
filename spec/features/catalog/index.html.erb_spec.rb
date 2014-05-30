@@ -9,6 +9,15 @@ describe "catalog/index.html.erb" do
     ActiveFedora::Base.destroy_all
     Warden.test_reset!
   end
+  describe "footer" do
+    before { visit catalog_index_path }
+    it "has a help link" do
+      expect(page).to have_link(I18n.t('dul_hydra.help.label'), help_path)
+    end
+    it "has a contact link" do
+      expect(page).to have_link(I18n.t('dul_hydra.contact.label'), "mailto:#{DulHydra.contact_email}")
+    end
+  end
   describe "search options" do
     before do
       object.discover_groups = ["public"]

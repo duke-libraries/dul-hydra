@@ -16,6 +16,10 @@ DulHydra.configure do |config|
 
   config.superuser_group = ENV['SUPERUSER_GROUP']
 
+  config.contact_email = ENV['CONTACT_EMAIL']
+
+  config.help_url = Rails.env.test? ? "http://www.loc.gov" : ENV['HELP_URL']
+
   config.csv_options = { 
     encoding: "UTF-8",
     col_sep: "\t",
