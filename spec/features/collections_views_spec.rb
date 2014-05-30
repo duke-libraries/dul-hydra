@@ -17,10 +17,11 @@ describe "Collections views" do
 
   describe "new.html.erb" do
     let(:user) { FactoryGirl.create(:user) }
-    let(:admin_policy) { FactoryGirl.create(:public_discover_policy) }
+    let(:admin_policy) { FactoryGirl.create(:admin_policy) }
     let(:collection_creator) { Role.new("Collection Creator", ability: :create, model: "Collection") }
     before do
       allow(User.any_instance).to receive(:roles) { [collection_creator] }
+      admin_policy.default_permissions = [DulHydra::Permissions::PUBLIC_DISCOVER_ACCESS]
       admin_policy.read_users = [user.user_key]
       admin_policy.save!
       login_as user
