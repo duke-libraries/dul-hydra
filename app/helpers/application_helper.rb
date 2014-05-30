@@ -120,12 +120,9 @@ module ApplicationHelper
     end
   end
 
-  def render_last_fixity_check_outcome
-    outcome = current_document.last_fixity_check_outcome
-    if outcome.present?
-      label = outcome == "success" ? "success" : "important"
-      render_label outcome.capitalize, label
-    end
+  def render_event_outcome(outcome)
+    label = outcome == PreservationEvent::SUCCESS ? "success" : "danger"
+    render_label outcome.capitalize, label
   end
 
   def render_content_size(document)

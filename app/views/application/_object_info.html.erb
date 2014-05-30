@@ -18,11 +18,24 @@
 	  <p class="list-group-item-text">
 		<% if current_document.last_fixity_check_outcome.present? %>
  	      <%= format_date current_document.last_fixity_check_on %>
-	      <%= render_last_fixity_check_outcome %>
+	      <%= render_event_outcome current_document.last_fixity_check_outcome %>
 		<% else %>
 	      [not checked]
 	    <% end %>
 	  </p>
 	</div>
+	<% if current_object.has_content? %>
+	<div class="list-group-item">
+	  <p class="list-group-item-heading">Virus Scanned</p>
+	  <p class="list-group-item-text">
+		<% if current_document.last_virus_check_outcome.present? %>
+ 	      <%= format_date current_document.last_virus_check_on %>
+	      <%= render_event_outcome current_document.last_virus_check_outcome %>
+		<% else %>
+	      [not scanned]
+	    <% end %>
+	  </p>
+	</div>
+	<% end %>
   </div>
 </div>

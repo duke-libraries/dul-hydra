@@ -48,6 +48,14 @@ module DulHydra
       get(DulHydra::IndexFields::LAST_FIXITY_CHECK_OUTCOME)
     end
 
+    def last_virus_check_on
+      get_date(DulHydra::IndexFields::LAST_VIRUS_CHECK_ON)
+    end
+
+    def last_virus_check_outcome
+      get(DulHydra::IndexFields::LAST_VIRUS_CHECK_OUTCOME)
+    end
+
     def datastreams
       object_profile["datastreams"]
     end
