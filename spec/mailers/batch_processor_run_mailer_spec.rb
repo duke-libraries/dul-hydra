@@ -4,16 +4,6 @@ describe BatchProcessorRunMailer, batch: true do
   let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
   let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id) }
   before { bp.execute }
-  after do
-    batch.batch_objects.each do |batch_object|
-      if batch_object.pid
-        repo_object = ActiveFedora::Base.find(batch_object.pid, :cast => true)
-        repo_object.destroy
-      end
-    end
-    batch.user.destroy
-    batch.destroy
-  end
   it "should send a notification" do
     ActionMailer::Base.deliveries.should_not be_empty
     email = ActionMailer::Base.deliveries.first

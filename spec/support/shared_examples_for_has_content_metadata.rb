@@ -8,7 +8,6 @@ shared_examples "an object that has content metadata" do
     object.contentMetadata.content = File.new(file_path, "r")
     object.save!
   end
-  after { object.delete }
   context "contentMetadata datastream" do
     let(:expected_result) do
       [

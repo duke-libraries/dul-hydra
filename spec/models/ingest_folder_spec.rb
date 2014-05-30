@@ -69,10 +69,6 @@ describe IngestFolder, ingest: true do
     File.stub(:readable?).and_return(true)
     IngestFolder.stub(:load_configuration).and_return(YAML.load(test_ingest_folder_config).with_indifferent_access)
   end
-  after do
-    ingest_folder.destroy
-    user.destroy
-  end
   context "initialization" do
     let(:ingest_folder) { IngestFolder.new }
     it "should set the checksum type to the default" do
@@ -159,7 +155,6 @@ describe IngestFolder, ingest: true do
       File.stub(:directory?).with("/mount/base/path/subpath/pdf").and_return(true)
       File.stub(:directory?).with("/mount/base/path/subpath/targets").and_return(true)
     end
-    after { ActiveFedora::Base.destroy_all }
     context "scan" do
       context "no warnings" do
         let(:scan_results) { ingest_folder.scan }
@@ -190,7 +185,6 @@ describe IngestFolder, ingest: true do
       let(:rels) { {} }
       let(:parent_model) { DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
       before { IngestFolder.any_instance.stub(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) }
-      after { user.batches.first.destroy }
       
       context "collection has admin policy" do
         before do

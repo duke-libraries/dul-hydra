@@ -11,14 +11,7 @@ end
 describe AdminPoliciesController do
 
   let(:user) { FactoryGirl.create(:user) }
-
   before { sign_in user }
-
-  after do
-    User.destroy_all
-    ActiveFedora::Base.destroy_all
-    EventLog.destroy_all
-  end
 
   it_behaves_like "a repository object controller" do
     let(:create_object) { Proc.new { create_policy } }

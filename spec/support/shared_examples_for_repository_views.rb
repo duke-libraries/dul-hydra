@@ -5,9 +5,6 @@ def setup
 end
 
 def teardown
-  User.destroy_all
-  ActiveFedora::Base.destroy_all
-  EventLog.destroy_all
   Warden.test_reset!
 end
 

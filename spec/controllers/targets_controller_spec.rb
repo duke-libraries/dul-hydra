@@ -4,13 +4,7 @@ require 'support/shared_examples_for_repository_controllers'
 describe TargetsController, targets: true do
 
   let(:user) { FactoryGirl.create(:user) }
-
   before { sign_in user }
-
-  after do
-    User.destroy_all
-    ActiveFedora::Base.destroy_all
-  end
 
   describe "#show" do
     let(:object) { FactoryGirl.create(:target) }

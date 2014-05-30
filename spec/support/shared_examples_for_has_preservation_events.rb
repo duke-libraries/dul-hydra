@@ -11,7 +11,6 @@ shared_examples "an object that has preservation events" do
 
   context "#fixity_check" do
     subject { obj.fixity_check }
-    after { obj.delete }
     let(:obj) do
       described_class.new.tap do |obj|
         obj.title = 'I can be fixity-checked'
@@ -23,7 +22,6 @@ shared_examples "an object that has preservation events" do
 
   context "#fixity_check!" do
     subject { obj.fixity_check! }
-    after { obj.destroy }
     let(:obj) do
       described_class.new.tap do |obj|
         obj.title = 'I can be fixity-checked!'

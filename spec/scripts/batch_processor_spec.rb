@@ -100,18 +100,6 @@ module DulHydra::Batch::Scripts
     context "ingest" do
       let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
-      after do
-        batch.batch_objects.each do |obj|
-          obj.batch_object_relationships.each do |r|
-            ActiveFedora::Base.find(r[:object], :cast => true).destroy if r[:name].eql?("parent")
-            AdminPolicy.find(r[:object]).destroy if r[:name].eql?("admin_policy")
-            Collection.find(r[:object]).destroy if r[:name].eql?("collection")
-          end
-          ActiveFedora::Base.find(obj.pid, :cast => true).destroy if obj.pid.present?
-        end
-        batch.user.destroy
-        batch.destroy
-      end
       context "successful initial run" do
         before { bp.execute }
         it_behaves_like "a successful ingest batch"
@@ -139,11 +127,6 @@ module DulHydra::Batch::Scripts
       before do
         repo_object.edit_users = [ batch.user.user_key ]
         repo_object.save
-      end
-      after do
-        repo_object.destroy
-        batch.user.destroy
-        batch.destroy
       end
       context "successful update" do
         before { bp.execute }

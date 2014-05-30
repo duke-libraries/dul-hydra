@@ -35,7 +35,6 @@ shared_examples "a DulHydra object" do
         obj.save(validate: false)
       end
     end
-    after { object.destroy }
     it "should return a boolean success/failure flag and hash of datastream profiles" do
       outcome, detail = object.validate_checksums
       outcome.should be_true

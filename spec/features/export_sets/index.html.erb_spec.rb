@@ -3,11 +3,6 @@ require 'spec_helper'
 describe "export_sets/index.html.erb", export_sets: true do
   let(:user) { FactoryGirl.create(:user) }
   before { login_as user }
-  after do
-    User.destroy_all
-    ActiveFedora::Base.destroy_all
-    Warden.test_reset!
-  end
   context "user has no bookmarks" do
     it "should not have a 'new export set' link" do
       visit export_sets_path

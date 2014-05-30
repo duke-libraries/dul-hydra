@@ -2,13 +2,7 @@ require 'spec_helper'
 
 describe EventLog do
   
-  after { User.destroy_all }
-
   context ".create_for_model_action" do
-    after do
-      ActiveFedora::Base.destroy_all
-      EventLog.destroy_all
-    end
     let(:object) { FactoryGirl.create(:test_model) }
     let(:user) { FactoryGirl.create(:user) }
     subject { EventLog.create_for_model_action(user: user, object: object, action: EventLog::Actions::CREATE) }

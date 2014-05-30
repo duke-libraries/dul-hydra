@@ -21,11 +21,6 @@ describe MetadataFile, :metadata_file => true do
   
   let(:metadata_file) { FactoryGirl.create(:metadata_file_qdc_csv) }
 
-  after do
-    metadata_file.user.destroy
-    metadata_file.destroy
-  end
-
   context "validation" do
     context "valid" do
       it "should have a valid factory" do
@@ -99,8 +94,6 @@ describe MetadataFile, :metadata_file => true do
       @batch_object = @batch.batch_objects.first
       @datastream = @batch_object.batch_object_datastreams.first
     end
-
-    after { @batch.destroy }
 
     context "cdm export metadata file" do
       let(:delimited_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_update', 'mapped_tab.txt') }

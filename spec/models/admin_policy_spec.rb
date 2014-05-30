@@ -61,7 +61,6 @@ describe AdminPolicy do
 
   context "indexing" do
     subject { SolrDocument.new(ActiveFedora::SolrService.query(ActiveFedora::SolrService.construct_query_for_pids([apo.pid])).first) }
-    after { apo.delete }
     let(:apo) { AdminPolicy.create(title: 'Awesome Policy') }
     its(:title) { should == apo.title }
   end

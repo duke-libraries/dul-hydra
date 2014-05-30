@@ -15,12 +15,6 @@ describe "AdminPolicies views", admin_policies: true do
       allow(Ability.any_instance).to receive(:role_abilities) { [[:create, AdminPolicy]] }
       login_as user
     end
-    after do 
-      ActiveFedora::Base.destroy_all
-      User.destroy_all
-      EventLog.destroy_all
-      Warden.test_reset!
-    end
     it "should create an AdminPolicy" do
       pending "Figuring out how to write the test"
       visit new_admin_policy_path

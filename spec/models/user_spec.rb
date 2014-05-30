@@ -60,10 +60,6 @@ describe User do
     subject { user.effective_roles }
     let(:user) { FactoryGirl.create(:user) }
     before { @role = Role.create(name: "Test Role") }
-    after do
-      User.destroy_all
-      Role.destroy_all
-    end
     context "role not granted to user" do
       it "should not include the role" do
         expect(subject).not_to include(@role)

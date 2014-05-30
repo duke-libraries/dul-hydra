@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Models
 
-  describe "ManifestObject", batch: true do
+  describe ManifestObject, batch: true do
   
     shared_examples "a valid manifest object" do
       it "should be valid" do
@@ -110,7 +110,6 @@ module DulHydra::Batch::Models
                 manifest_object.object_hash[Manifest::MODEL] = model
                 manifest_object.object_hash[key] = object.pid
               end
-              after { object.destroy }
               it_behaves_like "an invalid manifest object"
             end
           end
@@ -128,7 +127,6 @@ module DulHydra::Batch::Models
               let(:error_message) { I18n.t('batch.manifest_object.errors.relationship_object_not_found', :identifier => identifier, :relationship => key, :pid => pid) }
               let!(:batch_object) { BatchObject.create(:identifier => id, :pid => pid) }
               before { manifest_object.object_hash[key] = { subkey => id } }
-              after { batch_object.destroy }
               it_behaves_like "an invalid manifest object"
             end
             context "repository object not correct model" do
@@ -140,10 +138,6 @@ module DulHydra::Batch::Models
               before do
                 manifest_object.object_hash[Manifest::MODEL] = model
                 manifest_object.object_hash[key] = { subkey => object.identifier.first }
-              end
-              after do
-                object.destroy
-                batch_object.destroy
               end
               it_behaves_like "an invalid manifest object"
             end
@@ -398,10 +392,6 @@ module DulHydra::Batch::Models
             @batch_object_a = BatchObject.create!(:batch_id => batch1.id, :identifier => relationship_id, :pid => pid_1)
             @batch_object_b = BatchObject.create!(:batch_id => batch2.id, :identifier => relationship_id, :pid => pid_2)
           end
-          after do
-            batch1.destroy
-            batch2.destroy
-          end
           context "batchid" do
             context "explicit id" do
               before do
@@ -474,10 +464,6 @@ module DulHydra::Batch::Models
           before do
             @batch_object_a = BatchObject.create!(:batch_id => batch1.id, :identifier => relationship_id, :pid => pid_1)
             @batch_object_b = BatchObject.create!(:batch_id => batch2.id, :identifier => relationship_id, :pid => pid_2)
-          end
-          after do
-            batch1.destroy
-            batch2.destroy
           end
           context "batchid" do
             context "explicit id" do

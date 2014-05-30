@@ -42,12 +42,6 @@ describe "metadata_files/show.html.erb", :metadata_file => true do
     visit(metadata_file_path(metadata_file))
   end
   
-  after do
-    metadata_file.user.destroy
-    metadata_file.destroy
-    Warden.test_reset!
-  end
-  
   context "factory version" do
     let(:metadata_file) { FactoryGirl.create(:metadata_file_qdc_csv) }
     let(:headers_text) {

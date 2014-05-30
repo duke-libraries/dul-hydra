@@ -5,10 +5,6 @@ describe "batches/index.html.erb" do
     let(:user) { FactoryGirl.create(:user) }
     let(:menu_label) { I18n.t('dul_hydra.ingest_folder.new_menu') }
     before { login_as user }
-    after do
-      user.destroy
-      Warden.test_reset!
-    end
     context "user has no permitted ingest folders" do
       before do
         IngestFolder.stub(:permitted_folders).with(user).and_return(nil)
@@ -35,10 +31,6 @@ describe "batches/index.html.erb" do
     before do
       login_as user
     end
-    after do
-      user.destroy
-      Warden.test_reset!
-    end
     context "user is not permitted to upload metadata files" do
       before do
         visit batches_path
@@ -52,7 +44,6 @@ describe "batches/index.html.erb" do
         user.roles << Role.create(name: "Metadata File Uploader", ability: "create", model: "MetadataFile")
         user.save!
       end
-      after { Role.destroy_all }
       it "should include a link to upload a metadata file" do
         visit batches_path
         expect(page).to have_link(menu_label, new_metadata_file_path)
@@ -62,12 +53,6 @@ describe "batches/index.html.erb" do
   context "batches" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
     let(:other_user) { FactoryGirl.create(:user) }
-    after do
-      other_user.delete
-      batch.user.delete
-      batch.destroy
-      Warden.test_reset!
-    end
     context "pending batches" do
       let(:tab_id) { '#tab_pending_batches' }
       context "user has no pending batches" do
@@ -86,7 +71,6 @@ describe "batches/index.html.erb" do
           login_as batch.user
           visit batches_path
         end
-        after { batch.destroy }
         it "should list the batch on the pending tab" do
           within tab_id do
             expect(page).to have_link(batch.id, :href => batch_path(batch))
@@ -147,7 +131,6 @@ describe "batches/index.html.erb" do
           login_as batch.user
           visit batches_path
         end
-        after { batch.destroy }
         it "should list the batch on the already run tab" do
           within tab_id do
             expect(page).to have_link(batch.id, :href => batch_path(batch))

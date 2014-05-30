@@ -6,7 +6,6 @@ shared_examples "a describable object" do
       obj.save(validate: false)
     end
   end
-  after { object.destroy }
   context "having an identifier" do
     it "should be findable by identifier" do
       described_class.find_by_identifier('id001').should include(object)

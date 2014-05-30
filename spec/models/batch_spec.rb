@@ -47,7 +47,6 @@ module DulHydra::Batch::Models
       end
       
       after do
-        admin_policy.delete
         batch.user.destroy
         batch.destroy
       end
