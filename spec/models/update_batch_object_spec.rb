@@ -68,17 +68,15 @@ module DulHydra::Batch::Models
     context "update" do
       context "successful update" do
         let(:repo_object) { TestModel.create(:pid => object.pid) }
-        let(:apo) { FactoryGirl.create(:group_edit_policy) }
         before do
           EventLog.destroy_all
-          repo_object.admin_policy = apo
-          repo_object.save
+          repo_object.edit_users = [batch.user.user_key]
+          repo_object.save!
           object.process
           repo_object.reload
         end
         after do
           repo_object.destroy
-          apo.destroy
           EventLog.destroy_all
         end
         it "should update the repository object" do

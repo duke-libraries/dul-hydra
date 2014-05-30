@@ -51,4 +51,8 @@ RSpec.configure do |config|
     User.destroy_all
     ActiveFedora::Base.destroy_all
   end
+
+  config.after(:each) do
+    ActiveFedora::Base.destroy_all
+  end
 end
