@@ -47,4 +47,7 @@ RSpec.configure do |config|
   end
   config.after(:each) { ActiveFedora::Base.destroy_all }
   config.after(:each, type: :feature) { Warden.test_reset! }
+
+  # Redirect all output to file
+  # config.output = File.open(File.join(Rails.root, 'log', 'rspec_output.txt'), 'w')
 end
