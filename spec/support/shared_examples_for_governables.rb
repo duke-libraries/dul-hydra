@@ -8,7 +8,6 @@ shared_examples "a governable object" do
   end
   describe "can have an admin policy" do
     let(:apo) { FactoryGirl.create(:admin_policy) }
-    after { apo.destroy }
     it "should set its admin policy with #admin_policy= and get with #admin_policy" do
       object.admin_policy = apo
       object.save(validate: false)

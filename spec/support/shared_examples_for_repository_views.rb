@@ -4,14 +4,9 @@ def setup
   login_as user
 end
 
-def teardown
-  Warden.test_reset!
-end
-
 shared_examples "a repository object show view" do
   let(:user) { FactoryGirl.create(:user) }
   before { setup }
-  after { teardown }
   describe "object summary" do
     before { visit url_for(object) }
     it "should display the title" do
@@ -116,7 +111,6 @@ shared_examples "a content-bearing object show view" do
     allow(user).to receive(:has_role?).with("Component Downloader") { true } # required for Components
     allow(user).to receive(:groups) { ["public", "registered"] }
   end
-  after { teardown }
   it "should have a download link" do
     pending
     visit url_for(object)
@@ -153,7 +147,6 @@ shared_examples "a repository object rights editing view" do
     object.save
     login_as user
   end
-  after { teardown }
   it "should be idempotent" do
     original_permissions = object.permissions
     visit url_for(controller: object.controller_name, action: "permissions", id: object)
@@ -207,7 +200,6 @@ shared_examples "a governable repository object rights editing view" do
       object.admin_policy = admin_policy
       object.save
     end
-    after { teardown }
     it "should display the inherited permissions" do
       visit url_for(controller: object.controller_name, action: "permissions", id: object)
       expect(find('#access-level-read')).to have_content("Bob")
