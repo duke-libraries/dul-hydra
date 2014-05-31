@@ -95,7 +95,6 @@ module DulHydra::Batch::Scripts
   describe BatchProcessor do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:log_dir) { test_dir }
-    before { ActiveFedora::Base.destroy_all }
     after { FileUtils.remove_dir test_dir }
     context "ingest" do
       let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }

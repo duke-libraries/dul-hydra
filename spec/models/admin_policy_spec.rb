@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AdminPolicy do
+describe AdminPolicy, admin_policies: true do
   context "terms delegated to defaultRights" do
     let(:apo) { AdminPolicy.new }
     before do
