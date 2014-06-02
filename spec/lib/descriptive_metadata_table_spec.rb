@@ -4,7 +4,6 @@ module DulHydra
   describe DescriptiveMetadataTable do
 
     let(:objects) { FactoryGirl.create_list(:test_model, 3) }
-    after { ActiveFedora::Base.destroy_all }
     it "should have headers" do
       expect(described_class.new(objects).headers).to match_array([:pid, :title, :identifier])
     end

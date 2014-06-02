@@ -69,7 +69,6 @@ describe ActiveFedora::Base do
     describe "#has_preservation_events?" do
       let(:preservation_eventable) { PreservationEventable.create }
       before { PreservationEvent.creation!(preservation_eventable) }
-      after { preservation_eventable.destroy }
       it "should return true if object has preservation events, else false" do
         preservation_eventable.should have_preservation_events
         PreservationEventable.new.should_not have_preservation_events

@@ -24,8 +24,6 @@ module DulHydra::Batch::Models
   
   describe IngestBatchObject, batch: true, ingest: true do
 
-    before { ActiveFedora::Base.destroy_all }
-    
     context "validate" do
     
       context "valid object" do

@@ -8,7 +8,7 @@ def update_policy
   patch :default_permissions, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
 end
 
-describe AdminPoliciesController do
+describe AdminPoliciesController, admin_policies: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
