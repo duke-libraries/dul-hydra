@@ -56,7 +56,7 @@ describe AdminPoliciesController, admin_policies: true do
           expect(response).to redirect_to(action: "show", tab: "default_permissions")
         end
         it "should create an event log entry for the action" do
-          expect{ update_policy }.to change{ object.event_logs(action: EventLog::Actions::MODIFY_POLICY).count }.by(1)
+          expect{ update_policy }.to change{ object.update_events.count }.by(1)
         end
       end
       context "when the user cannot edit the object" do

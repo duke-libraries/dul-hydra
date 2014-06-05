@@ -15,7 +15,7 @@ describe DulHydra::Services::Antivirus, antivirus: true do
       end
     end
     it "should raise an execption" do
-      expect { described_class.scan(file) }.to raise_error(DulHydra::Services::Antivirus::VirusFoundError)
+      expect { described_class.scan(file) }.to raise_error(DulHydra::VirusFoundError)
     end
   end
   context "when an error occurs in the engine" do
@@ -25,7 +25,7 @@ describe DulHydra::Services::Antivirus, antivirus: true do
       end
     end
     it "should raise an execption" do
-      expect { described_class.scan(file) }.to raise_error(DulHydra::Services::Antivirus::AntivirusEngineError)
+      expect { described_class.scan(file) }.to raise_error(DulHydra::Error)
     end
   end
 end

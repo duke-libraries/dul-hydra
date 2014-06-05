@@ -18,6 +18,7 @@ class Ability
     discover_permissions
     export_sets_permissions
     preservation_events_permissions
+    events_permissions
     batches_permissions
     ingest_folders_permissions
     metadata_files_permissions
@@ -47,12 +48,19 @@ class Ability
 
   def export_sets_permissions
     can :create, ExportSet if authenticated_user?
-    can :manage, ExportSet, :user_id => current_user.id
+    can :manage, ExportSet, user: current_user
   end
 
   def preservation_events_permissions
     can :read, PreservationEvent do |pe|
       pe.for_object? and can?(:read, pe.for_object)
+    end
+  end
+
+  def events_permissions
+    can :read, Event, user: current_user
+    can :read, Event do |e|
+      can? :read, e.pid
     end
   end
   
@@ -65,11 +73,11 @@ class Ability
 
   def ingest_folders_permissions
     can :create, IngestFolder if IngestFolder.permitted_folders(current_user).present?
-    can [:show, :procezz], IngestFolder, :user => current_user
+    can [:show, :procezz], IngestFolder, user: current_user
   end
   
   def metadata_files_permissions
-    can [:show, :procezz], MetadataFile, :user => current_user
+    can [:show, :procezz], MetadataFile, user: current_user
   end
   
   def download_permissions

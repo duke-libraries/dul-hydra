@@ -4,15 +4,13 @@ module DulHydra
   module Services
     class Antivirus
 
-      class AntivirusError < DulHydra::Error; end
-      class VirusFoundError < AntivirusError; end
-      class AntivirusEngineError < AntivirusError; end
+      SOFTWARE = "ClamAV"
 
       class << self
         def scan(file)
           result = scan_one file
-          raise VirusFoundError, result if result.has_virus?
-          raise AntivirusEngineError, result.version if result.error?
+          raise DulHydra::VirusFoundError, result if result.has_virus?
+          raise DulHydra::Error, "Antivirus error (#{result.version})" if result.error?
           logger.info result
           result
         end
@@ -71,8 +69,8 @@ module DulHydra
         def initialize(raw, file, opts={})
           @raw = raw
           @file = file
-          @scanned_at = opts.fetch(:scanned_at, DateTime.now)
-          @version = opts.fetch(:version, DulHydra::Services::Antivirus.version)
+          @scanned_at = opts.fetch(:scanned_at, Time.now.utc)
+          @version = DulHydra::Services::Antivirus.version
         end
 
         def virus_found

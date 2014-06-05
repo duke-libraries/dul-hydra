@@ -16,7 +16,6 @@ module DulHydra::Batch::Models
 Batch object database id: %{batch_id}
 Batch object identifier: %{identifier}
 Model: %{model}
-DulHydra version #{DulHydra::VERSION}
     EOS
   
     def self.pid_from_identifier(identifier, batch_id)
@@ -167,8 +166,8 @@ DulHydra version #{DulHydra::VERSION}
             verifications["#{r.name} relationship is correct"] = verify_relationship(repo_object, r)
           end
         end
-        preservation_event = repo_object.fixity_check!
-        verifications["Fixity check"] = preservation_event.event_outcome.eql?(PreservationEvent::SUCCESS) ? VERIFICATION_PASS : VERIFICATION_FAIL
+        event = FixityCheck.execute! repo_object
+        verifications["Fixity check"] = event.success? ? VERIFICATION_PASS : VERIFICATION_FAIL
       end
       verifications
     end

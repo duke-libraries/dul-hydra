@@ -7,27 +7,27 @@ shared_examples "an object that can have content" do
       let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
       before { object.content.content = file }
       it "should run a virus scan" do
-        expect(DulHydra::Services::Antivirus).to receive(:scan).with(file).and_call_original
+        expect(VirusCheck).to receive(:execute).with(object, file).and_call_original
         object.save
       end
       context "and a virus is found" do
-        before { allow(DulHydra::Services::Antivirus).to receive(:scan).with(file).and_raise(DulHydra::Services::Antivirus::VirusFoundError) }
+        before { allow(VirusCheck).to receive(:execute).with(object, file).and_raise(DulHydra::VirusFoundError) }
         it "should not persist the object" do
           expect { object.save }.to raise_error
           expect(object).to be_new_record
         end
       end
       context "and no virus is found" do
-        before { object.save }
-        it "should create a 'virus check' preservation event for the object" do
-          expect(PreservationEvent.events_for(object, PreservationEvent::VIRUS_CHECK).count).to eq(1)
+        before { object.save(validate: false) }
+        it "should create a 'virus check' event for the object" do
+          expect(VirusCheckEvent.for_object(object).count).to eq(1)
         end
       end
     end
     context "and the content is not a file" do
       before { object.content.content = "A string" }
       it "should not run a virus scan" do
-        expect(DulHydra::Services::Antivirus).not_to receive(:scan)
+        expect(VirusCheck).not_to receive(:execute)
         object.save!
       end
     end

@@ -19,7 +19,7 @@ module DulHydra::Batch::Models
     let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
     let(:object) { batch.batch_objects.first }
 
-    context "validate" do
+    context "validate", validation: true do
       context "valid object" do
         let(:repo_object) { TestModel.create(:pid => object.pid) }
         before do
@@ -69,8 +69,8 @@ module DulHydra::Batch::Models
           expect(repo_object.title.first).to eq('Sample updated title')
         end
         it "should create an event log for the update" do
-          expect(repo_object.event_logs(action: EventLog::Actions::UPDATE).count).to eq(1)
-          expect(repo_object.event_logs(action: EventLog::Actions::UPDATE).first.comment).to eq("Updated by batch process (Batch #{object.batch.id}, BatchObject #{object.id})")
+          expect(repo_object.update_events.count).to eq(1)
+          expect(repo_object.update_events.first.comment).to eq("Updated by batch process (Batch #{object.batch.id}, BatchObject #{object.id})")
         end
         
       end
