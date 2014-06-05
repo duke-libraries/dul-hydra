@@ -7,7 +7,7 @@ class BatchFixityCheckMailer < ActionMailer::Base
     @subject = "Batch Fixity Check Results"
     @host = default_url_options[:host]
     @bfc = bfc
-    if @bfc.report?
+    if @bfc.report? && @bfc.total > 0
       attachments[File.basename(@bfc.report.path)] = File.read(@bfc.report.path)
       @attachment_note = "See attached file for detailed outcome information."
     end
