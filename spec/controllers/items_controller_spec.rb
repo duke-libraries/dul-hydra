@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_item
-  post :create, parent: collection, item: {title: "New Item", description: "Member of a collection"}
+  post :create, parent: collection, item: {title: "New Item", description: ""}
 end
 
 describe ItemsController do

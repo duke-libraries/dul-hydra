@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_collection
-  post :create, collection: {title: "Title", description: "Description"}, admin_policy_id: FactoryGirl.create(:admin_policy)
+  post :create, collection: {title: "Title", description: ""}, admin_policy_id: FactoryGirl.create(:admin_policy)
 end
 
 def new_collection

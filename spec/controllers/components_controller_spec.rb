@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_component checksum = "bda5fda452d0047c27e9e0048ed59428cb9e6d5d46fe9c27dff5c8e39b75a59e"
-  post :create, parent: item, component: {title: "New Component", description: "Part of an item"}, content: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum
+  post :create, parent: item, component: {title: "New Component", description: ""}, content: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum
 end
 
 describe ComponentsController, components: true do

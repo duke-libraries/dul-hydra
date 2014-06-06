@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 def create_policy
-  post :create, admin_policy: {title: "New Policy", description: "We will control your destiny!"}
+  post :create, admin_policy: {title: "New Policy", description: ""}
 end
 
 def update_policy

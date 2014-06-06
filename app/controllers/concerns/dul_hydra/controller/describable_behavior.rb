@@ -15,11 +15,13 @@ module DulHydra
         end
 
         def create
-          if current_object.update create_params
+          params_to_use = create_params
+          params_to_use.each { |k,v| params_to_use[k] = nil if v.empty? }
+          if current_object.update params_to_use
             flash[:success] = "Object successfully created"
             redirect_to action: "show", id: current_object
           else
-            render :new
+            render :new, layout: 'new'
           end
         end
 
