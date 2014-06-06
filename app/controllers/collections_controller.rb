@@ -25,7 +25,9 @@ class CollectionsController < ApplicationController
   protected
 
   def set_admin_policy
-    current_object.admin_policy = AdminPolicy.find(params[:admin_policy_id])
+    if params[:admin_policy_id].present?
+      current_object.admin_policy = AdminPolicy.find(params[:admin_policy_id])
+    end
   end
 
   def collection_report
