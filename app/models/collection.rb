@@ -9,7 +9,7 @@ class Collection < DulHydra::Base
   alias_method :items, :children
   alias_method :item_ids, :child_ids
 
-  validates_presence_of :title
+  validates_presence_of :title, :admin_policy
 
   def components_from_solr
     outer = DulHydra::IndexFields::IS_PART_OF
