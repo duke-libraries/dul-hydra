@@ -7,6 +7,10 @@ FactoryGirl.define do
     trait :has_target do
       target
     end
+    
+    trait :has_parent do
+      item
+    end
 
     factory :component_with_content do
       after(:build) do |c|
@@ -37,5 +41,7 @@ FactoryGirl.define do
     
     factory :component_has_target, :traits => [:has_target]
 
+    factory :component_has_parent, :traits => [:has_parent]
+    
   end
 end

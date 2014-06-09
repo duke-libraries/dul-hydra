@@ -104,6 +104,19 @@ shared_examples "a repository object show view" do
   end
 end
 
+shared_examples "a child object show view" do
+  let(:user) { FactoryGirl.create(:user) }
+  before do
+    setup
+    object.parent.read_users = [user.user_key]
+    object.parent.save!
+  end
+  it "should have a link to the parent object" do
+    visit url_for(object)
+    expect(page).to have_link(object.parent.title_display)
+  end
+end
+
 shared_examples "a content-bearing object show view" do
   let(:user) { FactoryGirl.create(:user) }
   before do
