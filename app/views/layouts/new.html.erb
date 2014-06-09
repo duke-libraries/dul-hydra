@@ -27,8 +27,8 @@
   	    <%= yield :form_bottom %>
 	  <% end %>    
       <div class="well form-group">
-		<%= f.submit data: {confirm: "This action will create a new #{f.object.class.to_s} in the repository. Continue?"}, class: "btn btn-primary" %>
-		<%= cancel_button data: {confirm: "Cancel creating a new #{f.object.class.to_s}?" } %>
+		<%= f.submit data: {confirm: "#{t('dul_hydra.repository_objects.alerts.creation_confirmation', model: f.object.class.to_s)}" }, class: "btn btn-primary" %>
+		<%= cancel_button data: {confirm: "#{t('dul_hydra.repository_objects.alerts.cancellation_confirmation', model: f.object.class.to_s)}" } %>
 	  </div>
 	<% end %>
   </div>

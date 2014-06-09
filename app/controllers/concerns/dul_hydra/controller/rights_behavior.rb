@@ -22,7 +22,7 @@ module DulHydra
           current_object.rightsMetadata.permissions = new_permissions
           current_object.license = params[:license]
           if current_object.save
-            flash[:success] = "Rights successfully changed."
+            flash[:success] = I18n.t('dul_hydra.rights.alerts.changed')
             redirect_to action: "show", tab: "permissions"
           end
         end        

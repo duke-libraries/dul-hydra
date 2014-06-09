@@ -18,7 +18,7 @@ module DulHydra
           params_to_use = create_params
           params_to_use.each { |k,v| params_to_use[k] = nil if v.empty? }
           if current_object.update params_to_use
-            flash[:success] = "Object successfully created"
+            flash[:success] = I18n.t('dul_hydra.repository_objects.alerts.created')
             redirect_to action: "show", id: current_object
           else
             render :new, layout: 'new'

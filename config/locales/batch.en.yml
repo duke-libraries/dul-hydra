@@ -82,6 +82,7 @@ en:
             batch_queued: "Batch %{id} queued for processing."
             batch_deleted: "Batch %{id} deleted."
             batch_not_deletable: "Cannot delete %{status} batch %{id}."
+            batch_deletion_confirmation: "You are about to delete batch %{batch_id}. Continue?"
             headings:
                 object_validation_errors: "Batch Object Validation Errors"
             page_titles:

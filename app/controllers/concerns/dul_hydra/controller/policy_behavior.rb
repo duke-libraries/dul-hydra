@@ -22,7 +22,7 @@ module DulHydra
           current_object.defaultRights.permissions = new_permissions
           current_object.default_license = params[:license]
           if current_object.save
-            flash[:success] = "Policy successfully changed."
+            flash[:success] = I18n.t('dul_hydra.admin_policies.messages.changed')
             redirect_to action: "show", tab: "default_permissions"
           end
         end        
