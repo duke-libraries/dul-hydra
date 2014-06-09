@@ -46,4 +46,13 @@ describe Collection do
     end
   end
 
+  context "validation" do
+    let(:collection) { Collection.new }
+    it "should require a title and admin policy" do
+      expect(collection).to_not be_valid
+      expect(collection.errors.messages).to have_key(:title)
+      expect(collection.errors.messages).to have_key(:admin_policy)
+    end
+  end
+
 end
