@@ -45,7 +45,7 @@ class RolesController < ApplicationController
     @role.destroy
     if @role.destroyed?
       flash[:success] = "Role \"#{@role.name} \" deleted"
-      redirect_to :index
+      redirect_to roles_path
     else
       flash.now[:error] = "Unable to delete role"
       render :show
