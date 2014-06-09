@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 def create_attachment checksum = "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18"
-  post :create, attach_to: attach_to, attachment: {title: "Attachment", description: "Sample file"}, content: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum
+  post :create, attach_to: attach_to, attachment: {title: "Attachment", description: ""}, content: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum
 end
 
 def new_attachment 

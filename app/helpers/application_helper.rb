@@ -233,13 +233,13 @@ module ApplicationHelper
     url_for controller: "downloads", action: "show", id: document_or_object
   end
 
-  def model_options_for_select(model, access=nil)
+  def model_options_for_select(model, access=nil, selected=nil)
     models = find_models_with_gated_discovery(model)
     if access
       models = models.select { |m| can? access, m }
     end
     options = models.collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
-    options_for_select options
+    options_for_select options, selected
   end
 
   def required?(obj, attr)

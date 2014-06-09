@@ -99,6 +99,10 @@ shared_examples "a repository object controller" do
         create_object.call
         expect(assigns(object_symbol).descMetadata).to have_content
       end
+      it "should not save an empty string metadata element" do
+        create_object.call
+        expect(assigns(object_symbol).description).to be_blank
+      end
       it "should grant edit permission on the object to the user" do
         create_object.call
         expect(assigns(object_symbol).edit_users).to include(user.user_key)

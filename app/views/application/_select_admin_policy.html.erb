@@ -1,4 +1,4 @@
 <div class="form-group">  
   <%= label_tag :admin_policy_id, "Admin Policy" %>
-  <%= select_tag :admin_policy_id, model_options_for_select(AdminPolicy), class: "form-control", prompt: "Select an Admin Policy ..." %>
+  <%= select_tag :admin_policy_id, model_options_for_select(AdminPolicy, nil, resource.admin_policy_id), class: "form-control", prompt: "Select an Admin Policy ..." %>
 </div>
