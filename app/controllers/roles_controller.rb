@@ -18,7 +18,7 @@ class RolesController < ApplicationController
 
   def create
     if @role.save
-      flash[:success] = "New role successfully created"
+      flash[:success] = I18n.t('dul_hydra.roles.alerts.created')
       redirect_to @role
     else
       render :new
@@ -34,7 +34,7 @@ class RolesController < ApplicationController
   def update
     @role.attributes = role_attributes
     if @role.save
-      flash[:success] = "Role succesfully updated"
+      flash[:success] = I18n.t('dul_hydra.roles.alerts.updated')
       redirect_to @role
     else
       render :edit
@@ -44,10 +44,10 @@ class RolesController < ApplicationController
   def destroy
     @role.destroy
     if @role.destroyed?
-      flash[:success] = "Role \"#{@role.name} \" deleted"
+      flash[:success] = I18n.t('dul_hydra.roles.alerts.deleted', role_name: @role.name)
       redirect_to roles_path
     else
-      flash.now[:error] = "Unable to delete role"
+      flash.now[:error] = I18n.t('dul_hydra.roles.alerts.delete_failed')
       render :show
     end
   end

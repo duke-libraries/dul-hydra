@@ -15,7 +15,7 @@ module DulHydra
           content_warning
         elsif request.patch?
           if upload_content!
-            flash[:success] = "Content successfully uploaded."
+            flash[:success] = I18n.t('dul_hydra.upload.alerts.success')
             redirect_to action: "show"
           else
             render :upload

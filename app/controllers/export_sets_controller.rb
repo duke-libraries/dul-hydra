@@ -24,7 +24,7 @@ class ExportSetsController < ApplicationController
   
   def create
     @export_set.update!(user: current_user)
-    flash[:notice] = "New export set created."
+    flash[:notice] = I18n.t('dul_hydra.export_sets.alerts.created')
     redirect_to action: :show, id: @export_set
   rescue ActiveRecord::InvalidRecord
     render :new
@@ -36,7 +36,7 @@ class ExportSetsController < ApplicationController
   def update
     @export_set.delete_archive unless @export_set.csv_col_sep == params[:export_set][:csv_col_sep]
     @export_set.update!(export_set_params)
-    flash[:notice] = "Export set updated."
+    flash[:notice] = I18n.t('dul_hydra.export_sets.alerts.updated')
     redirect_to action: :show, id: @export_set
   rescue ActiveRecord::InvalidRecord
     render :edit
@@ -44,7 +44,7 @@ class ExportSetsController < ApplicationController
   
   def destroy
     @export_set.destroy
-    flash[:notice] = "Export set destroyed."
+    flash[:notice] = I18n.t('dul_hydra.export_sets.alerts.destroyed')
     redirect_to action: :index
   end
 
@@ -76,20 +76,20 @@ class ExportSetsController < ApplicationController
       else
         case
         when result.is_a?(ExportSet)
-          flash[:notice] = "Archive created."
+          flash[:notice] = I18n.t('dul_hydra.export_sets.alerts.archive.created')
         when result.is_a?(Exception)
-          flash[:error] = "Archive creation failed due to a server error."
+          flash[:error] = I18n.t('dul_hydra.export_sets.alerts.archive.creation_exception')
         when !result
-          flash[:alert] = "Archive already exists or could not be created."
+          flash[:alert] = I18n.t('dul_hydra.export_sets.alerts.archive.not_created')
         end
         redirect_to action: :show, id: @export_set
       end
 
     elsif request.delete?
       if @export_set.delete_archive
-        flash[:notice] = "Archive deleted."
+        flash[:notice] = I18n.t('dul_hydra.export_sets.alerts.archive.deleted')
       else
-        flash[:alert] = "Archive deletion failed."
+        flash[:alert] = I18n.t('dul_hydra.export_sets.alerts.archive.deletion_failed')
       end
       redirect_to action: :show, id: @export_set
     end

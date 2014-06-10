@@ -37,7 +37,7 @@
 	</div>
   </fieldset>
   <div class="form-group">
-	<%= submit_tag "Save", data: {confirm: "TODO: PUT I18N HERE"}, class: "btn btn-primary" %>
+	<%= submit_tag "Save", data: {confirm: "#{params[:action] == "permissions" ? t('dul_hydra.permissions.alerts.permissions_will_change') : t('dul_hydra.permissions.alerts.default_permissions_will_change')} Continue?"}, class: "btn btn-primary" %>
 	<%= cancel_button return_to: url_for(action: "show", tab: "permissions") %>
   </div>
 <% end %>

@@ -4,7 +4,7 @@
 		<%= link_to "Edit", edit_export_set_path(@export_set) %> 
 	  </li>
 	  <li>
-		<%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :data => { :confirm => "You are about to delete #{export_set_show_title}. Continue?" } %>	
+		<%= link_to "Delete", {:action => 'destroy', :id => @export_set}, :method => 'delete', :data => { :confirm => t('dul_hydra.export_sets.alerts.deletion_confirmation', title: export_set_show_title) } %>	
 	  </li>
 	</ul>
 </div>
