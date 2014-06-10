@@ -37,8 +37,8 @@ DulHydra::Application.routes.draw do
     get ':tab' => '#show', constraints: {tab: tab_constraint}
   end
 
-  def event_log_routes
-    get 'preservation_events'
+  def event_routes
+    get 'events'
   end
 
   def thumbnail_routes
@@ -56,7 +56,7 @@ DulHydra::Application.routes.draw do
 
   def repository_routes
     rights_routes
-    event_log_routes
+    event_routes
     datastream_routes
   end
 
@@ -101,11 +101,12 @@ DulHydra::Application.routes.draw do
       rights_routes
       policy_routes
       datastream_routes
+      event_routes
     end
   end
   resources :thumbnail, only: :show, constraints: {id: pid_constraint}
 
-  resources :preservation_events, :only => :show, constraints: {id: /[1-9][0-9]*/}
+  resources :events, :only => [:index, :show], constraints: {id: /[1-9][0-9]*/, pid: pid_constraint}
 
   resources :export_sets do
     member do

@@ -19,14 +19,6 @@ ActiveFedora::Base.class_eval do
     can_have_children? and children.size > 0
   end
 
-  def can_have_preservation_events?
-    self.is_a? DulHydra::HasPreservationEvents
-  end
-
-  def has_preservation_events?
-    can_have_preservation_events? && preservation_events.size > 0
-  end
-
   def can_have_content?
     self.is_a? DulHydra::HasContent
   end

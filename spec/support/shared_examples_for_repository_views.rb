@@ -88,7 +88,7 @@ shared_examples "a repository object show view" do
     end
   end
   describe "events" do
-    let(:tab) { "#tab_preservation_events" }
+    let(:tab) { "#tab_events" }
     before do
       object.fixity_check!
       object.reload

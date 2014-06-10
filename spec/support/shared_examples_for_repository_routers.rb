@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 shared_examples "a repository object router" do
   it "should have a new route" do
     expect(get: "/#{controller}/new").to route_to(controller: controller, action: "new") unless controller == "targets"
@@ -21,7 +19,7 @@ shared_examples "a repository object router" do
     expect(patch: "/#{controller}/duke:1/permissions").to route_to(controller: controller, action: "permissions", id: "duke:1")
   end
   it "should have an events route" do
-    expect(get: "/#{controller}/duke:1/preservation_events").to route_to(controller: controller, action: "preservation_events", id: "duke:1") unless controller == "admin_policies"
+    expect(get: "/#{controller}/duke:1/events").to route_to(controller: controller, action: "events", id: "duke:1")
   end
   it "should have a thumbnail route" do
     expect(:get => "/thumbnail/duke:1").to route_to(controller: "thumbnail", action: "show", id: "duke:1")
@@ -38,20 +36,5 @@ shared_examples "a content-bearing object router" do
   it "should have a upload routes" do
     expect(get: "/#{controller}/duke:1/upload").to route_to(controller: controller, action: "upload", id: "duke:1")
     expect(patch: "/#{controller}/duke:1/upload").to route_to(controller: controller, action: "upload", id: "duke:1")
-  end
-end
-
-describe "repository routers" do
-  ["collections", "items", "components", "attachments", "admin_policies", "targets"].each do |controller|
-    describe "the #{controller} router" do
-      it_behaves_like "a repository object router" do
-        let(:controller) { controller }
-      end
-      if ["components", "attachments", "targets"].include? controller
-        it_behaves_like "a content-bearing object router" do
-          let(:controller) { controller }
-        end
-      end
-    end
   end
 end

@@ -110,8 +110,8 @@ en:
         label: "Collection Info"
         actions:
           download: "Download CSV Report"
-      preservation_events:
-        label: "Preservation Events"
+      events:
+        label: "Events"
       attachments:
         label: Attachments
       pending_batches:

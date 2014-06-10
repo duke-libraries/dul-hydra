@@ -14,7 +14,7 @@ shared_examples "it cannot" do |ability|
   end
 end
 
-describe Ability do
+describe Ability, abilities: true do
 
   subject { described_class.new(user) }
   let(:user) { FactoryGirl.build(:user) }
@@ -46,7 +46,7 @@ describe Ability do
     end
   end
 
-  describe "#download_permissions" do
+  describe "#download_permissions", downloads: true do
     context "on an object" do
       context "which is a Component", components: true do
         let!(:resource) { FactoryGirl.create(:component) }
@@ -68,7 +68,7 @@ describe Ability do
           end
         end
 
-        context "and user has the Component Downloader role" do
+        context "and user has the Component Downloader role", roles: true do
           before do
             allow(subject).to receive(:has_role?).with("Component Downloader") { true }
           end
@@ -100,12 +100,12 @@ describe Ability do
       end
     end
 
-    context "on a datastream" do
+    context "on a datastream", datastreams: true do
 
-      context "named 'content'" do
+      context "named 'content'", content: true do
         let(:resource) { obj.content }
 
-        context "and object is a Component" do
+        context "and object is a Component", components: true do
           let(:obj) { FactoryGirl.build(:component_with_content) }
           context "and user does not have the Component Downloader role" do
             context "and user has read permission on the object" do
@@ -118,7 +118,7 @@ describe Ability do
             end
           end
 
-          context "and user has the Component Downloader role" do
+          context "and user has the Component Downloader role", roles: true do
             before { allow(subject).to receive(:has_role?).with("Component Downloader") { true } }
             context "and user has read permission on the object" do
               before { subject.can(:read, obj.pid) }
@@ -166,8 +166,25 @@ describe Ability do
     # TODO
   end
 
-  describe "#preservation_events_permissions" do
-    # TODO
+  describe "#events_permissions", events: true do
+    let(:object) { FactoryGirl.create(:test_model) }
+    let(:resource) { Event.new(pid: object.pid) }
+    context "event is associated with a user" do
+      before { resource.user = user }
+      it_behaves_like "it can", :read
+    end
+    context "event is not associated with a user" do      
+      context "and can read object" do
+        before do
+          object.read_users = [user.user_key]
+          object.save!
+        end
+        it_behaves_like "it can", :read
+      end
+      context "and cannot read object" do
+        it_behaves_like "it cannot", :read
+      end
+    end
   end
 
   describe "#export_sets_permissions", export_sets: true do
@@ -182,7 +199,7 @@ describe Ability do
     end
   end
   
-  describe "#ingest_folders_permissions" do
+  describe "#ingest_folders_permissions", ingest_folders: true do
     let(:resource) { IngestFolder }
     context "user has no permitted ingest folders" do
       before { allow(resource).to receive(:permitted_folders).with(user).and_return([]) }
@@ -194,7 +211,7 @@ describe Ability do
     end
   end
 
-  describe "#superuser_permissions" do
+  describe "#superuser_permissions", superusers: true do
     let(:resource) { :all }
     before do
       allow(DulHydra).to receive(:superuser_group).and_return("superusers")
@@ -222,7 +239,7 @@ describe Ability do
     end
   end
 
-  describe "#children_permissions" do
+  describe "#children_permissions", children: true do
     context "user has edit rights on object" do
       before { subject.can(:edit, resource) }
       context "and object can have children" do

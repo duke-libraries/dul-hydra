@@ -92,11 +92,11 @@ module DulHydra
       end
 
       def check_object(obj)
-        dryrun ? obj.fixity_check : obj.fixity_check!
+        dryrun ? FixityCheck.execute(obj) : FixityCheck.execute!(obj)
       end
 
       def log_outcome(event)
-        msg = "Fixity check outcome for #{event.for_object.pid} -- #{event.event_outcome.upcase}."
+        msg = "Fixity check outcome for #{event.pid} -- #{event.outcome.upcase}."
         event.success? ? log.info(msg) : log.error(msg)
       end
 
@@ -124,7 +124,7 @@ module DulHydra
       end
 
       def update_summary(event)
-        summary[:objects][event.for_object.pid] = event.event_outcome
+        summary[:objects][event.pid] = event.outcome
       end
 
       def objects_to_check

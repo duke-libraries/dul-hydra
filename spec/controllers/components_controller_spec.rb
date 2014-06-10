@@ -75,8 +75,8 @@ describe ComponentsController, components: true do
           create_component
           expect(assigns(:component)).to have_thumbnail
         end
-        it "should create an event log" do
-          expect{ create_component }.to change{ EventLog.where(model: "Component", action: "create").count }.by(1)
+        it "should create an event" do
+          expect{ create_component }.to change{ CreationEvent.count }.by(1)
         end
         it "should redirect to the component show page" do
           create_component
@@ -93,8 +93,8 @@ describe ComponentsController, components: true do
           it "should not create a new object" do
             expect{ create_component checksum = bad_checksum }.not_to change{ Component.count }
           end
-          it "should not create an event log" do
-            expect{ create_component checksum = bad_checksum }.not_to change{ EventLog.where(model: "Component", action: "create").count }
+          it "should not create an event" do
+            expect{ create_component checksum = bad_checksum }.not_to change{ CreationEvent.count }
           end
         end
       end

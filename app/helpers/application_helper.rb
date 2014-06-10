@@ -121,7 +121,7 @@ module ApplicationHelper
   end
 
   def render_event_outcome(outcome)
-    label = outcome == PreservationEvent::SUCCESS ? "success" : "danger"
+    label = outcome == Event::SUCCESS ? "success" : "danger"
     render_label outcome.capitalize, label
   end
 
@@ -213,8 +213,10 @@ module ApplicationHelper
     render_inherited_entities("user", access)
   end
 
-  def event_outcome_label(pe)
-    content_tag :span, pe.event_outcome.capitalize, :class => "label label-#{pe.success? ? 'success' : 'important'}"
+  def event_outcome_label(event)
+    if event.outcome
+      content_tag :span, event.outcome.capitalize, :class => "label label-#{event.success? ? 'success' : 'important'}"
+    end
   end
 
   def render_document_model_and_id(document)
@@ -255,10 +257,6 @@ module ApplicationHelper
     return_to = args.delete(:return_to) || :back
     opts = {class: "btn btn-danger"}.merge(args)
     link_to "Cancel", return_to, opts
-  end
-
-  def object_preservation_events
-    @object_preservation_events ||= current_object.preservation_events
   end
 
   def user_options_for_select(permission)
@@ -329,6 +327,14 @@ module ApplicationHelper
     apo_link = link_to(current_object.admin_policy_id, default_permissions_path(current_object.admin_policy_id))
     alert = I18n.t('dul_hydra.permissions.alerts.inherited') % apo_link
     alert.html_safe
+  end
+
+  def fixity_checkable?
+    current_object.respond_to? :fixity_checks
+  end
+
+  def virus_checkable?
+    current_object.respond_to? :virus_checks
   end
 
   private

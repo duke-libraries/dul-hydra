@@ -2,18 +2,32 @@ module DulHydra
   module EventLoggable
     extend ActiveSupport::Concern
 
-    included do
-      def self.event_logs(conditions = {})
-        EventLog.where(conditions.merge(model: to_s))
+    def events
+      Event.for_object(self)
+    end
+
+    def update_events
+      UpdateEvent.for_object(self)
+    end
+
+    def log_event(type, args={})
+      klass = event_class(type)
+      klass.new.tap do |event|
+        event.object = self
+        event.attributes = args
+        event.save!
       end
     end
 
-    def log_event(args)
-      EventLog.create_for_model_action(args.merge(object: self))
+    def has_events?
+      events.count > 0
     end
 
-    def event_logs(conditions = {})
-      EventLog.where(conditions.merge(object_identifier: self.pid))
+    private 
+
+    def event_class(token)
+      class_name = "#{token.to_s.camelize}Event"
+      class_name.constantize
     end
 
   end

@@ -12,11 +12,11 @@ module DulHydra
                           control_group: 'M'
 
       include Hydra::Derivatives
+      include DulHydra::VirusCheckable
 
       # Original file name of content file should be stored in this property
       has_attributes :original_filename, datastream: DulHydra::Datastreams::PROPERTIES, multiple: false
 
-      around_save :virus_check, if: :content_is_new_file?
       before_save :set_original_filename, if: :content_changed?, unless: :original_filename_changed?
       before_save :set_content_type, if: :content_changed?
       around_save :update_thumbnail, if: :content_changed?
@@ -58,12 +58,6 @@ module DulHydra
       content_type == "application/pdf"
     end
 
-    def to_solr(solr_doc=Hash.new, opts={})
-      solr_doc = super(solr_doc, opts)
-      solr_doc.merge!(DulHydra::IndexFields::ORIGINAL_FILENAME => original_filename)
-      solr_doc
-    end
-
     def has_content?
       content.has_content?
     end
@@ -75,35 +69,7 @@ module DulHydra
       end
     end
 
-    def virus_checks
-      PreservationEvent.events_for(self, PreservationEvent::VIRUS_CHECK)
-    end
-
-    def last_virus_check_to_solr
-      e = virus_checks.last
-      e ? {
-        DulHydra::IndexFields::LAST_VIRUS_CHECK_ON => PreservationEvent.to_event_date_time(e.event_date_time),
-        DulHydra::IndexFields::LAST_VIRUS_CHECK_OUTCOME => e.event_outcome
-      } : {}
-    end
-
-    def to_solr(solr_doc=Hash.new, opts={})
-      solr_doc = super(solr_doc, opts)
-      solr_doc.merge!(last_virus_check_to_solr)
-      solr_doc
-    end
-
     protected
-
-    def content_is_new_file?
-      content_changed? && content.content.respond_to?(:path)
-    end
-
-    def virus_check
-      result = DulHydra::Services::Antivirus.scan(content.content)
-      yield
-      PreservationEvent.virus_check! self, result
-    end
 
     def set_original_filename
       file = content.content

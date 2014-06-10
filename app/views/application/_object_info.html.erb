@@ -13,6 +13,7 @@
 		<%= render_object_date current_object.modified_date %>
 	  </p>
 	</div>
+	<% if fixity_checkable? %>
 	<div class="list-group-item">
 	  <p class="list-group-item-heading">Fixity Checked</p>
 	  <p class="list-group-item-text">
@@ -24,7 +25,8 @@
 	    <% end %>
 	  </p>
 	</div>
-	<% if current_object.has_content? %>
+	<% end %>
+	<% if virus_checkable? %>
 	<div class="list-group-item">
 	  <p class="list-group-item-heading">Virus Scanned</p>
 	  <p class="list-group-item-text">

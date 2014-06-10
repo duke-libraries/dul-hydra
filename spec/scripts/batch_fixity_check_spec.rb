@@ -25,7 +25,7 @@ module DulHydra
         let(:obj) { FactoryGirl.create(:component) }
         before do
           fc = obj.fixity_check
-          fc.event_date_time = PreservationEvent.to_event_date_time(Time.now.ago(1.year).utc)
+          fc.event_date_time = Time.now.ago(1.year).utc
           fc.save   
         end
         it "should check the object" do

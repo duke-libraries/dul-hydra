@@ -5,14 +5,10 @@ module DulHydra
 
       module ClassMethods
         def require_permission! permission, opts={}
-          # if permission == :read
-          #   before_action :enforce_show_permissions, opts
-          # else
-            object = opts.delete(:object) || :current_object
-            before_action opts do |controller|
-              controller.authorize! permission, controller.send(object)
-            end
-          # end
+          object = opts.delete(:object) || :current_object
+          before_action opts do |controller|
+            controller.authorize! permission, controller.send(object)
+          end
         end
 
         def require_edit_permission! opts={}

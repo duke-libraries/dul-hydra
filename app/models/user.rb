@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
   has_many :ingest_folders, :inverse_of => :user
   has_many :metadata_files, :inverse_of => :user
   has_many :export_sets, :dependent => :destroy
-  has_many :event_logs, :inverse_of => :user
+  has_many :events, :inverse_of => :user
 
   has_and_belongs_to_many :roles
 

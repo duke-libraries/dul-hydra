@@ -50,9 +50,8 @@ shared_examples "a repository object controller" do
           update_rights
           expect(response).to be_redirect
         end
-        it "should create an event log entry for the update action" do
-          update_rights
-          expect(object.event_logs(action: EventLog::Actions::MODIFY_RIGHTS).count).to eq(1)
+        it "should create an update event" do
+          expect { update_rights }.to change { object.update_events.count }.by(1)
         end
       end
     end
@@ -107,8 +106,8 @@ shared_examples "a repository object controller" do
         create_object.call
         expect(assigns(object_symbol).edit_users).to include(user.user_key)
       end
-      it "should create an event log" do
-        expect{ create_object.call }.to change{ object_class.event_logs(action: EventLog::Actions::CREATE).count }.by(1)
+      it "should record a creation event" do
+        expect{ create_object.call }.to change { CreationEvent.count }.by(1)
       end
       it "should redirect to the show page" do
         create_object.call
@@ -153,10 +152,10 @@ shared_examples "a repository object controller" do
         expect(response).to redirect_to(object)
       end
       it "should update the object" do
-        expect{ update_metadata; object.reload }.to change{ object.descMetadata }
+        expect{ update_metadata; object.reload }.to change { object.descMetadata }
       end
-      it "should create an event log entry for the update action" do
-        expect{ update_metadata }.to change{ object.event_logs(action: EventLog::Actions::UPDATE).count }.by(1)
+      it "should create an update event" do
+        expect{ update_metadata }.to change { object.update_events.count }.by(1)
       end
     end
     context "when the user cannot edit" do
