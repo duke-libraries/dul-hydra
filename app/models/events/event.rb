@@ -17,32 +17,20 @@ class Event < ActiveRecord::Base
   # For rendering "performed by" when no associated user
   SYSTEM = "SYSTEM"
 
-  validates_presence_of :event_date_time, :pid, :software
+  DULHYDRA_SOFTWARE = "DulHydra #{DulHydra::VERSION}"
+
+  class_attribute :description
+  
+  validates_presence_of :event_date_time, :pid
   validates :outcome, inclusion: {in: OUTCOMES, message: "\"%{value}\" is not a valid event outcome"}
   validate :object_exists # unless/until we have a deaccession-type of event
  
-  before_validation :set_defaults
+  after_initialize :set_defaults
 
-  # Factories
-
-  def self.create_event(type, args={})
-    event = build_event(type, args)
-    event.save!
-    event
-  end
-
-  def self.build_event(type, args={})
-    begin
-      klass = "#{type.to_s.camelize}Event".constantize
-    rescue NameError
-      raise ArgumentError, "\"#{type.to_s}\" does not correspond to a valid event type"
-    end
-    object = args.delete(:object)
-    klass.new.tap do |event|
-      event.object = object if object
-      event.attributes = args
-      yield event if block_given?
-    end
+  # Ugly hack to get repository version -- e.g., "Fedora Repository 3.7.0"
+  def self.repository_software
+    @@repository_software ||= ActiveFedora::Base.connection_for_pid(0).repository_profile
+                                .values_at(:repositoryName, :repositoryVersion).join(" ")
   end
 
   # Scopes
@@ -122,7 +110,7 @@ class Event < ActiveRecord::Base
   protected
 
   def set_defaults
-    self.attributes = defaults.reject { |key, val| attribute_present? key }
+    self.attributes = defaults.reject { |attr, val| attribute_present? attr }
   end
 
   def defaults
@@ -140,31 +128,20 @@ class Event < ActiveRecord::Base
     end
   end
 
-  def repository_software
-    if object_exists?
-      repo = object.inner_object.repository.repository_profile
-      "#{repo[:repositoryName]} #{repo[:repositoryVersion]}"
-    end  
-  end
-
-  def dulhydra_software
-    "DulHydra #{DulHydra::VERSION}"
-  end
-
   def default_software
-    dulhydra_software
+    DULHYDRA_SOFTWARE
   end
 
   def default_outcome
     SUCCESS
   end
 
-  def default_event_date_time
-    Time.now.utc
+  def default_summary
+    self.class.description
   end
 
-  def default_summary
-    nil
+  def default_event_date_time
+    Time.now.utc
   end
 
 end

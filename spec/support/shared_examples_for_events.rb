@@ -11,9 +11,6 @@ end
 
 shared_examples "a preservation-related event" do
   subject { described_class.new }
-  it "should implement preservation-related behavior" do
-    expect(subject).to be_a PreservationEvent
-  end
   it "should have an event_type" do
     expect(subject.preservation_event_type).not_to be_nil
   end
@@ -41,29 +38,40 @@ end
 
 shared_examples "an event" do
   describe "validation" do
-    it "should require presence of pid" do
-      expect(subject).not_to be_valid
-      expect(subject.errors[:pid]).to include("can't be blank")
-    end
-    context "when the pid is set" do
-      before do
-        subject.pid = "test:123"
-      end
-      it "should require the referenced object to exist" do
+    context "of pid" do
+      it "should require presence" do
         expect(subject).not_to be_valid
-        expect(subject.errors).to have_key(:pid)
+        expect(subject.errors[:pid]).to include "can't be blank"
       end
+      context "when the object exists" do
+        before { subject.pid = ActiveFedora::Base.create.pid }
+        it "should be valid" do
+          expect(subject).to be_valid
+        end
+      end
+      context "when the object doesn't exist" do
+        before { subject.pid = "test:123" }
+        it "should not be valid" do
+          expect(subject).not_to be_valid
+          expect(subject.errors).to have_key :pid
+        end
+      end
+    end
+    it "should require an event_date_time" do
+      subject.event_date_time = nil # reset b/c set to default after init
+      expect(subject).not_to be_valid
+      expect(subject.errors[:event_date_time]).to include "can't be blank"
     end
     it "should require a valid outcome" do
       subject.outcome = Event::SUCCESS
       subject.valid?
-      expect(subject.errors.keys).not_to include :outcome
+      expect(subject.errors).not_to have_key :outcome
       subject.outcome = Event::FAILURE
       subject.valid?
-      expect(subject.errors.keys).not_to include :outcome
+      expect(subject.errors).not_to have_key :outcome
       subject.outcome = "Some other value"
-      subject.valid?
-      expect(subject.errors[:outcome]).to include("\"Some other value\" is not a valid event outcome")
+      expect(subject).not_to be_valid
+      expect(subject.errors[:outcome]).to include "\"Some other value\" is not a valid event outcome"
     end
   end
 
@@ -78,32 +86,31 @@ shared_examples "an event" do
     end
   end
 
-  describe "defaults" do
-    let(:object) { FactoryGirl.create(:test_model_omnibus) }
-    before { allow(subject).to receive(:object) { object } }
-    it "should set defaults before validation" do
-      expect(subject).to receive(:set_defaults)
-      subject.valid?
-    end
-    it "should set outcome to 'success'" do
-      expect(subject.outcome).to be_nil
-      subject.valid?
-      expect(subject.outcome).to eq Event::SUCCESS
-    end
-    it "should set event_date_time if not present" do
-      expect(subject.event_date_time).to be_nil
-      expect { subject.valid? }.to change { subject.event_date_time }
-    end
-    context "when event_date_time value" do
-      before { subject.event_date_time = Time.utc(2013) }
-      it "should not overwrite the value" do
-        expect { subject.valid? }.not_to change { subject.event_date_time }
+  describe "setting defaults" do
+    context "after initialization" do
+      it "should set outcome to 'success'" do
+        expect(subject.outcome).to eq Event::SUCCESS
+      end
+      it "should set event_date_time" do
+        expect(subject.event_date_time).to be_present
+      end
+      it "should set software" do
+        expect(subject.software).to be_present
+        expect(subject.software).to eq subject.send(:default_software)
+      end
+      it "should set summary" do
+        expect(subject.summary).to eq subject.send(:default_summary)
       end
     end
-    it "should set software if not present" do
-      expect(subject.software).to be_nil
-      subject.valid?
-      expect(subject.software).to be_present
+    context "when attributes are set" do
+      let(:obj) { ActiveFedora::Base.create }
+      let(:event) { described_class.new(pid: obj.pid, outcome: Event::FAILURE, event_date_time: Time.utc(2013), software: "Test", summary: "A terrible disaster") }
+      it "should not overwrite attributes" do
+        expect { event.send(:set_defaults) }.not_to change { event.outcome }
+        expect { event.send(:set_defaults) }.not_to change { event.event_date_time }
+        expect { event.send(:set_defaults) }.not_to change { event.software }
+        expect { event.send(:set_defaults) }.not_to change { event.summary }
+      end
     end
   end
 

@@ -32,8 +32,4 @@ Scan Result: %{result}
     new(object, file).execute
   end
 
-  def self.software
-    DulHydra::Services::Antivirus.version
-  end
-
 end
