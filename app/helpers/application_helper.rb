@@ -31,14 +31,6 @@ module ApplicationHelper
     end
   end
   
-  def bootstrap_icon(icon)
-    if icon == :group
-      (bootstrap_icon(:user)*2).html_safe
-    else
-      content_tag :i, "", class: "icon-#{icon}"
-    end
-  end
-
   def entity_icon(type)
     send "#{type}_icon"
   end
