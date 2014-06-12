@@ -1,0 +1,4 @@
+insert into events (type, event_date_time, pid, summary, outcome, detail, created_at, updated_at) select preservation_events.event_type, preservation_events.event_date_time, preservation_events.linking_object_id_value, preservation_events.event_detail, preservation_events.event_outcome, preservation_events.event_outcome_detail_note, preservation_events.created_at, preservation_events.updated_at from preservation_events order by preservation_events.id;
+update events set type = 'FixityCheckEvent' where type = 'fixity check';
+update events set type = 'IngestionEvent' where type = 'ingestion';
+update events set type = 'ValidationEvent' where type = 'validation';
