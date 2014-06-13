@@ -30,7 +30,7 @@
 	<div class="form-group">
 	  <%= f.label :user_ids, "Users" %>
 	  <span class="help-block">Selected users are granted the role</span>
-	  <%= f.collection_select :user_ids, User.all, :id, :user_key, {include_blank: true}, {multiple: true, class: "form-control"} %>
+	  <%= f.collection_select :user_ids, User.all, :id, :user_key, {}, {multiple: true, class: "form-control"} %>
 	</div>
 	<div class="form-group">
 	  <%= label_tag "role[groups]", "Groups" %>
