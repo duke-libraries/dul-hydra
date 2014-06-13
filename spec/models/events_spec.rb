@@ -35,6 +35,12 @@ describe FixityCheckEvent, events: true do
       expect(subject.software).to match /^Fedora Repository \d\.\d\.\d$/
     end
   end
+  describe "subscriptions" do
+    let!(:obj) { FactoryGirl.create(:test_model) }
+    it "should subscribe to fixity checks" do
+      expect { FixityCheck.execute(obj) }.to change { obj.fixity_checks.count }.by 1
+    end
+  end
 end
 
 describe VirusCheckEvent, events: true do

@@ -5,8 +5,10 @@ def setup
 end
 
 shared_examples "a repository object show view" do
+
   let(:user) { FactoryGirl.create(:user) }
   before { setup }
+
   describe "object summary" do
     before { visit url_for(object) }
     it "should display the title" do
@@ -19,6 +21,7 @@ shared_examples "a repository object show view" do
       expect(find("#object-summary")).to have_content(object.pid)
     end
   end
+
   describe "object info" do
     before { visit url_for(object) }
     it "should display the object creation date" do
@@ -28,9 +31,11 @@ shared_examples "a repository object show view" do
       expect(find("#object-info")).to have_content("Modified")
     end
   end
+
   describe "tools" do
     it "should have bookmark toggle control"
   end
+
   describe "descriptive metadata" do
     let(:tab) { "#tab_descriptive_metadata" }
     it "should display the descriptive metadata" do
@@ -58,6 +63,7 @@ shared_examples "a repository object show view" do
       end
     end
   end
+
   describe "rights metadata" do
     let(:tab) { "#tab_permissions" }
     it "should display the rights metadata" do
@@ -87,10 +93,11 @@ shared_examples "a repository object show view" do
       end
     end
   end
+
   describe "events" do
     let(:tab) { "#tab_events" }
     before do
-      object.fixity_check!
+      object.fixity_check
       object.reload
     end
     it "should display the last fixity check" do
