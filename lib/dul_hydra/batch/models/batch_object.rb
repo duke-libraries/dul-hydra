@@ -166,8 +166,8 @@ Model: %{model}
             verifications["#{r.name} relationship is correct"] = verify_relationship(repo_object, r)
           end
         end
-        event = FixityCheck.execute! repo_object
-        verifications["Fixity check"] = event.success? ? VERIFICATION_PASS : VERIFICATION_FAIL
+        result = FixityCheck.execute repo_object
+        verifications["Fixity check"] = result.success ? VERIFICATION_PASS : VERIFICATION_FAIL
       end
       verifications
     end

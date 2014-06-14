@@ -8,36 +8,30 @@ module DulHydra
       after { report.close! }
       context "with an object that was just checked" do
         let(:obj) { FactoryGirl.create(:component) }
-        before { obj.fixity_check! }
+        before { obj.fixity_check }
         it "should not check the object" do
-          expect(obj.fixity_checks.count).to eq(1)
           expect { bfc.execute }.not_to change{ obj.fixity_checks.count }
         end
       end
       context "with an object that has not previously been checked" do
-        let(:obj) { FactoryGirl.create(:component) }
+        let!(:obj) { FactoryGirl.create(:component) }
         it "should check the object" do
-          expect(obj.fixity_checks.count).to eq(0)
           expect { bfc.execute }.to change{ obj.fixity_checks.count }.by(1)
         end
       end
       context "with an object that was last checked one year ago" do
-        let(:obj) { FactoryGirl.create(:component) }
+        let!(:obj) { FactoryGirl.create(:component) }
         before do
-          fc = obj.fixity_check
-          fc.event_date_time = Time.now.ago(1.year).utc
-          fc.save   
+          FixityCheckEvent.create(pid: obj.pid, event_date_time: Time.now.ago(1.year).utc)
         end
         it "should check the object" do
-          expect(obj.fixity_checks.count).to eq(1)
           expect { bfc.execute }.to change{ obj.fixity_checks.count }.by(1)
         end
       end
       context "with an object that doesn't have preservation events" do
         let(:obj) { FactoryGirl.create(:admin_policy) }
         it "should not check the object" do
-          expect(obj).not_to receive(:fixity_check!)
-          expect(obj).not_to receive(:fixity_check)
+          expect(AdminPolicy.any_instance).not_to receive(:fixity_check)
           bfc.execute
         end
       end
