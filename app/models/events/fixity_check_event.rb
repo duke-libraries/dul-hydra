@@ -13,25 +13,20 @@ class FixityCheckEvent < Event
   DETAIL_PREAMBLE = "Datastream checksum validation results:"
   DETAIL_TEMPLATE = "%{dsid} ... %{validation}"
 
-  # Presists a FixityCheckEvent instance for an ActiveSupport::Notifications::Event
-  def self.from_notification_event(event)
-    fc_event = from_result(event.payload[:result], event.time)
-    fc_event.save
-  end
-
-  # Returns a FixityCheckEvent instance for a FixityCheck::Result
-  def self.from_result(result, date_time = nil)
-    new.tap do |e|
-      e.pid = result.pid
-      e.event_date_time = date_time || result.checked_at
-      e.failure! unless result.success
-      detail = [DETAIL_PREAMBLE]
-      result.results.each do |dsid, dsProfile|
-        validation = dsProfile["dsChecksumValid"] ? VALID : INVALID
-        detail << DETAIL_TEMPLATE % {dsid: dsid, validation: validation} 
-      end
-      e.detail = detail.join("\n")
-    end        
+  # Message sent by ActiveSupport::Notifications
+  def call(*args)
+    notification = ActiveSupport::Notifications::Event.new(*args)
+    result = notification.payload[:result] # FixityCheck::Result instance
+    self.pid = result.pid
+    self.event_date_time = notification.time
+    failure! unless result.success
+    detail = [DETAIL_PREAMBLE]
+    result.results.each do |dsid, dsProfile|
+      validation = dsProfile["dsChecksumValid"] ? VALID : INVALID
+      detail << DETAIL_TEMPLATE % {dsid: dsid, validation: validation} 
+    end
+    self.detail = detail.join("\n")
+    save
   end
 
   def to_solr
