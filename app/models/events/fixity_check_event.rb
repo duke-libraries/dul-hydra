@@ -14,19 +14,20 @@ class FixityCheckEvent < Event
   DETAIL_TEMPLATE = "%{dsid} ... %{validation}"
 
   # Message sent by ActiveSupport::Notifications
-  def call(*args)
+  def self.call(*args)
     notification = ActiveSupport::Notifications::Event.new(*args)
     result = notification.payload[:result] # FixityCheck::Result instance
-    self.pid = result.pid
-    self.event_date_time = notification.time
-    failure! unless result.success
     detail = [DETAIL_PREAMBLE]
     result.results.each do |dsid, dsProfile|
       validation = dsProfile["dsChecksumValid"] ? VALID : INVALID
       detail << DETAIL_TEMPLATE % {dsid: dsid, validation: validation} 
     end
-    self.detail = detail.join("\n")
-    save
+    create(pid: result.pid,
+           event_date_time: notification.time,
+           outcome: result.success ? SUCCESS : FAILURE,
+           detail: detail.join("\n"),
+           software: result.software
+           )
   end
 
   def to_solr
@@ -37,7 +38,7 @@ class FixityCheckEvent < Event
   protected
 
   def default_software
-    Event.repository_software
+    DulHydra.repository_software
   end
 
 end

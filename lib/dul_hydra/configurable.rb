@@ -38,6 +38,12 @@ module DulHydra
       # List of models that may appear on a "create" menu (if user has ability)
       mattr_accessor :create_menu_models
       self.create_menu_models = []
+
+      # Repository software version -- e.g., "Fedora Repository 3.7.0"
+      mattr_accessor :repository_software
+      self.repository_software = ActiveFedora::Base.connection_for_pid(0).repository_profile
+                                                   .values_at(:repositoryName, :repositoryVersion)
+                                                   .join(" ")
     end
 
     module ClassMethods
@@ -48,3 +54,4 @@ module DulHydra
 
   end
 end
+

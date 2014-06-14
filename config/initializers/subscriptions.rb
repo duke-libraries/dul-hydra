@@ -3,4 +3,4 @@
 ##
 
 # Fixity Checks
-ActiveSupport::Notifications.subscribe(DulHydra::Notifications::FIXITY_CHECK, FixityCheckEvent.new)
+ActiveSupport::Notifications.subscribe(DulHydra::Notifications::FIXITY_CHECK, FixityCheckEvent)
