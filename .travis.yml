@@ -5,6 +5,7 @@ before_install:
   - sudo freshclam -v
 rvm:
   - 2.0.0
+  - 2.1
 before_script:
   - "cp config/log4r.yml.sample config/log4r.yml"
 cache: bundler
