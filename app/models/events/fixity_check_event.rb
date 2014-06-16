@@ -25,8 +25,7 @@ class FixityCheckEvent < Event
     create(pid: result.pid,
            event_date_time: notification.time,
            outcome: result.success ? SUCCESS : FAILURE,
-           detail: detail.join("\n"),
-           software: result.software
+           detail: detail.join("\n")
            )
   end
 
@@ -38,7 +37,7 @@ class FixityCheckEvent < Event
   protected
 
   def default_software
-    DulHydra.repository_software
+    self.class.repository_software
   end
 
 end

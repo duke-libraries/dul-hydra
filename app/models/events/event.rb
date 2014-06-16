@@ -27,6 +27,13 @@ class Event < ActiveRecord::Base
  
   after_initialize :set_defaults
 
+  # Repository software version -- e.g., "Fedora Repository 3.7.0"
+  def self.repository_software
+    @@repository_software ||= ActiveFedora::Base.connection_for_pid(0).repository_profile
+                                                .values_at(:repositoryName, :repositoryVersion)
+                                                .join(" ")
+  end
+
   # Scopes
 
   def self.for_object(obj)

@@ -17,14 +17,15 @@ class FixityCheck
     end
   end
 
+  
+
   class Result
-    attr_accessor :pid, :success, :results, :software, :checked_at
+    attr_accessor :pid, :success, :results, :checked_at
 
     def initialize(args={})
       @pid = args[:pid]
       @success = args[:success] || true
       @results = args[:results] || {}
-      @software = args[:software] || DulHydra.repository_software
       @checked_at = args[:checked_at] || Time.now.utc
     end
   end
