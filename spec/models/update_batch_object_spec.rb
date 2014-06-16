@@ -62,7 +62,7 @@ module DulHydra::Batch::Models
         before do
           repo_object.edit_users = [batch.user.user_key]
           repo_object.save!
-          object.process
+          object.process(batch.user)
           repo_object.reload
         end
         it "should update the repository object" do

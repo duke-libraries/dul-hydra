@@ -30,6 +30,7 @@ module DulHydra::Batch::Scripts
             expect(event.detail).to_not include(FixityCheckEvent::INVALID)
           when "IngestionEvent"
             expect(event.summary).to include("Batch object identifier: #{batch_obj.identifier}")
+            expect(event.user).to eq(bp_user)
           when "ValidationEvent"
             expect(event.detail).to include(DulHydra::Batch::Scripts::BatchProcessor::PASS)
             expect(event.detail).to_not include(DulHydra::Batch::Scripts::BatchProcessor::FAIL)
@@ -62,6 +63,14 @@ module DulHydra::Batch::Scripts
         expect(obj).to be_an_instance_of(batch_obj.model.constantize)
         expect(obj.label).to eq(batch_obj.label) if batch_obj.label
         expect(obj.title.first).to eq('Sample updated title')
+        update_event_count = 0
+        obj.events.each do |event|
+          if event.is_a? UpdateEvent
+            update_event_count += 1
+            expect(event.user).to eq(bp_user)
+          end
+        end
+        expect(update_event_count).to eq(1)
         batch_obj_ds = batch_obj.batch_object_datastreams
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
         batch_obj_rs = batch_obj.batch_object_relationships
@@ -93,17 +102,18 @@ module DulHydra::Batch::Scripts
   describe BatchProcessor do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:log_dir) { test_dir }
+    let(:bp_user) { FactoryGirl.create(:user) }
     after { FileUtils.remove_dir test_dir }
     context "ingest" do
       let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
-      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
+      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
       context "successful initial run" do
         before { bp.execute }
-        it_behaves_like "a successful ingest batch"
+          it_behaves_like "a successful ingest batch"
       end
       context "successful restart run" do
         before do
-          batch.batch_objects.first.process
+          batch.batch_objects.first.process(bp_user)
           batch.update_attributes(:status => DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE)
           bp.execute
         end
@@ -120,7 +130,7 @@ module DulHydra::Batch::Scripts
     context "update" do
       let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
       let(:repo_object) { TestModelOmnibus.create(:pid => batch.batch_objects.first.pid, :label => 'Object Label') }
-      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
+      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
       before do
         repo_object.edit_users = [ batch.user.user_key ]
         repo_object.save

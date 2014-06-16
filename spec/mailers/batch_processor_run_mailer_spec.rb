@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe BatchProcessorRunMailer, batch: true do
   let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
-  let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id) }
+  let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, batch.user) }
   before { bp.execute }
   it "should send a notification" do
     ActionMailer::Base.deliveries.should_not be_empty
