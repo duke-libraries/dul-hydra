@@ -16,7 +16,7 @@ module DulHydra
         end
 
         def scan_one(file)
-          load! unless loaded?
+          loaded? ? reload! : load!
           path = get_file_path file
           raw_result = engine.scanfile path
           ScanResult.new raw_result, path
@@ -27,10 +27,20 @@ module DulHydra
           loaded!
         end
 
-        def version
+        def reload!
+          # ClamAV is supposed to reload the database if changed (1 = successful, 0 = unnecessary)
+          # but operation only succeeds when unneccesary and raises RuntimeError when the db needs
+          # to be reloaded.
+          (engine.reload == 1) && version(true)
+        rescue RuntimeError
+          load!
+        end
+
+        def version(reset = false)
           # Engine and database versions
           # E.g., ClamAV 0.98.3/19010/Tue May 20 21:46:01 2014
-          `sigtool --version`.strip
+          @version = nil if reset
+          @version ||= `sigtool --version`.strip
         end
 
         private
@@ -45,6 +55,7 @@ module DulHydra
 
         def load
           engine.loaddb
+          version(true)
         end
 
         def get_file_path(file)

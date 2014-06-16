@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe DulHydra::Services::Antivirus, antivirus: true do
   let(:file) { fixture_file_upload "library-devil.tiff" }
+  it "should reload the db" do
+    expect(described_class).to receive(:reload!)
+    described_class.scan file
+  end
   it "should report whether a file is infected" do
     expect(described_class.scan(file)).not_to have_virus
   end
