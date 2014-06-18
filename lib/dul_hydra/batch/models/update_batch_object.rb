@@ -26,9 +26,9 @@ module DulHydra::Batch::Models
       end
     end
         
-    def process(opts = {})
+    def process(user, opts = {})
       unless verified
-        repo_object = update_repository_object(opts)
+        repo_object = update_repository_object(user, opts)
         verifications = verify_repository_object
         verification_outcome_detail = []
         verified = true
@@ -56,7 +56,7 @@ module DulHydra::Batch::Models
         
     private
     
-    def update_repository_object(opts = {})
+    def update_repository_object(user, opts = {})
       repo_object = nil
       begin
         repo_object = ActiveFedora::Base.find(pid, :cast => true)
@@ -69,7 +69,7 @@ module DulHydra::Batch::Models
           end
         end
         if repo_object.save          
-          repo_object.log_event(:update, user: batch.user, comment: event_log_comment)
+          repo_object.log_event(:update, user: user, comment: event_log_comment)
         end
       rescue Exception => e
         logger.error("Error in updating repository object #{repo_object.pid} for #{identifier} : : #{e}")

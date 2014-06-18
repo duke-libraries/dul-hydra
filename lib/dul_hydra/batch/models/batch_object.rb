@@ -48,7 +48,7 @@ Model: %{model}
       raise NotImplementedError
     end
     
-    def process
+    def process(user, opts = {})
       raise NotImplementedError
     end
 

@@ -15,7 +15,7 @@ module DulHydra::Batch::Models
   end
   
   shared_examples "a successful ingest" do
-    before { object.process }
+    before { object.process(user) }
     it "should result in a verified repository object" do
       expect(object.verified).to be_true
       expect(object.pid).to eq(assigned_pid) if assigned_pid.present?
@@ -205,6 +205,7 @@ module DulHydra::Batch::Models
   
     context "ingest" do
       
+      let(:user) { FactoryGirl.create(:user) }
       let(:object) { FactoryGirl.create(:generic_ingest_batch_object) }
       context "successful ingest" do
         context "object without a pre-assigned PID" do
@@ -236,7 +237,7 @@ module DulHydra::Batch::Models
         context "error during processing" do
           it "should log a fatal message and re-raise the exception" do
             Rails.logger.should_receive(:fatal).with(/Error in creating repository object/)
-            expect { object.process }.to raise_error(RuntimeError)
+            expect { object.process(user) }.to raise_error(RuntimeError)
           end
         end
         context "error while destroying repository object" do
@@ -245,7 +246,7 @@ module DulHydra::Batch::Models
           it "should log two fatal messages and re-raise the initial exception" do
             Rails.logger.should_receive(:fatal).with(/Error in creating repository object/)
             Rails.logger.should_receive(:fatal).with(/Error deleting repository object/)
-            expect { object.process }.to raise_error(RuntimeError)
+            expect { object.process(user) }.to raise_error(RuntimeError)
           end
         end
       end

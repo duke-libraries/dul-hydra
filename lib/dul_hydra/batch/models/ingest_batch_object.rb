@@ -13,8 +13,8 @@ module DulHydra::Batch::Models
       model.constantize.new.datastreams.keys
     end
         
-    def process(opts = {})
-      ingest(opts) unless verified
+    def process(user, opts = {})
+      ingest(user, opts) unless verified
     end
     
     def results_message
@@ -34,13 +34,14 @@ module DulHydra::Batch::Models
       return errs      
     end
     
-    def ingest(opts = {})
+    def ingest(user, opts = {})
       repo_object = create_repository_object
       if !repo_object.nil? && !repo_object.new_record?
         ingest_outcome_detail = []
         ingest_outcome_detail << "Ingested #{model} #{identifier} into #{repo_object.pid}"
         IngestionEvent.new.tap do |event|
           event.object = repo_object
+          event.user = user
           event.summary = PRESERVATION_EVENT_DETAIL % {
             :label => "Object ingestion",
             :batch_id => id,
