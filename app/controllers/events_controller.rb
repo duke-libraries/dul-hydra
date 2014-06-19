@@ -3,21 +3,19 @@ class EventsController < ApplicationController
   load_and_authorize_resource only: :show
 
   def index
+    @events = []
     @pid = params[:pid].present? && params[:pid]
+    events = @pid.present? ? Event.for_pid(@pid) : Event.all
+    events.each do |event|
+      @events << event if can? :read, event
+    end
     respond_to do |format|
       format.html do
-        @events = Event.accessible_by(current_ability)
-        @events = @events.for_pid(@pid) if @pid
         if request.xhr?
           render layout: false
         end
       end
-      format.xml do
-        @events = PreservationEvent.accessible_by(current_ability)
-        if params[:pid].present?
-          @events = @events.for_pid(params[:pid])
-        end
-      end
+      format.xml
     end
   end
 
