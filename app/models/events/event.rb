@@ -14,6 +14,10 @@ class Event < ActiveRecord::Base
   FAILURE = "failure"
   OUTCOMES = [SUCCESS, FAILURE]
 
+  # Validation constants
+  VALID = "VALID"
+  INVALID = "INVALID"
+
   # For rendering "performed by" when no associated user
   SYSTEM = "SYSTEM"
 

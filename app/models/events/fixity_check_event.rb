@@ -6,10 +6,6 @@ class FixityCheckEvent < Event
   self.preservation_event_type = :fix
   self.description = "Validation of datastream checksums"
 
-  # Datastream checksum validation outcomes
-  VALID = "VALID"
-  INVALID = "INVALID"
-
   DETAIL_PREAMBLE = "Datastream checksum validation results:"
   DETAIL_TEMPLATE = "%{dsid} ... %{validation}"
 

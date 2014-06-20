@@ -109,4 +109,14 @@ namespace :dul_hydra do
           end
         end        
     end
+
+    namespace :validate do
+	    desc "Run model validation on all objects in the repository"
+        task :all => :environment do
+            ActiveFedora::Base.find_each do |obj|
+                print "Validating #{obj.pid} ... "
+                puts obj.valid? ? Event::VALID : Event::INVALID
+            end
+        end
+    end
 end
