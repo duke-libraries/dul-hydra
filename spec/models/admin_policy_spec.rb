@@ -26,9 +26,7 @@ describe AdminPolicy, admin_policies: true do
       end
       context "uniqueness" do
         before do
-          allow(AdminPolicy).to receive(:where).with("title_ssi" => "My Title") do
-            [AdminPolicy.new(title: "My Title")] 
-          end
+          allow(AdminPolicy).to receive(:exists?).with("title_ssi" => "My Title") { true }
           apo.title = "My Title"
         end
         it "should be required" do
