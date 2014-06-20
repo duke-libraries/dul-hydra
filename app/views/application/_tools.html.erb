@@ -7,29 +7,28 @@
 	<% if current_object.is_a?(Collection) and can?(:create, Item) and can?(:add_children, current_object) %>
 	<div class="list-group-item">
 	  <%= link_to new_item_path(parent: current_object.pid), id: "add-item-link" do %>
-	  <i class="glyphicon glyphicon-plus"></i> Add Item
+	    <span class="glyphicon glyphicon-plus"></span> Add Item
 	  <% end %>
 	</div>
 	<% end %>
 	<% if current_object.is_a?(Item) and can?(:create, Component) and can?(:add_children, current_object) %>
 	<div class="list-group-item">
 	  <%= link_to new_component_path(parent: current_object.pid), id: "add-component-link" do %>
-	  <i class="glyphicon glyphicon-plus"></i> Add Component
+	    <span class="glyphicon glyphicon-plus"></span> Add Component
 	  <% end %>
 	</div>
 	<% end %>
 	<% if current_object.can_have_attachments? and can?(:create, Attachment) and can?(:add_attachment, current_object) %>
 	<div class="list-group-item">
 	  <%= link_to new_attachment_path(attach_to: current_object.pid), id: "add-attachment-link" do %>
-	  <%= image_tag "silk/attach.png", size: "16x16", alt: "attach" %>
-	  Add Attachment
+	    <span class="glyphicon glyphicon-paperclip"></span> Add Attachment
 	  <% end %>
 	</div>
 	<% end %>
 	<% if current_object.has_content? and can?(:upload, current_object) %>
 	<div class="list-group-item">
 	  <%= link_to url_for(action: "upload"), id: "upload-content-link" do %>
-	  <i class="glyphicon glyphicon-upload"></i> Upload Content
+	    <span class="glyphicon glyphicon-upload"></span> Upload Content
 	  <% end %>
 	</div>
 	<% end %>
