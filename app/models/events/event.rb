@@ -7,7 +7,7 @@ class Event < ActiveRecord::Base
 
   # set default ordering
   DEFAULT_SORT_ORDER = "event_date_time ASC"
-  default_scope order(DEFAULT_SORT_ORDER)
+  default_scope { order(DEFAULT_SORT_ORDER) }
 
   # Outcomes
   SUCCESS = "success"
