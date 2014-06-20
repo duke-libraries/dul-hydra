@@ -1,5 +1,6 @@
 <div class="pull-right">
   <% if current_user %>
+    <%= render 'manage_menu' %>
     <%= render 'create_menu' %>
     <strong><%= t('dul_hydra.user.welcome.authenticated') %></strong>
     <%= render 'user_menu' %>
