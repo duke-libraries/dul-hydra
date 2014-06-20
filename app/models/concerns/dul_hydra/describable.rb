@@ -2,36 +2,19 @@ module DulHydra
   module Describable
     extend ActiveSupport::Concern
    
-    DC11_ELEMENTS = [ # Dublin Core 1.1 element set, excluding :format and :type
-                     :contributor,
-                     :coverage, 
-                     :creator, 
-                     :date, 
-                     :description, 
-                     :identifier, 
-                     :language, 
-                     :publisher, 
-                     :relation, 
-                     :rights,
-                     :source, 
-                     :subject,
-                     :title,
-                     :type
-                    ]
-
     included do
       has_metadata name: DulHydra::Datastreams::DESC_METADATA, 
                    type: DulHydra::Datastreams::DescriptiveMetadataDatastream,
                    versionable: true, 
                    label: "Descriptive Metadata for this object", 
                    control_group: 'M'
-      DC11_ELEMENTS.each do |element|
+      DulHydra::Metadata::DCTerms::ELEMENTS_11.each do |element|
         has_attributes element, datastream: DulHydra::Datastreams::DESC_METADATA, multiple: true
       end
     end
 
     def descriptive_metadata_terms
-      DC11_ELEMENTS
+      DulHydra::Metadata::DCTerms::ELEMENTS_11
     end
 
     def terms_for_editing
@@ -42,6 +25,7 @@ module DulHydra
        :coverage, 
        :creator, 
        :date, 
+       :format,
        :language, 
        :publisher, 
        :relation, 
