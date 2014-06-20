@@ -15,7 +15,7 @@
   </tr>
   <tr>
 	<th scope="row">Summary</th>
-	<td><%= @event.summary %></td>
+	<td><%= simple_format @event.summary %></td>
   </tr>
   <tr>
 	<th scope="row">Outcome</th>
@@ -23,7 +23,7 @@
   </tr>
   <tr>
 	<th scope="row">Detail</th>
-	<td><%= simple_format @event.detail %></td>
+	<td style="white-space: pre-wrap"><%= @event.detail %></td>
   </tr>
   <tr>
 	<th scope="row">Performed By</th>
@@ -35,6 +35,6 @@
   </tr>
   <tr>
 	<th scope="row">Comment</th>
-	<td><%= @event.comment %></td>
+	<td><%= simple_format @event.comment %></td>
   </tr>
 </table>	
