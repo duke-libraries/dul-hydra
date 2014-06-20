@@ -6,35 +6,35 @@
   <ul class="dropdown-menu" role="menu">
 	<li>
 	  <%= link_to bookmarks_path do %>
-	    <i class="glyphicon glyphicon-bookmark"></i> Bookmarks
+	    <span class="glyphicon glyphicon-bookmark"></span> Bookmarks
       <% end %>
 	</li>
 	<li>
 	  <%= link_to export_sets_path do %>
-	    <i class="glyphicon glyphicon-download-alt"></i> Export Sets
+	    <span class="glyphicon glyphicon-download-alt"></span> Export Sets
 	  <% end %>
 	</li>
 	<li>
 	  <%= link_to batches_path do %>
-	    <i class="glyphicon glyphicon-list"></i> Batches
+	    <span class="glyphicon glyphicon-list"></span> Batches
 	  <% end %>
 	</li>
 	<li>
 	  <%= link_to saved_searches_path do %>
-	    <i class="glyphicon glyphicon-search"></i> 
+	    <span class="glyphicon glyphicon-search"></span> 
 		<%= t('blacklight.header_links.saved_searches') %>
 	  <% end %>
 	</li>
 	<li>
 	  <%= link_to search_history_path do %>
-	    <i class="glyphicon glyphicon-time"></i>
+	    <span class="glyphicon glyphicon-time"></span>
 	    <%= t('blacklight.header_links.search_history') %>
 	  <% end %>
 	</li>
 	<li class="divider"></li>
 	<li>
 	  <%= link_to destroy_user_session_path do %>
-	    <i class="glyphicon glyphicon-hand-left"></i>
+	    <span class="glyphicon glyphicon-hand-left"></span>
 	    <%= t('blacklight.header_links.logout') %>
 	  <% end %>
 	</li>
