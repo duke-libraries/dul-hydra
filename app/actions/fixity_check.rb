@@ -17,8 +17,6 @@ class FixityCheck
     end
   end
 
-  
-
   class Result
     attr_accessor :pid, :success, :results, :checked_at
 
