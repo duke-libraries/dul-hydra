@@ -21,7 +21,7 @@
  	      <%= format_date current_document.last_fixity_check_on %>
 	      <%= render_event_outcome current_document.last_fixity_check_outcome %>
 		<% else %>
-	      [not checked]
+	      <span class="label label-warning">Not Checked</span>
 	    <% end %>
 	  </p>
 	</div>
@@ -34,7 +34,7 @@
  	      <%= format_date current_document.last_virus_check_on %>
 	      <%= render_event_outcome current_document.last_virus_check_outcome %>
 		<% else %>
-	      [not scanned]
+	      <span class="label label-warning">Not Scanned</span>
 	    <% end %>
 	  </p>
 	</div>
