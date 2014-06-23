@@ -28,7 +28,7 @@
 		</div>
 		<div class="form-group">
 			<%= f.label :collection_pid %>
-			<%= f.select :collection_pid, model_options_for_select(Collection, :add_children), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {class: 'form-control'} %>
+			<%= f.select :collection_pid, model_options_for_select(Collection, access: :add_children), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {class: 'form-control'} %>
 		</div>
 		<div class="form-group">
 			<%= f.label :parent_id_length %>
