@@ -1,0 +1,12 @@
+<ul class="nav nav-tabs" id="object-show-tabs">
+  <%= render_tabs %>
+</ul>
+<div class="tab-content">
+  <%= render_tabs_content %>
+</div>
+
+<% if current_tabs.present? %>
+<script type="text/javascript">
+  $(function() { $('#object-show-tabs a[href="#<%= current_tabs.active.css_id %>"]').tab('show'); })
+</script>
+<% end %>

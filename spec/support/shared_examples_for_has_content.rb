@@ -1,47 +1,56 @@
 require 'spec_helper'
-require 'tempfile'
 
 shared_examples "an object that can have content" do
-  let(:object) do
-    obj = described_class.new(title: "I Have Content!")
-    obj.save(validate: false)
-    obj
+  let(:object) { described_class.new(title: "I Have Content!") }
+  context "when new content is saved" do
+    context "and the content is a file" do
+      let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+      before { object.content.content = file }
+      it "should run a virus scan" do
+        expect(VirusCheck).to receive(:execute).with(object, file).and_call_original
+        object.save
+      end
+      context "and a virus is found" do
+        before { allow(VirusCheck).to receive(:execute).with(object, file).and_raise(DulHydra::VirusFoundError) }
+        it "should not persist the object" do
+          expect { object.save }.to raise_error
+          expect(object).to be_new_record
+        end
+      end
+      context "and no virus is found" do
+        before { object.save(validate: false) }
+        it "should create a 'virus check' event for the object" do
+          expect(VirusCheckEvent.for_object(object).count).to eq(1)
+        end
+      end
+    end
+    context "and the content is not a file" do
+      before { object.content.content = "A string" }
+      it "should not run a virus scan" do
+        expect(VirusCheck).not_to receive(:execute)
+        object.save!
+      end
+    end
   end
-  after { ActiveFedora::Base.destroy_all }
   context "after content is uploaded" do
     before do
       object.upload fixture_file_upload("library-devil.tiff", "image/tiff")
-      object.save(validate: false)
     end
     it "should have content" do
       expect(object).to have_content
     end
-    it "should have an original_filename" do
-      expect(object.original_filename).to eq("library-devil.tiff")
-    end
-    it "should have a content_type" do
-      expect(object.content_type).to eq("image/tiff")
-    end
-    it "should have a thumbnail (if it's an appropriate type)" do
-      expect(object.thumbnail).to be_present
-    end
-    it "should have a default file prefix, file extension, and file name" do
-      # XXX Does this belong in a test module for FileContentDatastream?
-      pid_prefix = object.pid.sub(':', '_')
-      object.content.default_file_prefix.should == "#{pid_prefix}_content"
-      object.content.default_file_extension.should == "tiff"
-      object.content.default_file_name.should == "#{pid_prefix}_content.tiff"
-    end
-    context "#write_content" do
-      let(:tmpfile) { Tempfile.new('content', :encoding => 'ascii-8bit') }
-      after { tmpfile.unlink }
-      it "should write the content to a file" do
-        tmppath = tmpfile.path
-        object.content.write_content(tmpfile)
-        tmpfile.close
-        object.content.content.size.should == File.size(tmppath)
+    context "after saving the object" do
+      before { object.save(validate: false) }
+      it "should have an original_filename" do
+        expect(object.original_filename).to eq("library-devil.tiff")
       end
-    end
+      it "should have a content_type" do
+        expect(object.content_type).to eq("image/tiff")
+      end
+      it "should have a thumbnail (if it's an appropriate type)" do
+        expect(object.thumbnail).to be_present
+      end
+    end # after saving
   end
   context "after content is uploaded with a checksum" do
     context "and the checksum matches" do

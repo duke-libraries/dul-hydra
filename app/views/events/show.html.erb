@@ -1,0 +1,40 @@
+<h2>Event</h2>
+
+<table class="table event">
+  <tr>
+	<th scope="row">Event Type</th>
+	<td><%= @event.display_type %></td>
+  </tr>
+  <tr>
+	<th scope="row">Event DateTime</th>
+	<td><%= format_date @event.event_date_time %></td>
+  </tr>
+  <tr>
+	<th scope="row">Object</th>
+	<td><%= @event.pid %></td>
+  </tr>
+  <tr>
+	<th scope="row">Summary</th>
+	<td><%= simple_format @event.summary %></td>
+  </tr>
+  <tr>
+	<th scope="row">Outcome</th>
+	<td><%= event_outcome_label @event %></td>
+  </tr>
+  <tr>
+	<th scope="row">Detail</th>
+	<td style="white-space: pre-wrap"><%= @event.detail %></td>
+  </tr>
+  <tr>
+	<th scope="row">Performed By</th>
+	<td><%= @event.performed_by %></td>
+  </tr>
+  <tr>
+	<th scope="row">Software</th>
+	<td><%= @event.software %></td>
+  </tr>
+  <tr>
+	<th scope="row">Comment</th>
+	<td><%= simple_format @event.comment %></td>
+  </tr>
+</table>	

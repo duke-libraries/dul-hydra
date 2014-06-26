@@ -4,6 +4,8 @@ class Ability
 
   include Hydra::PolicyAwareAbility
 
+  delegate :role_abilities, :has_role?, to: :current_user
+
   def hydra_default_permissions
     if current_user.superuser?
       can :manage, :all
@@ -13,26 +15,21 @@ class Ability
   end
 
   def custom_permissions
-    download_permissions unless self.ability_logic.include?(:download_permissions)
     discover_permissions
     export_sets_permissions
     preservation_events_permissions
+    events_permissions
     batches_permissions
     ingest_folders_permissions
     metadata_files_permissions
     attachment_permissions
     children_permissions
     upload_permissions
+    role_permissions
   end
 
-  def create_permissions
-    super # Permits :create for :all if user is authenticated
-    # First block repository object creation ...
-    cannot :create, ActiveFedora::Base 
-    # ... then permit members of authorized groups on a per-model basis
-    DulHydra.creatable_models.each do |model|
-      can :create, model.constantize if has_ability_group?(:create, model)
-    end
+  def role_permissions
+    role_abilities.each { |role_ability| can(*role_ability) }
   end
 
   def read_permissions
@@ -50,12 +47,20 @@ class Ability
   end
 
   def export_sets_permissions
-    can :manage, ExportSet, :user_id => current_user.id
+    can :create, ExportSet if authenticated_user?
+    can :manage, ExportSet, user: current_user
   end
 
   def preservation_events_permissions
     can :read, PreservationEvent do |pe|
       pe.for_object? and can?(:read, pe.for_object)
+    end
+  end
+
+  def events_permissions
+    can :read, Event, user: current_user
+    can :read, Event do |e|
+      can? :read, e.pid
     end
   end
   
@@ -67,33 +72,32 @@ class Ability
   end
 
   def ingest_folders_permissions
-    cannot :create, IngestFolder unless IngestFolder.permitted_folders(current_user).present?
-    can [:show, :procezz], IngestFolder, :user => current_user
+    can :create, IngestFolder if IngestFolder.permitted_folders(current_user).present?
+    can [:show, :procezz], IngestFolder, user: current_user
   end
   
   def metadata_files_permissions
-    cannot :create, MetadataFile unless has_ability_group?(:create, MetadataFile)
-    can [:show, :procezz], MetadataFile, :user => current_user
+    can [:show, :procezz], MetadataFile, user: current_user
   end
   
   def download_permissions
     can :download, ActiveFedora::Base do |obj|
       if obj.class == Component
-        can?(:edit, obj) or (can?(:read, obj) and has_ability_group?(:download, Component))
+        can?(:edit, obj) or (can?(:read, obj) and has_role?("Component Downloader"))
       else
         can? :read, obj
       end
     end
     can :download, SolrDocument do |doc|
       if doc.active_fedora_model == "Component"
-        can?(:read, doc) and has_ability_group?(:download, Component)
+        can?(:read, doc) and has_role?("Component Downloader")
       else
         can? :read, doc
       end
     end
     can :download, ActiveFedora::Datastream do |ds|
       if ds.dsid == DulHydra::Datastreams::CONTENT and ds.digital_object.original_class == Component
-        can?(:read, ds) and has_ability_group?(:download, Component)
+        can?(:read, ds) and has_role?("Component Downloader")
       else
         can? :read, ds
       end
@@ -199,32 +203,10 @@ class Ability
     Hydra.config[:permissions][:discover][:group]
   end
 
-  def can_create_models
-    DulHydra.creatable_models.select { |model| can_create_model? model }
-  end
-
-  def can_create_model?(model)
-    can? :create, model_class(model)
-  end
-
-  def can_create_models?
-    can_create_models.present?
-  end
-
-  protected
-
-  def has_ability_group?(action, model)
-    current_user.member_of?(ability_group(action, model))
-  end
-
-  def ability_group(action, model)
-    DulHydra.ability_group_map[model.to_s][action] rescue nil
-  end
-  
   private
 
-  def model_class(model)
-    model.respond_to?(:constantize) ? model.constantize : model
+  def authenticated_user?
+    current_user.persisted?
   end
 
 end

@@ -2,6 +2,8 @@ require 'mime/types'
 
 ActiveFedora::Datastream.class_eval do
 
+  DEFAULT_FILE_EXTENSION = "bin"
+
   # Return default file extension for datastream based on MIME type
   def default_file_extension
     mimetypes = MIME::Types[self.mimeType]

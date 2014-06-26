@@ -1,14 +1,11 @@
 require 'spec_helper'
+require 'support/shared_examples_for_repository_routers'
 
-describe "attachments routes", attachments: true do
-  it "should have a new route" do
-    @route = {controller: 'attachments', action: 'new', id: 'duke:1'}
-    expect(:get => '/objects/duke:1/attachments/new').to route_to(@route)
-    expect(:get => new_attachment_path('duke:1')).to route_to(@route)
+describe "attachments router", attachments: true do
+  it_behaves_like "a repository object router" do
+    let(:controller) { "attachments" }
   end
-  it "should have a create route" do
-    @route = {controller: 'attachments', action: 'create', id: 'duke:1'}
-    expect(:post => '/objects/duke:1/attachments').to route_to(@route)
-    expect(:post => attachments_path('duke:1')).to route_to(@route)
+  it_behaves_like "a content-bearing object router" do
+    let(:controller) { "attachments" }
   end
 end

@@ -1,7 +1,0 @@
-<% pagination_params = {controller: 'objects', action: 'show', id: current_object, tab: tab} -%>
-<%= render partial: 'children/sort_and_per_page', locals: {pagination_params: pagination_params} %>
-<%= render_document_index @documents %>
-<%= render partial: 'children/results_pagination', locals: {pagination_params: pagination_params} %>
-
-
-

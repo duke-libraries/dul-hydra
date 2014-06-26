@@ -1,27 +1,43 @@
-<div class="well well-small">
-  <ul class="nav nav-list">
-	<li class="nav-header">
-	  Created
-	</li>
-	<li>
-	  <%= render_object_date current_object.create_date %>
-	</li>
-	<li class="nav-header">
-	  Modified
-	</li>
-	<li>
-	   <%= render_object_date current_object.modified_date %>
-	</li>
-	<li class="nav-header">
-	  <%= t('dul_hydra.object_nav.headings.fixity') %>
-	</li>
-	<li>
-	  <% if current_document.last_fixity_check_outcome.present? %>
-	    <%= format_date current_document.last_fixity_check_on %>
-		<%= render_last_fixity_check_outcome %>
-      <% else %>
-	    No fixity checks
-	  <% end %>
-	</li>
-  </ul>
+<div class="panel panel-default">
+  <div class="panel-heading">Object Info</div>
+  <div class="list-group" id="object-info">
+	<div class="list-group-item">
+	  <p class="list-group-item-heading">Created</p>
+	  <p class="list-group-item-text">
+		<%= render_object_date current_object.create_date %>
+	  </p>
+	</div>
+	<div class="list-group-item">
+	  <p class="list-group-item-heading">Modified</p>
+	  <p class="list-group-item-text">
+		<%= render_object_date current_object.modified_date %>
+	  </p>
+	</div>
+	<% if fixity_checkable? %>
+	<div class="list-group-item">
+	  <p class="list-group-item-heading">Fixity Checked</p>
+	  <p class="list-group-item-text">
+		<% if current_document.last_fixity_check_outcome.present? %>
+ 	      <%= format_date current_document.last_fixity_check_on %>
+	      <%= render_event_outcome current_document.last_fixity_check_outcome %>
+		<% else %>
+	      [not checked]
+	    <% end %>
+	  </p>
+	</div>
+	<% end %>
+	<% if virus_checkable? %>
+	<div class="list-group-item">
+	  <p class="list-group-item-heading">Virus Scanned</p>
+	  <p class="list-group-item-text">
+		<% if current_document.last_virus_check_outcome.present? %>
+ 	      <%= format_date current_document.last_virus_check_on %>
+	      <%= render_event_outcome current_document.last_virus_check_outcome %>
+		<% else %>
+	      [not scanned]
+	    <% end %>
+	  </p>
+	</div>
+	<% end %>
+  </div>
 </div>

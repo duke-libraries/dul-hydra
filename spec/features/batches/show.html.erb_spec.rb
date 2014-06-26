@@ -1,17 +1,12 @@
 require 'spec_helper'
-require 'helpers/user_helper'
 
 describe "batches/show.html.erb" do
 
   context "batch" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
-    after do
-      batch.user.delete
-      batch.destroy
-    end
     context "batch info" do
+      before { login_as batch.user }
       context "validate action" do
-        before { login batch.user }
         context "not yet validated" do
           before { visit batch_path(batch) }
           it "should have a link to validate the batch" do
@@ -37,6 +32,38 @@ describe "batches/show.html.erb" do
           end
         end
       end          
+      context "delete action" do
+        context "delete-able" do
+          [ nil, DulHydra::Batch::Models::Batch::STATUS_VALIDATED ].each do |status|
+            before do
+              batch.status = status
+              batch.save
+              visit batch_path(batch)
+            end
+            it "should have a link to delete the batch" do
+              expect(page).to have_link("batch_delete_#{batch.id}")
+              click_link "batch_delete_#{batch.id}"
+              expect(current_path).to eql(batches_path)
+              expect(page).to have_content(I18n.t("batch.web.batch_deleted", :id => batch.id))
+              expect(page).to_not have_link(batch.id, :href => batch_path(batch))
+            end
+          end
+        end
+        context "not delete-able" do
+          [ DulHydra::Batch::Models::Batch::STATUS_QUEUED, DulHydra::Batch::Models::Batch::STATUS_RUNNING,
+            DulHydra::Batch::Models::Batch::STATUS_FINISHED, DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED,
+            DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE ].each do |status|
+              before do
+                batch.status = status
+                batch.save
+                visit batch_path(batch)
+              end
+              it "should not have a link to delete the batch" do
+                expect(page).to_not have_link("batch_delete_#{batch.id}")
+              end
+            end
+        end
+      end
     end
   end
 

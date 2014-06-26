@@ -2,10 +2,6 @@ require 'spec_helper'
 
 describe DownloadsController do
   let(:user) { FactoryGirl.create(:user) }
-  after do
-    user.destroy
-    obj.destroy
-  end
   before do
     obj.read_users = [user.user_key]
     obj.save
@@ -20,9 +16,6 @@ describe DownloadsController do
     context "when original_filename is set" do
       it "should attach the file using the original filename" do
         get :show, id: obj
-        #expect(obj.content).to be_present
-        #expect(obj.content.size).to eq(10032)
-        #expect(obj.original_filename).to eq("library-devil.tiff")
         expect(response.headers["Content-Disposition"]).to match(/filename="#{obj.original_filename}"/)
       end
     end

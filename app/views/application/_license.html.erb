@@ -1,0 +1,18 @@
+<h4>License</h4>
+<% if current_object.license %>
+  <% if current_object.governable? and current_object.inherited_license %>
+    <p>
+	  This license information takes precedence over the inherited license information below.
+	</p>
+  <% end %>
+  <%= render partial: 'license_info', locals: {license: current_object.license} %>
+<% else %>
+  <p>
+	This object has no license information.
+  </p>
+<% end %>
+
+<% if current_object.governable? and current_object.inherited_license %>
+  <h4>Inherited License</h4>
+  <%= render partial: 'license_info', locals: {license: current_object.inherited_license} %>
+<% end %>

@@ -1,16 +1,9 @@
-<div class="well">
-  <h4>New Attachment</h4>
-  <%= form_for @attachment, html: {enctype: "multipart/form-data"} do |f| %>
-    <%= render partial: 'form_errors', locals: {form: f} %>
-
-    <%= f.label :title %>
-    <%= text_field_tag "attachment[title]", nil %>
-
-    <%= f.label :description %>
-    <%= text_area_tag "attachment[description]" %>
-
-	<%= render 'select_content_file' %>
-
-    <%= render partial: 'new_form_actions', locals: {form: f} %>
-  <% end %>
-</div>
+<% content_for :form_top do %>
+  <%= hidden_field_tag "attach_to", attach_to.pid %>
+  <div class="form-group">
+	<label class="control-label">Attach To <%= attach_to.class.to_s %> <%= attach_to.pid %></label>
+	<p class="form-control-static">
+	  <%= link_to attach_to.title_display, url_for(attach_to) %>
+	<p>
+  </div>
+<% end %>

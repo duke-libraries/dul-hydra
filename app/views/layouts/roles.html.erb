@@ -1,0 +1,5 @@
+<% content_for :main_content do %>
+  <%= render partial: 'breadcrumbs', layout: 'global_breadcrumbs' %>
+  <%= yield %>
+<% end %>
+<%= render template: 'layouts/application' %>

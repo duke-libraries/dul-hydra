@@ -1,26 +1,26 @@
 <h1>New Export Set</h1>
 
 <% if export_set_object_list.empty? %>
-  <p class="alert">
+  <p class="alert alert-warning">
 	<%= t("dul_hydra.export_sets.alerts.no_objects.#{@export_set.export_type}") %>
   </p>
 <% else %>
-  <%= form_for @export_set do |f| %>
+  <%= form_for @export_set, html: {role: "form"} do |f| %>
     <p>
 	  Export Type: <strong><%= @export_set.export_type_label %></strong>
 	</p>
 	<%= f.hidden_field :export_type %>
     <%= render :partial => 'title_field', :locals => {:f => f} %>
 	<% if @export_set.export_descriptive_metadata? -%>
-	  <%= f.label :csv_col_sep, "CSV Column Separator" %>
-	  <%= f.select :csv_col_sep, csv_col_sep_options %>
+	  <div class="form-group">
+		<%= f.label :csv_col_sep, "CSV Column Separator" %>
+		<%= f.select :csv_col_sep, csv_col_sep_options %>
+	  </div>
 	<% end -%>
-    <div class="alert alert-info" style="width: 30em">
+    <p class="help-block">
 	  <%= t('dul_hydra.export_sets.alerts.new.select') %>:
-	</div>
+	</p>
 	<%= render 'object_list' %>
-	<div>
-	  <%= f.submit :id => 'export_set_submit_button', :class => "btn btn-primary" %>
-	</div>
+	<%= f.submit :id => 'export_set_submit_button', :class => "btn btn-primary" %>
   <% end %>
 <% end %>

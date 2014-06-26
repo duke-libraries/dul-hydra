@@ -4,11 +4,6 @@ describe "export_sets/show.html.erb", export_sets: true do
   let(:object) { FactoryGirl.create(:test_content) }
   let(:export_set) { FactoryGirl.create(:content_export_set, :pids => [object.pid], :title => "Test Export Set") }
   before { login_as(export_set.user, :scope => :user, :run_callbacks => false) }
-  after do
-    object.delete 
-    export_set.user.destroy
-    Warden.test_reset!
-  end
   it "should display information about the export set" do
     visit export_set_path(export_set)
     page.should have_content(export_set.title)

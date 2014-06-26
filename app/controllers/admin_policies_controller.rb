@@ -1,23 +1,11 @@
 class AdminPoliciesController < ApplicationController
 
-  include DulHydra::RepositoryController
+  include DulHydra::Controller::RepositoryBehavior
+  include DulHydra::Controller::PolicyBehavior
 
-  before_action { |controller| authorize! :create, AdminPolicy }
-
-  def new
-    @admin_policy = AdminPolicy.new
-  end
-
-  def create
-    @admin_policy = AdminPolicy.new(params.require(:admin_policy).permit(:title, :description))
-    @admin_policy.set_initial_permissions(current_user)
-    if @admin_policy.save
-      # @admin_policy.log_event(action: "create", user: current_user)
-      flash[:success] = "New AdminPolicy created."
-      redirect_to controller: 'objects', action: 'show', id: @admin_policy
-    else
-      render :new
-    end
-  end
+  self.tabs = [:tab_default_permissions,
+               :tab_descriptive_metadata,
+               :tab_permissions,
+               :tab_events]
 
 end

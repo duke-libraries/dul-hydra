@@ -1,0 +1,15 @@
+<div class="well">
+  <h4>Upload Content</h4>
+  <%= form_tag url_for(action: "upload"), method: "patch", multipart: true, role: "form" do %>
+    <%= render 'form_errors' %>
+    <%= render 'select_content_file' %>
+    <div class="form-group">
+      <%= label_tag "comment" %>
+      <%= text_area_tag "comment", nil, class: "form-control" %>
+	</div>
+    <div class="form-group">
+	  <%= submit_tag "Upload", data: {confirm: current_object.has_content? ? "#{t('dul_hydra.upload.alerts.has_content')} Continue?" : "Upload new content?"}, class: "btn btn-primary" %>
+	  <%= cancel_button %>
+    </div>
+  <% end %>
+</div>

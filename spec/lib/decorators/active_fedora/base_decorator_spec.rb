@@ -26,6 +26,7 @@ describe ActiveFedora::Base do
       end
     end
   end
+
   describe "children", children: true do
     before do
       class Childrenable < ActiveFedora::Base
@@ -51,32 +52,7 @@ describe ActiveFedora::Base do
       end
     end
   end
-  describe "preservation events", preservation_events: true do
-    before do
-      class PreservationEventable < ActiveFedora::Base
-        include DulHydra::HasPreservationEvents
-      end
-    end
-    after do
-      Object.send(:remove_const, :PreservationEventable)
-    end
-    describe "#can_have_preservation_events?" do
-      it "should return true if object can have preservation events, else false" do
-        PreservationEventable.new.can_have_preservation_events?.should be_true
-        ActiveFedora::Base.new.can_have_preservation_events?.should be_false        
-      end
-    end
-    describe "#has_preservation_events?" do
-      let(:preservation_eventable) { PreservationEventable.create }
-      before { PreservationEvent.creation!(preservation_eventable) }
-      after { preservation_eventable.destroy }
-      it "should return true if object has preservation events, else false" do
-        preservation_eventable.should have_preservation_events
-        PreservationEventable.new.should_not have_preservation_events
-        ActiveFedora::Base.new.should_not have_preservation_events
-      end
-    end
-  end
+
   describe "thumbnail" do
     before do
       class Thumbnailable < ActiveFedora::Base
@@ -102,6 +78,7 @@ describe ActiveFedora::Base do
       end
     end
   end
+
   describe "content" do
     before do
       class Contentable < ActiveFedora::Base

@@ -8,6 +8,10 @@ module DulHydra
       alias_method :pid, :id
     end
 
+    def to_partial_path
+      'document'
+    end
+
     def safe_id
       id.sub(/:/, "-")
     end
@@ -44,6 +48,14 @@ module DulHydra
       get(DulHydra::IndexFields::LAST_FIXITY_CHECK_OUTCOME)
     end
 
+    def last_virus_check_on
+      get_date(DulHydra::IndexFields::LAST_VIRUS_CHECK_ON)
+    end
+
+    def last_virus_check_outcome
+      get(DulHydra::IndexFields::LAST_VIRUS_CHECK_OUTCOME)
+    end
+
     def datastreams
       object_profile["datastreams"]
     end
@@ -62,7 +74,7 @@ module DulHydra
 
     def admin_policy_pid
       uri = admin_policy_uri
-      uri &&= ActiveFedora::Base.pids_from_uris(uri)
+      uri &&= ActiveFedora::Base.pid_from_uri(uri)
     end
 
     def has_children?
@@ -101,6 +113,8 @@ module DulHydra
     def content_mime_type
       content_ds["dsMIME"] rescue nil
     end
+    # For duck-typing with DulHydra::HasContent
+    alias_method :content_type, :content_mime_type
 
     def content_size
       content_ds["dsSize"] rescue nil
@@ -134,6 +148,10 @@ module DulHydra
       get_pid(ActiveFedora::SolrService.solr_name(name, :symbol))
     end
 
+    def controller_name
+      active_fedora_model.tableize
+    end
+
     private
 
     def targets_query
@@ -157,7 +175,7 @@ module DulHydra
     end
 
     def get_pid(field)
-      ActiveFedora::Base.pids_from_uris(get(field))
+      ActiveFedora::Base.pid_from_uri(get(field)) rescue nil
     end
 
   end

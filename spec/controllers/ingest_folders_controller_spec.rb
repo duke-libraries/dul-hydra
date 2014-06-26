@@ -31,15 +31,12 @@ describe IngestFoldersController do
     File.stub(:readable?).and_return(true)
   end
   
-  after { user.destroy }
-  
   describe "#create" do
     
     let(:additional_attributes) { { :sub_path => '/subpath/subsubpath/' } }
     before do
       post :create, ingest_folder: FactoryGirl.attributes_for(:ingest_folder).merge(additional_attributes)
     end
-    after { IngestFolder.first.delete }
 
     it "sets the ingest folder attributes correctly" do
       expect(assigns[:ingest_folder].add_parents).to be_true

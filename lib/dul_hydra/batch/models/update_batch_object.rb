@@ -68,8 +68,8 @@ module DulHydra::Batch::Models
             end        
           end
         end
-        if repo_object.save
-          repo_object.log_event(action: EventLog::Actions::UPDATE, user: batch.user, comment: event_log_comment)
+        if repo_object.save          
+          repo_object.log_event(:update, user: batch.user, comment: event_log_comment)
         end
       rescue Exception => e
         logger.error("Error in updating repository object #{repo_object.pid} for #{identifier} : : #{e}")

@@ -1,9 +1,5 @@
 module MetadataFilesHelper
 
-  def new_metadata_file_link
-    link_to I18n.t('batch.metadata_file.new'), new_metadata_file_path
-  end
-  
   def metadata_file_profiles
     profiles = {}
     files = Dir.glob(File.join(metadata_file_profiles_dir, "*.yml"))

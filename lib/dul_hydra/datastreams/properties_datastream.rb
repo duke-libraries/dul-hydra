@@ -6,6 +6,11 @@ module DulHydra
         t.root(:path => "fields")
         t.original_filename
       end
+
+      def prefix
+        # Squash AF 8.0 deprecation warning
+        ""
+      end
       
       def self.xml_template
         builder = Nokogiri::XML::Builder.new do |xml|

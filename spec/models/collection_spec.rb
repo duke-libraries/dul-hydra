@@ -24,8 +24,6 @@ describe Collection do
 
   it_behaves_like "a DulHydra object"
 
-  after { ActiveFedora::Base.destroy_all }
-  
   context "collection-item relationships" do
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:item) { FactoryGirl.create(:item) }
@@ -45,6 +43,15 @@ describe Collection do
     context "#targets.<<" do
       before { collection.targets << target }
       it_behaves_like "a Collection related to a Target"
+    end
+  end
+
+  context "validation" do
+    let(:collection) { Collection.new }
+    it "should require a title and admin policy" do
+      expect(collection).to_not be_valid
+      expect(collection.errors.messages).to have_key(:title)
+      expect(collection.errors.messages).to have_key(:admin_policy)
     end
   end
 

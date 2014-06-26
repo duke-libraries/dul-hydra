@@ -3,10 +3,6 @@ require 'spec_helper'
 describe 'export_sets/edit.html.erb', export_sets: true do
   let(:user) { FactoryGirl.create(:user) }
   before { login_as user }
-  after do
-    User.destroy_all
-    Warden.test_reset!
-  end
   context "edit content export set title" do
     let(:export_set) do
       ExportSet.new.tap do |es|

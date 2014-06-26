@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe AdminPolicy do
+describe AdminPolicy, admin_policies: true do
   context "terms delegated to defaultRights" do
     let(:apo) { AdminPolicy.new }
     before do
@@ -16,8 +16,26 @@ describe AdminPolicy do
   end
 
   context "validation" do
-    it "should require a title" do
-      expect { AdminPolicy.create! }.to raise_error(ActiveFedora::RecordInvalid)
+    let(:apo) { AdminPolicy.new }
+    context "of title attribute" do
+      context "presence" do
+        it "should be required" do
+          expect(apo).not_to be_valid
+          expect(apo.errors[:title]).to include("can't be blank")
+        end
+      end
+      context "uniqueness" do
+        before do
+          allow(AdminPolicy).to receive(:where).with("title_ssi" => "My Title") do
+            [AdminPolicy.new(title: "My Title")] 
+          end
+          apo.title = "My Title"
+        end
+        it "should be required" do
+          expect(apo).not_to be_valid
+          expect(apo.errors[:title]).to include("has already been taken")
+        end
+      end
     end
   end
 
@@ -43,7 +61,6 @@ describe AdminPolicy do
 
   context "indexing" do
     subject { SolrDocument.new(ActiveFedora::SolrService.query(ActiveFedora::SolrService.construct_query_for_pids([apo.pid])).first) }
-    after { apo.delete }
     let(:apo) { AdminPolicy.create(title: 'Awesome Policy') }
     its(:title) { should == apo.title }
   end

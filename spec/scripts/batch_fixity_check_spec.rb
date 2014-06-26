@@ -5,11 +5,7 @@ module DulHydra
     describe BatchFixityCheck, fixity_check: true do
       let(:report) { Tempfile.new('batch_fixity_check_spec') }
       let!(:bfc) { described_class.new(report: report.path) }
-      after do
-        report.close!
-        ActiveFedora::Base.destroy_all
-        PreservationEvent.destroy_all
-      end
+      after { report.close! }
       context "with an object that was just checked" do
         let(:obj) { FactoryGirl.create(:component) }
         before { obj.fixity_check! }
@@ -29,7 +25,7 @@ module DulHydra
         let(:obj) { FactoryGirl.create(:component) }
         before do
           fc = obj.fixity_check
-          fc.event_date_time = PreservationEvent.to_event_date_time(Time.now.ago(1.year).utc)
+          fc.event_date_time = Time.now.ago(1.year).utc
           fc.save   
         end
         it "should check the object" do

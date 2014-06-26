@@ -3,7 +3,6 @@ require 'zip/zip'
 
 describe ExportSetsController, export_sets: true do
   before { sign_in user }
-  after { user.destroy }    
   context "#index" do
     let(:user) { FactoryGirl.create(:user) }
     it "should display the user's list of export sets" do
@@ -33,9 +32,6 @@ describe ExportSetsController, export_sets: true do
     before do
       object.read_users = [user.user_key]
       object.save
-    end
-    after do
-      object.delete
     end
     it "should create an export set and redirect to the show page" do
       user.export_sets.count.should == 0
@@ -93,9 +89,6 @@ describe ExportSetsController, export_sets: true do
     before do 
       object.read_users = [user.user_key]
       object.save
-    end
-    after do
-      object.delete
     end
     context "request method == delete" do
       before { export_set.create_archive }

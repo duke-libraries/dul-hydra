@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140220211229) do
+ActiveRecord::Schema.define(version: 20140603220359) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -91,19 +91,24 @@ ActiveRecord::Schema.define(version: 20140220211229) do
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
 
-  create_table "event_logs", force: true do |t|
+  create_table "events", force: true do |t|
     t.datetime "event_date_time"
-    t.string   "agent_type"
     t.integer  "user_id"
-    t.string   "software_agent_value"
-    t.string   "action"
-    t.string   "model"
-    t.string   "object_identifier"
-    t.string   "application_version"
+    t.string   "type"
+    t.string   "pid"
+    t.string   "software"
     t.text     "comment"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "summary"
+    t.string   "outcome"
+    t.text     "detail"
   end
+
+  add_index "events", ["event_date_time"], name: "index_events_on_event_date_time"
+  add_index "events", ["outcome"], name: "index_events_on_outcome"
+  add_index "events", ["pid"], name: "index_events_on_pid"
+  add_index "events", ["type"], name: "index_events_on_type"
 
   create_table "export_sets", force: true do |t|
     t.integer  "user_id"
@@ -159,6 +164,20 @@ ActiveRecord::Schema.define(version: 20140220211229) do
     t.string   "linking_object_id_value"
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
+  end
+
+  create_table "roles", force: true do |t|
+    t.string   "name"
+    t.string   "model"
+    t.string   "ability"
+    t.text     "groups"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "roles_users", id: false, force: true do |t|
+    t.integer "role_id"
+    t.integer "user_id"
   end
 
   create_table "searches", force: true do |t|

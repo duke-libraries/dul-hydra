@@ -33,7 +33,7 @@ module ExportSetsHelper
   def render_object_list_row_value(obj, col)
     case col
     when :pid
-      link_to(obj.pid, object_path(obj))
+      link_to(obj.pid, url_for(obj))
     when :object_type
       obj.class.to_s
     when :title, :identifier, :description, :source

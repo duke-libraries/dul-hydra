@@ -3,10 +3,19 @@ en:
     form:
       title: 'Edit Descriptive Metadata'
   dul_hydra:
-    errors: "The action could not be completed due to the following errors:"
+    ingest_folder:
+      new_menu: "Folder Ingest"
+    metadata_file:
+      new_menu: "Metadata File Upload"
+    help:
+        label: "Help"
+    contact:
+        label: "Contact Us"
+        subject: "Duke Digital Repository Email Contact"
     upload:
       alerts:
         has_content: "Uploading new content will supersede the existing content with a new version."
+        success: "Content successfully uploaded."
     event_logs:
       alerts:
         action:
@@ -18,6 +27,17 @@ en:
         no_bookmarks: "Export sets are created from bookmarks. Please bookmark one or more objects to export."
         new:
           select: "Select objects to export"
+        created: "New export set created."
+        updated: "Export set updated."
+        destroyed: "Export set destroyed."
+        deletion_confirmation: "You are about to delete %{title}. Continue?"
+        archive:
+            created: "Archive created."
+            creation_exception: "Archive creation failed due to a server error."
+            not_created: "Archive already exists or could not be created."
+            deleted: "Archive deleted."
+            deletion_failed: "Archive deletion failed."
+            deletion_confirmation: "You are about to delete the archive file. Continue?"
         export_type:
           missing: "Missing export type parameter."
           invalid: "Invalid export type parameter: '%s'."
@@ -56,12 +76,25 @@ en:
         description: 'Description'
         title: 'Title'
         url: 'URL'
+    repository_objects:
+        alerts:
+            creation_confirmation: "This action will create a new %{model} in the repository.  Continue?"
+            cancellation_confirmation: "Cancel creating a new %{model}?"
+            created: "Object successfully created"
+    roles:
+        alerts:
+            created: "New role successfully created"
+            updated: "Role succesfully updated"
+            deleted: "Role '%{role_name}' deleted"
+            delete_failed: "Unable to delete role"
+            deletion_confirmation: "Are you sure you want to DELETE this role?"
     admin_policies:
       headings:
         inheritable_rights: 'Access restrictions inherited by objects governed by this Admin Policy'
         license: 'Copyright / license statement inherited by objects governed by this Admin Policy'
       messages:
         updated: 'Admin Policy updated'
+        changed: "Policy successfully changed." 
       page_titles:
         edit: 'Editing Admin Policy'
     permissions:
@@ -71,10 +104,15 @@ en:
       alerts:
         inherited: 'This object is governed by the Admin Policy %s. Permissions granted on this page are <strong>added to</strong> the inherited permissions (if any) shown below the select boxes.'
         default_permissions: "These settings are <strong>inherited</strong> by objects governed by this policy. They do <strong>not</strong> apply to this Admin Policy object itself."
+        permissions_will_change: "The permissions will be overwritten with your selections."
+        default_permissions_will_change: "The default permissions will be overwritten with your selections and be applied to all objects governed by this policy."
       descriptions:
         discover: 'Find object via search and view summary data'
         read: 'View object and download content (includes Discover)'
         edit: 'Modify object (includes Discover + Read)'
+    rights:
+        alerts:
+            changed: "Rights successfully changed."
     tabs:
       items:
         label: Items
@@ -102,8 +140,8 @@ en:
         label: "Collection Info"
         actions:
           download: "Download CSV Report"
-      preservation_events:
-        label: "Preservation Events"
+      events:
+        label: "Events"
       attachments:
         label: Attachments
       pending_batches:

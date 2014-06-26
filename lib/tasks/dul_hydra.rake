@@ -1,13 +1,31 @@
 namespace :dul_hydra do
-    desc "CI build"
-	task :ci do
-		ENV['environment'] = "test"
-		jetty_params = Jettywrapper.load_config
-  		jetty_params[:startup_wait] = 60
+
+    namespace :config do
+      desc "Copy sample config files" 
+      task :samples do
+          Dir.glob("config/**/*.sample") do |sample|
+            actual = sample.gsub(/\.sample/, "")
+            FileUtils.cp sample, actual, verbose: true unless File.exists?(actual)
+          end
+      end
+    end
+
+    namespace :ci do
+      desc "Prepare for CI build"
+      task :prepare => ['dul_hydra:config:samples', 'db:test:prepare', 'jetty:clean', 'jetty:config'] do
+      end
+
+      desc "CI build"
+      task :build => :prepare do
+        ENV['environment'] = "test"
+        jetty_params = Jettywrapper.load_config
+        jetty_params[:startup_wait] = 60
         Jettywrapper.wrap(jetty_params) do
-    	    Rake::Task['spec'].invoke
-		end
-	end
+            Rake::Task['spec'].invoke
+        end
+      end
+    end
+
     namespace :batch do
         desc "Converts CSV file to one or more XML files"
         task :csv_to_xml => :environment do
@@ -28,13 +46,13 @@ namespace :dul_hydra do
                 :dryrun => ENV['dryrun'] == 'true' ? true : false,
                 :limit => ENV.fetch('limit', 1000).to_i,
                 :period => ENV.fetch('period', '60DAYS'),
-				:report => ENV['report']
+                :report => ENV['report']
             }
-	    	mailto = ENV['mailto']
+            mailto = ENV['mailto']
             puts "Running batch fixity check with options #{opts} ..."
             bfc = DulHydra::Scripts::BatchFixityCheck.new(opts)
-	    	bfc.execute
-	    	BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
+            bfc.execute
+            BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
         end
         desc "Make manifest MANIFEST based on files in directory DIRPATH"
         task :make_manifest => :environment do
@@ -68,6 +86,7 @@ namespace :dul_hydra do
             thumb.execute if thumb.collection
         end
     end
+
     namespace :solr do
         desc "Deletes everything from the solr index"
         task :clean => :environment do
@@ -89,32 +108,5 @@ namespace :dul_hydra do
             end
           end
         end        
-    end
-    namespace :upgrade do
-      desc "Upgrades existing export sets to new schema"
-      task :export_sets => :environment do
-        for export_set in ExportSet.all
-          export_set.export_type = ExportSet::Types::CONTENT if export_set.export_type.blank?
-          export_set.csv_col_sep = "tab" if export_set.csv_col_sep.blank? && export_set.export_descriptive_metadata?
-          export_set.save if export_set.changed?
-        end
-      end
-      desc "Migrates original file names from source to original_filename"
-      task :original_file_names => :environment do
-        [ Component, Target, Attachment ].each do |model|
-          model.find_each do |obj|
-            if obj.source.present?
-              if obj.source.size == 1
-                obj.original_filename = obj.source.first
-                obj.source = []
-                obj.save!
-              else
-                puts "Multiple source attributes: #{obj.pid}"
-                obj.source.each { |s| puts s }
-              end
-            end
-          end
-        end
-      end
     end
 end

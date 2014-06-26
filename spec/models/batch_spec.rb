@@ -11,14 +11,6 @@ module DulHydra::Batch::Models
         batch.user.destroy
         batch.destroy
       end
-      after do
-        # The following clean-up steps are needed only to cover the case that the test fails;
-        # i.e., that batch.destroy does not successfully destroy itself and all related batch objects
-        DulHydra::Batch::Models::BatchObjectRelationship.all.each { |obj| obj.destroy }
-        DulHydra::Batch::Models::BatchObjectDatastream.all.each { |obj| obj.destroy }
-        DulHydra::Batch::Models::BatchObject.all.each { |obj| obj.destroy }
-        DulHydra::Batch::Models::Batch.all.each { |obj| obj.destroy }
-      end
       it "should destroy all the associated dependent objects" do
         DulHydra::Batch::Models::Batch.all.should be_empty
         DulHydra::Batch::Models::BatchObject.all.should be_empty
@@ -46,12 +38,6 @@ module DulHydra::Batch::Models
         end
       end
       
-      after do
-        admin_policy.delete
-        batch.user.destroy
-        batch.destroy
-      end
-
       it "should cache the results of looking up relationship objects" do
         batch.should_receive(:add_found_pid).once.with(admin_policy.pid, "AdminPolicy").and_call_original
         batch.validate

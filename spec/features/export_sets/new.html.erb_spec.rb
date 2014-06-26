@@ -4,11 +4,6 @@ describe "export_sets/new.html.erb", export_sets: true do
 
   let(:user) { FactoryGirl.create(:user) }
 
-  after do
-    user.destroy
-    Warden.test_reset!
-  end
-
   context "export_type == 'content'" do
     let(:object_read) { FactoryGirl.create(:component_with_content) }
     let(:object_discover) { FactoryGirl.create(:component_with_content) }
@@ -19,13 +14,8 @@ describe "export_sets/new.html.erb", export_sets: true do
       object_discover.save
       user.bookmarks.create(:document_id => object_read.pid)
       user.bookmarks.create(:document_id => object_discover.pid)
-      DulHydra.ability_group_map = {"Component" => {download: "component_download"}}.with_indifferent_access
-      user.stub(:groups).and_return(["component_download"])
+      allow(user).to receive(:has_role?).with("Component Downloader") { true }
       login_as user
-    end
-    after do
-      object_read.delete 
-      object_discover.delete 
     end
     it "should display a form with content-bearing bookmarked objects on which the user has download permission" do
       visit "#{new_export_set_path}?export_type=#{ExportSet::Types::CONTENT}"
@@ -44,11 +34,7 @@ describe "export_sets/new.html.erb", export_sets: true do
       object_discover.save
       user.bookmarks.create(:document_id => object_read.pid)
       user.bookmarks.create(:document_id => object_discover.pid)
-      login user
-    end
-    after do
-      object_read.delete 
-      object_discover.delete 
+      login_as user
     end
     it "should display a form with bookmarked objects on which the user has read permission" do
       visit "#{new_export_set_path}?export_type=#{ExportSet::Types::DESCRIPTIVE_METADATA}"

@@ -2,6 +2,9 @@ class BatchesController < ApplicationController
   
   load_and_authorize_resource :class => DulHydra::Batch::Models::Batch
 
+  include DulHydra::Controller::TabbedViewBehavior
+  self.tabs = [:tab_pending_batches, :tab_finished_batches]
+
   def index
     @pending = []
     @finished = []
@@ -18,8 +21,20 @@ class BatchesController < ApplicationController
     @batch_objects = @batch.batch_objects.page params[:page]
   end
   
+  def destroy
+    case @batch.status
+    when nil, DulHydra::Batch::Models::Batch::STATUS_VALIDATED
+      @batch.destroy
+      flash[:notice] = I18n.t('batch.web.batch_deleted', :id => @batch.id)
+    else
+      flash[:notice] = I18n.t('batch.web.batch_not_deletable', :id => @batch.id, :status => @batch.status)
+    end
+    redirect_to action: :index
+  end
+  
   def procezz
-    Delayed::Job.enqueue DulHydra::Batch::Jobs::BatchProcessorJob.new(@batch.id)
+    # Delayed::Job.enqueue DulHydra::Batch::Jobs::BatchProcessorJob.new(@batch.id)
+    Resque.enqueue(DulHydra::Batch::Jobs::BatchProcessorJob, @batch.id)
     flash[:notice] = I18n.t('batch.web.batch_queued', :id => @batch.id)
     redirect_to batches_url
   end
@@ -40,11 +55,8 @@ class BatchesController < ApplicationController
       redirect_to batch_url(@batch.id)
     end
   end
-  
-  def tabs
-    methods = [:tab_pending_batches, :tab_finished_batches]
-    Tabs.new(self, *methods)
-  end
+
+  protected
   
   def tab_pending_batches
     Tab.new("pending_batches")

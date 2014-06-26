@@ -1,4 +1,4 @@
-<ul class="unstyled">
+<ul class="list-unstyled">
   <li>
 	<%= render_document_model_and_id document %>
   </li>
@@ -7,18 +7,16 @@
   	  <%= document.identifier %>
     </li>
   <% end -%>
-  <% if document.id == params[:id] -%>
-    <% association, associated_doc = get_associated_document(document) -%>
-	<% if associated_doc -%>
-	  <li class="small">
-		  <%= t("dul_hydra.associations.#{association}") %>:
-		  <% if can? :read, associated_doc -%>
-		    <%= link_to associated_doc.title, object_path(associated_doc.id) %>
-		  <% else -%>
-		    <%= associated_doc.title %>
-		  <% end -%>
-	  </li>
-	<% end -%>
+  <% association, associated_doc = get_associated_document(document) -%>
+  <% if associated_doc -%>
+    <li class="small">
+	  <%= t("dul_hydra.associations.#{association}") %>:
+	  <% if can? :read, associated_doc -%>
+	    <%= link_to associated_doc.title, document_or_object_url(associated_doc) %>
+	  <% else -%>
+	    <%= associated_doc.title %>
+	  <% end -%>
+	</li>
   <% end -%>
   <% if document.has_content? -%>
     <li class="small">

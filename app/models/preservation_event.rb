@@ -1,14 +1,18 @@
 class PreservationEvent < ActiveRecord::Base
+  extend Deprecation
 
+  after_initialize :deprecation_warning
   after_initialize :set_event_id
-  after_initialize :set_event_date_time
+  after_initialize :set_event_date_time, if: "event_date_time.nil?"
+  after_save :update_index_for_object, if: :update_index?
 
   # Event types
   FIXITY_CHECK = "fixity check" # http://id.loc.gov/vocabulary/preservationEvents/fixityCheck
   INGESTION    = "ingestion"    # http://id.loc.gov/vocabulary/preservationEvents/ingestion
   VALIDATION   = "validation"   # http://id.loc.gov/vocabulary/preservationEvents/validation
   CREATION     = "creation"     # http://id.loc.gov/vocabulary/preservationEvents/creation
-  EVENT_TYPES = [FIXITY_CHECK, INGESTION, VALIDATION, CREATION]
+  VIRUS_CHECK  = "virus check"  # http://id.loc.gov/vocabulary/preservation/eventType/vir.html
+  EVENT_TYPES = [FIXITY_CHECK, INGESTION, VALIDATION, CREATION, VIRUS_CHECK]
 
   # Outcomes
   SUCCESS = "success"
@@ -42,57 +46,14 @@ class PreservationEvent < ActiveRecord::Base
   validates :event_id_value, presence: true
   validates :linking_object_id_type, inclusion: {in: LINKING_OBJECT_ID_TYPES, message: "%{value} is not a valid linking object identifier type"}, if: "linking_object_id_value.present?"
   validates :linking_object_id_value, presence: true, if: "linking_object_id_type.present?"
-  validate :for_object_must_exist_and_have_preservation_events
-
-  # Return a new fixity check PreservationEvent for the object
-  def self.fixity_check(object)
-    outcome, results = object.validate_checksums
-    outcome_detail_note = ["Datastream checksum validation results:"]
-    results.each do |dsid, dsProfile|
-      outcome_detail_note << "%s ... %s" % [dsid, dsProfile["dsChecksumValid"] ? VALID : INVALID]
-    end
-    pe = new(event_detail: "Validation of datastream checksums\nDulHydra version #{DulHydra::VERSION}",
-             event_type: FIXITY_CHECK,
-             event_outcome: outcome ? SUCCESS : FAILURE,
-             event_outcome_detail_note: outcome_detail_note.join("\n")
-             )
-    pe.for_object = object
-    pe
-  end
-
-  # Return a persisted fixity check PreservationEvent for the object
-  def self.fixity_check!(object)
-    pe = PreservationEvent.fixity_check(object)
-    pe.save
-    pe
-  end
-
-  # Return a new creation PreservationEvent for the object, user
-  def self.creation(object, user=nil)
-    event_detail = "New #{object.class.to_s} object created"
-    event_detail << " by #{user.user_key}" if user
-    event_detail << ".\n#{version_note}"
-    event_date_time = DateTime.strptime(object.create_date, DATE_TIME_FORMAT)
-    pe = new(event_detail: event_detail,
-             event_date_time: event_date_time,
-             event_type: CREATION)
-    pe.for_object = object
-    pe
-  end
-
-  # Return a persisted creation PreservationEvent for the object, user
-  def self.creation!(object, user=nil)
-    factory!(:creation, object, user)
-  end
-
-  def save(*)
-    super
-    # Update ActiveFedora object in the Solr index
-    for_object.update_index if for_object? && fixity_check?
-  end
+  validate :for_object_must_exist
 
   def fixity_check?
     event_type == FIXITY_CHECK
+  end
+
+  def virus_check?
+    event_type == VIRUS_CHECK
   end
 
   def success?
@@ -118,33 +79,16 @@ class PreservationEvent < ActiveRecord::Base
   end
 
   # Validation method
-  def for_object_must_exist_and_have_preservation_events
+  def for_object_must_exist
     if for_object?
       begin
-        errors.add(:linking_object_id_value, "Object does not support preservation events") unless for_object.is_a?(DulHydra::HasPreservationEvents)
+        for_object
       rescue ArgumentError => e
         errors.add(:linking_object_id_value, e.message)
       rescue ActiveFedora::ObjectNotFoundError => e
         errors.add(:linking_object_id_value, e.message)
       end
     end
-  end
-
-  def self.events_for(object_or_pid, event_type=nil)
-    raise TypeError, 'Invalid event type' unless event_type.nil? || EVENT_TYPES.include?(event_type)
-    if object_or_pid.is_a?(DulHydra::HasPreservationEvents)
-      pid = object_or_pid.pid
-    elsif object_or_pid.is_a?(String)
-      pid = object_or_pid
-    else
-      raise TypeError, "First argument must be a DulHydra::HasPreservationEvents or a PID string."
-    end
-    params = {
-      linking_object_id_type: OBJECT,
-      linking_object_id_value: pid
-      }
-    params[:event_type] = event_type unless event_type.nil?
-    PreservationEvent.where(params).order(DEFAULT_SORT_ORDER)
   end
 
   # Return a date/time formatted as a string suitable for use as a PREMIS eventDateTime.
@@ -171,13 +115,22 @@ class PreservationEvent < ActiveRecord::Base
     as_premis.to_xml
   end
 
-  private
+  protected
 
-  def self.factory!(method, *args)
-    pe = PreservationEvent.send(method, *args)
-    pe.save!
-    pe
+  def deprecation_warning
+    Deprecation.warn(PreservationEvent, "PreservationEvent is deprecated and will be removed in DulHydra 2.0.0.")
   end
+
+  def update_index_for_object
+    for_object.update_index
+  end
+
+  # Whether we should update the index of the related object after save
+  def update_index?
+    for_object? && (fixity_check? || virus_check?)
+  end
+
+  private
 
   def set_event_id
     self.event_id_type = UUID
@@ -185,7 +138,7 @@ class PreservationEvent < ActiveRecord::Base
   end
 
   def set_event_date_time
-    self.event_date_time = Time.now.utc unless self.event_date_time
+    self.event_date_time = Time.now.utc
   end
 
   def self.version_note

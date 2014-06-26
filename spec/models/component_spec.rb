@@ -6,8 +6,7 @@ shared_examples "a Component related to an Item" do
   it "should be the first part of the item" do
     expect(item.parts.first).to eq(component)
   end
-  it "should have the item as container, parent and item" do
-    expect(component.container).to eq(item)
+  it "should have the item as parent and item" do
     expect(component.parent).to eq(item)
     expect(component.item).to eq(item)
   end
@@ -30,30 +29,32 @@ describe Component, components: true do
   context "#collection" do
     context "orphan component" do
       subject { component }
-      after { component.delete }
       let(:component) { FactoryGirl.create(:component) }
       its(:collection) { should be_nil }
     end
     context "belongs to orphan item" do
       subject { component }
-      after do
-        component.item.delete
-        component.delete
+      let(:component) { FactoryGirl.create(:component) }
+      let(:item) { FactoryGirl.create(:item) }
+      before do
+        component.parent = item
+        component.save!
       end
-      let(:component) { FactoryGirl.create(:component_part_of_item) }
       its(:collection) { should be_nil }
     end
     context "belongs to item in collection" do
-      subject { component }
-      before { item.children << component }
-      after do
-        item.collection.delete
-        item.delete
-        component.delete
+      before do
+        item.collection = collection
+        item.children << component
+        item.save
+        component.reload
       end
       let(:component) { FactoryGirl.create(:component) }
-      let(:item) { FactoryGirl.create(:item_in_collection) }
-      its(:collection) { should eq(component.parent.parent) }
+      let(:item) { FactoryGirl.create(:item) }
+      let(:collection) { FactoryGirl.create(:collection) }
+      it "should have the collection as its parent's parent" do
+        expect(collection).to eq(component.parent.parent)
+      end
     end
   end
 
@@ -61,18 +62,6 @@ describe Component, components: true do
     let!(:component) { FactoryGirl.create(:component) }
     let!(:item) { FactoryGirl.create(:item) }
     let!(:target) { FactoryGirl.create(:target) }
-    after do
-      target.delete
-      item.delete
-      component.delete
-    end
-    context "#container=" do
-      before do 
-        component.container = item
-        component.save!
-      end
-      it_behaves_like "a Component related to an Item"
-    end
     context "#parent=" do
       before do
         component.parent = item

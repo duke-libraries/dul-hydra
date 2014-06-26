@@ -2,23 +2,25 @@ source 'http://rubygems.org'
 
 gem 'rails', '~> 4.0.3'
 
-gem 'sqlite3'
-gem 'hydra-head', '6.5.0'
-gem 'blacklight', '4.7.0'
-gem 'bootstrap-sass' # blacklight 4.0
-gem 'unicode'        # blacklight 4.0
+# gem 'hydra-head', github: 'projecthydra/hydra-head'
+gem 'hydra-head', '7.0.1'
+# gem 'active-fedora', github: 'projecthydra/active_fedora'
+gem 'active-fedora', '7.0.2'
 gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user', '0.3.0'
-gem 'active-fedora', '6.7.6'
 gem 'grouper-rest-client'
 gem 'hydra-editor', '0.2.2'
 gem 'hydra-derivatives'
 gem 'deprecation'
-gem 'rubydora', '1.7.4'
+gem 'clamav'
 
+gem 'sqlite3'
 gem 'log4r'
 
-gem 'delayed_job_active_record'
+# Background processing
+gem 'resque', '1.25.2'
+gem 'resque-pool', '0.3.0'
+gem 'nest', '1.1.2'
 
 # ExecJS runtime
 gem 'therubyracer', '~> 0.11.3', :require => 'v8'
@@ -37,6 +39,7 @@ group :development, :test do
   gem 'factory_girl_rails', '~> 4.0'
   gem 'orderly'
   gem 'launchy'
+  gem 'database_cleaner'
 end
 
 group :production do

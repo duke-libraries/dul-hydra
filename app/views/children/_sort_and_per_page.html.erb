@@ -1,6 +1,6 @@
 <div id="sortAndPerPage">
    <div class="page_links">
-     <%= render 'catalog/paginate_compact' %>
+     <%= render partial: 'catalog/paginate_compact', object: object_children %>
    </div>
     <%= render 'catalog/sort_widget' %>
     <%= render 'catalog/per_page_widget' %>

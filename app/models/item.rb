@@ -3,8 +3,8 @@ class Item < DulHydra::Base
   include DulHydra::HasContentMetadata
   include DulHydra::HasChildren
 
-  has_many :children, :property => :is_part_of, :inbound => true, :class_name => 'Component'
-  belongs_to :parent, :property => :is_member_of_collection, :class_name => 'Collection'
+  has_many :children, property: :is_part_of, class_name: 'Component'
+  belongs_to :parent, property: :is_member_of_collection, class_name: 'Collection'
 
   alias_method :components, :children
   alias_method :component_ids, :child_ids

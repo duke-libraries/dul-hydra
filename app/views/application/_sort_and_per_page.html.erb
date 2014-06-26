@@ -1,8 +1,9 @@
-<%# Copied from Blacklight partial catalog/sort_and_per_page %>
-<div id="sortAndPerPage">
-  <div class="page_links">
-    <%= render :partial => "catalog/paginate_compact" %>
+<%# Copied from Blacklight 5.3 partial catalog/sort_and_per_page %>
+<div id="sortAndPerPage" class="clearfix" style="padding-top: 1em;">
+  <%= render :partial => "catalog/paginate_compact", :object => @response %>
+  <div class="search-widgets pull-right">
+    <%= render :partial => 'catalog/sort_widget' %>
+    <%= render :partial => 'catalog/per_page_widget' %>
+    <%= render :partial => 'catalog/view_type_group' %>
   </div>
-  <%= render :partial => 'catalog/sort_widget' %>
-  <%= render :partial => 'catalog/per_page_widget' %>
 </div>

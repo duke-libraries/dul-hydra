@@ -1,7 +1,7 @@
 module ApplicationHelper
 
   def internal_uri_to_pid(args)
-    ActiveFedora::Base.pids_from_uris(args[:document][args[:field]])
+    ActiveFedora::Base.pid_from_uri(args[:document][args[:field]])
   end
 
   def internal_uri_to_link(args)
@@ -31,14 +31,6 @@ module ApplicationHelper
     end
   end
   
-  def bootstrap_icon(icon)
-    if icon == :group
-      (bootstrap_icon(:user)*2).html_safe
-    else
-      content_tag :i, "", class: "icon-#{icon}"
-    end
-  end
-
   def entity_icon(type)
     send "#{type}_icon"
   end
@@ -120,12 +112,9 @@ module ApplicationHelper
     end
   end
 
-  def render_last_fixity_check_outcome
-    outcome = current_document.last_fixity_check_outcome
-    if outcome.present?
-      label = outcome == "success" ? "success" : "important"
-      render_label outcome.capitalize, label
-    end
+  def render_event_outcome(outcome)
+    label = outcome == Event::SUCCESS ? "success" : "danger"
+    render_label outcome.capitalize, label
   end
 
   def render_content_size(document)
@@ -137,28 +126,25 @@ module ApplicationHelper
   end
 
   def render_download_link(args = {})
-    document = args[:document]
-    return unless document
+    return unless args[:document]
     label = args.fetch(:label, "Download")
-    css_class = args.fetch(:css_class, "")
-    css_id = args.fetch(:css_id, "download-#{document.safe_id}")
-    link_to label, download_object_path(document.id), :class => css_class, :id => css_id
+    link_to label, download_url_for(args[:document]), class: args[:css_class], id: args[:css_id]
   end
   
   def render_download_icon(args = {})
-    label = content_tag(:i, "", :class => "icon-download-alt")
-    render_download_link args.merge(:label => label)
+    label = content_tag(:span, "", class: "glyphicon glyphicon-download-alt")
+    render_download_link args.merge(label: label)
   end
 
   def render_document_title
     current_document.title
   end
 
-  def render_document_thumbnail(document, linked = false)
-    src = document.has_thumbnail? ? thumbnail_object_path(document.id) : default_thumbnail(document)
-    thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-polaroid thumbnail")
-    if linked && can?(:read, document)
-      link_to thumbnail, object_path(document)
+  def render_thumbnail(document_or_object, linked = false)
+    src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object) : default_thumbnail(document_or_object)
+    thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
+    if linked && can?(:read, document_or_object)
+      link_to thumbnail, document_or_object_url(document_or_object)
     else
       thumbnail
     end
@@ -219,8 +205,10 @@ module ApplicationHelper
     render_inherited_entities("user", access)
   end
 
-  def event_outcome_label(pe)
-    content_tag :span, pe.event_outcome.capitalize, :class => "label label-#{pe.success? ? 'success' : 'important'}"
+  def event_outcome_label(event)
+    if event.outcome
+      content_tag :span, event.outcome.capitalize, :class => "label label-#{event.success? ? 'success' : 'important'}"
+    end
   end
 
   def render_document_model_and_id(document)
@@ -228,16 +216,24 @@ module ApplicationHelper
   end
 
   def link_to_create_model(model)
-    link_to model, send("new_#{model.underscore}_path")
+    link_to I18n.t("dul_hydra.#{model.underscore}.new_menu", default: model), controller: model.tableize, action: "new"
   end
 
-  def model_options_for_select(model, access=nil)
+  def document_or_object_url(document_or_object)
+    url_for controller: document_or_object.controller_name, action: "show", id: document_or_object
+  end
+
+  def download_url_for(document_or_object)
+    url_for controller: "downloads", action: "show", id: document_or_object
+  end
+
+  def model_options_for_select(model, access=nil, selected=nil)
     models = find_models_with_gated_discovery(model)
     if access
       models = models.select { |m| can? access, m }
     end
     options = models.collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
-    options_for_select options
+    options_for_select options, selected
   end
 
   def required?(obj, attr)
@@ -246,11 +242,91 @@ module ApplicationHelper
   end
 
   def create_menu_models
-    current_ability.can_create_models & ["AdminPolicy", "Collection"]
+    session[:create_menu_models] ||= DulHydra.create_menu_models.select { |model| can? :create, model.constantize }
   end
 
-  def cancel_button
-    link_to "Cancel", :back, class: "btn"
+  def cancel_button args={}
+    return_to = args.delete(:return_to) || :back
+    opts = {class: "btn btn-danger"}.merge(args)
+    link_to "Cancel", return_to, opts
+  end
+
+  def user_options_for_select(permission)
+    options_for_select all_user_options, selected_user_options(permission)
+  end
+
+  def group_options_for_select(permission)
+    options_for_select all_group_options, selected_group_options(permission)
+  end
+
+  def all_user_options
+    @all_user_options ||= user_options(User.order(:last_name, :first_name))
+  end
+
+  def selected_user_options(permission)
+    users = case params[:action]
+            when "permissions" then current_object.send "#{permission}_users"
+            when "default_permissions" then current_object.send "default_#{permission}_users"
+            end
+    users.collect { |u| user_option_value(u) }
+  end
+
+  def group_options(groups)
+    groups.collect { |g| [group_option_text(g), group_option_value(g)] }
+  end
+
+  def all_group_options
+    # TODO: List public first, then registered, then rest in alpha order (?)
+    @all_group_options ||= group_options(group_service.groups)
+  end
+
+  def selected_group_options(permission)
+    groups = case params[:action]
+             when "permissions" then current_object.send "#{permission}_groups"
+             when "default_permissions" then current_object.send "default_#{permission}_groups"
+             end
+    groups.collect { |g| group_option_value(g) }
+  end
+
+  def group_option_text(group_name)
+    case group_name
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+      "Public"
+    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
+      "Duke Community"
+    else
+      group_name
+    end
+  end
+
+  def group_option_value(group_name)
+    "group:#{group_name}"
+  end
+
+  def user_options(users)
+    users.collect { |u| [user_option_text(u), user_option_value(u)] }
+  end
+
+  def user_option_text(user)
+    user.display_name or user.user_key
+  end
+
+  def user_option_value(user_name)
+    "user:#{user_name}"
+  end
+
+  def inherited_permissions_alert
+    apo_link = link_to(current_object.admin_policy_id, default_permissions_path(current_object.admin_policy_id))
+    alert = I18n.t('dul_hydra.permissions.alerts.inherited') % apo_link
+    alert.html_safe
+  end
+
+  def fixity_checkable?
+    current_object.respond_to? :fixity_checks
+  end
+
+  def virus_checkable?
+    current_object.respond_to? :virus_checks
   end
 
   private
@@ -259,11 +335,11 @@ module ApplicationHelper
     content_tag :span, text, :class => "label label-#{label}"
   end
 
-  def default_thumbnail(document)
-    if document.content_mime_type
-      default_mime_type_thumbnail(document.content_mime_type)
+  def default_thumbnail(document_or_object)
+    if document_or_object.has_content?
+      default_mime_type_thumbnail(document_or_object.content_type)
     else
-      default_model_thumbnail(document.active_fedora_model)
+      default_model_thumbnail(document_or_object.active_fedora_model)
     end
   end
   

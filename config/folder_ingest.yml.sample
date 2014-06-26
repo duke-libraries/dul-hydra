@@ -8,6 +8,10 @@ config:
     file_creators:
         ABC: Alpha Bravo Charlie
 files:
+    included_extensions:
+        - .pdf
+        - .tif
+        - .tiff
     mount_points:
         base_folder: /mnt/point/
     permissions:

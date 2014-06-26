@@ -7,11 +7,11 @@ end
 
 class TestParent < TestModel
   include DulHydra::HasChildren
-  has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true 
+  has_many :children, property: :is_part_of, class_name: 'TestChild'
 end
 
 class TestChild < TestModel
-  belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
+  belongs_to :parent, property: :is_part_of, class_name: 'TestParent'
 end
 
 class TestContentMetadata < TestParent
@@ -23,8 +23,8 @@ class TestModelOmnibus < TestModel
   include DulHydra::HasContent
   include DulHydra::HasContentMetadata
   include DulHydra::HasAttachments
-  has_many :children, :property => :is_part_of, :class_name => 'TestChild', :inbound => true
-  belongs_to :parent, :property => :is_part_of, :class_name => 'TestParent'
+  has_many :children, property: :is_part_of, class_name: 'TestChild'
+  belongs_to :parent, property: :is_part_of, class_name: 'TestParent'
 end
 
 FactoryGirl.define do

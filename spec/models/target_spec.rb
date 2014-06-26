@@ -29,9 +29,6 @@ describe Target do
     let!(:component) { FactoryGirl.create(:component) }
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:target) { FactoryGirl.create(:target) }
-    after do
-      ActiveFedora::Base.destroy_all
-    end
     context "#collection=" do
       before do 
         target.collection = collection

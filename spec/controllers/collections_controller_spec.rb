@@ -1,30 +1,59 @@
 require 'spec_helper'
+require 'support/shared_examples_for_repository_controllers'
+
+def create_collection
+  post :create, collection: {title: "Title", description: ""}, admin_policy_id: FactoryGirl.create(:admin_policy)
+end
+
+def new_collection
+  get :new, admin_policy_id: FactoryGirl.create(:admin_policy) 
+end
 
 describe CollectionsController do
+
   let(:user) { FactoryGirl.create(:user) }
-  before do
-    DulHydra.stub(:creatable_models).and_return(["Collection"])
-    DulHydra.stub(:ability_group_map).and_return({"Collection" => {create: "collection_admins"}}.with_indifferent_access)
-    User.any_instance.stub(:groups).and_return(["collection_admins"])
-    sign_in user
+  before { sign_in user }
+
+  it_behaves_like "a repository object controller" do
+    let(:create_object) { Proc.new { create_collection } }
+    let(:new_object) { Proc.new { new_collection } }
   end
-  after { user.destroy }
-  it "should have a 'new' action" do
-    expect(get :new).to render_template(:new)
-  end
+
   describe "#create" do
-    let(:admin_policy) { FactoryGirl.create(:admin_policy) }
-    before { post :create, collection: {title: "New Collection"}, admin_policy_id: admin_policy.pid }
-    after { ActiveFedora::Base.destroy_all }
-    it "should create a new object" do
-      expect(assigns(:collection).title).to eq(["New Collection"])
-    end
-    it "should grant edit permission to the user" do
-      expect(assigns(:collection).edit_users).to include(user.user_key)
-    end
-    it "should create an event log" do
-      expect(assigns(:collection).event_logs(action: "create").count).to eq(1)
+    # has shared examples
+    before { controller.current_ability.can(:create, Collection) }
+    it "should set the admin policy" do
+      create_collection
+      expect(assigns(:collection).admin_policy).to be_present
     end
   end
 
+  describe "#collection_info" do
+    let(:collection) { FactoryGirl.create(:collection) }
+    let(:items) { FactoryGirl.create_list(:item, 3) }
+    before do
+      items.each do |item|
+        item.children = FactoryGirl.create_list(:component_with_content, 2)
+        item.parent = collection
+        item.save
+      end
+    end
+    context "when the user can read the collection" do
+      before { controller.current_ability.can(:read, collection) }
+      it "should report the statistics" do
+        get :collection_info, id: collection
+        expect(response).to render_template(:collection_info)
+        expect(controller.send(:collection_report)[:components]).to eq(6)
+        expect(controller.send(:collection_report)[:items]).to eq(3)
+        expect(controller.send(:collection_report)[:total_file_size]).to eq(60192)
+      end
+    end
+    context "when the user cannot read the collection" do
+      before { controller.current_ability.cannot(:read, collection) }
+      it "should be unauthorized" do
+        get :collection_info, id: collection
+        expect(response.response_code).to eq(403)
+      end
+    end
+  end
 end

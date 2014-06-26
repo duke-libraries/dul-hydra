@@ -13,11 +13,6 @@ module DulHydra
       end
     end
 
-    def set_initial_permissions!(user_creator = nil)
-      set_initial_permissions
-      save if changed?
-    end
-
     def copy_permissions_from(other)
       # XXX active-fedora < 7.0
       self.permissions_attributes = other.permissions.collect { |p| p.to_hash }

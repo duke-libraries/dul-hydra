@@ -1,37 +1,54 @@
 require 'spec_helper'
+require 'support/shared_examples_for_repository_controllers'
+
+def create_item
+  post :create, parent: collection, item: {title: "New Item", description: ""}
+end
 
 describe ItemsController do
+
   let(:user) { FactoryGirl.create(:user) }
-  let(:collection) { FactoryGirl.create(:collection) }
-  before do
-    collection.edit_users = [user.user_key]
-    collection.save!
-    DulHydra.stub(:creatable_models).and_return(["Item"])
-    DulHydra.stub(:ability_group_map).and_return({"Item" => {create: "item_creators"}}.with_indifferent_access)
-    User.any_instance.stub(:groups).and_return(["item_creators"])
-    sign_in user
-  end
-  after do
-    ActiveFedora::Base.destroy_all
-    User.destroy_all
-  end
-  it "should have a 'new' action" do
-    expect(get :new, id: collection).to render_template(:new)
-  end
-  describe "#create" do
-    before { post :create, item: {title: "New Item"}, id: collection }
-    it "should create a new object" do
-      expect(assigns(:item).title).to eq(["New Item"])
+  before { sign_in user }
+  
+  it_behaves_like "a repository object controller" do
+    let(:collection) { FactoryGirl.create(:collection) }
+    let(:create_object) do
+      Proc.new do
+        controller.current_ability.can(:add_children, collection)
+        create_item
+      end
     end
-    it "should grant edit permission to the user" do
-      expect(assigns(:item).edit_users).to include(user.user_key)
-    end
-    it "should create an event log" do
-      expect(assigns(:item).event_logs(action: "create").count).to eq(1)
-    end
-    it "should redirect to the item show page" do
-      expect(response).to redirect_to(object_path(assigns(:item)))
+    let(:new_object) do
+      Proc.new do
+        controller.current_ability.can(:add_children, collection)
+        get :new, parent: collection
+      end
     end
   end
 
+  describe "#new" do
+    # see shared examples
+    let(:collection) { FactoryGirl.create(:collection) }    
+    before { controller.current_ability.can(:create, Item) }
+    context "when the user cannot add children to the collection" do
+      before { controller.current_ability.cannot(:add_children, collection) }
+      it "should be unauthorized" do
+        get :new, parent: collection
+        expect(response.response_code).to eq(403)
+      end
+    end
+  end
+
+  describe "#create" do
+    # see shared examples
+    let(:collection) { FactoryGirl.create(:collection) }
+    before { controller.current_ability.can(:create, Item) }
+    context "when the user cannot add children to the collection" do
+      before { controller.current_ability.cannot(:add_children, collection) }
+      it "should be unauthorized" do
+        create_item
+        expect(response.response_code).to eq(403)
+      end
+    end
+  end
 end

@@ -36,13 +36,20 @@ module DulHydra::Batch::Models
     
     def ingest(opts = {})
       repo_object = create_repository_object
-      if !repo_object.nil? && !repo_object.new?
+      if !repo_object.nil? && !repo_object.new_record?
         ingest_outcome_detail = []
         ingest_outcome_detail << "Ingested #{model} #{identifier} into #{repo_object.pid}"
-        create_preservation_event(PreservationEvent::INGESTION,
-                                  PreservationEvent::SUCCESS,
-                                  ingest_outcome_detail,
-                                  repo_object)
+        IngestionEvent.new.tap do |event|
+          event.object = repo_object
+          event.summary = PRESERVATION_EVENT_DETAIL % {
+            :label => "Object ingestion",
+            :batch_id => id,
+            :identifier => identifier,
+            :model => model
+          }
+          event.detail = ingest_outcome_detail.join("\n")
+          event.save!
+        end
         update_attributes(:pid => repo_object.pid)
         verifications = verify_repository_object
         verification_outcome_detail = []
@@ -52,10 +59,18 @@ module DulHydra::Batch::Models
           verified = false if value.eql?(VERIFICATION_FAIL)
         end
         update_attributes(:verified => verified)
-        create_preservation_event(PreservationEvent::VALIDATION,
-                                  verified ? PreservationEvent::SUCCESS : PreservationEvent::FAILURE,
-                                  verification_outcome_detail,
-                                  repo_object)
+        ValidationEvent.new.tap do |event|
+          event.object = repo_object
+          event.failure! unless verified
+          event.summary = PRESERVATION_EVENT_DETAIL % {
+            :label => "Object ingestion validation",
+            :batch_id => id,
+            :identifier => identifier,
+            :model => model
+          }
+          event.detail = verification_outcome_detail.join("\n")
+          event.save!
+        end
       else
         verifications = nil
       end
@@ -75,7 +90,7 @@ module DulHydra::Batch::Models
       rescue Exception => e1
         logger.fatal("Error in creating repository object #{repo_object.pid} for #{identifier} : #{e1}")
         repo_clean = false
-        if repo_object && !repo_object.new?
+        if repo_object && !repo_object.new_record?
           begin
             logger.info("Deleting potentially incomplete #{repo_object.pid} due to error in ingest batch processing")
             repo_object.destroy
@@ -95,32 +110,7 @@ module DulHydra::Batch::Models
       end
       repo_object
     end
-  
-    def create_preservation_event(event_type, event_outcome, outcome_details, repository_object)
-      event = PreservationEvent.new(:event_type => event_type,
-                                    :event_detail => event_detail(event_type),
-                                    :event_outcome => event_outcome,
-                                    :event_outcome_detail_note => outcome_details.join("\n"),
-                                    )
-      event.for_object = repository_object
-      event.save
-    end
     
-    def event_detail(event_type)
-      event_label = case event_type
-              when PreservationEvent::INGESTION
-                "Object ingestion"
-              when PreservationEvent::VALIDATION
-                "Object ingest validation"
-              end
-      PRESERVATION_EVENT_DETAIL % {
-        :label => event_label,
-        :batch_id => id,
-        :identifier => identifier,
-        :model => model
-      }
-    end
-  
   end
 
 end

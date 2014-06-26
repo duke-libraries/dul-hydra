@@ -12,6 +12,7 @@ module DulHydra
                           control_group: 'M'
 
       include Hydra::Derivatives
+      include DulHydra::VirusCheckable
 
       # Original file name of content file should be stored in this property
       has_attributes :original_filename, datastream: DulHydra::Datastreams::PROPERTIES, multiple: false
@@ -29,6 +30,7 @@ module DulHydra
     # If :checksum option is a non-empty string, it must match the SHA-256 digest for the file,
     # or the upload will raise an exception (DulHydra::ChecksumInvalid).
     def upload file, opts = Hash.new
+      raise ArgumentError, "Missing file argument" unless file
       validate_file_checksum! file, opts[:checksum] if opts[:checksum].present?
       self.content.content = file
       content_changed?
@@ -54,12 +56,6 @@ module DulHydra
 
     def pdf?
       content_type == "application/pdf"
-    end
-
-    def to_solr(solr_doc=Hash.new, opts={})
-      solr_doc = super(solr_doc, opts)
-      solr_doc.merge!(DulHydra::IndexFields::ORIGINAL_FILENAME => original_filename)
-      solr_doc
     end
 
     def has_content?

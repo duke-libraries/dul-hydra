@@ -12,6 +12,12 @@ def test_ingest_folder_config
       file_creators:
           ABC: Alpha Bravo Charlie
   files:
+      included_extensions:
+          - .mp4
+          - .pdf
+          - .tif
+          - .tiff
+          - .wav
       mount_points:
           #{mount_point_name}: #{mount_point_path}
       permissions:

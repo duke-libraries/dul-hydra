@@ -7,10 +7,6 @@ module DulHydra::Scripts
     
     let(:thumbnails_script) { DulHydra::Scripts::Thumbnails.new(collection.pid) }
     
-    after do
-      ActiveFedora::Base.destroy_all
-    end
-    
     context "thumbnail does not exist" do
       
       context "child has thumbnail" do

@@ -1,64 +1,112 @@
+require 'resque/server'
+
 DulHydra::Application.routes.draw do
 
   root :to => "catalog#index"
   Blacklight.add_routes(self)
   devise_for :users
 
-  # http://railsadventures.wordpress.com/2012/10/07/routing-only-ajax-requests-in-ror/
-  class XhrRequestConstraint
-    def self.matches?(request)
-      request.xhr?
+  def pid_constraint
+    /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
+  end
+  
+  def tab_constraint
+    /attachments|items|components|descriptive_metadata|permissions|default_permissions/
+  end
+
+  if defined?(DulHydra::ResqueAdmin)
+    namespace :admin do
+      constraints DulHydra::ResqueAdmin do
+        mount Resque::Server, at: '/queues'
+      end
     end
   end
 
-  pid_constraint = {id: /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/}
+  def rights_routes
+    get 'permissions'
+    patch 'permissions'
+  end
 
-  resources :objects, only: [:show], constraints: pid_constraint do
+  def content_routes
+    get 'upload'
+    patch 'upload'
+    get 'download' => 'downloads#show'
+  end
+
+  def tab_routes
+    get ':tab' => '#show', constraints: {tab: tab_constraint}
+  end
+
+  def event_routes
+    get 'events'
+  end
+
+  def thumbnail_routes
+    get 'thumbnail' => 'thumbnail#show'
+  end
+
+  def datastream_routes
+    get 'datastreams/:datastream_id' => 'downloads#show'
+  end
+
+  def policy_routes
+    get 'default_permissions'
+    patch 'default_permissions'
+  end
+
+  def repository_routes
+    rights_routes
+    event_routes
+    datastream_routes
+  end
+
+  def repository_contraints
+    {id: pid_constraint}
+  end
+
+  def no_repository_routes_for name
+    no_routes = [:index, :destroy]
+    no_routes += [:new, :create] if name == :targets
+  end
+
+  def repository_options name
+    { except: no_repository_routes_for(name), 
+      constraints: repository_contraints }
+  end
+
+  def repository_resource name
+    resources name, repository_options(name) do
+      member do
+        repository_routes
+        yield if block_given?
+      end
+    end
+  end
+
+  def repository_content_resource name
+    repository_resource name do
+      content_routes
+    end
+  end
+
+  repository_resource :collections do
+    get 'collection_info'
+  end
+  repository_resource :items
+  repository_content_resource :components
+  repository_content_resource :attachments
+  repository_content_resource :targets
+  resources :admin_policies, repository_options(:admin_policies) do
     member do
-      get 'collection_info'
-      get 'download' => 'downloads#show'
-      get 'preservation_events', constraints: XhrRequestConstraint
-      get 'thumbnail' => 'thumbnail#show'
-      get 'datastreams/:datastream_id' => 'downloads#show', as: 'download_datastream'
-      get 'upload' => 'uploads#show'
-      patch 'upload' => 'uploads#update'
+      rights_routes
+      policy_routes
+      datastream_routes
+      event_routes
     end
   end
+  resources :thumbnail, only: :show, constraints: {id: pid_constraint}
 
-  resources :collections, only: [:new, :create]
-  resources :admin_policies, only: [:new, :create]
-
-  # other object tabs
-  get '/objects/:id/:tab' => 'objects#show', 
-      constraints: pid_constraint.merge(tab: /attachments|items|components/), 
-      as: 'object_tab'
-
-  # Hydra-editor for descriptive metadata
-  scope '/objects/:id/descriptive_metadata', constraints: pid_constraint, as: 'record' do
-    get '/' => 'objects#show', defaults: {tab: 'descriptive_metadata'}
-    get 'edit' => 'objects#edit'
-    patch '/' => 'objects#update'
-  end
-
-  scope '/objects/:id/permissions', constraints: pid_constraint, as: 'permissions' do
-    get '/' => 'objects#show', defaults: {tab: 'permissions'}
-    get 'edit' => 'permissions#edit'
-    put '/' => 'permissions#update'
-  end
-
-  scope '/objects/:id/default_permissions', constraints: pid_constraint, as: 'default_permissions' do
-    get '/' => 'objects#show', defaults: {tab: 'default_permissions'}
-    get 'edit' => 'permissions#edit', defaults: {default_permissions: true}
-    put '/' => 'permissions#update', defaults: {default_permissions: true}
-  end
-
-  scope '/objects/:id', constraints: pid_constraint do
-    resources :attachments, only: [:new, :create]
-    resources :items, only: [:new, :create]
-    resources :components, only: [:new, :create]
-  end
-
-  resources :preservation_events, :only => :show, constraints: { id: /[1-9][0-9]*/ }
+  resources :events, :only => [:index, :show], constraints: {id: /[1-9][0-9]*/, pid: pid_constraint}
 
   resources :export_sets do
     member do
@@ -68,7 +116,7 @@ DulHydra::Application.routes.draw do
     end
   end
   
-  resources :batches, :only => [:index, :show] do
+  resources :batches, :only => [:index, :show, :destroy] do
     member do
       get 'procezz'
       get 'validate'
@@ -92,5 +140,9 @@ DulHydra::Application.routes.draw do
       get 'procezz'
     end
   end
+
+  resources :roles
   
+  get '/help', to: redirect(DulHydra.help_url)
+
 end

@@ -18,7 +18,6 @@ en:
                 rows: Rows (excludes header row)
     batch:
         ingest_folder:
-            create: New Ingest Folder
             batch_name: Folder Ingest
             base_path:
                 forbidden: "%{path} is not permitted for folder ingest"
@@ -29,13 +28,13 @@ en:
             not_readable: "%{path} does not exist or is not readable"
             objects_to_ingest: Objects to be Ingested
             scan_folder: Scan Folder
+            submitted: Scanning ...
             help:
                 parent_id_length: Leave blank or set to 0 to create a separate Item for each file.
         metadata_file:
             batch_name: Metadata Update File
             create_batch: Create Update Batch
             fields: Fields
-            new: Upload Metadata File
             upload_file: Upload File
             uploaded_file: Uploaded File
             error:
@@ -81,6 +80,9 @@ en:
             no_batch_runs: "No runs found for this batch."
             no_batch_objects: "No objects in this batch."
             batch_queued: "Batch %{id} queued for processing."
+            batch_deleted: "Batch %{id} deleted."
+            batch_not_deletable: "Cannot delete %{status} batch %{id}."
+            batch_deletion_confirmation: "You are about to delete batch %{batch_id}. Continue?"
             headings:
                 object_validation_errors: "Batch Object Validation Errors"
             page_titles:

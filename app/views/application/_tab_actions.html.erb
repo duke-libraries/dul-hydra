@@ -1,0 +1,11 @@
+<% unless tab.authorized_actions.empty? -%>
+<nav class="navbar navbar-default">
+  <ul class="nav navbar-nav">
+	<% tab.authorized_actions.each do |action| -%>
+	<li>
+	  <%= link_to t("dul_hydra.tabs.#{tab.id}.actions.#{action.id}"), action.href %>
+	</li>
+	<% end -%>
+  </ul>
+</nav>
+<% end -%>

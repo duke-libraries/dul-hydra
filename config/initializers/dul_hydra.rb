@@ -2,7 +2,6 @@ require 'dul_hydra'
 require 'dul_hydra/decorators/active_fedora/base_decorator'
 require 'dul_hydra/decorators/active_fedora/datastream_decorator'
 require 'dul_hydra/decorators/blacklight/solr_helper_decorator'
-require 'dul_hydra/decorators/hydra_access_controls/permission_decorator'
 
 DulHydra.configure do |config|
   config.collection_report_fields = [:pid, :identifier, :content_size, :content_checksum]
@@ -15,11 +14,11 @@ DulHydra.configure do |config|
 
   config.remote_groups_name_filter = "duke:library:repository:ddr:"
 
-  if File.exists? "#{Rails.root}/config/ability_group_map.yml"
-    config.ability_group_map = YAML.load_file("#{Rails.root}/config/ability_group_map.yml").with_indifferent_access
-  end
-
   config.superuser_group = ENV['SUPERUSER_GROUP']
+
+  config.contact_email = ENV['CONTACT_EMAIL']
+
+  config.help_url = Rails.env.test? ? "http://www.loc.gov" : ENV['HELP_URL']
 
   config.csv_options = { 
     encoding: "UTF-8",
@@ -28,6 +27,8 @@ DulHydra.configure do |config|
     write_headers: true,
     header_converters: :symbol
   }
+
+  config.create_menu_models = ["AdminPolicy", "Collection", "Role", "IngestFolder", "MetadataFile"]
 end
 
 # Load configuration for Grouper service, if present
@@ -58,3 +59,5 @@ Warden::Manager.after_set_user do |user, auth, opts|
 end
 
 Blacklight::Configuration.default_values[:http_method] = :post
+
+DulHydra::Services::Antivirus.load!
