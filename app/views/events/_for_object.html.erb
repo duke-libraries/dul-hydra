@@ -16,7 +16,7 @@
     	 	<td class="event-type"><%= event.display_type %></td>
     	 	<td class="event-outcome"><%= event_outcome_label event %></th>
 			<td class="event-performed-by"><%= event.performed_by %></td>
-			<td class="event-comment-detail"><%= event.comment_or_summary %></td>
+			<td class="event-comment-detail"><%= simple_format event.comment_or_summary %></td>
 			<td class="event-more">
 			  <%= link_to content_tag(:span, "", class: "glyphicon glyphicon-zoom-in"), event_path(event) %>
 			</td>
