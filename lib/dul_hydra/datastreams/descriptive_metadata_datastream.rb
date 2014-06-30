@@ -24,6 +24,14 @@ module DulHydra
       def self.indexers_for(term_name)
         indexers.fetch(term_name, default_indexers)
       end
+
+      def self.term_names
+        terms = []
+        vocabularies.each do |vocab|
+          terms |= vocab.term_names
+        end
+        terms
+      end
          
       set_terminology do |t|
         t.root(path: "dc")

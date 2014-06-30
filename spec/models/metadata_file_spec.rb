@@ -13,13 +13,13 @@ shared_examples "a successful metadata file processing" do
     expect(@datastream.name).to eq(DulHydra::Datastreams::DESC_METADATA)
     expect(@datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
     expect(@datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
-    expect(Nokogiri::XML(@datastream.payload)).to be_equivalent_to(Nokogiri::XML(expected_qdc))
+    expect(Nokogiri::XML(@datastream.payload)).to be_equivalent_to(Nokogiri::XML(expected_md))
   end
 end
 
 describe MetadataFile, :metadata_file => true do
   
-  let(:metadata_file) { FactoryGirl.create(:metadata_file_qdc_csv) }
+  let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
 
   context "validation" do
     context "valid" do
@@ -45,8 +45,8 @@ describe MetadataFile, :metadata_file => true do
       end
     end
     context "metadata file invalid attribute names"do
-      context "invalid QDC header" do
-        before { metadata_file.update(:metadata => File.new(Rails.root.join('spec', 'fixtures', 'batch_update', 'qdc_csv_invalid_column.csv'))) }
+      context "invalid metadata header" do
+        before { metadata_file.update(:metadata => File.new(Rails.root.join('spec', 'fixtures', 'batch_update', 'descmd_csv_invalid_column.csv'))) }
         it "should have an attribute name error" do
           expect(metadata_file.validate_data.messages[:metadata].first).to include("#{I18n.t('batch.metadata_file.error.attribute_name')}: invalid")
         end
@@ -76,13 +76,14 @@ describe MetadataFile, :metadata_file => true do
 
   context "successful processing", batch: true do
 
-    let(:expected_qdc) do
-      ds = ActiveFedora::QualifiedDublinCoreDatastream.new
+    let(:expected_md) do
+      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new
       ds.title = "Updated Title"
       ds.identifier = "test12345"
       ds.description = 'This is some description; this is "some more" description.'
       ds.subject = [ "Alpha", "Beta", "Gamma" , "Delta", "Epsilon" ]
       ds.dateSubmitted = "2010-01-22"
+      ds.arranger = "John Doe"
       ds.content
     end
 
@@ -115,15 +116,16 @@ describe MetadataFile, :metadata_file => true do
             "Subject-Keyword" => "subject",
             "Subject-Topic" => "subject",
             "Submission-Date" => "dateSubmitted",
-            "Title" => "title"
+            "Title" => "title",
+            "Arranger" => "arranger"
           }
         }
       end      
       it_behaves_like "a successful metadata file processing"
     end
     
-    context "qdc csv file" do
-      let(:delimited_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_update', 'qdc_csv.csv') }
+    context "desc metadata csv file" do
+      let(:delimited_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_update', 'descmd_csv.csv') }
       let(:options) do
         {
           :csv => {

@@ -9,7 +9,7 @@ class MetadataFile < ActiveRecord::Base
   
   def validate_data
     begin
-      valid_headers = [ :pid, :model ].concat(ActiveFedora::QualifiedDublinCoreDatastream::DCTERMS)
+      valid_headers = [ :pid, :model ].concat(DulHydra::Datastreams::DescriptiveMetadataDatastream.term_names)
       as_csv_table.headers.each do |header|
         if effective_options[:schema_map].present?
           canonical_name = canonical_attribute_name(header)
@@ -60,7 +60,7 @@ class MetadataFile < ActiveRecord::Base
   
   def canonical_attribute_name(attribute_name)
     unless effective_options[:schema_map].present?
-      return attribute_name if ActiveFedora::QualifiedDublinCoreDatastream::DCTERMS.include?(attribute_name.to_sym)
+      return attribute_name if DulHydra::Datastreams::DescriptiveMetadataDatastream.term_names.include?(attribute_name.to_sym)
     else
       @downcased_schema_map ||= MetadataFile.downcase_schema_map_keys(effective_options[:schema_map])
       return @downcased_schema_map[attribute_name.downcase] if @downcased_schema_map.has_key?(attribute_name.downcase)
@@ -87,7 +87,7 @@ class MetadataFile < ActiveRecord::Base
       obj.model = row.field("model") if row.headers.include?("model")
       obj.pid = row.field("pid") if row.headers.include?("pid")
       obj.save
-      ds = ActiveFedora::QualifiedDublinCoreDatastream.new
+      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new
       row.headers.each_with_index do |header, idx|
         if effective_options[:parse][:include_empty_fields] || !row.field(header, idx).blank?
           if header.eql?(effective_options[:parse][:local_identifier])

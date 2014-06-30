@@ -5,7 +5,7 @@ module DulHydra
     before(:all) do
       class Validatable < ActiveFedora::Base
         include DulHydra::Validations
-        has_metadata name: 'descMetadata', type: ActiveFedora::QualifiedDublinCoreDatastream
+        has_metadata name: 'descMetadata', type: DulHydra::Datastreams::DescriptiveMetadataDatastream
         has_attributes :title, datastream: 'descMetadata', multiple: false
 
         def to_solr(solr_doc={}, opts={})

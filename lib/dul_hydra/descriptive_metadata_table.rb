@@ -6,7 +6,7 @@ module DulHydra
     end
 
     def terms
-      ActiveFedora::QualifiedDublinCoreDatastream::DCTERMS
+      DulHydra::Datastreams::DescriptiveMetadataDatastream.term_names
     end
   end
 
