@@ -100,11 +100,5 @@ module DulHydra
       file.rewind
     end
 
-    def validate_content_checksum! checksum
-      unless checksum == content.checksum
-        raise DulHydra::ChecksumInvalid, "The checksum provided [#{checksum}] does not match the repository checksum for the object content [#{digest}]"
-      end
-    end
-
   end
 end
