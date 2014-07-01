@@ -34,7 +34,7 @@
                                 <%= content_tag :td, b.outcome.nil? ? '--' : b.outcome %>
                                 <%= content_tag :td, b.logfile_file_name.nil? ? '--' : link_to(I18n.t('batch.web.column_names.log'), b.logfile.url) %>
 								<% if current_user.superuser? %>
-									<%= content_tag :td, b.user.user_key %>
+									<%= content_tag :td, b.user.nil? ? '--' : b.user.user_key %>
 								<% end %>
                         <% end %>
                 <% end %>
