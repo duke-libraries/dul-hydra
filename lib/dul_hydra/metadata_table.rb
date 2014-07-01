@@ -67,7 +67,11 @@ module DulHydra
     end
 
     def term_values(obj, term)
-      obj.datastreams[datastream_id].send(term)
+      if term == :format
+        obj.datastreams[datastream_id].format
+      else
+        obj.datastreams[datastream_id].send(term)
+      end
     end
 
     def to_csv(opts = Hash.new)
