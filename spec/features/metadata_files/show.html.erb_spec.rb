@@ -43,10 +43,10 @@ describe "metadata_files/show.html.erb", :metadata_file => true do
   end
   
   context "factory version" do
-    let(:metadata_file) { FactoryGirl.create(:metadata_file_qdc_csv) }
+    let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
     let(:headers_text) {
-      [ [ 'identifier', 'title', 'description', 'subject', 'subject', 'dateSubmitted' ],
-        [ '', '', '', 'multi', 'multi', ''] ]
+      [ [ 'identifier', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ],
+        [ '', '', '', 'multi', 'multi', '', ''] ]
     }
     it_behaves_like "metadata file show page"
   end
@@ -54,9 +54,9 @@ describe "metadata_files/show.html.erb", :metadata_file => true do
   context "tab-delimited mapped schema" do
     let(:metadata_file) { FactoryGirl.create(:metadata_file_mapped_tab) }
     let(:headers_text) {
-      [ [ 'Identifier-LocalID', 'Title', 'Description', 'Subject-Topic', 'Subject-Keyword', 'Submission-Date' ],
-        [ '', '', '', 'multi', 'multi', ''],
-        [ 'identifier', 'title', 'description', 'subject', 'subject', 'dateSubmitted' ] ]
+      [ [ 'Identifier-LocalID', 'Title', 'Description', 'Subject-Topic', 'Subject-Keyword', 'Submission-Date', 'Arranger' ],
+        [ '', '', '', 'multi', 'multi', '', ''],
+        [ 'identifier', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ] ]
     }
     it_behaves_like "metadata file show page"    
   end
