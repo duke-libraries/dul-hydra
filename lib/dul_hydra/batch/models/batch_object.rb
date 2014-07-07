@@ -73,12 +73,10 @@ Model: %{model}
     def validate_datastreams
       errs = []
       batch_object_datastreams.each do |d|
-        begin
+        if model_datastream_keys.present?
           unless model_datastream_keys.include?(d.name)
             errs << "#{@error_prefix} Invalid datastream name for #{model}: #{d.name}"
           end
-        rescue NameError
-          errs << "#{@error_prefix} Unable to validate datastream name due to invalid model name: #{d.name}"
         end
         unless DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPES.include?(d.payload_type)
           errs << "#{@error_prefix} Invalid payload type for #{d.name} datastream: #{d.payload_type}"

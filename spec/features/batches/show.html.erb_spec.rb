@@ -34,7 +34,8 @@ describe "batches/show.html.erb" do
       end          
       context "delete action" do
         context "delete-able" do
-          [ nil, DulHydra::Batch::Models::Batch::STATUS_VALIDATED ].each do |status|
+          [ nil, DulHydra::Batch::Models::Batch::STATUS_VALIDATED,
+            DulHydra::Batch::Models::Batch::STATUS_INVALID ].each do |status|
             before do
               batch.status = status
               batch.save

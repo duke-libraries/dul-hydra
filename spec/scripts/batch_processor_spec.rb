@@ -99,6 +99,17 @@ module DulHydra::Batch::Scripts
     end
   end
   
+  shared_examples "an invalid batch" do
+    before { batch.reload }
+    it "should have an invalid status and a failed outcome" do
+      expect(batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_INVALID)
+      expect(batch.outcome).to eq(DulHydra::Batch::Models::Batch::OUTCOME_FAILURE)
+    end
+    it "should have a logfile" do
+      expect(batch.logfile).to_not be_nil
+    end
+  end
+  
   describe BatchProcessor do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:log_dir) { test_dir }
@@ -138,6 +149,13 @@ module DulHydra::Batch::Scripts
       context "successful update" do
         before { bp.execute }
         it_behaves_like "a successful update batch"
+      end
+      context "invalid batch" do
+        before do
+          batch.batch_objects.first.update_attributes(pid: nil)
+          bp.execute
+        end
+        it_behaves_like "an invalid batch"
       end
       context "exception during run" do
         before do
