@@ -34,7 +34,10 @@ module DulHydra::Batch::Scripts
       end
       if @batch
         initiate_batch_run
-        valid_batch = validate_batch unless @skip_validation
+        unless @skip_validation
+          valid_batch = validate_batch
+          @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_INVALID) unless valid_batch
+        end
         if @skip_validation || @ignore_validation_errors || valid_batch
           process_batch
         end
