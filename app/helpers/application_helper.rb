@@ -254,6 +254,10 @@ module ApplicationHelper
     session[:create_menu_models] ||= DulHydra.create_menu_models.select { |model| can? :create, model.constantize }
   end
 
+  def manage_menu
+    session[:manage_menu] ||= [Queue, Role].select { |entity| can? :manage, entity }
+  end
+
   def cancel_button args={}
     return_to = args.delete(:return_to) || :back
     opts = {class: "btn btn-danger"}.merge(args)

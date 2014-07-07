@@ -1,6 +1,6 @@
 class Role < ActiveRecord::Base
 
-  MODELS = %w( AdminPolicy Attachment Collection Component ExportSet Item MetadataFile Target )
+  MODELS = %w( AdminPolicy Attachment Collection Component ExportSet Item MetadataFile Queue Role Target )
   ABILITIES = %w( create download manage )
   NIL_ATTRS = %w( model ability )
 
