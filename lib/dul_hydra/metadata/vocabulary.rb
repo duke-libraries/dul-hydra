@@ -17,6 +17,10 @@ module DulHydra
         const_get(:TERMS)
       end
 
+      def self.label
+        const_get(:LABEL)
+      end
+
     end
   end
 end

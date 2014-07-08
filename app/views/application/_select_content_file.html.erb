@@ -1,8 +1,8 @@
 <div class="form-group">
-  <%= label_tag "content" %>
-  <%= file_field_tag "content" %>
+  <%= label_tag "content_file", "Content File" %>
+  <%= file_field_tag "content[file]" %>
 </div>
 <div class="form-group">
-  <%= label_tag "checksum", "SHA-256 Checksum (will require match if provided)" %>
-  <%= text_field_tag "checksum", nil, class: "form-control" %>
+  <%= label_tag "content_checksum", "SHA-256 Checksum (will require match if provided)" %>
+  <%= text_field_tag "content[checksum]", nil, class: "form-control" %>
 </div>

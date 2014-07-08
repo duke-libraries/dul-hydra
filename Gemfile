@@ -2,15 +2,15 @@ source 'http://rubygems.org'
 
 gem 'rails', '~> 4.0.3'
 
-# gem 'hydra-head', github: 'projecthydra/hydra-head'
-gem 'hydra-head', '7.0.1'
+gem 'hydra-head', '7.0.2'
 gem 'active-fedora', github: 'projecthydra/active_fedora', ref: '4259edf192f2e78a79f34e86265f31c5853244fc'
-#gem 'active-fedora', '7.0.2'
+gem 'blacklight', '5.3.0'
+
+gem 'hydra-derivatives'
+
 gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user', '0.3.0'
 gem 'grouper-rest-client'
-gem 'hydra-editor', '0.2.2'
-gem 'hydra-derivatives'
 gem 'deprecation'
 gem 'clamav'
 

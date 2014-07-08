@@ -1,0 +1,20 @@
+<% content_for :main_content do %>
+<div class="col-md-8">
+  <%= content_for?(:form_content) ? yield(:form_content) : yield %>
+</div>
+<div class="col-md-4" id="object-sidebar">
+  <div class="well well-sm clearfix">
+	<div id="object-thumbnail" class="pull-right">
+	  <%= render_thumbnail current_object %>
+	</div>
+	<h4 id="object-title"><%= render_object_title %></h4>
+	<div id="object-summary">
+	  <%= render_document_summary current_document %>
+	</div>
+  </div>
+  <div id="object-sidebar-extra">
+	<%= content_for :sidebar %>
+  </div>
+</div>
+<% end %>
+<%= render template: "layouts/application" %>

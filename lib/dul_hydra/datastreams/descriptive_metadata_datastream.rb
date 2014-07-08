@@ -30,7 +30,7 @@ module DulHydra
         vocabularies.each do |vocab|
           terms |= vocab.term_names
         end
-        terms
+        terms.sort
       end
          
       set_terminology do |t|
@@ -59,6 +59,21 @@ module DulHydra
 
       def prefix
         ""
+      end
+
+      def values term
+        term == :format ? self.format : self.send(term)
+      end
+
+      # Update term with values
+      # Note that empty values (nil or "") are rejected from values array
+      def set_values term, values
+        if values.respond_to?(:reject!)
+          values.reject! { |v| v.blank? }
+        else
+          values = nil if values.blank?
+        end
+        self.send("#{term}=", values)
       end
 
     end

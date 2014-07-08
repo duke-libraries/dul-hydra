@@ -15,7 +15,7 @@ module ApplicationHelper
   end
 
   def render_object_title
-    current_object.title_display rescue "#{current_object.class.to_s} #{current_object.pid}"
+    current_document.title
   end
 
   def object_display_title(pid)
@@ -260,7 +260,8 @@ module ApplicationHelper
 
   def cancel_button args={}
     return_to = args.delete(:return_to) || :back
-    opts = {class: "btn btn-danger"}.merge(args)
+    opts = {class: ["btn", "btn-danger", args.delete(:class)].compact.join(" ")}
+    opts.merge! args
     link_to "Cancel", return_to, opts
   end
 
@@ -340,6 +341,54 @@ module ApplicationHelper
 
   def virus_checkable?
     current_object.respond_to? :virus_checks
+  end
+
+  def desc_metadata_form_fields
+    if current_object.new_record?
+      current_object.desc_metadata_terms :required
+    else
+      current_object.desc_metadata_terms :present, :required
+    end
+  end
+
+  def desc_metadata_form_field_id field, counter=1
+    "descMetadata_#{field}_#{counter}"
+  end
+
+  def desc_metadata_form_field_label field, counter=1
+    label_tag field, nil, for: desc_metadata_form_field_id(field, counter)
+  end
+
+  def desc_metadata_form_field_tag field, value=nil, counter=1
+    name = "descMetadata[#{field}][]"
+    opts = {
+      class: "form-control desc-metadata__#{field}",
+      id: desc_metadata_form_field_id(field, counter)
+    }
+    if field == :description
+      text_area_tag name, value, opts
+    else
+      text_field_tag name, value, opts
+    end
+  end
+
+  def desc_metadata_form_field_values field
+    values = current_object.desc_metadata_values field
+    values.empty? ? values << "" : values
+  end
+
+  def desc_metadata_field_lists
+    if current_object.respond_to? :desc_metadata_vocabs
+      render partial: 'desc_metadata_form/field_lists', locals: {vocabs: current_object.desc_metadata_vocabs}
+    else
+      render partial: 'desc_metadata_form/field_list', locals: {label: "Terms", terms: current_object.desc_metadata_terms}
+    end
+  end
+
+  def new_form_html_opts
+    opts = {role: "form", class: "form-horizontal"}
+    opts[:enctype] = "multipart/form-data" if current_object.can_have_content?
+    opts
   end
 
   private

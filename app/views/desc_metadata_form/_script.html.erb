@@ -1,0 +1,66 @@
+<script type="text/javascript">
+  var icon_classes = "glyphicon-remove glyphicon-refresh";
+  var btn_classes = "btn-default btn-warning";
+
+  function addFieldValueHandler(e) {
+      var field = $(e.target).text(); // e.g., 'title'
+      var fieldset_id = 'desc-metadata__' + field; // e.g., 'desc-metadata__title'
+
+      // find existing fieldset for field
+      var fieldset = $('#' + fieldset_id);         
+
+      // if not found, clone and append to fieldsets wrapper element
+      if ( fieldset.length == 0) {        
+        fieldset = $('#clone-fieldset fieldset')
+                       .clone()
+                       .appendTo( $('#desc-metadata-fieldsets') )
+                       .attr("id", fieldset_id);
+        fieldset.children('legend').html(field);
+      }
+
+      // clone a new field value wrapper element and append to fieldset
+      var newFieldValue = $('#clone-field-value .field-value')
+                            .clone(true)
+                            .appendTo( fieldset.children('.field-values') );
+
+      // clone a new input element and prepend to the field value wrapper
+      $('#clone-field-tags .' + fieldset_id)
+          .clone()
+          .prependTo(newFieldValue)
+          .focus();
+  
+      // close bootstrap dropdown
+      $(e.target).closest('.dropdown-menu').prev().dropdown('toggle');
+
+      return false;
+  }
+
+  function removeFieldValueHandler(e) {
+    var btn = $(e.target).closest('button');
+    btn.closest('.field-value').children('.form-control')
+       .prop("disabled", true)
+       .css("text-decoration", "line-through");
+    btn.children('.glyphicon').toggleClass(icon_classes);
+    btn.toggleClass(btn_classes)
+       .unbind("click", removeFieldValueHandler)
+       .click(restoreFieldValueHandler)
+       .attr("title", "Restore this value");
+  }
+
+  function restoreFieldValueHandler(e) {
+    var btn = $(e.target).closest('button');
+    btn.closest('.field-value').children('.form-control')
+       .prop("disabled", false)
+       .css("text-decoration", "none");
+    btn.children('.glyphicon').toggleClass(icon_classes);
+    btn.toggleClass(btn_classes)
+       .unbind("click", restoreFieldValueHandler)
+       .click(removeFieldValueHandler)
+       .attr("title", "Remove this value");
+  }
+
+  $(function() {
+    $('.field-value button').click(removeFieldValueHandler);
+    $('.add-field-button').click(addFieldValueHandler);
+  });
+</script>

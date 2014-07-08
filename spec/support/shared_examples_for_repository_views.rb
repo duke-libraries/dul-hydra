@@ -156,6 +156,48 @@ shared_examples "a content-bearing object show view" do
   end
 end
 
+shared_examples "a repository object descriptive metadata editing view" do
+  let(:user) { FactoryGirl.create(:user) }
+  before do
+    object.edit_users = [user.user_key]
+    object.save
+    login_as user
+  end
+  context "where there are existing empty string values" do
+    before do
+      object.descMetadata.creator = [""]
+      object.save
+    end
+    it "should remove them" do
+      visit url_for(controller: object.controller_name, action: 'edit', id: object)
+      click_button "desc-metadata-form-submit"
+      object.reload
+      expect(object.descMetadata.creator).to be_empty
+    end
+  end
+  context "where new empty values are submitted" do
+    it "should not add them" do
+      visit url_for(controller: object.controller_name, action: 'edit', id: object)
+      click_link "creator"
+      click_button "desc-metadata-form-submit"
+      object.reload
+      expect(object.descMetadata.creator).to be_empty
+    end
+  end
+  context "where there are existing non-empty values" do
+    before do
+      object.descMetadata.creator = ["Duke University Libraries"]
+      object.save
+      visit url_for(controller: object.controller_name, action: 'edit', id: object)
+    end
+    it "should preserve values that are not changed" do
+      click_button "desc-metadata-form-submit"
+      object.reload
+      expect(object.descMetadata.creator).to eq ["Duke University Libraries"]
+    end
+  end
+end
+
 shared_examples "a repository object rights editing view" do
   let(:user) { FactoryGirl.create(:user) }
   before do

@@ -1,7 +1,3 @@
-#
-# AdminPolicy does not subclass DulHydra::Base
-# b/c Hydra::AdminPolicy provides all the datastreams it needs.
-#
 class AdminPolicy < Hydra::AdminPolicy
 
   include ActiveFedora::Auditable
@@ -31,13 +27,29 @@ class AdminPolicy < Hydra::AdminPolicy
     self.default_license_url = l[:url]
   end
 
-  def descriptive_metadata_terms
+  # XXX For compatibility with DulHydra::Describable
+  def desc_metadata_terms(*)
     [:title, :description]
   end
 
-  # hydra-editor integration
-  def terms_for_editing
-    descriptive_metadata_terms
+  # XXX For compatibility with DulHydra::Describable
+  def desc_metadata_values term
+    descMetadata.send term
+  end
+
+  # XXX For compatibility with DulHydra::Describable
+  # Update all descMetadata terms with values in hash
+  # Note that term not having key in hash will be set to nil!
+  def set_desc_metadata term_values_hash
+    desc_metadata_terms.each do |term| 
+      values = term_values_hash[term]
+      if values.respond_to?(:reject!)
+        values.reject! { |v| v.blank? }
+      else
+        values = nil if values.blank?
+      end
+      descMetadata.send("#{term}=", values)
+    end
   end
 
   def to_solr(solr_doc=Hash.new, opts={})

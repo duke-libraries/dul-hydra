@@ -1,55 +1,30 @@
-# Provides descriptive metadata support
 module DulHydra
   module Controller
     module DescribableBehavior
       extend ActiveSupport::Concern
 
       included do
-        include RecordsControllerBehavior     # HydraEditor
-        helper_method :resource_instance_name # HydraEditor method
-        self.log_actions += [:create, :update]
+        self.log_actions << :update
+      end
 
-        def new
-          # Not using HydraEditor's :new action or template
-          render layout: 'new'
+      def edit
+      end
+
+      def update
+        current_object.set_desc_metadata desc_metadata_params
+        if current_object.save
+          flash[:success] = "Descriptive metadata updated."
+          redirect_to action: "show", tab: "descriptive_metadata"
+        else
+          render :edit
         end
-
-        def create
-          params_to_use = create_params
-          params_to_use.each { |k,v| params_to_use[k] = nil if v.empty? }
-          if current_object.update params_to_use
-            flash[:success] = I18n.t('dul_hydra.repository_objects.alerts.created')
-            redirect_to action: "show", id: current_object
-          else
-            render :new, layout: 'new'
-          end
-        end
-
-        protected
-
-        # Overrides RecordsControllerBehavior
-        def collect_form_attributes
-          resource_params.reject { |key, value| resource[key].empty? and value == [""] }
-        end
-
-        # Overrides RecordsControllerBehavior
-        def redirect_after_update
-          url_for resource
-        end
-      end # included
+      end
 
       protected
 
-      def resource_params
-        params.require(resource_instance_name.to_sym)
-      end
-
-      def edit_params
-        resource_params.permit(resource.terms_for_editing.each_with_object({}) {|term, h| h[term] = []})
-      end
-
-      def create_params
-        resource_params.permit(:title, :description)
+      def desc_metadata_params
+        permitted = current_object.desc_metadata_terms.each_with_object({}) { |term, memo| memo[term] = [] }
+        params.require(:descMetadata).permit(permitted)
       end
 
       # tabs
@@ -68,13 +43,5 @@ module DulHydra
       end
 
     end
-  end
-end
-
-HydraEditor::ControllerResource.class_eval do
-  # We don't want the behavior requiring the :type param,
-  # just use normal CanCan::ControllerResources behavior.
-  def resource_class
-    super
   end
 end

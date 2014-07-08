@@ -77,3 +77,11 @@ table.access-controls td ul {
 #object-sidebar .panel-heading {
 	font-weight: bold;
 }
+
+.desc-metadata-form fieldset {
+	margin: 1em 0;
+}
+.desc-metadata-form .field-value {
+	margin-bottom: 0.5em;
+	margin-left: 1em;
+}

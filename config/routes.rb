@@ -33,10 +33,6 @@ DulHydra::Application.routes.draw do
     get 'download' => 'downloads#show'
   end
 
-  def tab_routes
-    get ':tab' => '#show', constraints: {tab: tab_constraint}
-  end
-
   def event_routes
     get 'events'
   end

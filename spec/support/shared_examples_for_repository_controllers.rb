@@ -15,7 +15,7 @@ def object_class
 end
 
 def update_metadata
-  put :update, :id => object, object_symbol => {:title => ["Updated"]}
+  put :update, id: object, descMetadata: {title: ["Updated"]}
 end
 
 shared_examples "a repository object controller" do
@@ -94,24 +94,20 @@ shared_examples "a repository object controller" do
       it "should persist the object" do
         expect{ create_object.call }.to change{ object_class.count }.by(1)
       end
-      it "should set the descriptive metadata" do
-        create_object.call
-        expect(assigns(object_symbol).descMetadata).to have_content
-      end
       it "should not save an empty string metadata element" do
         create_object.call
-        expect(assigns(object_symbol).description).to be_blank
+        expect(assigns(:current_object).description).to be_blank
       end
       it "should grant edit permission on the object to the user" do
         create_object.call
-        expect(assigns(object_symbol).edit_users).to include(user.user_key)
+        expect(assigns(:current_object).edit_users).to include(user.user_key)
       end
       it "should record a creation event" do
         expect{ create_object.call }.to change { CreationEvent.count }.by(1)
       end
-      it "should redirect to the show page" do
+      it "should redirect to the edit page" do
         create_object.call
-        expect(response).to redirect_to(assigns(object_symbol))
+        expect(response).to redirect_to(action: 'edit', id: assigns(:current_object))
       end
     end
     context "when the user cannot create objects of this type" do
@@ -128,7 +124,7 @@ shared_examples "a repository object controller" do
     context "when the user can edit the object" do
       before { controller.current_ability.can(:edit, object) }
       it "should render the edit template" do
-        expect(get :edit, id: object).to render_template('records/edit')
+        expect(get :edit, id: object).to render_template 'edit'
       end
     end
     context "when the user cannot edit the object" do
@@ -147,9 +143,9 @@ shared_examples "a repository object controller" do
         object.edit_users = [user.user_key]
         object.save
       end
-      it "should redirect to the show page" do
+      it "should redirect to the descriptive metadata tab of the show page" do
         update_metadata
-        expect(response).to redirect_to(object)
+        expect(response).to redirect_to(action: "show", id: object, tab: "descriptive_metadata")
       end
       it "should update the object" do
         expect{ update_metadata; object.reload }.to change { object.descMetadata }

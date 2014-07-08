@@ -1,0 +1,11 @@
+<fieldset id="desc-metadata__<%= field %>">
+  <legend><%= field %></legend>
+  <div class="field-values">
+	<% desc_metadata_form_field_values(field).each do |value| %>
+      <div class="input-group field-value">
+		<%= desc_metadata_form_field_tag field, value %>
+		<%= render 'desc_metadata_form/remove_value_button' %>
+	  </div>
+	<% end %>
+  <div>
+</fieldset>

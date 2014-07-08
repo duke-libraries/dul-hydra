@@ -1,10 +1,5 @@
-<% content_for :form_top do %>
-  <%= hidden_field_tag "parent", parent.pid %>
-  <div class="form-group">
-	<label class="control-label">Add to Collection <%= parent.pid %></label>
-	<p class="form-control-static">
-	  <%= link_to parent.title.first, url_for(parent) %>
-	</p>
-  </div>
-<% end %>
-
+<div class="form-group">
+  <%= label_tag :parent_id, "Member of Collection" %>
+  <%= link_to parent.title_display, url_for(parent) %>
+  <%= text_field_tag :parent_id, parent.pid, readonly: "readonly", class: "form-control" %>
+</div>  

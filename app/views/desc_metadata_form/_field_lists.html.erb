@@ -1,0 +1,3 @@
+<% vocabs.each do |vocab| %>
+  <%= render partial: 'desc_metadata_form/field_list', locals: {label: vocab.label, terms: current_object.desc_metadata_terms(vocab.namespace_prefix)} %>
+<% end %>

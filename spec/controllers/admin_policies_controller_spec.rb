@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 def create_policy
-  post :create, admin_policy: {title: "New Policy", description: ""}
+  post :create, descMetadata: {title: ["New Policy"]}
 end
 
 def update_policy
@@ -22,13 +22,15 @@ describe AdminPoliciesController, admin_policies: true do
     let(:object) { FactoryGirl.create(:admin_policy) }
     context "GET" do
       context "when the user can edit the object" do
-        before { controller.current_ability.can(:edit, object) }
+        before do
+          object.edit_users = [user.user_key]
+          object.save
+        end
         it "should render the default_permissions template" do
           expect(get :default_permissions, id: object).to render_template("default_permissions")      
         end
       end
       context "when the user cannot edit the object" do
-        before { controller.current_ability.cannot(:edit, object) }
         it "should be unauthorized" do
           get :default_permissions, id: object
           expect(response.response_code).to eq(403)
@@ -37,7 +39,10 @@ describe AdminPoliciesController, admin_policies: true do
     end
     context "PATCH" do
       context "when the user can edit the object" do
-        before { controller.current_ability.can(:edit, object) }
+        before do
+          object.edit_users = [user.user_key]
+          object.save
+        end
         it "should update the default permissions" do
           update_policy
           object.reload
@@ -60,7 +65,6 @@ describe AdminPoliciesController, admin_policies: true do
         end
       end
       context "when the user cannot edit the object" do
-        before { controller.current_ability.cannot(:edit, object) }
         it "should be unauthorized" do
           update_policy
           expect(response.response_code).to eq(403)

@@ -2,10 +2,10 @@ require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_item
-  post :create, parent: collection, item: {title: "New Item", description: ""}
+  post :create, parent_id: collection.pid
 end
 
-describe ItemsController do
+describe ItemsController, items: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
@@ -21,7 +21,7 @@ describe ItemsController do
     let(:new_object) do
       Proc.new do
         controller.current_ability.can(:add_children, collection)
-        get :new, parent: collection
+        get :new, parent_id: collection.pid
       end
     end
   end
@@ -33,7 +33,7 @@ describe ItemsController do
     context "when the user cannot add children to the collection" do
       before { controller.current_ability.cannot(:add_children, collection) }
       it "should be unauthorized" do
-        get :new, parent: collection
+        get :new, parent_id: collection.pid
         expect(response.response_code).to eq(403)
       end
     end

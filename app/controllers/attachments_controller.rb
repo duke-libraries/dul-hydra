@@ -7,28 +7,28 @@ class AttachmentsController < ApplicationController
   before_action :attach, only: :create
   before_action :copy_admin_policy_or_permissions, only: :create
 
-  helper_method :attach_to
+  helper_method :attached_to
 
   protected
 
   def attach
-    current_object.attached_to = attach_to
+    current_object.attached_to = attached_to
   end
 
-  def attach_to
-    @attach_to ||= ActiveFedora::Base.find(params.require(attach_to_param), cast: true)
+  def attached_to
+    @attached_to ||= ActiveFedora::Base.find attached_to_param
   end
 
-  def attach_to_param
-    :attach_to
+  def attached_to_param
+    params.require(:attached_to_id)
   end
 
   def authorize_add_attachment!
-    authorize! :add_attachment, attach_to
+    authorize! :add_attachment, attached_to
   end
 
   def copy_admin_policy_or_permissions
-    current_object.copy_admin_policy_or_permissions_from attach_to
+    current_object.copy_admin_policy_or_permissions_from attached_to
   end
 
 end

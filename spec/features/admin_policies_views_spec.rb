@@ -3,13 +3,12 @@ require 'support/shared_examples_for_repository_views'
 
 describe "AdminPolicies views", admin_policies: true do
 
-  describe "rights editing" do
-    it_behaves_like "a repository object rights editing view" do
-      let(:object) { FactoryGirl.create(:admin_policy) }
-    end
+  describe "permissions" do
+    let(:object) { FactoryGirl.create(:admin_policy) }
+    it_behaves_like "a repository object rights editing view"
   end
 
-  describe "new.html.erb" do
+  describe "new/create" do
     let(:user) { FactoryGirl.create(:user) }
     before do
       allow(Ability.any_instance).to receive(:role_abilities) { [[:create, AdminPolicy]] }

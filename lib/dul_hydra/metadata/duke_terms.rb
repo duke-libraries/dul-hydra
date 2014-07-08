@@ -2,6 +2,8 @@ module DulHydra
   module Metadata
     class DukeTerms < Vocabulary
 
+      LABEL = "Duke Terms"
+
       XMLNS = "http://library.duke.edu/metadata/terms".freeze
 
       NAMESPACE_PREFIX = "duke".freeze

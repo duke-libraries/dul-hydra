@@ -20,7 +20,4 @@
 //= require bootstrap/tab
 //= require bootstrap/button
 //
-// hydra-editor
-//= require hydra-editor/hydra-editor
-//
 //= require_tree .
