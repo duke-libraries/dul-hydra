@@ -86,7 +86,9 @@ namespace :dul_hydra do
           puts "Running batch fixity check with options #{opts} ..."
           bfc = DulHydra::Scripts::BatchFixityCheck.new(opts)
           bfc.execute
-          BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
+          if bfc.total > 0
+            BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
+          end
       end
       desc "Make manifest MANIFEST based on files in directory DIRPATH"
       task :make_manifest => :environment do
