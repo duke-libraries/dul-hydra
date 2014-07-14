@@ -114,7 +114,7 @@ class MetadataFile < ActiveRecord::Base
           else
             @collection = nil
           end
-          obj.pid = determine_pid_from_identifier(obj.identifier, model(row), @collection)
+          obj.pid = DulHydra::Utils.pid_for_identifier(obj.identifier, {model: model(row), collection: @collection})
           obj.save
         end
       end
@@ -133,28 +133,6 @@ class MetadataFile < ActiveRecord::Base
     end
   end
   
-  def determine_pid_from_identifier(identifier, model, collection)
-    objs = []
-    ActiveFedora::Base.find_each( { DulHydra::IndexFields::IDENTIFIER => identifier }, { :cast => true } ) { |o| objs << o }
-    pids = []
-    objs.each { |obj| pids << obj.pid }
-    if model.present?
-      objs.each { |obj| pids.delete(obj.pid) unless obj.is_a?(model.constantize) }
-    end
-    if collection.present?
-      objs.each { |obj| pids.delete(obj.pid) unless obj == collection || collection.children.include?(obj) }
-    end
-    pid = case pids.size
-    when 0
-      nil
-    when 1
-      pids.first
-    else
-      raise DulHydra::Error, I18n.t('dul_hydra.errors.multiple_object_matches', :criteria => "identifier #{identifier}")
-    end
-    return pid
-  end
-
   def as_csv_table
     CSV.read(metadata.path, effective_options[:csv])
   end
