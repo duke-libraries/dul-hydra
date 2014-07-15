@@ -1,8 +1,8 @@
 FactoryGirl.define do
 
   factory :attachment do
-    title "Test Attachment"
-    sequence(:identifier) { |n| "att%05d" % n }
+    title [ "Test Attachment" ]
+    sequence(:identifier) { |n| [ "att%05d" % n ] }
     after(:build) do |a|
       a.upload! File.new(File.join(Rails.root, 'spec', 'fixtures', 'sample.docx'), "rb")
     end

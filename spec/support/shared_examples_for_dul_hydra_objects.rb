@@ -13,11 +13,11 @@ shared_examples "a DulHydra object" do
   context "#title_display" do
     subject { object.title_display }
     context "has title" do
-      let(:object) { described_class.new(:title => 'Title') }
+      let(:object) { described_class.new(:title => [ 'Title' ] ) }
       it { should eq('Title') }
     end
     context "has no title, has identifier" do
-      let(:object) { described_class.new(:identifier => 'id001') }
+      let(:object) { described_class.new(:identifier => [ 'id001' ]) }
       it { should eq('id001') }
     end
     context "has no title, has no identifier" do

@@ -1,8 +1,8 @@
 FactoryGirl.define do
 
   factory :item, :aliases => [:container] do
-    title "Test Item"
-    sequence(:identifier) { |n| "item%05d" % n }
+    title [ "Test Item" ]
+    sequence(:identifier) { |n| [ "item%05d" % n ] }
 
     trait :member_of_collection do
       collection

@@ -5,7 +5,7 @@ describe "Grouper integration" do
   let(:user) { FactoryGirl.create(:user) }
   let(:object) { FactoryGirl.create(:collection) }
   before do
-    object.title = "Grouper Works!"
+    object.title = [ "Grouper Works!" ]
     object.read_groups = ["duke:library:repository:ddr:foo:bar"]
     object.save!
     Warden.on_next_request do |proxy|
