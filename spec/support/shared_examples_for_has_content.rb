@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 shared_examples "an object that can have content" do
-  let(:object) { described_class.new(title: "I Have Content!") }
+  let(:object) { described_class.new(title: [ "I Have Content!" ]) }
   context "when new content is saved" do
     context "and the content is a file" do
       let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }

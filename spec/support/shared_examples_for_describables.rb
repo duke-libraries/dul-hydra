@@ -1,8 +1,8 @@
 shared_examples "a describable object" do
   let!(:object) do
     described_class.new.tap do |obj|
-      obj.title = 'Describable'
-      obj.identifier = 'id001'
+      obj.title = [ 'Describable' ]
+      obj.identifier = [ 'id001' ]
       obj.save(validate: false)
     end
   end

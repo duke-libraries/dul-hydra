@@ -320,8 +320,8 @@ class IngestFolder < ActiveRecord::Base
   
   def desc_metadata(identifier, creator=nil)
     base = DulHydra::Base.new
-    base.identifier = identifier if identifier.present?
-    base.creator = creator if creator.present?
+    base.identifier = [ identifier ] if identifier.present?
+    base.creator = [ creator ] if creator.present?
     base.descMetadata.content
   end
   

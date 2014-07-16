@@ -52,7 +52,7 @@ module DulHydra::Batch::Scripts
       let(:mfp) { described_class.new({ folder: folder }) }
       let(:object) { FactoryGirl.create(:test_model) }
       before do
-        object.update_attributes(identifier: "efghi01003")
+        object.update_attributes(identifier: [ "efghi01003"] )
         Dir.stub(:foreach).and_call_original
         Dir.stub(:foreach).with(folder).and_return(["md.xml"].each)
         File.stub(:directory?).and_call_original

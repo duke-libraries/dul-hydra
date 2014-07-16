@@ -1,8 +1,8 @@
 FactoryGirl.define do
 
   factory :component do
-    title "Test Component"
-    sequence(:identifier) { |n| "cmp%05d" % n }
+    title [ "Test Component" ]
+    sequence(:identifier) { |n| [ "cmp%05d" % n ] }
     
     trait :has_target do
       target
