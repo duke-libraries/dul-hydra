@@ -196,6 +196,12 @@ shared_examples "a repository object descriptive metadata editing view" do
       expect(object.descMetadata.creator).to eq ["Duke University Libraries"]
     end
   end
+  it "should permit a comment" do
+    visit url_for(controller: object.controller_name, action: 'edit', id: object)
+    fill_in "Comment", with: "Just for fun!"
+    click_button "desc-metadata-form-submit"
+    expect(object.update_events.last.comment).to eq "Just for fun!"
+  end
 end
 
 shared_examples "a repository object rights editing view" do

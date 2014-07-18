@@ -25,9 +25,12 @@ module DulHydra
 
     private 
 
-    def event_class(token)
-      class_name = "#{token.to_s.camelize}Event"
-      class_name.constantize
+    def event_class_name token
+      "#{token.to_s.camelize}Event"
+    end
+
+    def event_class token
+      event_class_name(token).constantize
     end
 
   end
