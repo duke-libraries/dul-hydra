@@ -27,6 +27,10 @@ module DulHydra
         params.require(:descMetadata).permit(permitted)
       end
 
+      def event_options_for_update
+        {summary: "Descriptive metadata updated"}
+      end
+
       # tabs
 
       def tab_descriptive_metadata

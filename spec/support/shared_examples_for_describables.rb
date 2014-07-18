@@ -2,7 +2,7 @@ shared_examples "a describable object" do
   let(:object) { described_class.new }
   context "having an identifier" do
     before do
-      object.identifier = 'id001'
+      object.identifier = ["id001"]
       object.save(validate: false)
     end
     it "should be findable by identifier" do

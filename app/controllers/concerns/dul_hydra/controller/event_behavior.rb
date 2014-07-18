@@ -52,12 +52,7 @@ module DulHydra
       end
 
       def event_options_for_action
-        case params[:action]
-        when "update"
-          {summary: "Descriptive metadata updated"}
-        else
-          {}
-        end
+        send("event_options_for_#{params[:action]}") rescue {}
       end
 
     end
