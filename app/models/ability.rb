@@ -18,7 +18,6 @@ class Ability
     action_aliases
     discover_permissions
     export_sets_permissions
-    preservation_events_permissions
     events_permissions
     batches_permissions
     ingest_folders_permissions
@@ -57,12 +56,6 @@ class Ability
   def export_sets_permissions
     can :create, ExportSet if authenticated_user?
     can :manage, ExportSet, user: current_user
-  end
-
-  def preservation_events_permissions
-    can :read, PreservationEvent do |pe|
-      pe.for_object? and can?(:read, pe.for_object)
-    end
   end
 
   def events_permissions
