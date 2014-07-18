@@ -64,10 +64,6 @@ module DulHydra
       desc_metadata_terms.each { |t| set_desc_metadata_values(t, term_values_hash[t]) }
     end
 
-    def descriptive_metadata_editable?
-      return descmetadata_source.nil?
-    end
-
     module ClassMethods
       def find_by_identifier(identifier)
         find(DulHydra::IndexFields::IDENTIFIER => identifier)
