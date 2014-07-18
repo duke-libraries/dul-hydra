@@ -6,14 +6,14 @@
     </div>
 	<% if current_object.is_a?(Collection) and can?(:create, Item) and can?(:add_children, current_object) %>
 	<div class="list-group-item">
-	  <%= link_to new_item_path(parent: current_object.pid), id: "add-item-link" do %>
+	  <%= link_to new_item_path(parent_id: current_object.pid), id: "add-item-link" do %>
 	    <span class="glyphicon glyphicon-plus"></span> Add Item
 	  <% end %>
 	</div>
 	<% end %>
 	<% if current_object.is_a?(Item) and can?(:create, Component) and can?(:add_children, current_object) %>
 	<div class="list-group-item">
-	  <%= link_to new_component_path(parent: current_object.pid), id: "add-component-link" do %>
+	  <%= link_to new_component_path(parent_id: current_object.pid), id: "add-component-link" do %>
 	    <span class="glyphicon glyphicon-plus"></span> Add Component
 	  <% end %>
 	</div>

@@ -2,14 +2,14 @@ require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_collection
-  post :create, collection: {title: "Title", description: ""}, admin_policy_id: FactoryGirl.create(:admin_policy)
+  post :create, admin_policy_id: FactoryGirl.create(:admin_policy).pid
 end
 
 def new_collection
-  get :new, admin_policy_id: FactoryGirl.create(:admin_policy) 
+  get :new, admin_policy_id: FactoryGirl.create(:admin_policy).pid
 end
 
-describe CollectionsController do
+describe CollectionsController, collections: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
@@ -24,7 +24,7 @@ describe CollectionsController do
     before { controller.current_ability.can(:create, Collection) }
     it "should set the admin policy" do
       create_collection
-      expect(assigns(:collection).admin_policy).to be_present
+      expect(assigns(:current_object).admin_policy).to be_present
     end
   end
 

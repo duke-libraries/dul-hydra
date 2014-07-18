@@ -1,0 +1,31 @@
+<!--
+  HIDDEN CONTENT FOR CLONING
+  -->
+<div class="hidden">
+
+ <div id="clone-field-tags">
+  <% current_object.desc_metadata_terms.each do |term| %>
+    <%= desc_metadata_form_field_tag term %>
+  <% end %>
+ </div>
+
+ <div id="clone-fieldset">
+   <fieldset>
+	 <legend><!-- field --></legend>
+	 <div class="field-values">
+	   <!-- field values -->
+	 </div>
+   </fieldset>
+ </div>
+
+ <div id="clone-field-value">
+   <div class="input-group field-value">
+	 <!-- field value -->
+     <%= render 'desc_metadata_form/remove_value_button' %>
+   </div>
+ </div>
+
+</div>
+<!--
+  END HIDDEN CONTENT FOR CLONING
+  -->

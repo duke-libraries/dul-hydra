@@ -1,14 +1,10 @@
 <%= render partial: 'tab_actions', locals: {tab: tab} %>
 
 <table class="table">
-  <% current_object.descriptive_metadata_terms.each do |term| -%>
-    <% label = term.to_s.titleize -%>
-    <% if current_object.class.multiple?(term) -%>
-      <% current_object.send(term).each do |value| -%>
-        <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: value} %>
-      <% end -%>
-    <% else -%>
-      <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: current_object.send(term)} %>
-    <% end -%>
-  <% end -%>
+  <% current_object.desc_metadata_terms.each do |term| %>
+    <% label = term.to_s.titleize %>
+    <% current_object.desc_metadata_values(term).each do |value| %>
+      <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: value} %>
+    <% end %>
+  <% end %>
 </table>

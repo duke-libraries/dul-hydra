@@ -5,20 +5,16 @@ module DulHydra
 
       included do
         rescue_from DulHydra::ChecksumInvalid, with: :checksum_invalid
-        require_permission! :upload, only: :upload
         before_action :upload_content, only: :create
         self.log_actions << :upload
       end
 
       def upload
-        if request.get?
-          content_warning
-        elsif request.patch?
-          if upload_content!
+        if request.patch?
+          upload_content
+          if current_object.save
             flash[:success] = I18n.t('dul_hydra.upload.alerts.success')
-            redirect_to action: "show"
-          else
-            render :upload
+            redirect_to(action: "show") and return
           end
         end
       end
@@ -26,50 +22,24 @@ module DulHydra
       protected
 
       def upload_content
-        current_object.upload content, checksum: checksum
-      rescue ArgumentError => e
-        content_missing && false
+        current_object.upload content_params[:file], checksum: checksum_param
       end
 
-      def upload_content!
-        current_object.upload! content, checksum: checksum
-      rescue ArgumentError => e
-        content_missing && false
-      end
-
-      def content_missing
-        current_object.errors.add(:content, "is required")
-      end
-
-      def content_warning
-        if current_object.has_content?
-          flash.now[:error] = "<strong>Warning!</strong> #{I18n.t('dul_hydra.upload.alerts.has_content')}".html_safe
-        end
+      def content_params
+        @content_params ||= params.require(:content).permit(:file, :checksum)
       end
 
       def checksum_invalid exception
         flash.now[:error] = "<strong>Checksum invalid:</strong> #{exception.message}".html_safe
-        render case params[:action]
-               when "create" then :new
-               when "update" then :edit
+        render case params[:action].to_sym
+               when :create then :new
+               when :update then :edit
                else params[:action]
                end
       end
 
-      def content
-        @content ||= params[content_param]
-      end
-
-      def checksum
-        (params[checksum_param] || "").strip
-      end
-
-      def content_param
-        :content
-      end
-
       def checksum_param
-        :checksum
+        (content_params[:checksum] || "").strip
       end
 
     end

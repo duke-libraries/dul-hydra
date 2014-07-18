@@ -1,0 +1,5 @@
+<div id="desc-metadata-fieldsets">
+  <% desc_metadata_form_fields.each do |field| %>
+    <%= render partial: 'desc_metadata_form/field', locals: {field: field} %>
+  <% end %>
+</div>

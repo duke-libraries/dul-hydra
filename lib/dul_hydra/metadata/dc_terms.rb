@@ -2,6 +2,8 @@ module DulHydra
   module Metadata
     class DCTerms < Vocabulary
 
+      LABEL = "DC Terms"
+
       XMLNS = "http://purl.org/dc/terms/".freeze
 
       NAMESPACE_PREFIX = "dcterms".freeze

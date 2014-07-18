@@ -1,21 +1,24 @@
 require 'spec_helper'
 require 'support/shared_examples_for_repository_views'
 
-describe "Collections views" do
+describe "Collections views", collections: true do
 
   describe "show" do
-    it_behaves_like "a repository object show view" do
-      let(:object) { FactoryGirl.create(:collection) }
-    end
+    let(:object) { FactoryGirl.create(:collection) }
+    it_behaves_like "a repository object show view"
   end
 
-  describe "rights editing" do
-    it_behaves_like "a governable repository object rights editing view" do
-      let(:object) { FactoryGirl.create(:collection) }
-    end
+  describe "edit/update" do
+    let(:object) { FactoryGirl.create(:collection) }
+    it_behaves_like "a repository object descriptive metadata editing view"
   end
 
-  describe "new.html.erb" do
+  describe "permissions" do
+    let(:object) { FactoryGirl.create(:collection) }
+    it_behaves_like "a governable repository object rights editing view"
+  end
+
+  describe "new/create" do
     let(:user) { FactoryGirl.create(:user) }
     let(:admin_policy) { FactoryGirl.create(:admin_policy) }
     let(:collection_creator) { Role.new("Collection Creator", ability: :create, model: "Collection") }

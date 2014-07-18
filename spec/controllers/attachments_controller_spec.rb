@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 def create_attachment checksum = "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18"
-  post :create, attach_to: attach_to, attachment: {title: "Attachment", description: ""}, content: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum
+  post :create, attached_to_id: attach_to.pid, content: {file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum}
 end
 
 def new_attachment 
-  get :new, attach_to: FactoryGirl.create(:collection)
+  get :new, attached_to_id: FactoryGirl.create(:collection).pid
 end
 
 describe AttachmentsController, attachments: true do
@@ -25,7 +25,7 @@ describe AttachmentsController, attachments: true do
     let(:new_object) do
       Proc.new do
         controller.current_ability.can(:add_attachment, attach_to)
-        get :new, attach_to: attach_to
+        get :new, attached_to_id: attach_to.pid
       end
     end
   end
@@ -39,7 +39,7 @@ describe AttachmentsController, attachments: true do
         controller.current_ability.cannot(:add_attachment, attach_to)
       end
       it "should be unauthorized" do
-        get :new, attach_to: attach_to
+        get :new, attached_to_id: attach_to.pid
         expect(response.response_code).to eq(403)
       end
     end
@@ -57,27 +57,21 @@ describe AttachmentsController, attachments: true do
         end
         it "should have content" do
           create_attachment
-          expect(assigns(:attachment)).to have_content
+          expect(assigns(:current_object)).to have_content
         end
         it "should correctly set the MIME type" do
           create_attachment
-          expect(assigns(:attachment).content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+          expect(assigns(:current_object).content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
         end
         it "should store the original file name" do
           create_attachment
-          expect(assigns(:attachment).original_filename).to eq("sample.docx")
+          expect(assigns(:current_object).original_filename).to eq("sample.docx")
         end
         it "should be attached to the object" do
           create_attachment
-          expect(assigns(:attachment).attached_to).to eq(attach_to)
+          expect(assigns(:current_object).attached_to).to eq(attach_to)
         end
-        it "should copy the object's permissions to the attachment" do
-          pending
-          expect(Attachment.any_instance).to receive(:copy_permissions_from)
-          create_attachment
-          #expect(assigns(:attachment).permissions).to eq(attach_to.permissions)
-          #expect(assigns(:attachment).read_users).to include(user.user_key, "sally@example.com", "bob@example.com")
-        end
+        it "should copy the object's permissions to the attachment"
         context "and attached_to object is governed by an admin policy" do
           let(:apo) { FactoryGirl.create(:admin_policy) }
           before do 
@@ -86,15 +80,9 @@ describe AttachmentsController, attachments: true do
           end
           it "should apply the admin policy to the attachment" do
             create_attachment
-            expect(assigns(:attachment).admin_policy).to eq(apo)
+            expect(assigns(:current_object).admin_policy).to eq(apo)
           end
-          it "should not copy the permissions of the attached_to object" do
-            pending
-            expect(Attachment.any_instance).not_to receive(:copy_permissions_from)
-            create_attachment
-            #expect(assigns(:attachment).read_users).not_to include("sally@example.com")
-            #expect(assigns(:attachment).read_users).not_to include("bob@example.com")
-          end
+          it "should not copy the permissions of the attached_to object"
         end
         context "and the checksum doesn't match" do
           it "should not create a new object" do

@@ -15,6 +15,7 @@ class Ability
   end
 
   def custom_permissions
+    action_aliases
     discover_permissions
     export_sets_permissions
     preservation_events_permissions
@@ -26,6 +27,13 @@ class Ability
     children_permissions
     upload_permissions
     role_permissions
+  end
+
+  def action_aliases
+    # read aliases
+    alias_action :collection_info, to: :read
+    # edit/update aliases
+    alias_action :permissions, :default_permissions, to: :update
   end
 
   def role_permissions

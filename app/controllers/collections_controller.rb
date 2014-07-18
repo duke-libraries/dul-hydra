@@ -7,7 +7,6 @@ class CollectionsController < ApplicationController
   self.tabs.unshift :tab_items
   self.tabs << :tab_collection_info
 
-  require_read_permission! only: :collection_info
   before_action :set_admin_policy, only: :create
   helper_method :collection_report
 
