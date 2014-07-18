@@ -15,7 +15,7 @@ def object_class
 end
 
 def update_metadata
-  put :update, id: object, descMetadata: {title: ["Updated"]}
+  put :update, id: object, descMetadata: {title: ["Updated"]}, comment: "Just for fun!"
 end
 
 shared_examples "a repository object controller" do
@@ -152,6 +152,14 @@ shared_examples "a repository object controller" do
       end
       it "should create an update event" do
         expect{ update_metadata }.to change { object.update_events.count }.by(1)
+      end
+      it "should record the comment in the update event" do
+        update_metadata
+        expect(object.update_events.last.comment).to eq "Just for fun!"
+      end
+      it "should add an action-specific summary to the event" do
+        update_metadata
+        expect(object.update_events.last.summary).to eq "Descriptive metadata updated"
       end
     end
     context "when the user cannot edit" do

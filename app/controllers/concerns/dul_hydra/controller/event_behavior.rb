@@ -12,7 +12,8 @@ module DulHydra
       protected
 
       def log_action
-        current_object.log_event event_type, user: current_user, comment: event_comment
+        event_options = default_event_options.merge event_options_for_action
+        current_object.log_event event_type, event_options
       end
 
       def no_errors?
@@ -37,18 +38,26 @@ module DulHydra
                 guard: current_object.has_events?)
       end
 
-      def event_comment
-        params[:comment] if params[:comment].present?
-      end
-
       def event_type
         params[:action] == "create" ? :creation : :update
       end
 
-      private
+      def event_params
+        params.permit(:comment)
+      end
 
-      def log_defaults
-        {comment: params[:comment], user: current_user}
+      def default_event_options
+        options = {user: current_user}
+        options.merge event_params
+      end
+
+      def event_options_for_action
+        case params[:action]
+        when "update"
+          {summary: "Descriptive metadata updated"}
+        else
+          {}
+        end
       end
 
     end
