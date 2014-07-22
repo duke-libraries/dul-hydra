@@ -1,8 +1,9 @@
 require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
-def create_component checksum = "bda5fda452d0047c27e9e0048ed59428cb9e6d5d46fe9c27dff5c8e39b75a59e"
-  post :create, parent_id: item.pid, content: {file: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum}
+def create_component opts={}
+  checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
+  post :create, parent_id: item.pid, content: {file: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
 end
 
 describe ComponentsController, components: true do
@@ -88,15 +89,19 @@ describe ComponentsController, components: true do
         context "when the parent is not governed by an admin policy" do
           it "should copy the parent's permissions"
         end
-        context "checksum doesn't match" do
-          let(:bad_checksum) { "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }
-          it "should not create a new object" do
-            expect{ create_component checksum = bad_checksum }.not_to change{ Component.count }
-          end
-          it "should not create an event" do
-            expect{ create_component checksum = bad_checksum }.not_to change{ CreationEvent.count }
-          end
+        it "should validate the checksum when provided" do
+          expect(controller).to receive(:validate_checksum)
+          create_component(checksum: "bda5fda452d0047c27e9e0048ed59428cb9e6d5d46fe9c27dff5c8e39b75a59e", checksum_type: "SHA-256")
         end
+        # context "checksum doesn't match" do
+        #   let(:bad_checksum) { "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }
+        #   it "should not create a new object" do
+        #     expect{ create_component checksum = bad_checksum }.not_to change{ Component.count }
+        #   end
+        #   it "should not create an event" do
+        #     expect{ create_component checksum = bad_checksum }.not_to change{ CreationEvent.count }
+        #   end
+        # end
       end
       context "and the user cannot add children to the item" do
         before { controller.current_ability.cannot(:add_children, item) }

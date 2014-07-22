@@ -6,22 +6,30 @@ module DulHydra
       included do
         self.log_actions << :create
         before_action :auto_title, only: :create
+        before_action :set_initial_permissions, only: :create
       end
 
       def new
       end
 
       def create
-        current_object.set_initial_permissions current_user
         if current_object.save
           flash[:success] = "New #{current_object.class.to_s} created."
-          redirect_to action: :edit, id: current_object
+          redirect_to after_create_redirect
         else
           render :new
         end
       end
 
       protected
+
+      def after_create_redirect
+        {action: :edit, id: current_object}
+      end
+
+      def set_initial_permissions
+        current_object.set_initial_permissions current_user
+      end
 
       def create_params
         {pid: ActiveFedora::Base.connection_for_pid('0').mint}

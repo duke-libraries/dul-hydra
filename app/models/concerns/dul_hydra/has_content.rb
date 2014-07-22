@@ -1,4 +1,4 @@
-require 'digest'
+require 'openssl'
 
 module DulHydra
   module HasContent
@@ -27,19 +27,15 @@ module DulHydra
     end
 
     # Set content to file and return boolean for changed (true)/not changed (false)
-    # If :checksum option is a non-empty string, it must match the SHA-256 digest for the file,
-    # or the upload will raise an exception (DulHydra::ChecksumInvalid).
-    def upload file, opts = Hash.new
-      raise ArgumentError, "Missing file argument" unless file
-      validate_file_checksum! file, opts[:checksum] if opts[:checksum].present?
+    def upload file
       self.content.content = file
       content_changed?
     end
 
     # Set content to file and save if changed.
     # Return boolean for success of upload and save.
-    def upload! file, opts = Hash.new
-      upload(file, opts) && save
+    def upload! file
+      upload(file) && save
     end
 
     def content_type
@@ -69,6 +65,27 @@ module DulHydra
       end
     end
 
+    def validate_checksum! checksum, checksum_type
+      if content_changed?
+        raise DulHydra::Error, "Cannot validate checksum against unpersisted content."
+      end
+      if content.checksumType == checksum_type
+        content_checksum = content.checksum
+      else
+        begin
+          digest_class = OpenSSL::Digest.const_get(checksum_type.sub("-", "").to_sym)
+          digest = digest_class.new
+          digest << content.content
+          content_checksum = digest.to_s
+        rescue NameError => e
+          raise ArgumentError, "Checksum type not recognized: #{checksum_type.inspect}"
+        end
+      end
+      unless checksum == content_checksum
+        raise DulHydra::ChecksumInvalid, "The checksum provided [#{checksum_type}: #{checksum}] does not match the checksum of the repository content [#{checksum_type}: #{content_checksum}]"
+      end
+    end
+
     protected
 
     def set_original_filename
@@ -88,16 +105,6 @@ module DulHydra
     def update_thumbnail
       yield
       set_thumbnail!
-    end
-
-    def validate_file_checksum! file, checksum
-      digest = Digest::SHA256.new
-      digest << file.read
-      unless checksum == digest.to_s
-        raise DulHydra::ChecksumInvalid, "The checksum provided [#{checksum}] does not match the digest generated for the file [#{digest.to_s}]"
-      end
-    ensure
-      file.rewind
     end
 
   end

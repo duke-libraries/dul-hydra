@@ -105,9 +105,10 @@ shared_examples "a repository object controller" do
       it "should record a creation event" do
         expect{ create_object.call }.to change { CreationEvent.count }.by(1)
       end
-      it "should redirect to the edit page" do
+      it "should redirect after creating the new object" do
+        expect(controller).to receive(:after_create_redirect).and_call_original
         create_object.call
-        expect(response).to redirect_to(action: 'edit', id: assigns(:current_object))
+        expect(response).to be_redirect
       end
     end
     context "when the user cannot create objects of this type" do
