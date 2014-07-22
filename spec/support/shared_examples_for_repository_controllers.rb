@@ -20,6 +20,27 @@ end
 
 shared_examples "a repository object controller" do
 
+  describe "#events" do
+    let(:object) { FactoryGirl.create(object_symbol) }
+    before { controller.current_ability.can(:read, object) }
+    it "should render the list of events" do
+      get :events, id: object
+      expect(response).to be_successful
+      expect(response).to render_template :events
+    end
+  end
+
+  describe "#event" do
+    let(:object) { FactoryGirl.create(object_symbol) }
+    let(:event) { Event.create(pid: object.pid) }
+    before { controller.current_ability.can(:read, object) }
+    it "should render the event" do
+      get :event, id: object, event_id: event
+      expect(response).to be_successful
+      expect(response).to render_template :event
+    end
+  end
+
   describe "#permissions" do
     let(:object) { FactoryGirl.create(object_symbol) }
     context "when the user has edit rights" do

@@ -1,18 +1,22 @@
-<h2>Event</h2>
+<h2><%= @event.display_type %> Event</h2>
 
 <table class="table event">
+<!--
   <tr>
-	<th scope="row">Event Type</th>
-	<td><%= @event.display_type %></td>
+	<th scope="row">Event ID</th>
+	<td><%= @event.id %></td>
   </tr>
+-->
   <tr>
 	<th scope="row">Event DateTime</th>
 	<td><%= format_date @event.event_date_time %></td>
   </tr>
+<!--
   <tr>
 	<th scope="row">Object</th>
 	<td><%= @event.pid %></td>
   </tr>
+-->
   <tr>
 	<th scope="row">Summary</th>
 	<td><%= simple_format @event.summary %></td>

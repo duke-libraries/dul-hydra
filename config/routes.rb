@@ -35,6 +35,7 @@ DulHydra::Application.routes.draw do
 
   def event_routes
     get 'events'
+    get 'events/:event_id' => :event
   end
 
   def thumbnail_routes
@@ -101,8 +102,6 @@ DulHydra::Application.routes.draw do
     end
   end
   resources :thumbnail, only: :show, constraints: {id: pid_constraint}
-
-  resources :events, :only => [:index, :show], constraints: {id: /[1-9][0-9]*/, pid: pid_constraint}
 
   resources :export_sets do
     member do

@@ -9,6 +9,13 @@ module DulHydra
         after_action :log_action, if: :log_action?
       end
 
+      def events
+      end
+
+      def event
+        @event = Event.find(params[:event_id])
+      end
+
       protected
 
       def log_action

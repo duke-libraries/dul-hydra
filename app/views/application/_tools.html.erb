@@ -1,9 +1,11 @@
 <div class="panel panel-default">
   <div class="panel-heading">Tools</div>
   <div class="list-group">
+<!--
     <div class="list-group-item">
 	  <%= render_show_doc_actions current_document %>
     </div>
+-->
 	<% if current_object.is_a?(Collection) and can?(:create, Item) and can?(:add_children, current_object) %>
 	<div class="list-group-item">
 	  <%= link_to new_item_path(parent_id: current_object.pid), id: "add-item-link" do %>

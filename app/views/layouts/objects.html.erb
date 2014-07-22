@@ -1,22 +1,11 @@
 <% content_for :main_content do %>
-<div class="col-md-9">
-  <div id="document" class="<%= render_document_class %>">
-	<h3 id="object-title"><%= render_object_title %></h3>
-	<div class="row" style="margin-bottom:1em">
-	  <div class="col-md-2" id="object-thumbnail">
-		<%= render_thumbnail current_object %>
-	  </div>
-	  <div class="col-md-7" id="object-summary">
-		<%= render_document_summary current_document %>
-	  </div>
-	</div>
-	<div class="document">
-	  <%= yield %>
-	</div>
-  </div>
+<div class="col-md-8">
+  <%= yield %>
 </div>
-<div class="col-md-3" id="object-sidebar">
-  <%= render 'sidebar' %>
+<div class="col-md-4" id="object-sidebar">
+  <%= render 'object_summary' %>
+  <%= render 'tools' %>
+  <%= render 'object_info' %>
 </div>
 <% end %>
 <%= render template: "layouts/application" %>

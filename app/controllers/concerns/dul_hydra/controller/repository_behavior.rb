@@ -18,8 +18,7 @@ module DulHydra
         include DulHydra::Controller::RightsBehavior
 
         self.tabs = [:tab_descriptive_metadata,
-                     :tab_permissions,
-                     :tab_events]
+                     :tab_permissions]
 
         helper_method :current_object
         helper_method :current_document
@@ -34,8 +33,7 @@ module DulHydra
       def dul_hydra_layout
         case params[:action].to_sym
         when :new, :create then 'new'
-        when :show then 'objects'
-        else 'edit'
+        else 'objects'
         end
       end
 
