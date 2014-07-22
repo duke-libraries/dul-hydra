@@ -1,10 +1,10 @@
 <div class="well well-sm clearfix">
-  <div id="object-thumbnail" class="pull-right">
-	<%= render_thumbnail current_object %>
-  </div>
   <h4 id="object-title">
 	<%= link_to_unless_current render_object_title, url_for(current_object) %>
   </h4>
+  <div id="object-thumbnail" class="pull-right">
+	<%= render_thumbnail current_object %>
+  </div>
   <div id="object-summary">
 	<%= render_document_summary current_document %>
   </div>

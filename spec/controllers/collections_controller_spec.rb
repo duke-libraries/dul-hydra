@@ -28,6 +28,10 @@ describe CollectionsController, collections: true do
     end
   end
 
+  describe "#items" do
+    
+  end
+
   describe "#collection_info" do
     let(:collection) { FactoryGirl.create(:collection) }
     let(:items) { FactoryGirl.create_list(:item, 3) }
