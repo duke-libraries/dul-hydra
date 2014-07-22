@@ -1,0 +1,28 @@
+<h2>Events</h2>
+
+<table class="table table-condensed table-hover" id="events">
+  <thead>
+	<tr>
+	  <th scope="col">#</th>
+	  <th scope="col">Event DateTime</th>
+	  <th scope="col">Event Type</th>
+	  <th scope="col">Outcome</th>
+	  <th scope="col">Performed By</th>
+	  <th scope="col">Summary</th>
+	  <th scope="col">Comment</th>
+	</tr>
+  </thead>
+  <tbody>
+  	<% current_object.events.each do |event| %>
+  	<tr class="event">
+	  <td class="event-id"><%= link_to event.id, url_for(action: :event, event_id: event.id) %></td>
+      <td class="event-date-time"><%= format_date event.event_date_time.localtime %></td>
+      <td class="event-type"><%= event.display_type %></td>
+      <td class="event-outcome"><%= event_outcome_label event %></td>
+	  <td class="event-performed-by"><%= event.performed_by %></td>
+	  <td class="event-summary"><%= event.summary %></td>
+	  <td class="event-comment"><%= simple_format event.comment %></td>
+	</tr>
+  	<% end %>
+  </tbody>
+</table>

@@ -13,7 +13,7 @@
 		<%= render_object_date current_object.modified_date %>
 	  </p>
 	</div>
-	<% if fixity_checkable? %>
+<% if fixity_checkable? %>
 	<div class="list-group-item">
 	  <p class="list-group-item-heading">Fixity Checked</p>
 	  <p class="list-group-item-text">
@@ -25,8 +25,8 @@
 	    <% end %>
 	  </p>
 	</div>
-	<% end %>
-	<% if virus_checkable? %>
+<% end %>
+<% if virus_checkable? %>
 	<div class="list-group-item">
 	  <p class="list-group-item-heading">Virus Scanned</p>
 	  <p class="list-group-item-text">
@@ -38,6 +38,14 @@
 	    <% end %>
 	  </p>
 	</div>
-	<% end %>
-  </div>
-</div>
+<% end %>
+<% if can?(:events, current_object) && current_object.has_events? %>
+	<div class="list-group-item">
+	  <%= link_to action: :events do %>
+	    <span class="glyphicon glyphicon-map-marker"></span> Events
+		(<%= current_object.events.count %>)
+	  <% end %>
+	</div>
+<% end %>
+  </div> <!-- /list-group -->
+</div> <!-- /panel -->

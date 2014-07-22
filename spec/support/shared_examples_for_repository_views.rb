@@ -95,7 +95,6 @@ shared_examples "a repository object show view" do
   end
 
   describe "events" do
-    let(:tab) { "#tab_events" }
     before do
       object.fixity_check
       object.reload
@@ -104,9 +103,9 @@ shared_examples "a repository object show view" do
       visit url_for(object)
       expect(find("#object-info")).to have_content("Fixity Check")
     end
-    it "should display the events" do
+    it "should link to the events" do
       visit url_for(object)
-      expect(page).to have_css(tab)
+      expect(page).to have_link("Events")
     end
   end
 end
