@@ -4,11 +4,14 @@ class CollectionsController < ApplicationController
   include DulHydra::Controller::HasChildrenBehavior
   include DulHydra::Controller::HasAttachmentsBehavior
 
-  self.tabs.unshift :tab_items
   self.tabs << :tab_collection_info
 
   before_action :set_admin_policy, only: :create
   helper_method :collection_report
+
+  def items
+    get_children
+  end
 
   # HTML format intended for tab content loaded via ajax
   def collection_info
