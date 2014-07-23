@@ -1,15 +1,32 @@
-<div class="well well-sm clearfix">
-  <h4 id="object-title">
-	<%= link_to_unless_current render_object_title, url_for(current_object) %>
-  </h4>
+<div class="well well-sm clearfix" id="object-summary">
+
   <div id="object-thumbnail" class="pull-right">
 	<%= render_thumbnail current_object %>
   </div>
-  <div id="object-summary">
-	<%= render_document_summary current_document %>
+
+  <h5 id="object-title">
+	<%= link_to_unless_current render_object_title, url_for(current_object) %>
+  </h5>
+
+  <ul class="list-unstyled">
+	<li>
+	  <%= current_object.class.to_s %> <%= current_object.pid %>
+	</li>
+	<% if current_object.respond_to?(:identifier) && current_object.identifier.present? %>
+	  <li class="small">
+		<%= current_object.identifier.first %>
+	  </li>
+	<% end %>
+    <% if current_document.has_content? %>
+      <li class="small">
+		<%= render partial: 'document_content', locals: {document: current_document} %>
+	  </li>
+    <% end %>
+  </ul>
+
+  <%# bookmark toggle control %>
+  <div style="padding-left: 20px">
+    <%= render partial: 'catalog/bookmark_control', locals: {document: current_document} %>
   </div>
-  <!-- padding compensates for bootstrap-sass style -->
-  <div id="object-actions" style="padding-left: 20px">
-	<%= render_show_doc_actions current_document %>
-  </div>
+
 </div>

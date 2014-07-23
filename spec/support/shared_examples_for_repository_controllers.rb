@@ -31,8 +31,8 @@ shared_examples "a repository object controller" do
   end
 
   describe "#event" do
-    let(:object) { FactoryGirl.create(object_symbol) }
-    let(:event) { Event.create(pid: object.pid) }
+    let!(:object) { FactoryGirl.create(object_symbol) }
+    let(:event) { UpdateEvent.create(pid: object.pid) }
     before { controller.current_ability.can(:read, object) }
     it "should render the event" do
       get :event, id: object, event_id: event

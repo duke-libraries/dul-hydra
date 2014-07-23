@@ -18,6 +18,18 @@ module ApplicationHelper
     current_document.title
   end
 
+  def render_object_content
+    if current_object.can_have_content?
+      render 'object_content'
+    end
+  end
+
+  def render_associated_objects
+    if current_object.can_have_children? or current_object.can_have_attachments?
+      render 'associated_objects'
+    end
+  end
+
   def object_display_title(pid)
     if pid.present?
       begin

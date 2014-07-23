@@ -1,5 +1,6 @@
-<h2>
-  <%= t('dul_hydra.permissions.page_titles.edit') %>
-</h2>
+<% content_for :page_heading do %>
+  Modify Permissions
+<% end %>
+
 <%= render 'permissions_alerts' %>
 <%= render partial: 'rights_form', locals: {license: current_object.license} %>

@@ -1,0 +1,4 @@
+<li class="list-group-item list-group-item-<%= current_document.last_virus_check_outcome == 'success' ? 'success' : 'danger' %>">
+  <span class="pull-right"><%= format_date current_document.last_virus_check_on %></span>
+  Virus Scanned
+</li>

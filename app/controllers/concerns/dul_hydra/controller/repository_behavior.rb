@@ -23,6 +23,8 @@ module DulHydra
         helper_method :current_object
         helper_method :current_document
         helper_method :get_solr_response_for_field_values
+
+        copy_blacklight_config_from CatalogController
       end
 
       def show

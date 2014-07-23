@@ -3,20 +3,23 @@ module DulHydra
     module HasAttachmentsBehavior
       extend ActiveSupport::Concern
 
-      included do
-        self.tabs << :tab_attachments
-        before_action :get_attachments, only: :show
-      end
-
-      def get_attachments
-        query = current_object.association_query(:attachments)
-        response, @attachments = get_search_results(params, {q: query})        
+      def attachments
+        get_attachments
       end
 
       protected
+      
+      def get_attachments
+        configure_blacklight_for_attachments
+        query = current_object.association_query(:attachments)
+        @response, @document_list = get_search_results(params, {q: query})        
+      end
 
-      def tab_attachments
-        Tab.new("attachments", guard: current_object.has_attachments?)
+      def configure_blacklight_for_attachments
+        blacklight_config.configure do |config|
+          config.sort_fields.clear
+          config.add_sort_field "#{DulHydra::IndexFields::TITLE} asc", label: "Title"
+        end
       end
 
     end

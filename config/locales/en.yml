@@ -1,7 +1,4 @@
 en:
-  hydra_editor:
-    form:
-      title: 'Edit Descriptive Metadata'
   dul_hydra:
     ingest_folder:
       new_menu: "Folder Ingest"
@@ -46,8 +43,8 @@ en:
           descriptive_metadata: "You have bookmarked no objects with descriptive metadata that you have permission to export."
         warn_change_csv_col_sep: "WARNING: If you change the CSV Column Separator, the existing archive file will be deleted and you will need to re-create it."
     associations:
-      is_part_of: 'Part of'
-      is_member_of_collection: 'Member of'
+      is_part_of: 'Part of Item'
+      is_member_of_collection: 'Member of Collection'
       is_attached_to: 'Attached to'
     prompts:
       select: "Select %s ..."
@@ -68,7 +65,6 @@ en:
         object_create_date: 'Created'
         object_modified_date: 'Modified'
         metadata: 'Metadata'
-        preservation_events: 'Preservation Events'
         collection_report: 'Collection Report'
         last_fixity_check_on: 'Checked'
         last_fixity_check_outcome: 'Outcome'
@@ -114,10 +110,6 @@ en:
         alerts:
             changed: "Rights successfully changed."
     tabs:
-      items:
-        label: Items
-      components:
-        label: Components
       descriptive_metadata:
         label: "Descriptive Metadata"
         actions:
@@ -140,10 +132,6 @@ en:
         label: "Collection Info"
         actions:
           download: "Download CSV Report"
-      events:
-        label: "Events"
-      attachments:
-        label: Attachments
       pending_batches:
           label: Pending
       finished_batches:

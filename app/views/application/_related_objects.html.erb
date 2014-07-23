@@ -1,0 +1,37 @@
+<ul class="list-group" id="related-objects">
+
+<% association, associated_doc = get_associated_document(current_document) %>
+<% if associated_doc %>
+  <li class="list-group-item">
+	<%= t("dul_hydra.associations.#{association}") %>:
+	<%= link_to_if can?(:read, associated_doc), associated_doc.title, document_or_object_url(associated_doc) %>
+  </li>
+<% end %>
+
+<% if current_object.respond_to?(:children) %>
+  <li class="list-group-item">
+	<span class="badge"><%= current_object.children.count %></span>
+	<%= render 'link_to_children' %>
+  </li>
+<% end %>
+
+<% if current_object.respond_to?(:attachments) %>
+  <li class="list-group-item">
+	<span class="badge"><%= current_object.attachments.count %></span>
+	<%= link_to_unless_current "Attachments", {action: "attachments"} %>
+	<% if can?(:create, Attachment) && can?(:add_attachment, current_object) %>
+	  <%= link_to new_attachment_path(attached_to_id: current_object), class: "btn btn-success btn-xs", title: "Create a new Attachment" do %>
+	    <span class="glyphicon glyphicon-plus"></span>
+	  <% end %>
+	<% end %>
+  </li>
+<% end %>
+
+<% if current_object.respond_to?(:targets) %>
+  <li class="list-group-item">
+	<span class="badge"><%= current_object.targets.count %></span>
+	Targets
+  </li>
+<% end %>
+
+</ul>

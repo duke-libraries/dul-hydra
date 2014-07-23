@@ -1,6 +1,7 @@
-<h2>Edit Descriptive Metadata</h2>
+<% content_for :page_heading do %>
+  Edit Descriptive Metadata
+<% end %>
 
-<%# "INSERT METADATA" MENU %>
 <%= render 'desc_metadata_form/navbar' %>
 
 <%= form_for current_object, html: {role: "form", class: "desc-metadata-form"} do |form| %>
@@ -10,6 +11,6 @@
   <%= render partial: 'desc_metadata_form/actions', locals: {form: form} %>
 <% end %>
 
-<%# HIDDEN CONTENT %>
 <%= render 'desc_metadata_form/clones' %>
+
 <%= render 'desc_metadata_form/script' %>
