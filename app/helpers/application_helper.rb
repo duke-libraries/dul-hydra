@@ -72,7 +72,7 @@ module ApplicationHelper
   end
 
   def render_object_date(date)
-    format_date(DateTime.strptime(date, "%Y-%m-%dT%H:%M:%S.%LZ").to_time.localtime)
+    format_date Time.parse(date).localtime
   end
 
   def render_breadcrumb(crumb)
