@@ -18,22 +18,10 @@ module ApplicationHelper
     current_document.title
   end
 
-  def render_object_content
-    if current_object.can_have_content?
-      render 'object_content'
-    end
-  end
-
-  def render_associated_objects
-    if current_object.can_have_children? or current_object.can_have_attachments?
-      render 'associated_objects'
-    end
-  end
-
   def object_display_title(pid)
     if pid.present?
       begin
-        object = ActiveFedora::Base.find(pid, :cast => true)
+        object = ActiveFedora::Base.find(pid)
         if object.respond_to?(:title_display)
           object.title_display
         end
@@ -42,11 +30,7 @@ module ApplicationHelper
       end
     end
   end
-  
-  def entity_icon(type)
-    send "#{type}_icon"
-  end
-  
+    
   def user_icon
     image_tag("silk/user.png", size: "16x16", alt: "user")
   end
@@ -85,10 +69,6 @@ module ApplicationHelper
 
   def render_object_date(date)
     format_date Time.parse(date).localtime
-  end
-
-  def render_breadcrumb(crumb)
-    truncate crumb.title, separator: ' '
   end
 
   def render_tab(tab)
@@ -148,10 +128,6 @@ module ApplicationHelper
     render_download_link args.merge(label: label)
   end
 
-  def render_document_title
-    current_document.title
-  end
-
   def render_thumbnail(document_or_object, linked = false)
     src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object) : default_thumbnail(document_or_object)
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
@@ -172,6 +148,15 @@ module ApplicationHelper
       return [assoc, get_solr_response_for_field_values(:id, associated_pid)[1].first] if associated_pid
     end
     nil
+  end
+
+  def associated_documents(document)
+    results = []
+    while result = get_associated_document(document) do
+      results << result
+      document = result[1]
+    end
+    results
   end
 
   def format_date(date)
@@ -239,15 +224,6 @@ module ApplicationHelper
     url_for controller: "downloads", action: "show", id: document_or_object
   end
 
-  # def model_options_for_select(model, access=nil, selected=nil)
-  #   models = find_models_with_gated_discovery(model)
-  #   if access
-  #     models = models.select { |m| can? access, m }
-  #   end
-  #   options = models.collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
-  #   options_for_select options, selected
-  # end
-  # 
   def model_options_for_select(model, opts={})
     models = find_models_with_gated_discovery(model)
     if opts[:access]
@@ -255,11 +231,6 @@ module ApplicationHelper
     end
     options = models.collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
     options_for_select options, opts[:selected]
-  end
-
-  def required?(obj, attr)
-    target = (obj.class == Class) ? obj : obj.class
-    target.validators_on(attr).map(&:class).include?(ActiveModel::Validations::PresenceValidator)
   end
 
   def create_menu_models
