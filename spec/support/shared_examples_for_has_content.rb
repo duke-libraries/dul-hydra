@@ -86,7 +86,7 @@ shared_examples "an object that can have content" do
       context "and the checksum type is the same as the datastream checksum type" do
         it "should compare the provided checksum with the datastream checksum" do
           expect(object.content).to receive(:checksum).and_call_original
-          expect { object.validate_checksum!(checksum, checksum_type) }.not_to raise_error DulHydra::ChecksumInvalid
+          expect { object.validate_checksum!(checksum, checksum_type) }.not_to raise_error
         end
       end
       context "and the checksum type differs from the datastream checksum type" do 
@@ -94,7 +94,7 @@ shared_examples "an object that can have content" do
           expect(object.content).not_to receive(:checksum).and_call_original
           expect(object.content).to receive(:content).and_call_original
           expect(OpenSSL::Digest).to receive(:const_get).with(:MD5).and_call_original
-          expect { object.validate_checksum!("273ae0f4aa60d94e89bc0e0652ae2c8f", "MD5") }.not_to raise_error DulHydra::ChecksumInvalid
+          expect { object.validate_checksum!("273ae0f4aa60d94e89bc0e0652ae2c8f", "MD5") }.not_to raise_error
         end
       end
       context "and the checksum doesn't match" do
