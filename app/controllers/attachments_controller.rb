@@ -4,15 +4,14 @@ class AttachmentsController < ApplicationController
   include DulHydra::Controller::HasContentBehavior
 
   prepend_before_action :authorize_add_attachment!, only: [:new, :create]
-  before_action :attach, only: :create
   before_action :copy_admin_policy_or_permissions, only: :create
 
   helper_method :attached_to
 
   protected
 
-  def attach
-    current_object.attached_to = attached_to
+  def create_params
+    {attached_to_id: attached_to_param}.merge params.require(:descMetadata).permit(title: [])
   end
 
   def attached_to

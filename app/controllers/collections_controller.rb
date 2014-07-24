@@ -6,13 +6,12 @@ class CollectionsController < ApplicationController
 
   self.tabs << :tab_collection_info
 
-  before_action :set_admin_policy, only: :create
   helper_method :collection_report
 
   def items
     get_children
   end
-
+  
   # HTML format intended for tab content loaded via ajax
   def collection_info
     respond_to do |format|
@@ -25,6 +24,10 @@ class CollectionsController < ApplicationController
   end
 
   protected
+
+  def create_params
+    {admin_policy_id: params.require(:admin_policy_id)}.merge params.require(:descMetadata).permit(title: [])
+  end
 
   def set_admin_policy
     if params[:admin_policy_id].present?
@@ -53,10 +56,6 @@ class CollectionsController < ApplicationController
   end
 
   # tabs
-
-  def tab_items
-    tab_children("items")
-  end
 
   def tab_collection_info
     Tab.new("collection_info", href: url_for(action: "collection_info"))

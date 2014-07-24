@@ -65,19 +65,6 @@ table.access-controls td ul {
 	content: 'will not map';
 }
 
-#object-info .list-group-item-heading {
-	font-weight: bold;
-}
-#object-info .list-group-item-text {
-	font-size: smaller;
-}
-#object-info .list-group-item-text .label {
-	font-size: small;
-}
-#object-sidebar .panel-heading {
-	font-weight: bold;
-}
-
 .desc-metadata-form fieldset {
 	margin: 1em 0;
 }

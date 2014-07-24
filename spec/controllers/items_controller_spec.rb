@@ -51,4 +51,14 @@ describe ItemsController, items: true do
       end
     end
   end
+
+  describe "#children" do
+    context "when the user can read the item" do
+      it "should render the children"
+    end
+    context "when the user cannot read the item" do
+      it "should be unauthorized"
+    end
+  end
+  
 end

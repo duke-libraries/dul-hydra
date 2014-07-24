@@ -1,4 +1,6 @@
-<h2>Upload Content</h2>
+<% content_for :page_heading do %>
+  Upload Content
+<% end %>
 
 <%= form_tag url_for(action: "upload"), method: "patch", multipart: true, role: "form" do %>
   <%= render 'form_errors' %>
@@ -11,10 +13,7 @@
 
   <%= render 'select_content_file' %>
 
-  <div class="form-group">
-    <%= label_tag "comment" %>
-    <%= text_area_tag "comment", nil, class: "form-control" %>
-  </div>
+  <%= render 'form_comment' %>
 
   <div class="well well-sm form-group">
 	<%= cancel_button class: "pull-right" %>

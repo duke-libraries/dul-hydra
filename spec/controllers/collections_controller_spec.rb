@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_collection
-  post :create, admin_policy_id: FactoryGirl.create(:admin_policy).pid
+  post :create, admin_policy_id: FactoryGirl.create(:admin_policy).pid, descMetadata: {title: ["New Collection"]}
 end
 
 def new_collection
@@ -28,8 +28,22 @@ describe CollectionsController, collections: true do
     end
   end
 
-  describe "#items" do
-    
+  describe "#children" do
+    context "when the user can read the collection" do
+      it "should render the children"
+    end
+    context "when the user cannot read the collection" do
+      it "should be unauthorized"
+    end
+  end
+
+  describe "#attachments" do
+    context "when the user can read the collection" do
+      it "should render the attachments"
+    end
+    context "when the user cannot read the collection" do
+      it "should be unauthorized"
+    end
   end
 
   describe "#collection_info" do

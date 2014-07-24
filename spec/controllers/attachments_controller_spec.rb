@@ -3,7 +3,7 @@ require 'spec_helper'
 def create_attachment opts={}
   # checksum = "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18"
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, attached_to_id: attach_to.pid, content: {file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum, checksum_type: checksum_type}
+  post :create, attached_to_id: attach_to.pid, content: {file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum, checksum_type: checksum_type}, descMetadata: {title: ["New Attachment"]}
 end
 
 def new_attachment 

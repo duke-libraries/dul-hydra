@@ -3,11 +3,6 @@ module DulHydra
     module HasChildrenBehavior
       extend ActiveSupport::Concern
 
-      included do
-        copy_blacklight_config_from CatalogController        
-        before_action :get_children, only: :show
-      end
-
       protected
 
       def get_children
@@ -23,10 +18,6 @@ module DulHydra
           config.add_sort_field "#{DulHydra::IndexFields::IDENTIFIER} asc", label: "Identifier"
           config.add_sort_field "#{DulHydra::IndexFields::TITLE} asc", label: "Title"
         end
-      end
-
-      def tab_children(id)
-        Tab.new(id, guard: current_object.has_children?)
       end
 
     end

@@ -53,19 +53,6 @@ module DulHydra
         @content_params
       end
 
-      def checksum_invalid exception
-        
-        render case params[:action].to_sym
-               when :create then :new
-               when :update then :edit
-               else params[:action]
-               end
-      end
-
-      def checksum_param
-        (content_params[:checksum] || "").strip
-      end
-
     end
   end
 end

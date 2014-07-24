@@ -7,6 +7,10 @@ class AdminPoliciesController < ApplicationController
 
   protected
 
+  def create_params
+    params.require(:descMetadata).permit(title: [])
+  end
+
   def after_create_redirect
     {action: :show, id: current_object, tab: "default_permissions"}
   end

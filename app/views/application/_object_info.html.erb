@@ -1,53 +1,43 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
+<ul class="list-group" id="object-info">
+
+  <li class="list-group-item active">
 	Object Info
-  </div>
-  <div class="list-group" id="object-info">
-	<div class="list-group-item">
-	  <p class="list-group-item-heading">Created</p>
-	  <p class="list-group-item-text">
-		<%= render_object_date current_object.create_date %>
-	  </p>
-	</div>
-	<div class="list-group-item">
-	  <p class="list-group-item-heading">Modified</p>
-	  <p class="list-group-item-text">
-		<%= render_object_date current_object.modified_date %>
-	  </p>
-	</div>
+  </li>
+
+  <li class="list-group-item">
+	<span class="pull-right"><%= render_object_date current_object.create_date %></span>
+	Created
+  </li>
+
+  <li class="list-group-item">
+	<span class="pull-right"><%= render_object_date current_object.modified_date %></span>
+	Modified
+  </li>
+
 <% if fixity_checkable? %>
-	<div class="list-group-item">
-	  <p class="list-group-item-heading">Fixity Checked</p>
-	  <p class="list-group-item-text">
-		<% if current_document.last_fixity_check_outcome.present? %>
- 	      <%= format_date current_document.last_fixity_check_on %>
-	      <%= render_event_outcome current_document.last_fixity_check_outcome %>
-		<% else %>
-	      <span class="label label-warning">Not Checked</span>
-	    <% end %>
-	  </p>
-	</div>
+	<% if current_document.last_fixity_check_outcome.present? %>
+	  <%= render 'last_fixity_check' %>
+	<% else %>
+      <li class="list-group-item list-group-item-warning">
+	    Not Fixity Checked
+	  </li>
+	<% end %>
 <% end %>
+
 <% if virus_checkable? %>
-	<div class="list-group-item">
-	  <p class="list-group-item-heading">Virus Scanned</p>
-	  <p class="list-group-item-text">
-		<% if current_document.last_virus_check_outcome.present? %>
- 	      <%= format_date current_document.last_virus_check_on %>
-	      <%= render_event_outcome current_document.last_virus_check_outcome %>
-		<% else %>
-	      <span class="label label-warning">Not Scanned</span>
-	    <% end %>
-	  </p>
-	</div>
+  <% if current_document.last_virus_check_outcome.present? %>
+    <%= render 'last_virus_scan' %>
+  <% else %>
+    <li class="list-group-item list-group-item-warning">
+	  Not Virus Scanned
+	</li>
+  <% end %>
 <% end %>
-<% if can?(:events, current_object) && current_object.has_events? %>
-	<div class="list-group-item">
-	  <%= link_to action: :events do %>
-	    <span class="glyphicon glyphicon-map-marker"></span> Events
-		(<%= current_object.events.count %>)
-	  <% end %>
-	</div>
-<% end %>
-  </div> <!-- /list-group -->
-</div> <!-- /panel -->
+
+<%# events %>
+  <li class="list-group-item">
+	<span class="badge"><%= current_object.events.count %></span>
+	<%= link_to_unless_current "Events", {action: "events"} %>
+  </li>
+
+</ul>

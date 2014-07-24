@@ -1,2 +1,7 @@
-<%= render_document_index @documents %>
+<% content_for :page_heading do %>
+  Attachments
+<% end %>
+
+<%= render 'object_list' %>
+
 
