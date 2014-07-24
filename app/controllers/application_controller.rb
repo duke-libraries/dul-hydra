@@ -36,8 +36,14 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.for(:sign_in) { |u| u.permit(:username, :email, :password, :remember_me) }
   end
   
-  def find_models_with_gated_discovery(model)
-    solr_results = model.find_with_conditions({}, fq: gated_discovery_filters.join(" OR "), rows: 9999)
+  def find_models_with_gated_discovery(model, opts={})
+    solr_opts = {
+      fq: gated_discovery_filters.join(" OR "), 
+      sort: "#{DulHydra::IndexFields::TITLE} ASC",
+      rows: 9999
+    }
+    solr_opts.merge! opts
+    solr_results = model.find_with_conditions({}, solr_opts)
     ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
   end
 
