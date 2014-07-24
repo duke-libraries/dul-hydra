@@ -77,6 +77,34 @@ describe "batches/index.html.erb" do
           end
         end
       end
+      context "new batch" do
+        context "new" do
+          before do
+            login_as batch.user
+            visit batches_path
+          end
+          it "should not have a link to process the batch" do
+            within tab_id do
+              expect(page).to_not have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
+            end
+          end
+        end
+      end
+      context "ready to process batch" do
+        context "ready" do
+          before do
+            batch.status = DulHydra::Batch::Models::Batch::STATUS_READY
+            batch.save
+            login_as batch.user
+            visit batches_path
+          end
+          it "should have a link to process the batch" do
+            within tab_id do
+              expect(page).to have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
+            end
+          end
+        end
+      end
       context "validate action" do
         before { login_as batch.user }
         context "not yet validated" do

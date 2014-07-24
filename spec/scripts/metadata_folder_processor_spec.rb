@@ -161,7 +161,7 @@ module DulHydra::Batch::Scripts
       let(:scanner_hash) { { "/tmp/a.xml" => { "sec_1" => { id: object[:id], pid: object[:pid], md: "testing" } } } }
       it "should create the appropriate batch" do
         batch = mfp.create_batch
-        expect(batch.status).to be(nil)
+        expect(batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_READY)
         expect(batch.user).to eq(user)
         expect(batch.name).to eq("Metadata Folder")
         expect(batch.description).to eq(folder)

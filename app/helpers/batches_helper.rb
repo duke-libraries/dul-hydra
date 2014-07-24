@@ -3,6 +3,8 @@ module BatchesHelper
   def batch_action(batch)
     case batch.status
     when nil
+      "New"
+    when DulHydra::Batch::Models::Batch::STATUS_READY
       # Temporarily remove the functionality requiring a separate validation step before processing
       # cf. issue #760
       #   link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))

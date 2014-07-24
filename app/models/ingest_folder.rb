@@ -133,6 +133,7 @@ class IngestFolder < ActiveRecord::Base
       @rights_metadata_content = temp_surrogate.rightsMetadata.content
     end
     scan_files(full_path, true)
+    @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_READY)
   end
   
   def file_checksum(file_entry)

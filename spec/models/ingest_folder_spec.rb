@@ -13,6 +13,7 @@ shared_examples "a proper set of batch objects" do
     expect(user.batches.count).to eql(1)
     expect(user.batches.first.name).to eql(I18n.t('batch.ingest_folder.batch_name'))
     expect(user.batches.first.description).to eql(ingest_folder.abbreviated_path)
+    expect(user.batches.first.status).to eql(DulHydra::Batch::Models::Batch::STATUS_READY)
     expect(objects.fetch('f').model).to eql(parent_model)
     expect(objects.fetch('file01001').model).to eql(IngestFolder.default_file_model)
     expect(objects.fetch('file01002').model).to eql(IngestFolder.default_file_model)

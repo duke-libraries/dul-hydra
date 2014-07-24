@@ -9,6 +9,7 @@ end
 
 shared_examples "a successful metadata file processing" do
   it "should create a batch with an appropriate UpdateBatchObject" do
+    expect(@batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_READY)
     expect(@batch_object).to be_a(DulHydra::Batch::Models::UpdateBatchObject)
     expect(@datastream.name).to eq(DulHydra::Datastreams::DESC_METADATA)
     expect(@datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
