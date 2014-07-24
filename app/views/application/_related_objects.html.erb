@@ -1,10 +1,9 @@
 <ul class="list-group" id="related-objects">
 
-<% association, associated_doc = get_associated_document(current_document) %>
-<% if associated_doc %>
+<% associated_documents(current_document).each do |assoc, doc| %>
   <li class="list-group-item">
-	<%= t("dul_hydra.associations.#{association}") %>:
-	<%= link_to_if can?(:read, associated_doc), associated_doc.title, document_or_object_url(associated_doc) %>
+	<%= t("dul_hydra.associations.#{assoc}") %>:
+	<%= link_to_if can?(:read, doc), doc.title, document_or_object_url(doc) %>
   </li>
 <% end %>
 
