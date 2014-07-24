@@ -10,6 +10,7 @@ module DulHydra
       end
 
       def events
+        @events = current_object.events.reorder("event_date_time DESC")
       end
 
       def event
