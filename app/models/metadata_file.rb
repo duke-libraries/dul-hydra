@@ -119,6 +119,7 @@ class MetadataFile < ActiveRecord::Base
         end
       end
     end
+    @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_READY)
   end
   
   def downcase_repeatable_field_names

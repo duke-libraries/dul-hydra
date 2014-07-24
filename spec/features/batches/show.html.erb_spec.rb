@@ -6,6 +6,22 @@ describe "batches/show.html.erb" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
     context "batch info" do
       before { login_as batch.user }
+      context "new batch" do
+        before { visit batch_path(batch) }
+        it "should not have a link to process the batch" do
+          expect(page).to_not have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
+        end
+      end
+      context "ready to process batch" do
+        before do
+          batch.status = DulHydra::Batch::Models::Batch::STATUS_READY
+          batch.save
+          visit batch_path(batch)
+        end
+        it "should have a link to process the batch" do
+          expect(page).to have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
+        end
+      end
       context "validate action" do
         context "not yet validated" do
           before { visit batch_path(batch) }

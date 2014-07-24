@@ -58,6 +58,7 @@ module DulHydra::Batch::Scripts
           create_batch_object(batch, @scanner[file_loc][dmdsec_id])
         end
       end
+      batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_READY)
       batch
     end
     
