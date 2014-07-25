@@ -1,6 +1,8 @@
 module DulHydra
   class Base < ActiveFedora::Base
 
+    include Hydra::ModelMethods
+
     include Describable
     include Governable
     include AccessControllable
@@ -11,6 +13,7 @@ module DulHydra
     include EventLoggable
     include Validations
     include FixityCheckable
+    include FileManagement
 
     def to_solr(solr_doc=Hash.new, opts={})
       solr_doc = super(solr_doc, opts)

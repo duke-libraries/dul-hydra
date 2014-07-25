@@ -19,7 +19,6 @@ module DulHydra::Batch::Scripts
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
         batch_obj_rs = batch_obj.batch_object_relationships
         batch_obj_rs.each { |r| expect(obj.send(r.name).pid).to eq(r.object) }
-        expect(obj.events.count).to eq(4)
         obj.events.each do |event|
           expect(event).to be_success
           expect(event.pid).to eq(obj.pid)

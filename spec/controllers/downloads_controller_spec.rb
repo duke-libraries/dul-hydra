@@ -13,28 +13,9 @@ describe DownloadsController do
       get :show, id: obj
       expect(response).to be_successful
     end
-    context "when original_filename is set" do
-      it "should attach the file using the original filename" do
-        get :show, id: obj
-        expect(response.headers["Content-Disposition"]).to match(/filename="#{obj.original_filename}"/)
-      end
-    end
-    context "when original_filename is not set" do
-      before { obj.original_filename = nil; obj.save! }
-      context "but identifier is set to what looks like a file name" do
-        let(:filename) { [obj.identifier.first, obj.content.default_file_extension].join(".") }
-        it "should attach the file using the identifier as a file prefix" do
-          get :show, id: obj
-          expect(response.headers["Content-Disposition"]).to match(/filename="#{filename}"/)
-        end
-      end
-      context "and identifier is not set to what looks like a file name" do
-        before { obj.identifier = "This doesn't look like a file name"; obj.save }
-        it "should attach the file using a default file name" do
-          get :show, id: obj
-          expect(response.headers["Content-Disposition"]).to match(/filename="#{obj.content.default_file_name}"/)
-        end
-      end
+    it "should attach the file using the original filename" do
+      get :show, id: obj
+      expect(response.headers["Content-Disposition"]).to match(/filename="#{obj.original_filename}"/)
     end
   end
   context "descMetadata download" do

@@ -29,6 +29,10 @@ DulHydra.configure do |config|
   }
 
   config.create_menu_models = ["AdminPolicy", "Collection", "Role", "IngestFolder", "MetadataFile"]
+
+  config.external_file_store = ENV['EXTERNAL_FILE_STORE']
+
+  config.external_file_subpath_pattern = [1, 1, 2]
 end
 
 # Load configuration for Grouper service, if present

@@ -13,6 +13,8 @@ script: "bundle exec rake dul_hydra:ci:build"
 notifications:
   email:
     - lib-drs@duke.edu
+env:
+  - EXTERNAL_FILE_STORE="/tmp"
 # To exclude antivirus tests:
 # env:
 #   - SPEC_OPTS="--tag ~antivirus"

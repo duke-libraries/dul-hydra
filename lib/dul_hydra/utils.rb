@@ -1,5 +1,59 @@
 module DulHydra::Utils
 
+  DEFAULT_MIME_TYPE = "application/octet-stream"
+
+  # Return a mime type for the file, using the file_name if necessary
+  # file can be a File object or file path (String)
+  # Return default mime type if unable to determine otherwise
+  def self.mime_type_for(file, file_name=nil)
+    return file.content_type if file.respond_to?(:content_type) # E.g., Rails uploaded file
+    path = file_name || file_path(file) rescue nil
+    mime_types = MIME::Types.of(path) rescue []                 # MIME::Types.of blows up on nil
+    mime_types.empty? ? DEFAULT_MIME_TYPE : mime_types.first.content_type
+  end
+
+  def self.file_or_path? file
+    file_path(file)
+  rescue ArgumentError
+    false
+  end
+  
+  def self.file_path? file
+    # length is a sanity check
+    file.is_a?(String) && (file.length < 1024) && File.exists?(file)
+  end
+
+  def self.file_path file
+    if file.respond_to?(:path) 
+      File.absolute_path(file.path)
+    elsif file_path?(file)
+      file
+    else
+      raise ArgumentError, "File argument is neither a File nor a path to an existing file."
+    end
+  end
+
+  def self.file_uri?(uri)
+    return false unless uri
+    URI.parse(uri).scheme == "file"
+  end
+
+  # Return file path for URI string 
+  # Should reverse .path_to_uri
+  # "file:/path/to/file" => "/path/to/file"
+  def self.path_from_uri(uri)
+    URI.unescape(URI.parse(uri).path)
+  end
+
+  # Return URI string for file path
+  # Should reverse .path_from_uri
+  # "/path/to/file" => "file:/path/to/file"
+  def self.path_to_uri(path)
+    uri = URI.parse(URI.escape(path))
+    uri.scheme = "file"
+    uri.to_s
+  end
+
   def self.ds_as_of_date_time(ds)
     ds.dsCreateDate.strftime("%Y-%m-%dT%H:%M:%S.%LZ")
   end

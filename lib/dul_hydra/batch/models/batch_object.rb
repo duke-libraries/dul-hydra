@@ -187,9 +187,8 @@ Model: %{model}
     end
     
     def verify_datastream(repo_object, datastream)
-      if repo_object.datastreams.keys.include?(datastream.name) &&
-          !repo_object.datastreams[datastream.name].profile.empty? &&
-          !repo_object.datastreams[datastream.name].size.eql?(0)
+      if repo_object.datastreams.include?(datastream.name) && 
+          repo_object.datastreams[datastream.name].has_content?
         VERIFICATION_PASS
       else
         VERIFICATION_FAIL
@@ -219,15 +218,10 @@ Model: %{model}
       when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
         repo_object.datastreams[datastream[:name]].content = datastream[:payload]
       when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-        if repo_object.datastreams[datastream[:name]].is_a? ActiveFedora::OmDatastream
-          repo_object.datastreams[datastream[:name]].content = File.read(datastream[:payload])
-          repo_object.save
-        else
-          datastream_file = File.open(datastream[:payload])
-          repo_object.datastreams[datastream[:name]].content = datastream_file
-          repo_object.save
-          datastream_file.close
-        end
+        file = File.new(datastream[:payload])
+        file_name = File.basename(datastream[:payload])
+        dsid = datastream[:name]
+        repo_object.add_file(file, dsid, file_name) 
       end
       return repo_object
     end

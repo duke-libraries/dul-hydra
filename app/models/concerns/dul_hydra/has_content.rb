@@ -5,37 +5,39 @@ module DulHydra
     extend ActiveSupport::Concern
 
     included do
-      has_file_datastream name: DulHydra::Datastreams::CONTENT, 
-                          type: DulHydra::Datastreams::FileContentDatastream,
+      has_file_datastream name: DulHydra::Datastreams::CONTENT,
                           versionable: true, 
-                          label: "Content file for this object", 
-                          control_group: 'M'
+                          label: "Content file for this object",
+                          control_group: "E"
 
       include Hydra::Derivatives
-      include DulHydra::VirusCheckable
 
-      # Original file name of content file should be stored in this property
-      has_attributes :original_filename, datastream: DulHydra::Datastreams::PROPERTIES, multiple: false
-
-      before_save :set_original_filename, if: :content_changed?, unless: :original_filename_changed?
-      before_save :set_content_type, if: :content_changed?
-      around_save :update_thumbnail, if: :content_changed?
+      around_save :update_thumbnail, if: :external_file_changed?
+      delegate :has_content?, to: :content
     end
 
-    def content_changed?
-      content.content_changed?
+    def original_filename
+      external_datastream_file_name(content)
     end
 
     # Set content to file and return boolean for changed (true)/not changed (false)
-    def upload file
-      self.content.content = file
-      content_changed?
+    def upload file, file_name=nil
+      file_name ||= if file.respond_to?(:original_filename)
+                      file.original_filename
+                    elsif file.respond_to?(:path)
+                      File.basename(file.path)
+                    elsif file.is_a?(String) && (file.length < 1024) && File.exists?(file)
+                      File.basename(file)
+                    else
+                      raise ArgumentError, "File name not provided and unable to determine from file."
+                    end
+      add_file(file, DulHydra::Datastreams::CONTENT, file_name)
     end
 
     # Set content to file and save if changed.
     # Return boolean for success of upload and save.
-    def upload! file
-      upload(file) && save
+    def upload! file, file_name=nil
+      upload(file, file_name) && save
     end
 
     def content_type
@@ -54,10 +56,6 @@ module DulHydra
       content_type == "application/pdf"
     end
 
-    def has_content?
-      content.has_content?
-    end
-
     def set_thumbnail
       return unless has_content?
       if image? or pdf?
@@ -66,9 +64,7 @@ module DulHydra
     end
 
     def validate_checksum! checksum, checksum_type
-      if content_changed?
-        raise DulHydra::Error, "Cannot validate checksum against unpersisted content."
-      end
+      raise DulHydra::Error, "Checksum cannot be validated on unpersisted object." if new_record?
       if content.checksumType == checksum_type
         content_checksum = content.checksum
       else
@@ -86,25 +82,23 @@ module DulHydra
       end
     end
 
-    protected
-
-    def set_original_filename
-      file = content.content
-      if file.respond_to?(:original_filename)
-        self.original_filename = file.original_filename
-      elsif file.respond_to?(:path)
-        self.original_filename = File.basename(file.path)
-      end
+    def virus_checks
+      VirusCheckEvent.for_object(self)
     end
 
-    def set_content_type
-      file = content.content
-      self.content_type = file.content_type if file.respond_to?(:content_type)
+    protected
+
+    def external_file_changed?
+      content.dsLocation_changed?
     end
 
     def update_thumbnail
       yield
       set_thumbnail!
+    end
+
+    def default_content_type
+      "application/octet-stream"
     end
 
   end

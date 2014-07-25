@@ -38,6 +38,15 @@ module DulHydra
       # List of models that may appear on a "create" menu (if user has ability)
       mattr_accessor :create_menu_models
       self.create_menu_models = []
+
+      # Base directory of external file store
+      mattr_accessor :external_file_store      
+
+      # Pattern (String or Array) for building external file subpath from hex digest
+      # Examples:
+      # - "1, 1, 2"
+      # - [1, 1, 2]
+      mattr_accessor :external_file_subpath_pattern
     end
 
     module ClassMethods
