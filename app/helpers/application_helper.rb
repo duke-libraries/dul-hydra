@@ -334,19 +334,23 @@ module ApplicationHelper
     end
   end
 
-  def desc_metadata_form_field_id field, counter=1
-    "descMetadata_#{field}_#{counter}"
+  def desc_metadata_form_field_id field, counter
+    "descMetadata__#{field}__#{counter}"
   end
 
-  def desc_metadata_form_field_label field, counter=1
-    label_tag field, nil, for: desc_metadata_form_field_id(field, counter)
-  end
-
-  def desc_metadata_form_field_tag field, value=nil, counter=1
-    name = "descMetadata[#{field}][]"
+  def desc_metadata_form_field_label field, counter=nil
     opts = {
-      class: "form-control desc-metadata__#{field}",
-      id: desc_metadata_form_field_id(field, counter)
+      class: "sr-only",
+      for: counter ? desc_metadata_form_field_id(field, counter) : nil
+      }
+    label_tag field, nil, opts
+  end
+
+  def desc_metadata_form_field_tag field, value=nil, counter=nil
+    name = "descMetadata[#{field}][]"
+    opts = { 
+      :class => "form-control field-value-input",
+      :id => counter ? desc_metadata_form_field_id(field, counter) : nil
     }
     if field == :description
       text_area_tag name, value, opts

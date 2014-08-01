@@ -1,9 +1,10 @@
-<fieldset id="desc-metadata__<%= field %>">
+<fieldset class="descMetadata__<%= field %>">
   <legend><%= field %></legend>
   <div class="field-values">
-	<% desc_metadata_form_field_values(field).each do |value| %>
+	<% desc_metadata_form_field_values(field).each_with_index do |value, i| %>
       <div class="input-group field-value">
-		<%= desc_metadata_form_field_tag field, value %>
+		<%= desc_metadata_form_field_label field, i+1 %>
+		<%= desc_metadata_form_field_tag field, value, i+1 %>
 		<%= render 'desc_metadata_form/remove_value_button' %>
 	  </div>
 	<% end %>
