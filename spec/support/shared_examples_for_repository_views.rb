@@ -42,9 +42,9 @@ shared_examples "a repository object show view" do
       visit url_for(object)
       expect(page).to have_css(tab)
     end
-    it "should have a link to download the XML" do
+    it "should have a link to download the N-Triples" do
       visit url_for(object)
-      expect(find(tab)).to have_link("Download XML")
+      expect(find(tab)).to have_link("Download N-Triples")
     end
     context "when the user can edit the object" do
       before do

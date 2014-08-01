@@ -9,17 +9,8 @@ module DulHydra::Batch::Scripts
  
     INCLUDED_EXTENSIONS = [ '.xml' ]
     COLLECTION_ID_SEPARATOR = '_'
-    VALID_NAMESPACE_DECLARATION_KEYS = 
-      DulHydra::Datastreams::DescriptiveMetadataDatastream.xml_template.root.namespaces.keys <<
-      "xmlns:xlink" <<
-      "xmlns:xsi"
-    METADATA_NAMESPACES = begin
-      namespaces = {}
-      DulHydra::Datastreams::DescriptiveMetadataDatastream.vocabularies.each do |vocab|
-        namespaces[vocab::NAMESPACE_PREFIX] = vocab::XMLNS
-      end
-      namespaces
-    end
+    VALID_NAMESPACE_DECLARATION_KEYS = [ "xmlns:dcterms", "xmlns:duke", "xmlns:xlink", "xmlns:xsi" ]
+    METADATA_NAMESPACES = { "dcterms"=>"http://purl.org/dc/terms/", "duke"=>"http://library.duke.edu/metadata/terms" }
 
     def initialize(opts={})
       @logger = config_logger
@@ -114,24 +105,26 @@ module DulHydra::Batch::Scripts
           end
           source_metadata = dmdsec.xpath("mdWrap/xmlData")
           validate_source(source_metadata)
-          obj_md = object_metadata(source_metadata, obj_id)
+          obj_md = object_metadata(source_metadata, obj_id, obj_pid)
           @scanner[@file_loc][dmdsec_id] = { id: obj_id, pid: obj_pid, md: obj_md }
         end
       end
     end
     
-    def object_metadata(xml_metadata, identifier)
-      doc = DulHydra::Datastreams::DescriptiveMetadataDatastream.xml_template
-      identifier_node = Nokogiri::XML::Node.new "dcterms:identifier", doc
-      identifier_node.content = identifier
-      doc.root.add_child(identifier_node)
+    def object_metadata(xml_metadata, identifier, pid)
+      obj = DulHydra::Base.new(pid: pid)
+      obj.descMetadata.identifier << identifier
       nodeset = xml_metadata.children
       nodeset.each do |node|
-        doc.root << node
+        begin
+          obj.descMetadata.add_value(node.name, node.content)
+        rescue ArgumentError => e
+          error("Error adding value for #{node.name} element to descriptive metadata: #{e.message}")
+        end
       end
-      doc.to_xml
+      obj.descMetadata.content
     end
-    
+
     def validate_source(source_metadata)
       nodeset = source_metadata.children
       nodeset.each do |node|
@@ -144,13 +137,13 @@ module DulHydra::Batch::Scripts
     def validate_elements(node)
       if node.namespace.present?
         vocabulary = case node.namespace.prefix
-        when DulHydra::Metadata::DCTerms::NAMESPACE_PREFIX
-          DulHydra::Metadata::DCTerms
-        when DulHydra::Metadata::DukeTerms::NAMESPACE_PREFIX
-          DulHydra::Metadata::DukeTerms
+        when "dcterms"
+          RDF::DC
+        when "duke"
+          DukeTerms
         end
         if vocabulary.present?
-          unless vocabulary::TERMS.include?(node.name.to_sym)
+          unless DulHydra::Metadata::Vocabulary.term_names(vocabulary).include?(node.name.to_sym)
             error("Unknown element name #{node.name} in #{abbrev_file_loc}")              
           end
         else

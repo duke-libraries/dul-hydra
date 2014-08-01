@@ -87,7 +87,7 @@ class MetadataFile < ActiveRecord::Base
       obj.model = row.field("model") if row.headers.include?("model")
       obj.pid = row.field("pid") if row.headers.include?("pid")
       obj.save
-      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new
+      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new(nil, 'descMetadata')
       row.headers.each_with_index do |header, idx|
         if effective_options[:parse][:include_empty_fields] || !row.field(header, idx).blank?
           if header.eql?(effective_options[:parse][:local_identifier])
@@ -104,7 +104,7 @@ class MetadataFile < ActiveRecord::Base
                 :batch_object => obj,
                 :name => DulHydra::Datastreams::DESC_METADATA,
                 :operation => DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE,
-                :payload => ds.content,
+                :payload => ds.resource.dump(:ntriples),
                 :payload_type => DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
                 )
       unless obj.pid.present?

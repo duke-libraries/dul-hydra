@@ -216,9 +216,23 @@ Model: %{model}
     def populate_datastream(repo_object, datastream)
       case datastream[:payload_type]
       when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
-        repo_object.datastreams[datastream[:name]].content = datastream[:payload]
+        ds_content = datastream[:payload]
+        if repo_object.datastreams[datastream[:name]].is_a? ActiveFedora::RDFDatastream
+          ds_content = set_rdf_subject(repo_object, ds_content)
+        end
+        repo_object.datastreams[datastream[:name]].content = ds_content
       when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-        repo_object.add_file File.new(datastream[:payload]), datastream[:name]
+        if repo_object.datastreams[datastream[:name]].is_a? ActiveFedora::RDFDatastream
+          ds_content = set_rdf_subject(repo_object, File.read(datastream[:payload]))
+          mime_type = "application/n-triples"
+        else
+          ds_content = File.new(datastream[:payload])
+        end
+        file_name = File.basename(datastream[:payload])
+        dsid = datastream[:name]
+        opts = { filename: file_name }
+        opts.merge({ mime_type: mime_type }) if mime_type
+        repo_object.add_file(ds_content, dsid, opts)
       end
       return repo_object
     end
@@ -232,6 +246,19 @@ Model: %{model}
       return repo_object
     end
     
+    def set_rdf_subject(repo_object, ds_content)
+      graph = RDF::Graph.new
+      RDF::Reader.for(:ntriples).new(ds_content) do |reader|
+        reader.each_statement do |statement|
+          if statement.subject.is_a? RDF::Node
+            statement.subject = RDF::URI(repo_object.internal_uri)
+          end
+          graph.insert(statement)
+        end
+      end
+      graph.dump :ntriples
+    end
+
   end
 
 end

@@ -15,11 +15,11 @@ shared_examples "a describable object" do
     end
     describe "arguments" do
       it "with fixed results" do
-        expect(object.desc_metadata_terms(:dcterms)).to eq(DulHydra::Metadata::DCTerms::ELEMENTS_11 + (DulHydra::Metadata::DCTerms.term_names - DulHydra::Metadata::DCTerms::ELEMENTS_11))
-        expect(object.desc_metadata_terms(:dcterms)).to match_array DulHydra::Metadata::DCTerms.term_names
-        expect(object.desc_metadata_terms(:duke)).to eq DulHydra::Metadata::DukeTerms.term_names
-        expect(object.desc_metadata_terms(:dcterms_elements11)).to eq DulHydra::Metadata::DCTerms::ELEMENTS_11
-        expect(object.desc_metadata_terms(:defined_attributes)).to match_array DulHydra::Metadata::DCTerms::ELEMENTS_11
+        expect(object.desc_metadata_terms(:dcterms)).to eq(DulHydra::Metadata::Vocabulary.term_names(RDF::DC11) + (DulHydra::Metadata::Vocabulary.term_names(RDF::DC) - DulHydra::Metadata::Vocabulary.term_names(RDF::DC11)))
+        expect(object.desc_metadata_terms(:dcterms)).to match_array DulHydra::Metadata::Vocabulary.term_names(RDF::DC)
+        expect(object.desc_metadata_terms(:duke)).to eq DulHydra::Metadata::Vocabulary.term_names(DukeTerms)
+        expect(object.desc_metadata_terms(:dcterms_elements11)).to eq DulHydra::Metadata::Vocabulary.term_names(RDF::DC11)
+        expect(object.desc_metadata_terms(:defined_attributes)).to match_array DulHydra::Metadata::Vocabulary.term_names(RDF::DC11)
       end
       context "with variable results" do
         before do
