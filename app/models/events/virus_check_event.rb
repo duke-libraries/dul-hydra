@@ -11,4 +11,16 @@ class VirusCheckEvent < Event
       DulHydra::IndexFields::LAST_VIRUS_CHECK_OUTCOME => outcome }
   end
 
+  # Message sent by ActiveSupport::Notifications
+  def self.call(*args)
+    notification = ActiveSupport::Notifications::Event.new(*args)
+    result = notification.payload[:result] # DulHydra::Services::Antivirus::ScanResult instance
+    create(pid: notification.payload[:pid],
+           event_date_time: result.scanned_at,
+           outcome: result.ok? ? SUCCESS : FAILURE,
+           software: result.version,
+           detail: result.to_s
+           )    
+  end
+
 end

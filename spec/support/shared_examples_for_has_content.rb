@@ -6,60 +6,43 @@ shared_examples "an object that can have content" do
   let(:object) { described_class.new(title: [ "I Have Content!" ]) }
 
   describe "when new content is saved" do
-    context "and the content is a file" do
-      let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
-      before { object.content.content = file }
-      it "should run a virus scan" do
-        expect(VirusCheck).to receive(:execute).with(object, file).and_call_original
-        object.save
-      end
-      it "should have an original_filename" do
-        object.save
-        expect(object.original_filename).to eq("library-devil.tiff")
-      end
-      it "should have a content_type" do
-        object.save
-        expect(object.content_type).to eq("image/tiff")
-      end
-      it "should have a thumbnail (if it's an appropriate type)" do
-        object.save
-        expect(object.thumbnail).to be_present
-      end
-      context "and a virus is found" do
-        before { allow(VirusCheck).to receive(:execute).with(object, file).and_raise(DulHydra::VirusFoundError) }
-        it "should not persist the object" do
-          expect { object.save }.to raise_error
-          expect(object).to be_new_record
-        end
-      end
-      context "and no virus is found" do
-        before { object.save(validate: false) }
-        it "should create a 'virus check' event for the object" do
-          expect(VirusCheckEvent.for_object(object).count).to eq(1)
-        end
-      end
+    let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+    before { object.upload file }
+    it "should have an original_filename" do
+      object.save
+      expect(object.original_filename).to eq("library-devil.tiff")
     end
-    context "and the content is not a file" do
-      before { object.content.content = "A string" }
-      it "should not run a virus scan" do
-        expect(VirusCheck).not_to receive(:execute)
-        object.save!
-      end
+    it "should have a content_type" do
+      object.save
+      expect(object.content_type).to eq("image/tiff")
+    end
+    it "should have a thumbnail (if it's an appropriate type)" do
+      object.save
+      expect(object.thumbnail).to be_present
+    end
+    it "should create a 'virus check' event for the object" do
+      expect { object.save }.to change { object.virus_checks.count }.by(1)
     end
   end
 
   describe "#upload" do
-    it "should change the content" do
-      expect { object.upload fixture_file_upload("library-devil.tiff", "image/tiff") }.to change { object.content.content }
+    let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+    it "should change the content location" do
+      expect { object.upload file }.to change { object.content.dsLocation }
+    end
+    it "should check the file for viruses" do
+      expect(object).to receive(:virus_scan).with(file)
+      object.upload file
     end
   end
 
   describe "#upload!" do 
+    let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
     it "should change the content" do
-      expect { object.upload! fixture_file_upload("library-devil.tiff", "image/tiff") }.to change { object.content.content }
+      expect { object.upload! file }.to change { object.content.content }
     end    
     it "should persist the object" do
-      expect { object.upload! fixture_file_upload("library-devil.tiff", "image/tiff") }.to change { object.pid } 
+      expect { object.upload! file }.to change { object.pid } 
     end
   end
 
@@ -68,9 +51,8 @@ shared_examples "an object that can have content" do
     let!(:checksum_type) { "SHA-256" }
     before { object.upload fixture_file_upload("library-devil.tiff", "image/tiff") }
     context "with unpersisted content" do
-      before { allow(object).to receive(:content_changed?) { true } }
       it "should raise an exception" do
-        expect { object.validate_checksum!(checksum, checksum_type) }.to raise_error DulHydra::Error
+        expect { object.validate_checksum!(checksum, checksum_type) }.to raise_error
       end
     end
     context "with persisted content" do
@@ -80,7 +62,7 @@ shared_examples "an object that can have content" do
       end
       context "and the checksum type is invalid" do
         it "should raise an exception" do
-          expect { object.validate_checksum!("0123456789abcdef", "FOO-BAR") }.to raise_error ArgumentError
+          expect { object.validate_checksum!("0123456789abcdef", "FOO-BAR") }.to raise_error
         end
       end
       context "and the checksum type is the same as the datastream checksum type" do
@@ -99,9 +81,20 @@ shared_examples "an object that can have content" do
       end
       context "and the checksum doesn't match" do
         it "should raise an exception" do
-          expect { object.validate_checksum!("0123456789abcdef", checksum_type) }.to raise_error DulHydra::ChecksumInvalid
+          expect { object.validate_checksum!("0123456789abcdef", checksum_type) }.to raise_error
         end
       end
     end
   end
+
+  describe "deleting" do
+    before { object.upload! fixture_file_upload("library-devil.tiff", "image/tiff") }
+    it "should delete the content file" do
+      path = object.external_datastream_file_path(object.content)
+      expect(File.exists?(path)).to be true
+      object.destroy
+      expect(File.exists?(path)).to be false
+    end
+  end
+
 end

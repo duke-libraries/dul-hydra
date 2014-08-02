@@ -14,7 +14,7 @@ describe DulHydra::Services::Antivirus, antivirus: true do
   end
   context "when a virus is found" do
     before do
-      allow(DulHydra::Services::Antivirus).to receive(:scan_one).with(file) do
+      allow(DulHydra::Services::Antivirus).to receive(:scan_one).with(file.path) do
         DulHydra::Services::Antivirus::ScanResult.new "Deadly Virus!", file.path
       end
     end
@@ -24,7 +24,7 @@ describe DulHydra::Services::Antivirus, antivirus: true do
   end
   context "when an error occurs in the engine" do
     before do
-      allow(DulHydra::Services::Antivirus).to receive(:scan_one).with(file) do
+      allow(DulHydra::Services::Antivirus).to receive(:scan_one).with(file.path) do
         DulHydra::Services::Antivirus::ScanResult.new 1, file.path
       end
     end

@@ -117,7 +117,14 @@ module DulHydra
     alias_method :content_type, :content_mime_type
 
     def content_size
-      content_ds["dsSize"] rescue nil
+      if content_ds["dsControlGroup"] == "E"
+        file_path = DulHydra::Utils.path_from_uri(content_ds["dsLocation"])
+        File.size(file_path)
+      else
+        content_ds["dsSize"] 
+      end
+    rescue
+      nil
     end
     
     def content_checksum
