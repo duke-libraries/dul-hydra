@@ -42,9 +42,8 @@ module DulHydra
       # Base directory of external file store
       mattr_accessor :external_file_store      
 
-      # Pattern (String or Array) for building external file subpath from hex digest
-      # Examples:
-      # - "1, 1, 2"
+      # Pattern (Array) for building external file subpath from hex digest
+      # Example:
       # - [1, 1, 2]
       mattr_accessor :external_file_subpath_pattern
     end

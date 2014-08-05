@@ -1,8 +1,6 @@
 module DulHydra
   class Base < ActiveFedora::Base
 
-    include Hydra::ModelMethods
-
     include Describable
     include Governable
     include AccessControllable
