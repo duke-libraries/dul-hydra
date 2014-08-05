@@ -35,7 +35,10 @@ module DulHydra
     end
 
     def title_display
-      title.first || identifier.first || "[#{pid}]"
+      return title.first if title.present?
+      return identifier.first if identifier.present?
+      return original_filename if respond_to?(:original_filename) && original_filename.present?
+      "[#{pid}]"
     end
 
     def identifier_sort
