@@ -17,27 +17,19 @@ module DulHydra
     end
 
     def original_filename
-      external_datastream_file_name(content)
+      content.external? ? content.file_name : properties.original_filename.first
     end
 
     # Set content to file and return boolean for changed (true)/not changed (false)
-    def upload file, file_name=nil
-      file_name ||= if file.respond_to?(:original_filename)
-                      file.original_filename
-                    elsif file.respond_to?(:path)
-                      File.basename(file.path)
-                    elsif file.is_a?(String) && (file.length < 1024) && File.exists?(file)
-                      File.basename(file)
-                    else
-                      raise ArgumentError, "File name not provided and unable to determine from file."
-                    end
-      add_file(file, DulHydra::Datastreams::CONTENT, file_name)
+    def upload file, opts={}
+      add_file(file, DulHydra::Datastreams::CONTENT, opts)
     end
 
     # Set content to file and save if changed.
     # Return boolean for success of upload and save.
-    def upload! file, file_name=nil
-      upload(file, file_name) && save
+    def upload! file, opts={}
+      upload(file, opts)
+      save
     end
 
     def content_type

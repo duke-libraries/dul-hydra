@@ -44,6 +44,10 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.clean
     ActiveFedora::Base.destroy_all
+    DulHydra.external_file_store = Dir.mktmpdir
+  end
+  config.after(:suite) do
+    FileUtils.remove_entry_secure DulHydra.external_file_store
   end
   config.after(:each) { ActiveFedora::Base.destroy_all }
   config.after(:each, type: :feature) { Warden.test_reset! }

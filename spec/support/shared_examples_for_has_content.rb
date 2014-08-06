@@ -31,7 +31,7 @@ shared_examples "an object that can have content" do
       expect { object.upload file }.to change { object.content.dsLocation }
     end
     it "should check the file for viruses" do
-      expect(object).to receive(:virus_scan).with(file)
+      expect(DulHydra::Services::Antivirus).to receive(:scan).with(file)
       object.upload file
     end
   end
@@ -90,7 +90,7 @@ shared_examples "an object that can have content" do
   describe "deleting" do
     before { object.upload! fixture_file_upload("library-devil.tiff", "image/tiff") }
     it "should delete the content file" do
-      path = object.external_datastream_file_path(object.content)
+      path = object.content.file_path
       expect(File.exists?(path)).to be true
       object.destroy
       expect(File.exists?(path)).to be false

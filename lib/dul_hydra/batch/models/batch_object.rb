@@ -218,10 +218,7 @@ Model: %{model}
       when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
         repo_object.datastreams[datastream[:name]].content = datastream[:payload]
       when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-        file = File.new(datastream[:payload])
-        file_name = File.basename(datastream[:payload])
-        dsid = datastream[:name]
-        repo_object.add_file(file, dsid, file_name) 
+        repo_object.add_file File.new(datastream[:payload]), datastream[:name]
       end
       return repo_object
     end

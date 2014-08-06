@@ -33,6 +33,11 @@ module DulHydra::Utils
     end
   end
 
+  def self.file_name_for file
+    return file.original_filename if file.respond_to?(:original_filename) && file.original_filename.present?
+    File.basename(file_path(file)) rescue nil
+  end
+
   def self.file_uri?(uri)
     return false unless uri
     URI.parse(uri).scheme == "file"
