@@ -19,9 +19,11 @@ module DulHydra
     # Comparable to Hydra::ModelMethods method add_file(file, dsid, file_name)
     def add_file file, dsid, opts={}
       self.file_to_add = file
+
+      opts[:file_name] ||= DulHydra::Utils.file_name_for(file)
+      opts[:mime_type] ||= DulHydra::Utils.mime_type_for(file, opts[:file_name])
+
       run_callbacks(:add_file) do
-        opts[:file_name] ||= DulHydra::Utils.file_name_for(file)
-        opts[:mime_type] ||= DulHydra::Utils.mime_type_for(file, opts[:file_name])
         if opts.delete(:external) || datastreams.include?(dsid) && datastreams[dsid].external?
           add_external_file(file, dsid, opts)
         else
@@ -29,11 +31,12 @@ module DulHydra
           add_file_datastream(file, dsid: dsid, mimeType: opts[:mime_type])
         end
       end
+
       self.file_to_add = nil
     end
 
     # Normally this method should not be called directly
-    # Call #add_file with dsid for external datastream, or :external => true if no spec for dsid
+    # Call #add_file with dsid for external datastream id, or :external => true if no spec for dsid
     def add_external_file file, dsid, opts={}
       file_path = DulHydra::Utils.file_path(file) # raises ArgumentError
 
@@ -51,6 +54,7 @@ module DulHydra
 
       # copy the file to storage unless we're using the original
       if opts[:use_original]
+        raise DulHydra::Error, "Cannot add file to repository that is owned by another user." unless File.owned?(file_path)
         store_path = file_path
       else
         # generate storage path
@@ -61,6 +65,9 @@ module DulHydra
         # copy the original file to the storage location
         FileUtils.cp file_path, store_path
       end
+
+      # Set file permissions
+      File.chmod 0644, store_path
 
       ds.dsLocation = DulHydra::Utils.path_to_uri(store_path)
     end
