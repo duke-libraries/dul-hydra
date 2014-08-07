@@ -12,6 +12,7 @@ class UniquenessValidator < ActiveModel::EachValidator
   end
 
   def validate_each(record, attribute, value)
+    value = value.respond_to?(:each) ? value.first : value
     conditions = {index_field(attribute) => value}
     conditions.merge!("-id" => record.id) if record.persisted?
     if record.class.exists? conditions

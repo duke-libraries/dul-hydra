@@ -1,10 +1,14 @@
-class AdminPolicy < Hydra::AdminPolicy
+class AdminPolicy < ActiveFedora::Base
+
+  include Hydra::AdminPolicyBehavior
 
   include ActiveFedora::Auditable
+  include DulHydra::Describable
   include DulHydra::Licensable
   include DulHydra::EventLoggable
   include DulHydra::AccessControllable
   include DulHydra::Validations
+  include DulHydra::Indexing
 
   has_attributes :default_license_title, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
   has_attributes :default_license_description, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
@@ -27,37 +31,6 @@ class AdminPolicy < Hydra::AdminPolicy
     self.default_license_url = l[:url]
   end
 
-  # XXX For compatibility with DulHydra::Describable
-  def desc_metadata_terms(*)
-    [:title, :description]
-  end
-
-  # XXX For compatibility with DulHydra::Describable
-  def desc_metadata_values term
-    descMetadata.send term
-  end
-
-  # XXX For compatibility with DulHydra::Describable
-  # Update all descMetadata terms with values in hash
-  # Note that term not having key in hash will be set to nil!
-  def set_desc_metadata term_values_hash
-    desc_metadata_terms.each do |term| 
-      values = term_values_hash[term]
-      if values.respond_to?(:reject!)
-        values.reject! { |v| v.blank? }
-      else
-        values = nil if values.blank?
-      end
-      descMetadata.send("#{term}=", values)
-    end
-  end
-
-  def to_solr(solr_doc=Hash.new, opts={})
-    solr_doc = super(solr_doc, opts)
-    solr_doc.merge!(DulHydra::IndexFields::TITLE => title || pid)
-    solr_doc
-  end
-
   def set_initial_permissions(creator_user = nil)
     super
     # Grant read to authenticated users
@@ -66,10 +39,6 @@ class AdminPolicy < Hydra::AdminPolicy
 
   def default_entities_for_permission(type, access)
     default_permissions.collect { |p| p[:name] if p[:type] == type and p[:access] == access }.compact
-  end
-
-  def title_display
-    title
   end
   
   ["discover", "read", "edit"].each do |access|
