@@ -1,7 +1,15 @@
 require 'spec_helper'
+require 'support/shared_examples_for_describables'
+require 'support/shared_examples_for_access_controllables'
+require 'support/shared_examples_for_indexing'
 
 describe AdminPolicy, admin_policies: true do
-  context "terms delegated to defaultRights" do
+
+  it_behaves_like "a describable object"
+  it_behaves_like "an access controllable object"
+  it_behaves_like "an object that has a display title"
+
+  describe "terms delegated to defaultRights" do
     let(:apo) { AdminPolicy.new }
     before do
       apo.default_license_title = "License Title"
@@ -15,7 +23,7 @@ describe AdminPolicy, admin_policies: true do
     end
   end
 
-  context "validation" do
+  describe "validation" do
     let(:apo) { AdminPolicy.new }
     context "of title attribute" do
       context "presence" do
@@ -27,7 +35,7 @@ describe AdminPolicy, admin_policies: true do
       context "uniqueness" do
         before do
           allow(AdminPolicy).to receive(:exists?).with("title_ssi" => "My Title") { true }
-          apo.title = "My Title"
+          apo.title = ["My Title"]
         end
         it "should be required" do
           expect(apo).not_to be_valid
@@ -37,7 +45,7 @@ describe AdminPolicy, admin_policies: true do
     end
   end
 
-  context "#set_initial_permissions" do
+  describe "#set_initial_permissions" do
     let(:apo) { AdminPolicy.new }
     context "no user creator" do
       before { apo.set_initial_permissions }
@@ -55,12 +63,6 @@ describe AdminPolicy, admin_policies: true do
         apo.read_groups.should == ["registered"]
       end
     end
-  end
-
-  context "indexing" do
-    subject { SolrDocument.new(ActiveFedora::SolrService.query(ActiveFedora::SolrService.construct_query_for_pids([apo.pid])).first) }
-    let(:apo) { AdminPolicy.create(title: 'Awesome Policy') }
-    its(:title) { should == apo.title }
   end
 
 end
