@@ -63,7 +63,7 @@ describe IngestFolder, ingest: true do
   let(:mount_point_path) { "/mount/" }
   let(:base_path) { File.join(mount_point_name, "base/path/") }
   let(:checksum_directory) { "/fixity/fedora_ingest/" }
-  let(:checksum_type) { "checksum-type" }
+  let(:checksum_type) { "sha256" }
   let(:user) { FactoryGirl.create(:user) }
   before do
     File.stub(:readable?).and_return(true)
@@ -115,7 +115,7 @@ describe IngestFolder, ingest: true do
     let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user) }
     context "#checksum_file_location" do
       context "checksum file not specified" do
-        let(:expected_location) { File.join(IngestFolder.default_checksum_file_location, "#{ingest_folder.sub_path}.txt") }
+        let(:expected_location) { File.join(IngestFolder.default_checksum_file_location, "#{ingest_folder.sub_path}-#{mount_point_name}-#{checksum_type}.txt") }
         it "should return the default path with subpath-based filename" do
           expect(ingest_folder.checksum_file_location).to eql(expected_location)
         end

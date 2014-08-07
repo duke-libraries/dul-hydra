@@ -43,7 +43,7 @@ describe IngestFoldersController do
       expect(assigns[:ingest_folder].model).to eql(IngestFolder.default_file_model)
       expect(assigns[:ingest_folder].base_path).to eql("base/path/")
       expect(assigns[:ingest_folder].sub_path).to eql('/subpath/subsubpath/')
-      expect(assigns[:ingest_folder].checksum_file).to eql(File.join(IngestFolder.default_checksum_file_location, "subpath.txt"))
+      expect(assigns[:ingest_folder].checksum_file).to eql(File.join(IngestFolder.default_checksum_file_location, "subpath-base-sha256.txt"))
       expect(assigns[:ingest_folder].checksum_type).to eql(IngestFolder.default_checksum_type)
     end
     
