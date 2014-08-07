@@ -372,12 +372,6 @@ module ApplicationHelper
     end
   end
 
-  def new_form_html_opts
-    opts = {role: "form", class: "form-horizontal"}
-    opts[:enctype] = "multipart/form-data" if current_object.can_have_content?
-    opts
-  end
-
   private
 
   def render_label(text, label)

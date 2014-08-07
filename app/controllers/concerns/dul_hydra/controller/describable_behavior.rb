@@ -3,16 +3,13 @@ module DulHydra
     module DescribableBehavior
       extend ActiveSupport::Concern
 
-      included do
-        self.log_actions << :update
-      end
-
       def edit
       end
 
       def update
-        current_object.set_desc_metadata desc_metadata_params
+        set_desc_metadata
         if current_object.save
+          notify_update(summary: "Descriptive metadata updated")
           flash[:success] = "Descriptive metadata updated."
           redirect_to action: "show", tab: "descriptive_metadata"
         else
@@ -22,16 +19,14 @@ module DulHydra
 
       protected
 
+      def set_desc_metadata
+        current_object.set_desc_metadata desc_metadata_params
+      end
+
       def desc_metadata_params
         permitted = current_object.desc_metadata_terms.each_with_object({}) { |term, memo| memo[term] = [] }
         params.require(:descMetadata).permit(permitted)
       end
-
-      def event_options_for_update
-        {summary: "Descriptive metadata updated"}
-      end
-
-      # tabs
 
       def tab_descriptive_metadata
         Tab.new("descriptive_metadata",

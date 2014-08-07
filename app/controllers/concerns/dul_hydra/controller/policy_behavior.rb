@@ -2,10 +2,6 @@ module DulHydra
   module Controller
     module PolicyBehavior
       extend ActiveSupport::Concern
-
-      included do
-        self.log_actions << :default_permissions
-      end
      
       def default_permissions
         if request.patch?
@@ -21,6 +17,7 @@ module DulHydra
           current_object.defaultRights.permissions = new_permissions
           current_object.default_license = params[:license]
           if current_object.save
+            notify_update(summary: "Default rights updated")
             flash[:success] = I18n.t('dul_hydra.admin_policies.messages.changed')
             redirect_to(action: "show", tab: "default_permissions") and return
           end

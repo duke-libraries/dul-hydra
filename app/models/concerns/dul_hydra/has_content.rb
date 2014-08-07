@@ -69,8 +69,10 @@ module DulHydra
           raise ArgumentError, "Checksum type not recognized: #{checksum_type.inspect}"
         end
       end
-      unless checksum == content_checksum
-        raise DulHydra::ChecksumInvalid, "The checksum provided [#{checksum_type}: #{checksum}] does not match the checksum of the repository content [#{checksum_type}: #{content_checksum}]"
+      if checksum == content_checksum
+        "The checksum [#{checksum_type}: #{checksum}] is valid for the content of #{model_pid}."
+      else
+        raise DulHydra::ChecksumInvalid, "The checksum [#{checksum_type}: #{checksum}] does not match repository checksum [#{checksum_type}: #{content_checksum}] for the content of #{model_pid}."
       end
     end
 

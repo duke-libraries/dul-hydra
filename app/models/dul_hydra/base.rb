@@ -23,5 +23,10 @@ module DulHydra
       ActiveFedora::SolrService.construct_query_for_rel(reflections[association].options[:property] => internal_uri)
     end
 
+    # e.g., "Collection duke:1"
+    def model_pid
+      [self.class.to_s, pid].join(" ")
+    end
+
   end
 end

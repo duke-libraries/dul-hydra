@@ -4,24 +4,14 @@ module DulHydra
       extend ActiveSupport::Concern
 
       included do
-        self.log_actions << :upload
-      end
-
-      def create
-        upload_content
-        if current_object.save
-          validate_checksum
-          flash[:success] = "New #{current_object.class.to_s} created."
-          redirect_to after_create_redirect
-        else
-          render :new
-        end
+        before_action :upload_content, only: :create
       end
 
       def upload
         if request.patch?
           upload_content
           if current_object.save
+            notify_upload
             validate_checksum
             flash[:success] = I18n.t('dul_hydra.upload.alerts.success')
             redirect_to(action: "show") and return
@@ -31,18 +21,23 @@ module DulHydra
 
       protected
 
+      def notify_upload
+        notify_update(summary: "Object content was updated")
+      end
+
       def upload_content
         current_object.upload content_params[:file]
       end
 
+      def after_create_success
+        validate_checksum
+      end
+
       def validate_checksum
-        return if content_params[:checksum].blank? || current_object.errors.any?
-        checksum, checksum_type = content_params.values_at :checksum, :checksum_type
-        current_object.validate_checksum! checksum, checksum_type
+        return if content_params[:checksum].blank?
+        flash[:info] = current_object.validate_checksum!(*checksum_params)
       rescue DulHydra::ChecksumInvalid => e
         flash[:error] = e.message
-      else
-        flash[:info] = "The checksum provided [#{checksum_type}: #{checksum}] was validated against the repository content."
       end
 
       def content_params
@@ -51,6 +46,10 @@ module DulHydra
         @content_params.require(:file)
         @content_params.permit(:checksum, :checksum_type)
         @content_params
+      end
+
+      def checksum_params
+        content_params.values_at :checksum, :checksum_type
       end
 
     end
