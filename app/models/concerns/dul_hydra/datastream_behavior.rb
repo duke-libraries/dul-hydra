@@ -1,6 +1,8 @@
 module DulHydra
   module DatastreamBehavior
 
+    DEFAULT_FILE_EXTENSION = "bin"
+
     # Returns a list of the external file paths for all versions of the datastream.
     def file_paths
       raise "The `file_paths' method is valid only for external datastreams." unless external?
@@ -22,6 +24,22 @@ module DulHydra
       if path = file_path
         File.basename(path)
       end
+    end
+
+    # Return default file extension for datastream based on MIME type
+    def default_file_extension
+      mimetypes = MIME::Types[mimeType]
+      mimetypes.empty? ? DEFAULT_FILE_EXTENSION : mimetypes.first.extensions.first
+    end
+
+    # Return default file name prefix based on object PID
+    def default_file_prefix
+      [pid.sub(/:/, '_'), dsid].join("_")
+    end
+
+    # Return default file name
+    def default_file_name
+      [default_file_prefix, default_file_extension].join(".")
     end
 
   end
