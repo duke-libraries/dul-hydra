@@ -30,7 +30,7 @@ class Ability
 
   def action_aliases
     # read aliases
-    alias_action :attachments, :collection_info, :components, :event, :events, :items, to: :read
+    alias_action :attachments, :collection_info, :components, :event, :events, :items, :targets, to: :read
     # edit/update aliases
     alias_action :permissions, :default_permissions, to: :update
   end

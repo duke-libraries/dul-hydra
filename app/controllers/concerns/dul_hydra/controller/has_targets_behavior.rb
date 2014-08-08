@@ -1,17 +1,20 @@
 module DulHydra
   module Controller
-    module HasChildrenBehavior
+    module HasTargetsBehavior
+
+      def targets
+        get_targets
+      end
 
       protected
 
-      def get_children
-        configure_blacklight_for_children
-        # Set instance vars for compatibility with Blacklight helpers and views
-        query = current_object.association_query(:children)
+      def get_targets
+        configure_blacklight_for_targets
+        query = current_object.association_query(:targets)
         @response, @document_list = get_search_results(params, {q: query})
       end
 
-      def configure_blacklight_for_children
+      def configure_blacklight_for_targets
         blacklight_config.configure do |config|
           config.sort_fields.clear
           config.add_sort_field "#{DulHydra::IndexFields::IDENTIFIER} asc", label: "Identifier"

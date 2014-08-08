@@ -1,7 +1,6 @@
 module DulHydra
   module Controller
     module HasAttachmentsBehavior
-      extend ActiveSupport::Concern
 
       def attachments
         get_attachments

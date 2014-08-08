@@ -28,21 +28,74 @@ describe CollectionsController, collections: true do
     end
   end
 
-  describe "#children" do
+  describe "#items" do
+    let(:collection) { FactoryGirl.create(:collection_has_item) }
     context "when the user can read the collection" do
-      it "should render the children"
+      before do
+        apo = collection.admin_policy
+        apo.default_permissions = [{type: "user", access: "read", name: user.user_key}]
+        apo.save
+      end
+      it "should render the items" do
+        get :items, id: collection
+        expect(response).to be_successful
+        expect(response).to render_template(:items)
+      end
     end
     context "when the user cannot read the collection" do
-      it "should be unauthorized"
+      it "should be unauthorized" do
+        get :items, id: collection
+        expect(response.response_code).to eq 403
+      end
     end
   end
 
   describe "#attachments" do
+    let(:collection) { FactoryGirl.create(:collection) }
+    let(:attachment) { FactoryGirl.create(:attachment) }
+    before do
+      attachment.attached_to = collection
+      attachment.save
+    end
     context "when the user can read the collection" do
-      it "should render the attachments"
+      before do
+        apo = collection.admin_policy
+        apo.default_permissions = [{type: "user", access: "read", name: user.user_key}]
+        apo.save
+      end
+      it "should render the attachments" do
+        get :attachments, id: collection
+        expect(response).to be_successful
+        expect(response).to render_template(:attachments)
+      end
     end
     context "when the user cannot read the collection" do
-      it "should be unauthorized"
+      it "should be unauthorized" do
+        get :attachments, id: collection
+        expect(response.response_code).to eq 403
+      end
+    end
+  end
+
+  describe "#targets" do
+    let(:collection) { FactoryGirl.create(:collection_has_target) }
+    context "when the user can read the collection" do
+      before do
+        apo = collection.admin_policy
+        apo.default_permissions = [{type: "user", access: "read", name: user.user_key}]
+        apo.save
+      end
+      it "should render the targets" do
+        get :targets, id: collection
+        expect(response).to be_successful
+        expect(response).to render_template(:targets)
+      end
+    end
+    context "when the user cannot read the collection" do
+      it "should be unauthorized" do
+        get :targets, id: collection
+        expect(response.response_code).to eq 403
+      end
     end
   end
 
