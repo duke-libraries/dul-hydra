@@ -21,7 +21,6 @@ describe "Collections views", collections: true do
           object.save
         end
         it "should link to its items" do
-          pending "https://github.com/duke-libraries/dul-hydra/issues/1012"
           visit collection_path(object)
           expect(page).to have_link "Items"
         end

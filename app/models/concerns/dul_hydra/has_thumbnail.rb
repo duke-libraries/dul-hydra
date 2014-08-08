@@ -23,10 +23,6 @@ module DulHydra
       thumbnail.content_changed?
     end
 
-    def has_thumbnail?
-      thumbnail.has_content?
-    end
-
     def copy_thumbnail_from(other)
       if other && other.has_thumbnail?
         self.thumbnail.content = other.thumbnail.content

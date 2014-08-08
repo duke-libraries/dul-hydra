@@ -12,21 +12,20 @@ module DulHydra
 
       include Hydra::Derivatives
 
-      around_save :update_thumbnail, if: :external_file_changed?
-      delegate :has_content?, to: :content
+      around_save :update_thumbnail, if: :content_changed?
     end
 
     def original_filename
+      # The fallback is here in case we don't convert all content datastreams from managed to external
       content.external? ? content.file_name : properties.original_filename.first
     end
 
-    # Set content to file and return boolean for changed (true)/not changed (false)
+    # Convenience method wrapping FileManagement#add_file
     def upload file, opts={}
       add_file(file, DulHydra::Datastreams::CONTENT, opts)
     end
 
-    # Set content to file and save if changed.
-    # Return boolean for success of upload and save.
+    # Set content to file and save
     def upload! file, opts={}
       upload(file, opts)
       save
@@ -80,11 +79,11 @@ module DulHydra
       VirusCheckEvent.for_object(self)
     end
 
-    protected
-
-    def external_file_changed?
+    def content_changed?
       content.dsLocation_changed?
     end
+
+    protected
 
     def update_thumbnail
       yield
