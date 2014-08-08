@@ -88,6 +88,7 @@ module DulHydra
     def title
       get(DulHydra::IndexFields::TITLE)
     end
+    alias_method :title_display, :title # duck-type DulHydra::Base
 
     def identifier
       # We want the multivalued version here

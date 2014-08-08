@@ -1,4 +1,8 @@
-<%= link_to_unless_current "Items", {action: "items"} %>
+<% if count > 0 %> 
+  <%= link_to_unless_current("Items", {action: "items"}) %>
+<% else %>
+  Items
+<% end %>
 <% if can?(:create, Item) && can?(:add_children, current_object) %>
   <%= link_to new_item_path(parent_id: current_object), class: "btn btn-success btn-xs", title: "Create a new Item" do %>
     <span class="glyphicon glyphicon-plus"></span>

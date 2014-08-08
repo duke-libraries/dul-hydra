@@ -128,11 +128,11 @@ module ApplicationHelper
     render_download_link args.merge(label: label)
   end
 
-  def render_thumbnail(document_or_object, linked = false)
-    src = document_or_object.has_thumbnail? ? thumbnail_path(document_or_object) : default_thumbnail(document_or_object)
+  def render_thumbnail(doc_or_obj, linked = false)
+    src = doc_or_obj.has_thumbnail? ? thumbnail_path(doc_or_obj) : default_thumbnail(doc_or_obj)
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
-    if linked && can?(:read, document_or_object)
-      link_to thumbnail, document_or_object_url(document_or_object)
+    if linked && can?(:read, doc_or_obj)
+      link_to thumbnail, document_or_object_url(doc_or_obj)
     else
       thumbnail
     end
@@ -212,16 +212,20 @@ module ApplicationHelper
     "#{document.active_fedora_model} #{document.id}"
   end
 
+  def link_to_document_or_object(doc_or_obj, access = :read)
+	link_to_if can?(access, doc_or_obj), doc_or_obj.title_display, document_or_object_url(doc_or_obj)
+  end
+
   def link_to_create_model(model)
     link_to I18n.t("dul_hydra.#{model.underscore}.new_menu", default: model), controller: model.tableize, action: "new"
   end
 
-  def document_or_object_url(document_or_object)
-    url_for controller: document_or_object.controller_name, action: "show", id: document_or_object
+  def document_or_object_url(doc_or_obj)
+    url_for controller: doc_or_obj.controller_name, action: "show", id: doc_or_obj
   end
 
-  def download_url_for(document_or_object)
-    url_for controller: "downloads", action: "show", id: document_or_object
+  def download_url_for(doc_or_obj)
+    url_for controller: "downloads", action: "show", id: doc_or_obj
   end
 
   def model_options_for_select(model, opts={})
@@ -384,11 +388,11 @@ module ApplicationHelper
     content_tag :span, text, :class => "label label-#{label}"
   end
 
-  def default_thumbnail(document_or_object)
-    if document_or_object.has_content?
-      default_mime_type_thumbnail(document_or_object.content_type)
+  def default_thumbnail(doc_or_obj)
+    if doc_or_obj.has_content?
+      default_mime_type_thumbnail(doc_or_obj.content_type)
     else
-      default_model_thumbnail(document_or_object.active_fedora_model)
+      default_model_thumbnail(doc_or_obj.active_fedora_model)
     end
   end
   

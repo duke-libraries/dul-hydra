@@ -2,8 +2,7 @@ module ActiveFedora
   class Base
 
     def can_have_attachments?
-      # XXX Should probably test existence of association on :attachments
-      self.is_a? DulHydra::HasAttachments
+      has_association? :attachments
     end
 
     def has_attachments?
@@ -11,9 +10,7 @@ module ActiveFedora
     end
 
     def can_have_children?
-      # DulHydra::HasChildren doesn't implement the has_many :children association
-      # In active-fedora 7, we can write !association(:children).nil?
-      !self.class.reflect_on_association(:children).nil?
+      has_association? :children
     end
 
     def has_children?
@@ -21,11 +18,11 @@ module ActiveFedora
     end
 
     def can_have_content?
-      self.is_a? DulHydra::HasContent
+      datastreams.include? "content"
     end
     
     def has_content?
-      false # DulHydra::HasContent implements #has_content?
+      can_have_content? && content.has_content?
     end
 
     def has_content_metadata?
@@ -37,7 +34,7 @@ module ActiveFedora
     end
 
     def governable?
-      self.is_a? DulHydra::Governable
+      has_association? :admin_policy
     end
 
     def has_admin_policy?
@@ -50,11 +47,11 @@ module ActiveFedora
     end
     
     def can_have_thumbnail?
-      self.is_a? DulHydra::HasThumbnail
+      datastreams.include? "thumbnail"
     end
 
     def has_thumbnail?
-      false # DulHydra::HasThumbnail implements #has_thumbnail?
+      can_have_thumbnail? && thumbnail.has_content?
     end
 
     def safe_id
@@ -67,7 +64,13 @@ module ActiveFedora
     end
 
     def controller_name
-      self.class.to_s.tableize
+      active_fedora_model.tableize
+    end
+
+    protected
+
+    def has_association? assoc
+      !association(assoc).nil?
     end
 
   end
