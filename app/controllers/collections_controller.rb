@@ -3,6 +3,7 @@ class CollectionsController < ApplicationController
   include DulHydra::Controller::RepositoryBehavior
   include DulHydra::Controller::HasChildrenBehavior
   include DulHydra::Controller::HasAttachmentsBehavior
+  include DulHydra::Controller::HasTargetsBehavior
 
   self.tabs << :tab_collection_info
 

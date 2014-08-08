@@ -14,4 +14,7 @@ describe "collections router", collections: true do
   it "should have an attachments route" do
     expect(get: "/collections/duke:1/attachments").to route_to(controller: "collections", action: "attachments", id: "duke:1")
   end
+  it "should have a targets route" do
+    expect(get: "/collections/duke:1/targets").to route_to(controller: "collections", action: "targets", id: "duke:1")
+  end
 end

@@ -34,8 +34,13 @@
 
 <% if current_object.respond_to?(:targets) %>
   <li class="list-group-item">
-	<span class="badge"><%= current_object.targets.count %></span>
-	Targets
+	<% count = current_object.targets.count %>
+	<span class="badge"><%= count %></span>
+	<% if count > 0 %>
+	  <%= link_to_unless_current "Targets", {action: "targets"} %>
+	<% else %>
+	  Targets
+    <% end %>
   </li>
 <% end %>
 
