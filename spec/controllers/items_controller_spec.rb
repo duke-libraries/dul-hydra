@@ -5,6 +5,11 @@ def create_item
   post :create, parent_id: collection.pid
 end
 
+def create_item_and_component opts={}
+  checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
+  post :create, parent_id: collection.pid, content: {file: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
+end
+
 describe ItemsController, items: true do
 
   let(:user) { FactoryGirl.create(:user) }
@@ -50,14 +55,51 @@ describe ItemsController, items: true do
         expect(response.response_code).to eq(403)
       end
     end
+    context "adding a component file at creation time" do
+      before { controller.current_ability.can(:add_children, collection) }
+      it "should create the component" do
+        expect { create_item_and_component }.to change { Component.count }.by(1)
+      end
+      it "the component should have content" do
+        create_item_and_component
+        expect(assigns(:current_object).children.first).to have_content
+      end
+      it "should correctly set the MIME type" do
+        create_item_and_component
+        expect(assigns(:current_object).children.first.content_type).to eq("image/tiff")
+      end
+      it "should store the original file name" do
+        create_item_and_component
+        expect(assigns(:current_object).children.first.original_filename).to eq("image1.tiff")
+      end
+      it "should grant edit permission to the user" do
+        create_item_and_component
+        expect(assigns(:current_object).children.first.edit_users).to include(user.user_key)
+      end
+      it "should have a thumbnail (if it's an image)" do
+        create_item_and_component
+        expect(assigns(:current_object).children.first).to have_thumbnail
+      end
+      it "should create events" do
+        expect{ create_item_and_component }.to change{ CreationEvent.count }.by(2)
+      end
+      it "should validate the checksum if provided"
+    end
   end
 
-  describe "#children" do
+  describe "#components" do
+    let(:item) { FactoryGirl.create(:item) }
     context "when the user can read the item" do
-      it "should render the children"
+      before { controller.current_ability.can(:read, item) }
+      it "should render the components" do
+        expect(get :components, id: item).to render_template(:components)
+      end
     end
     context "when the user cannot read the item" do
-      it "should be unauthorized"
+      it "should be unauthorized" do
+        get :components, id: item
+        expect(response.response_code).to eq 403
+      end
     end
   end
   

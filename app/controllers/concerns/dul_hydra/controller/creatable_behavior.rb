@@ -3,17 +3,15 @@ module DulHydra
     module CreatableBehavior
       extend ActiveSupport::Concern
 
-      included do
-        self.log_actions << :create
-        before_action :set_initial_permissions, only: :create
-      end
-
       def new
       end
 
       def create
+        set_initial_permissions
         if current_object.save
-          flash[:success] = "New #{current_object.class.to_s} created."
+          notify_creation
+          flash[:success] = after_create_success_message
+          after_create_success
           redirect_to after_create_redirect
         else
           render :new
@@ -21,6 +19,18 @@ module DulHydra
       end
 
       protected
+
+      def after_create_success
+        # no-op -- override to add behavior after save and before redirect
+      end
+
+      def notify_creation
+        notify_event :creation
+      end
+
+      def after_create_success_message
+        "New #{current_object.class.to_s} created."
+      end
 
       def after_create_redirect
         {action: :edit, id: current_object}

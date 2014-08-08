@@ -1,7 +1,7 @@
 <% content_for :main_content do %>
   <h2>New <%= current_object.class.to_s %></h2>
   <div class="col-md-6">
-    <%= form_for current_object, html: new_form_html_opts do |f| %>
+    <%= form_for current_object, html: {role: "form", class: "form-horizontal", enctype: "multipart/form-data"} do |f| %>
       <%= render 'form_errors' %>
   	  <%= yield %>
 	  <%= render partial: 'form_actions', locals: {f: f} %>

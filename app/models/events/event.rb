@@ -31,6 +31,12 @@ class Event < ActiveRecord::Base
  
   after_initialize :set_defaults
 
+  # Receive message sent by ActiveSupport::Notifications
+  def self.call(*args)
+    notification = ActiveSupport::Notifications::Event.new(*args)
+    create(notification.payload)
+  end
+
   # Repository software version -- e.g., "Fedora Repository 3.7.0"
   def self.repository_software
     @@repository_software ||= ActiveFedora::Base.connection_for_pid(0).repository_profile
