@@ -34,6 +34,21 @@ module ActiveFedora
         end
       end
 
+      describe "#file_size" do
+        it "should return nil when dsLocation is not set" do
+          expect(subject.file_size).to be_nil
+        end
+        it "should return nil when dsLocation is not a file URI" do
+          subject.dsLocation = "http://library.duke.edu/"
+          expect(subject.file_size).to be_nil
+        end
+        it "should return the file name when dsLocation is a file URI" do
+          allow(File).to receive(:size).with("/tmp/foo/bar.txt") { 42 }
+          subject.dsLocation = "file:/tmp/foo/bar.txt"
+          expect(subject.file_size).to eq 42
+        end        
+      end
+
     end # external datastreams
 
   end
