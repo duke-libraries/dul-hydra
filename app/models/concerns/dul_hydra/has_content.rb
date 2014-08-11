@@ -31,8 +31,24 @@ module DulHydra
       save
     end
 
+    def content_size
+      content.external? ? content.file_size : content.dsSize
+    end
+
+    def content_human_size
+      ActiveSupport::NumberHelper.number_to_human_size(content_size) if content_size
+    end
+
     def content_type
       content.mimeType
+    end
+
+    def content_major_type
+      content_type.split("/").first
+    end
+
+    def content_sub_type
+      content_type.split("/").last
     end
 
     def content_type= mime_type
@@ -40,7 +56,7 @@ module DulHydra
     end
 
     def image?
-      content_type =~ /image\//
+      content_major_type == "image"
     end
 
     def pdf?

@@ -21,9 +21,13 @@ module DulHydra
     # See #external_datastream_file_path(ds)
     def file_name
       raise "The `file_name' method is valid only for external datastreams." unless external?
-      if path = file_path
-        File.basename(path)
-      end
+      File.basename(file_path) rescue nil
+    end
+
+    # Returns the 
+    def file_size
+      raise "The `file_size' method is valid only for external datastreams." unless external?
+      File.size(file_path) rescue nil
     end
 
     # Return default file extension for datastream based on MIME type
