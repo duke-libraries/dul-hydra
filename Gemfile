@@ -2,9 +2,8 @@ source 'http://rubygems.org'
 
 gem 'rails', '~> 4.1.4'
 
-gem 'hydra-head', '7.0.2'
-gem 'active-fedora', github: 'projecthydra/active_fedora', ref: '4259edf192f2e78a79f34e86265f31c5853244fc'
-gem 'blacklight', '5.3.0'
+gem 'hydra-head', '~> 7.2.0'
+#gem 'blacklight', '5.3.0'
 
 gem 'hydra-derivatives'
 
@@ -33,7 +32,7 @@ gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 3.4.2'
 
 group :development, :test do
-  gem 'rspec-rails', '~> 2.14.1'
+  gem 'rspec-rails', '~> 2.99.0'
   gem 'capybara', '~> 2.0'
   gem 'jettywrapper', '~> 1.5'
   gem 'factory_girl_rails', '~> 4.0'
