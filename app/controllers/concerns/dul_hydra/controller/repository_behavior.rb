@@ -22,6 +22,7 @@ module DulHydra
 
         helper_method :current_object
         helper_method :current_document
+        helper_method :current_bookmarks
         helper_method :get_solr_response_for_field_values
 
         copy_blacklight_config_from CatalogController
@@ -41,6 +42,12 @@ module DulHydra
 
       def current_document
         @document ||= get_solr_response_for_doc_id[1]
+      end
+
+      # override Blacklight::CatalogHelperBehavior
+      def current_bookmarks
+        @current_bookmarks ||= 
+          current_user.bookmarks_for_documents(@response ? @response.documents << current_document : [current_document])
       end
 
     end
