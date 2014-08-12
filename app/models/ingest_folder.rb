@@ -60,8 +60,11 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def mount_point
-    base_key = base_path.split(File::Separator).first
-    IngestFolder.load_configuration.fetch(:files).fetch(:mount_points).fetch(base_key, nil)
+    IngestFolder.load_configuration.fetch(:files).fetch(:mount_points).fetch(mount_point_base_key, nil)
+  end
+
+  def mount_point_base_key
+    base_path.split(File::Separator).first
   end
 
   def full_path
@@ -82,7 +85,7 @@ class IngestFolder < ActiveRecord::Base
     case
     when checksum_file.blank?
       path_parts = sub_path.split(File::SEPARATOR).reject { |p| p.empty? }
-      File.join(full_checksum_path, "#{path_parts.first}.txt")
+      File.join(full_checksum_path, "#{path_parts.first}-#{mount_point_base_key}-sha256.txt")
     when checksum_file.start_with?(File::SEPARATOR)
       checksum_file
     else
