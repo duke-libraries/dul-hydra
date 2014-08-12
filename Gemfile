@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '~> 4.0.3'
+gem 'rails', '~> 4.1.4'
 
 gem 'hydra-head', '7.0.2'
 gem 'active-fedora', github: 'projecthydra/active_fedora', ref: '4259edf192f2e78a79f34e86265f31c5853244fc'
