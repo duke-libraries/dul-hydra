@@ -23,7 +23,7 @@ class BatchesController < ApplicationController
   
   def destroy
     case @batch.status
-    when nil, DulHydra::Batch::Models::Batch::STATUS_VALIDATED, DulHydra::Batch::Models::Batch::STATUS_INVALID
+    when nil, DulHydra::Batch::Models::Batch::STATUS_READY, DulHydra::Batch::Models::Batch::STATUS_VALIDATED, DulHydra::Batch::Models::Batch::STATUS_INVALID
       @batch.destroy
       flash[:notice] = I18n.t('batch.web.batch_deleted', :id => @batch.id)
     else

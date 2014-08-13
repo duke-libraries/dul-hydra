@@ -169,19 +169,21 @@ describe "batches/index.html.erb" do
     context "deleting batches" do
       before { login_as batch.user }
       context "delete-able batches" do
-        [ nil, DulHydra::Batch::Models::Batch::STATUS_VALIDATED,
+        [ nil, DulHydra::Batch::Models::Batch::STATUS_READY, DulHydra::Batch::Models::Batch::STATUS_VALIDATED,
           DulHydra::Batch::Models::Batch::STATUS_INVALID ].each do |status|
-          before do
-            batch.status = status
-            batch.save
-            visit batches_path
-          end
-          it "should have a link to delete the batch" do
-            expect(page).to have_link("batch_delete_#{batch.id}")
-            click_link "batch_delete_#{batch.id}"
-            expect(current_path).to eql(batches_path)
-            expect(page).to have_content(I18n.t("batch.web.batch_deleted", :id => batch.id))
-            expect(page).to_not have_link(batch.id, :href => batch_path(batch))
+          context "status #{status}" do
+            before do
+              batch.status = status
+              batch.save
+              visit batches_path
+            end
+            it "should have a link to delete the batch" do
+              expect(page).to have_link("batch_delete_#{batch.id}")
+              click_link "batch_delete_#{batch.id}"
+              expect(current_path).to eql(batches_path)
+              expect(page).to have_content(I18n.t("batch.web.batch_deleted", :id => batch.id))
+              expect(page).to_not have_link(batch.id, :href => batch_path(batch))
+            end
           end
         end
       end
@@ -189,13 +191,15 @@ describe "batches/index.html.erb" do
         [ DulHydra::Batch::Models::Batch::STATUS_QUEUED, DulHydra::Batch::Models::Batch::STATUS_RUNNING,
           DulHydra::Batch::Models::Batch::STATUS_FINISHED, DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED,
           DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE ].each do |status|
-            before do
-              batch.status = status
-              batch.save
-              visit batches_path
-            end          
-            it "should not have a link to delete the batch" do
-              expect(page).to_not have_link("batch_delete_#{batch.id}")
+            context "status #{status}" do
+              before do
+                batch.status = status
+                batch.save
+                visit batches_path
+              end
+              it "should not have a link to delete the batch" do
+                expect(page).to_not have_link("batch_delete_#{batch.id}")
+              end
             end
           end
       end
