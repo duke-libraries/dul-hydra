@@ -8,7 +8,7 @@ module DulHydra
                    versionable: true, 
                    label: "Descriptive Metadata for this object", 
                    control_group: 'M'
-      has_attributes *DulHydra::Metadata::DCTerms::ELEMENTS_11,
+      has_attributes *DulHydra::Metadata::Vocabulary.term_names(RDF::DC11),
                      datastream: DulHydra::Datastreams::DESC_METADATA, 
                      multiple: true
     end
@@ -26,11 +26,12 @@ module DulHydra
               when :required
                 desc_metadata_terms(:defined_attributes).select {|t| required? t}
               when :dcterms
-                DulHydra::Metadata::DCTerms::ELEMENTS_11 + (DulHydra::Metadata::DCTerms.term_names - DulHydra::Metadata::DCTerms::ELEMENTS_11)
+                DulHydra::Metadata::Vocabulary.term_names(RDF::DC11) +
+                      (DulHydra::Metadata::Vocabulary.term_names(RDF::DC) - DulHydra::Metadata::Vocabulary.term_names(RDF::DC11))
               when :dcterms_elements11
-                DulHydra::Metadata::DCTerms::ELEMENTS_11
+                DulHydra::Metadata::Vocabulary.term_names(RDF::DC11)
               when :duke
-                DulHydra::Metadata::DukeTerms.term_names
+                DulHydra::Metadata::Vocabulary.term_names(DukeTerms)
               else
                 raise ArgumentError, "Invalid argument: #{arg.inspect}"
               end

@@ -1,4 +1,7 @@
 require 'spec_helper'
+require 'rdf/isomorphic'
+
+include RDF::Isomorphic
 
 shared_examples "an invalid metadata file" do
   it "should not be valid" do
@@ -14,7 +17,7 @@ shared_examples "a successful metadata file processing" do
     expect(@datastream.name).to eq(DulHydra::Datastreams::DESC_METADATA)
     expect(@datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
     expect(@datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
-    expect(Nokogiri::XML(@datastream.payload)).to be_equivalent_to(Nokogiri::XML(expected_md))
+    expect(RDF::Reader.for(:ntriples).new(@datastream.payload)).to be_isomorphic_with(RDF::Reader.for(:ntriples).new(expected_md))
   end
 end
 
@@ -78,14 +81,14 @@ describe MetadataFile, :metadata_file => true do
   context "successful processing", batch: true do
 
     let(:expected_md) do
-      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new
+      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new(nil, 'descMetadata')
       ds.title = "Updated Title"
       ds.identifier = "test12345"
       ds.description = 'This is some description; this is "some more" description.'
       ds.subject = [ "Alpha", "Beta", "Gamma" , "Delta", "Epsilon" ]
       ds.dateSubmitted = "2010-01-22"
       ds.arranger = "John Doe"
-      ds.content
+      ds.resource.dump :ntriples
     end
 
     before do

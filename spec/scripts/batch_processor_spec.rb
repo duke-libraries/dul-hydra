@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'helpers/metadata_helper'
 
 module DulHydra::Batch::Scripts
   
@@ -61,7 +62,7 @@ module DulHydra::Batch::Scripts
         batch_obj = batch.batch_objects[index]
         expect(obj).to be_an_instance_of(batch_obj.model.constantize)
         expect(obj.label).to eq(batch_obj.label) if batch_obj.label
-        expect(obj.title.first).to eq('Sample updated title')
+        expect(obj.title.first).to eq('Sample title')
         update_event_count = 0
         obj.events.each do |event|
           if event.is_a? UpdateEvent
@@ -113,10 +114,16 @@ module DulHydra::Batch::Scripts
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:log_dir) { test_dir }
     let(:bp_user) { FactoryGirl.create(:user) }
+    before do
+      File.stub(:readable?).and_call_original
+      File.stub(:readable?).with("/tmp/qdc-rdf.nt").and_return(true)
+      File.stub(:read).and_call_original
+    end
     after { FileUtils.remove_dir test_dir }
     context "ingest" do
       let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
+      before { File.stub(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples) }
       context "successful initial run" do
         before { bp.execute }
           it_behaves_like "a successful ingest batch"
@@ -142,6 +149,7 @@ module DulHydra::Batch::Scripts
       let(:repo_object) { TestModelOmnibus.create(:pid => batch.batch_objects.first.pid, :label => 'Object Label') }
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
       before do
+        File.stub(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples("<#{ActiveFedora::Rdf::ObjectResource.base_uri}#{repo_object.pid}>"))
         repo_object.edit_users = [ batch.user.user_key ]
         repo_object.save
       end

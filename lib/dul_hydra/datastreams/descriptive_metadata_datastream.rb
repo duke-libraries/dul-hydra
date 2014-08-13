@@ -1,20 +1,17 @@
-require 'dul_hydra/metadata/dc_terms'
-require 'dul_hydra/metadata/duke_terms'
-
 module DulHydra
   module Datastreams
-    class DescriptiveMetadataDatastream < ActiveFedora::OmDatastream
+    class DescriptiveMetadataDatastream < ActiveFedora::NtriplesRDFDatastream
 
       class_attribute :vocabularies
-      self.vocabularies = [DulHydra::Metadata::DCTerms, DulHydra::Metadata::DukeTerms].freeze
+      self.vocabularies = [RDF::DC, DukeTerms].freeze
+
+      def self.default_attributes
+        super.merge(:mimeType => 'application/n-triples')
+      end
 
       def self.indexers
         # Add term_name => [indexers] mapping to customize indexing
         {}
-      end
-
-      def self.om_term_opts(vocab)
-        {xmlns: vocab.xmlns, namespace_prefix: vocab.namespace_prefix}        
       end
 
       def self.default_indexers
@@ -28,39 +25,22 @@ module DulHydra
       def self.term_names
         terms = []
         vocabularies.each do |vocab|
-          terms |= vocab.term_names
+          terms |= DulHydra::Metadata::Vocabulary.term_names(vocab)
         end
         terms.sort
       end
-         
-      set_terminology do |t|
-        t.root(path: "dc")
-      end
 
-      # Add terms from the vocabularies to the terminology
+      # Add terms from the vocabularies as properties
       vocabularies.each do |vocab|
-        vocab.term_names.each do |t|
-          next if terminology.has_term? t
-          opts = om_term_opts(vocab).merge(index_as: indexers_for(t))
-          term = OM::XML::Term.new t, opts
-          terminology.add_term term.generate_xpath_queries!
+        vocab.each do |term|
+          term_name = DulHydra::Metadata::Vocabulary.term_name(vocab, term)
+          property term_name, predicate: term do |index|
+            index.as *indexers_for(term_name)
+          end
         end
       end
      
-      def self.xml_template
-        builder = Nokogiri::XML::Builder.new do |xml|
-          xml.dc
-        end
-        vocabularies.each do |vocab|
-          builder.doc.root.add_namespace(vocab.namespace_prefix, vocab.xmlns)
-        end
-        builder.doc
-      end
-
-      def prefix
-        ""
-      end
-
+      # Returns ActiveFedora::Rdf::Term now that this is an RDF datastream
       def values term
         term == :format ? self.format : self.send(term)
       end
@@ -73,7 +53,30 @@ module DulHydra
         else
           values = nil if values.blank?
         end
-        self.send("#{term}=", values)
+        begin
+          self.send("#{term}=", values)
+        rescue NoMethodError
+          raise ArgumentError, "No such term: #{term}"
+        end
+      end
+
+      # Add value to term
+      # Note that empty value (nil or "") is not added
+      def add_value term, value
+        begin
+          unless value.blank?
+            values = values(term).to_a << value
+            set_values term, values
+          end
+        rescue NoMethodError
+          raise ArgumentError, "No such term: #{term}"
+        end
+      end
+
+      # Override ActiveFedora::Rdf::Indexing#apply_prefix(name) to not
+      # prepend the index field name with a string based on the datastream id.
+      def apply_prefix(name)
+        name
       end
 
     end

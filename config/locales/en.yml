@@ -114,7 +114,7 @@ en:
         label: "Descriptive Metadata"
         actions:
           edit: Edit
-          download: "Download XML"
+          download: "Download N-Triples"
       permissions:
         label: Permissions
         actions:

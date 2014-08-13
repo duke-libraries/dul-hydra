@@ -53,10 +53,10 @@ module DulHydra::Scripts
         end
         context "no contentMetadata" do
           before do
-            iden = children[0].identifier
-            children[0].identifier = children[1].identifier
+            iden = children[0].identifier.first
+            children[0].identifier = [ children[1].identifier.first ]
             children[0].save
-            children[1].identifier = iden
+            children[1].identifier = [ iden ]
             children[1].save
             thumbnails_script.execute
             item.reload

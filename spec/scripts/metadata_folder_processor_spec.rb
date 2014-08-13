@@ -1,5 +1,8 @@
 require 'spec_helper'
-require 'helpers/metadata_folder_processor_helper'
+require 'helpers/metadata_helper'
+require 'rdf/isomorphic'
+
+include RDF::Isomorphic
 
 module DulHydra::Batch::Scripts
 
@@ -60,7 +63,13 @@ module DulHydra::Batch::Scripts
         File.stub(:read).and_call_original
       end
       context "no warnings or errors" do
-        before { File.stub(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_xml) }
+        let(:subject_string) { "<#{ActiveFedora::Rdf::ObjectResource.base_uri}#{object.pid}>" }
+        let(:expected_triples) do
+          "#{subject_string} <http://purl.org/dc/terms/identifier> \"efghi01003\" .\n".concat(sample_metadata_triples(subject_string))
+        end
+        before do
+          File.stub(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_xml)
+        end
         it "should populate the scanner hash appropriately" do
           mfp.scan
           expect(mfp.scanner.keys).to eq( [ File.join(folder, "md.xml") ] )
@@ -69,7 +78,7 @@ module DulHydra::Batch::Scripts
           dmdsec = dmdsecs["abcd_efghi01003"]
           expect(dmdsec[:id]).to eq("efghi01003")
           expect(dmdsec[:pid]).to eq(object.pid)
-          expect(dmdsec[:md]).to be_equivalent_to(sample_descriptive_metadata_xml)
+          expect(RDF::Reader.for(:ntriples).new(dmdsec[:md])).to be_isomorphic_with(RDF::Reader.for(:ntriples).new(expected_triples))
         end
         it "should not report any warnings or errors" do
           expect(mfp.logger).to receive(:info).exactly(2).times
@@ -95,8 +104,9 @@ module DulHydra::Batch::Scripts
           expect(mfp.logger).to receive(:info).exactly(2).times
           expect(mfp.logger).to_not receive(:warn)
           expect(mfp.logger).to receive(:error).with("Unknown element name unknown in md.xml")
+          expect(mfp.logger).to receive(:error).with("Error adding value for unknown element to descriptive metadata: No such term: unknown")
           mfp.scan
-          expect(mfp.report).to include("0 WARNINGS and 1 ERROR")
+          expect(mfp.report).to include("0 WARNINGS and 2 ERRORS")
         end
       end
       context "element with no namespace" do
