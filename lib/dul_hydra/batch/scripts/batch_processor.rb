@@ -3,7 +3,7 @@ module DulHydra::Batch::Scripts
     
     LOG_CONFIG_FILEPATH = File.join(Rails.root, 'config', 'log4r_batch_processor.yml')
     DEFAULT_LOG_DIR = File.join(Rails.root, 'log')
-    DEFAULT_LOG_FILE = "batch_processor.log"
+    DEFAULT_LOG_FILE = "batch_processor_log.txt"
     PASS = "PASS"
     FAIL = "FAIL"
     
@@ -132,7 +132,7 @@ module DulHydra::Batch::Scripts
       @bp_log.outputters.each do |outputter|
         @logfilename = outputter.filename if outputter.respond_to?(:filename)
       end
-      @batch.update_attributes({:logfile => File.new(@logfilename)}) if @logfilename
+      @batch.update!({ logfile: File.new(@logfilename) }) if @logfilename
     end
     
     def send_notification

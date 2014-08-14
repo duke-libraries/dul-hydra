@@ -29,7 +29,7 @@ gem 'mime-types', '~> 1.19'
 
 # Export sets
 gem 'rubyzip', '< 1.0.0'
-gem 'paperclip', '~> 3.4.2'
+gem 'paperclip', '~> 4.2.0'
 
 group :development, :test do
   gem 'rspec-rails', '~> 2.99.0'

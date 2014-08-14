@@ -4,6 +4,7 @@ module DulHydra::Batch::Models
     belongs_to :user, :inverse_of => :batches
     has_many :batch_objects, -> { order("id ASC") }, :inverse_of => :batch, :dependent => :destroy
     has_attached_file :logfile
+    do_not_validate_attachment_file_type :logfile
 
     OUTCOME_SUCCESS = "SUCCESS"
     OUTCOME_FAILURE = "FAILURE"
