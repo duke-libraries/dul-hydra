@@ -17,9 +17,9 @@ module DulHydra::Batch::Models
     end
   
     context "validate" do
-      let(:admin_policy_pid) { "duke-apo:adminPolicy" }
+      let(:collection_pid) { "test:1" }
       context "valid" do
-        let!(:admin_policy) { AdminPolicy.create(:pid => admin_policy_pid, :title => "Test Policy") }
+        let!(:collection) { Collection.create(:pid => collection_pid, :title => "Test Collection") }
         context "manifest with files" do
           let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
           before { manifest.manifest_hash['basepath'] = File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous') }
@@ -161,7 +161,7 @@ module DulHydra::Batch::Models
           context "pid" do
             context "object not in repository" do
               let(:key) { BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY }
-              let(:pid) { "duke-apo:adminPolicy" }
+              let(:pid) { "test:1" }
               let(:error_message) { I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => key, :pid => pid) }
               before { manifest.manifest_hash[key] = pid }
               it_behaves_like "an invalid manifest"

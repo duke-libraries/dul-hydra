@@ -25,7 +25,7 @@ DulHydra.configure do |config|
     header_converters: :symbol
   }
 
-  config.create_menu_models = ["AdminPolicy", "Collection", "Role", "IngestFolder", "MetadataFile"]
+  config.create_menu_models = ["Collection", "Role", "IngestFolder", "MetadataFile"]
 
   config.external_file_store = ENV['EXTERNAL_FILE_STORE']
 

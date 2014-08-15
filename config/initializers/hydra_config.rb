@@ -14,5 +14,5 @@ Hydra.configure do |config|
   #   :owner => ActiveFedora::SolrService.solr_name("inheritable_depositor", indexer),
   #   :embargo_release_date => ActiveFedora::SolrService.solr_name("inheritable_embargo_release_date", Solrizer::Descriptor.new(:date, :stored, :indexed))
   # }
-  config.permissions.policy_class = AdminPolicy
+  config.permissions.policy_class = Collection
 end

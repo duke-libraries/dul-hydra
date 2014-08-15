@@ -99,7 +99,7 @@ module DulHydra::Batch::Models
             it_behaves_like "an invalid ingest object"
           end
           context "admin policy pid object exists but is not admin policy" do
-            let(:error_message) { "#{error_prefix} admin_policy relationship object #{@not_admin_policy.pid} exists but is not a(n) AdminPolicy" }
+            let(:error_message) { "#{error_prefix} admin_policy relationship object #{@not_admin_policy.pid} exists but is not a(n) Collection" }
             before do
               @not_admin_policy = FactoryGirl.create(:test_model)
               relationship = FactoryGirl.create(:batch_object_add_relationship, :name => "admin_policy", :object => @not_admin_policy.pid, :object_type => BatchObjectRelationship::OBJECT_TYPE_PID)

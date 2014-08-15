@@ -26,7 +26,7 @@ describe DownloadsController do
     end
   end
   context "rightsMetadata download" do
-    let(:obj) { FactoryGirl.create(:admin_policy) }
+    let(:obj) { FactoryGirl.create(:test_model) }
     it "should download successfully" do
       get :show, id: obj, datastream_id: "rightsMetadata"
       response.should be_successful

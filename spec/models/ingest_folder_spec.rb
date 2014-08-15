@@ -189,12 +189,14 @@ describe IngestFolder, ingest: true do
       
       context "collection has admin policy" do
         before do
+          collection.admin_policy = collection
+          collection.save
           ingest_folder.procezz
           objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
         end
         it_behaves_like "a proper set of batch objects"
         it_behaves_like "batch objects without individual permissions"
-        it "should have an admin_policy relationship" do
+        it "should have an admin_policy relationship with the collection's admin policy" do
           user.batches.first.batch_objects.each do |obj|
             expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.admin_policy.pid)
           end
@@ -202,10 +204,6 @@ describe IngestFolder, ingest: true do
       end
       
       context "collection has no admin policy" do
-        before do
-          collection.admin_policy = nil
-          collection.save(validate: false)
-        end
         context "collection has individual permissions" do
           before do
             collection.permissions_attributes = [ { type: 'user', name: 'person1', access: 'read' } ]
@@ -214,12 +212,12 @@ describe IngestFolder, ingest: true do
             objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
           it_behaves_like "a proper set of batch objects"
-          it_behaves_like "batch objects without an admin policy"
-          it "should have rightsMetadata datatream" do
+          it_behaves_like "batch objects without individual permissions"
+          it "should have an admin_policy relationship with the collection" do
             user.batches.first.batch_objects.each do |obj|
-              expect(dss.fetch(obj.identifier).fetch('rightsMetadata').payload).to eql(collection.rightsMetadata.content)
+              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
             end
-          end
+          end  
         end
 
         context "collection has no individual permissions" do
@@ -228,8 +226,12 @@ describe IngestFolder, ingest: true do
             objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
           it_behaves_like "a proper set of batch objects"
-          it_behaves_like "batch objects without an admin policy"
           it_behaves_like "batch objects without individual permissions"        
+          it "should have an admin_policy relationship with the collection" do
+            user.batches.first.batch_objects.each do |obj|
+              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
+            end
+          end  
         end
 
       end

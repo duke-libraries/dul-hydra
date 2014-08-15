@@ -91,6 +91,7 @@ DulHydra::Application.routes.draw do
     get 'items'
     get 'attachments'
     get 'targets'
+    policy_routes
   end
   repository_resource :items do
     get 'components'

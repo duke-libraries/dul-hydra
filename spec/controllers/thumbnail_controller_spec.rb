@@ -16,12 +16,12 @@ describe ThumbnailController do
     end
   end
   context "user with discover policy permission, but not read permission, on asset" do
-    let(:policy) { AdminPolicy.create(title: "Test Policy") }
+    let(:collection) { Collection.create(title: "Test Policy") }
     before do
-      policy.default_permissions = [{type: 'group', name: 'public', access: 'discover'},
-                                    {type: 'group', name: 'registered', access: 'read'}]
-      policy.save
-      object.admin_policy = policy
+      collection.default_permissions = [{type: 'group', name: 'public', access: 'discover'},
+                                        {type: 'group', name: 'registered', access: 'read'}]
+      collection.save
+      object.admin_policy = collection
       object.save
     end
     it "should allow user to download thumbnail" do
