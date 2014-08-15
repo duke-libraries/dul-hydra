@@ -23,9 +23,10 @@ end
 
 describe MetadataFile, :metadata_file => true do
   
-  let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
-
   context "validation" do
+
+    let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
+
     context "valid" do
       it "should have a valid factory" do
         expect(metadata_file).to be_valid
@@ -79,6 +80,8 @@ describe MetadataFile, :metadata_file => true do
   end
 
   context "successful processing", batch: true do
+
+    let(:metadata_file) { FactoryGirl.build(:metadata_file) }
 
     let(:expected_md) do
       ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new(nil, 'descMetadata')

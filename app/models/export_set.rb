@@ -7,6 +7,7 @@ class ExportSet < ActiveRecord::Base
 
   belongs_to :user
   has_attached_file :archive
+  do_not_validate_attachment_file_type :archive
   serialize :pids
 
   module Types

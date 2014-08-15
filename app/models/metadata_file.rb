@@ -4,6 +4,7 @@ class MetadataFile < ActiveRecord::Base
 
   belongs_to :user, :inverse_of => :metadata_files
   has_attached_file :metadata
+  do_not_validate_attachment_file_type :metadata
   
   validates_presence_of :metadata, :profile
   
