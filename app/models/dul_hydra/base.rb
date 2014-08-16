@@ -9,10 +9,10 @@ module DulHydra
     include HasThumbnail
     include ActiveFedora::Auditable
     include EventLoggable
-    include Validations
     include FixityCheckable
     include FileManagement
     include Indexing
+    include Hydra::Validations
 
     def copy_admin_policy_or_permissions_from(other)
       copy_permissions_from(other) unless copy_admin_policy_from(other)

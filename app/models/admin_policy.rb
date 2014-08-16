@@ -7,15 +7,15 @@ class AdminPolicy < ActiveFedora::Base
   include DulHydra::Licensable
   include DulHydra::EventLoggable
   include DulHydra::AccessControllable
-  include DulHydra::Validations
   include DulHydra::Indexing
+  include Hydra::Validations
 
   has_attributes :default_license_title, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
   has_attributes :default_license_description, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
   has_attributes :default_license_url, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :url], multiple: false
 
   validates_presence_of :title
-  validates_uniqueness_of :title, index_field: DulHydra::IndexFields::TITLE
+  validates_uniqueness_of :title, solr_name: DulHydra::IndexFields::TITLE
 
   def default_license
     if default_license_title.present? or default_license_description.present? or default_license_url.present?

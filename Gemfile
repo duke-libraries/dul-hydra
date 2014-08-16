@@ -3,8 +3,7 @@ source 'http://rubygems.org'
 gem 'rails', '~> 4.1.4'
 
 gem 'hydra-head', '~> 7.2.0'
-#gem 'blacklight', '5.3.0'
-
+gem 'hydra-validations', '~> 0.2'
 gem 'hydra-derivatives'
 
 gem 'devise', '~> 3.1.1'
