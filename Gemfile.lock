@@ -134,6 +134,9 @@ GEM
       hydra-access-controls (= 7.2.0)
       hydra-core (= 7.2.0)
       rails (>= 3.2.6)
+    hydra-validations (0.2.0)
+      active-fedora (~> 7.0)
+      activemodel (~> 4.0)
     i18n (0.6.11)
     jettywrapper (1.7.0)
       activesupport (>= 3.0.0)
@@ -383,6 +386,7 @@ DEPENDENCIES
   grouper-rest-client
   hydra-derivatives
   hydra-head (~> 7.2.0)
+  hydra-validations (~> 0.2)
   jettywrapper (~> 1.5)
   jquery-rails
   launchy
