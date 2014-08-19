@@ -136,7 +136,7 @@ module DulHydra
       end
 
       def objects_never_checked(rows)
-        q = "-#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO *] NOT #{DulHydra::IndexFields::ACTIVE_FEDORA_MODEL}:AdminPolicy"
+        q = "-#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO *]"
         ActiveFedora::SolrService.query(q, rows: rows)
       end
 

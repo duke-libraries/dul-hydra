@@ -405,8 +405,6 @@ module ApplicationHelper
 
   def default_model_thumbnail(model)
     case model
-    when 'AdminPolicy'
-      'crystal-clear/lists.png'
     when 'Collection'
       'crystal-clear/kmultiple.png'
     else

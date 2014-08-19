@@ -4,7 +4,9 @@ class CollectionsController < ApplicationController
   include DulHydra::Controller::HasChildrenBehavior
   include DulHydra::Controller::HasAttachmentsBehavior
   include DulHydra::Controller::HasTargetsBehavior
+  include DulHydra::Controller::PolicyBehavior
 
+  self.tabs << :tab_default_permissions
   self.tabs << :tab_collection_info
 
   helper_method :collection_report
@@ -27,13 +29,7 @@ class CollectionsController < ApplicationController
   protected
 
   def create_params
-    {admin_policy_id: params.require(:admin_policy_id)}.merge params.require(:descMetadata).permit(title: [])
-  end
-
-  def set_admin_policy
-    if params[:admin_policy_id].present?
-      current_object.admin_policy = AdminPolicy.find(params[:admin_policy_id])
-    end
+    params.require(:descMetadata).permit(title: [])
   end
 
   def collection_report

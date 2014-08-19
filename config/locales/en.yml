@@ -98,10 +98,10 @@ en:
         edit_default_permissions: "Modify Default Permissions"
         edit: "Modify Permissions"
       alerts:
-        inherited: 'This object is governed by the Admin Policy %s. Permissions granted on this page are <strong>added to</strong> the inherited permissions (if any) shown below the select boxes.'
-        default_permissions: "These settings are <strong>inherited</strong> by objects governed by this policy. They do <strong>not</strong> apply to this Admin Policy object itself."
+        inherited: 'This object is governed by the Collection %s. Permissions granted on this page are <strong>added to</strong> the inherited permissions (if any) shown below the select boxes.'
+        default_permissions: "These settings are <strong>inherited</strong> by objects governed by this policy. They do <strong>not</strong> apply to this Collection object itself."
         permissions_will_change: "The permissions will be overwritten with your selections."
-        default_permissions_will_change: "The default permissions will be overwritten with your selections and be applied to all objects governed by this policy."
+        default_permissions_will_change: "The default permissions will be overwritten with your selections and be applied to all objects governed by this collection."
       descriptions:
         discover: 'Find object via search and view summary data'
         read: 'View object and download content (includes Discover)'
@@ -121,8 +121,8 @@ en:
           edit: Modify
           download: "Download XML"
         alerts:
-          is_admin_policy: "These settings apply to this Admin Policy object itself. They are <strong>not inherited</strong> by objects governed by this policy."
-          has_admin_policy: "This object is governed by the Admin Policy %s. Permissions inherited from the policy are shown below."
+          is_admin_policy: "These settings apply to this Collection object itself. They are <strong>not inherited</strong> by objects governed by this collection."
+          has_admin_policy: "This object is governed by the Collection %s. Permissions inherited from the collection are shown below."
       default_permissions:
         label: "Default Permissions"
         actions:

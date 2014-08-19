@@ -255,16 +255,16 @@ shared_examples "a governable repository object rights editing view" do
 
   it_behaves_like "a repository object rights editing view"
 
-  context "when the object is governed by an admin policy" do
-    let(:admin_policy) { FactoryGirl.create(:admin_policy) }
+  context "when the object is governed by a collection" do
+    let(:coll) { FactoryGirl.create(:collection) }
     let(:user) { FactoryGirl.create(:user) }
     before do
       setup
-      admin_policy.default_permissions = [{type: "user", name: "Bob", access: "read"},
-                                          {type: "group", name: "Special People", access: "edit"}]
-      admin_policy.save
+      coll.default_permissions = [{type: "user", name: "Bob", access: "read"},
+                                  {type: "group", name: "Special People", access: "edit"}]
+      coll.save
       object.edit_users = [user.user_key]
-      object.admin_policy = admin_policy
+      object.admin_policy = coll
       object.save
     end
     it "should display the inherited permissions" do

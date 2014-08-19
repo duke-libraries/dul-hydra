@@ -2,11 +2,15 @@ require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_collection
-  post :create, admin_policy_id: FactoryGirl.create(:admin_policy).pid, descMetadata: {title: ["New Collection"]}
+  post :create, descMetadata: {title: ["New Collection"]}
 end
 
 def new_collection
-  get :new, admin_policy_id: FactoryGirl.create(:admin_policy).pid
+  get :new
+end
+
+def update_policy
+  patch :default_permissions, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
 end
 
 describe CollectionsController, collections: true do
@@ -19,22 +23,12 @@ describe CollectionsController, collections: true do
     let(:new_object) { Proc.new { new_collection } }
   end
 
-  describe "#create" do
-    # has shared examples
-    before { controller.current_ability.can(:create, Collection) }
-    it "should set the admin policy" do
-      create_collection
-      expect(assigns(:current_object).admin_policy).to be_present
-    end
-  end
-
   describe "#items" do
     let(:collection) { FactoryGirl.create(:collection_has_item) }
     context "when the user can read the collection" do
       before do
-        apo = collection.admin_policy
-        apo.default_permissions = [{type: "user", access: "read", name: user.user_key}]
-        apo.save
+        collection.permissions_attributes = [{type: "user", access: "read", name: user.user_key}]
+        collection.save
       end
       it "should render the items" do
         get :items, id: collection
@@ -59,9 +53,8 @@ describe CollectionsController, collections: true do
     end
     context "when the user can read the collection" do
       before do
-        apo = collection.admin_policy
-        apo.default_permissions = [{type: "user", access: "read", name: user.user_key}]
-        apo.save
+        collection.permissions_attributes = [{type: "user", access: "read", name: user.user_key}]
+        collection.save
       end
       it "should render the attachments" do
         get :attachments, id: collection
@@ -81,9 +74,8 @@ describe CollectionsController, collections: true do
     let(:collection) { FactoryGirl.create(:collection_has_target) }
     context "when the user can read the collection" do
       before do
-        apo = collection.admin_policy
-        apo.default_permissions = [{type: "user", access: "read", name: user.user_key}]
-        apo.save
+        collection.permissions_attributes = [{type: "user", access: "read", name: user.user_key}]
+        collection.save
       end
       it "should render the targets" do
         get :targets, id: collection
@@ -127,4 +119,60 @@ describe CollectionsController, collections: true do
       end
     end
   end
+  
+  describe "#default_permissions" do
+    let(:object) { FactoryGirl.create(:collection) }
+    context "GET" do
+      context "when the user can edit the object" do
+        before do
+          object.edit_users = [user.user_key]
+          object.save
+        end
+        it "should render the default_permissions template" do
+          expect(get :default_permissions, id: object).to render_template("default_permissions")      
+        end
+      end
+      context "when the user cannot edit the object" do
+        it "should be unauthorized" do
+          get :default_permissions, id: object
+          expect(response.response_code).to eq(403)
+        end
+      end
+    end
+    context "PATCH" do
+      context "when the user can edit the object" do
+        before do
+          object.edit_users = [user.user_key]
+          object.save
+        end
+        it "should update the default permissions" do
+          update_policy
+          object.reload
+          object.default_discover_groups.should == ["public"]
+          object.default_read_groups.should == ["registered"]
+          object.default_edit_groups.should == ["editors", "managers"]
+          object.default_discover_users.should == ["Sally", "Mitch"]
+          object.default_read_users.should == ["Gil", "Ben"]
+          object.default_edit_users.should == ["Rocky", "Gwen", "Teresa"]
+          object.default_license_title.should == "No Access"
+          object.default_license_description.should == "No one can get to it"
+          object.default_license_url.should == "http://www.example.com"
+        end
+        it "should redirect to the show view" do
+          update_policy
+          expect(response).to redirect_to(action: "show", tab: "default_permissions")
+        end
+        it "should create an event log entry for the action" do
+          expect{ update_policy }.to change{ object.update_events.count }.by(1)
+        end
+      end
+      context "when the user cannot edit the object" do
+        it "should be unauthorized" do
+          update_policy
+          expect(response.response_code).to eq(403)
+        end
+      end
+    end
+  end
+
 end

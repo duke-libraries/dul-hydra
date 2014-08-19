@@ -28,13 +28,6 @@ module DulHydra
           expect { bfc.execute }.to change{ obj.fixity_checks.count }.by(1)
         end
       end
-      context "with an object that doesn't have preservation events" do
-        let(:obj) { FactoryGirl.create(:admin_policy) }
-        it "should not check the object" do
-          expect(AdminPolicy.any_instance).not_to receive(:fixity_check)
-          bfc.execute
-        end
-      end
       describe "the report" do
         let(:csv) { CSV.read(report.path, headers: true) }
         let(:datastreams_with_content) { ["DC", "RELS-EXT", "descMetadata", "content", "thumbnail"] }

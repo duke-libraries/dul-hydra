@@ -74,15 +74,15 @@ describe AttachmentsController, attachments: true do
           expect(assigns(:current_object).attached_to).to eq(attach_to)
         end
         it "should copy the object's permissions to the attachment"
-        context "and attached_to object is governed by an admin policy" do
-          let(:apo) { FactoryGirl.create(:admin_policy) }
+        context "and attached_to object is governed by a collection" do
+          let(:collection) { FactoryGirl.create(:collection) }
           before do 
-            attach_to.admin_policy = apo
+            attach_to.admin_policy = collection
             attach_to.save
           end
           it "should apply the admin policy to the attachment" do
             create_attachment
-            expect(assigns(:current_object).admin_policy).to eq(apo)
+            expect(assigns(:current_object).admin_policy).to eq(collection)
           end
           it "should not copy the permissions of the attached_to object"
         end

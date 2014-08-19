@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "policy view" do
   let(:user) { FactoryGirl.create(:user) }
-  let(:object) { FactoryGirl.create(:admin_policy) }
+  let(:object) { FactoryGirl.create(:collection) }
   before do
     object.edit_users = [user.user_key]
     object.default_permissions = [{type: "group", access: "read", name: "registered"},

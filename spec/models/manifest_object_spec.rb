@@ -95,7 +95,7 @@ module DulHydra::Batch::Models
           context "pid" do
             context "object not in repository" do
               let(:key) { BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY }
-              let(:pid) { "duke-apo:adminPolicy" }
+              let(:pid) { "test:1" }
               let(:error_message) { I18n.t('batch.manifest_object.errors.relationship_object_not_found', :identifier => identifier, :relationship => key, :pid => pid) }
               before { manifest_object.object_hash[key] = pid }
               it_behaves_like "an invalid manifest object"
