@@ -134,7 +134,7 @@ GEM
       hydra-access-controls (= 7.2.0)
       hydra-core (= 7.2.0)
       rails (>= 3.2.6)
-    hydra-validations (0.2.0)
+    hydra-validations (0.3.0)
       active-fedora (~> 7.0)
       activemodel (~> 4.0)
     i18n (0.6.11)
@@ -190,6 +190,7 @@ GEM
     nest (1.1.2)
       redis
     net-http-persistent (1.9)
+    netrc (0.7.7)
     nokogiri (1.6.3.1)
       mini_portile (= 0.6.0)
     nom-xml (0.5.1)
@@ -278,8 +279,9 @@ GEM
       rake
       resque (~> 1.20)
       trollop (~> 1.16)
-    rest-client (1.6.7)
-      mime-types (>= 1.16)
+    rest-client (1.7.2)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
     rsolr (1.0.10)
       builder (>= 2.1.2)
     rspec-collection_matchers (1.0.0)
