@@ -58,7 +58,7 @@ module DulHydra::Batch::Scripts
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:manifest_file) { File.join(test_dir, 'manifest.yml') }
     let(:log_dir) { test_dir }
-    let(:coll) { Collection.create(title: "Test Collection") }
+    let(:coll) { Collection.create(title: ["Test Collection"]) }
     after do
       FileUtils.remove_dir test_dir
     end

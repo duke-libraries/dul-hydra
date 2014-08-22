@@ -19,7 +19,7 @@ module DulHydra::Batch::Models
     context "validate" do
       let(:collection_pid) { "test:1" }
       context "valid" do
-        let!(:collection) { Collection.create(:pid => collection_pid, :title => "Test Collection") }
+        let!(:collection) { Collection.create(:pid => collection_pid, :title => ["Test Collection"]) }
         context "manifest with files" do
           let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
           before { manifest.manifest_hash['basepath'] = File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous') }
