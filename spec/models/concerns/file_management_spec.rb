@@ -83,7 +83,7 @@ module DulHydra
         end
         it "should add a subpath using the configured pattern and UUID" do
           uuid = SecureRandom.uuid
-          allow(object).to receive(:generate_external_file_dirname) { uuid }
+          allow(object).to receive(:generate_external_directory_name) { uuid }
           object.add_external_file(file, "e_content")
           path = object.e_content.file_path
           subpath = File.dirname(path.sub(DulHydra.external_file_store, "").sub("/", ""))
