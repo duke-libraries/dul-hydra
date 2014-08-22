@@ -5,6 +5,12 @@ shared_examples "an object that can have content" do
 
   let(:object) { described_class.new(title: [ "I Have Content!" ]) }
 
+  it "should delegate :validate_checksum! to :content" do
+    checksum = "dea56f15b309e47b74fa24797f85245dda0ca3d274644a96804438bbd659555a"
+    expect(object.content).to receive(:validate_checksum!).with(checksum, "SHA-256")
+    object.validate_checksum!(checksum, "SHA-256")
+  end
+
   describe "when new content is saved" do
     let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
     before { object.upload file }
@@ -43,47 +49,6 @@ shared_examples "an object that can have content" do
     end    
     it "should persist the object" do
       expect { object.upload! file }.to change { object.pid } 
-    end
-  end
-
-  context "#validate_checksum!" do
-    let!(:checksum) { "dea56f15b309e47b74fa24797f85245dda0ca3d274644a96804438bbd659555a" }
-    let!(:checksum_type) { "SHA-256" }
-    before { object.upload fixture_file_upload("library-devil.tiff", "image/tiff") }
-    context "with unpersisted content" do
-      it "should raise an exception" do
-        expect { object.validate_checksum!(checksum, checksum_type) }.to raise_error
-      end
-    end
-    context "with persisted content" do
-      before do 
-        object.save
-        object.reload
-      end
-      context "and the checksum type is invalid" do
-        it "should raise an exception" do
-          expect { object.validate_checksum!("0123456789abcdef", "FOO-BAR") }.to raise_error
-        end
-      end
-      context "and the checksum type is the same as the datastream checksum type" do
-        it "should compare the provided checksum with the datastream checksum" do
-          expect(object.content).to receive(:checksum).and_call_original
-          expect { object.validate_checksum!(checksum, checksum_type) }.not_to raise_error
-        end
-      end
-      context "and the checksum type differs from the datastream checksum type" do 
-        it "should generate a checksum for comparison" do
-          expect(object.content).not_to receive(:checksum).and_call_original
-          expect(object.content).to receive(:content).and_call_original
-          expect(OpenSSL::Digest).to receive(:const_get).with(:MD5).and_call_original
-          expect { object.validate_checksum!("273ae0f4aa60d94e89bc0e0652ae2c8f", "MD5") }.not_to raise_error
-        end
-      end
-      context "and the checksum doesn't match" do
-        it "should raise an exception" do
-          expect { object.validate_checksum!("0123456789abcdef", checksum_type) }.to raise_error
-        end
-      end
     end
   end
 

@@ -13,6 +13,8 @@ module DulHydra
       include Hydra::Derivatives
 
       around_save :update_thumbnail, if: :content_changed?
+
+      delegate :validate_checksum!, to: :content
     end
 
     def original_filename
@@ -67,27 +69,6 @@ module DulHydra
       return unless has_content?
       if image? or pdf?
         transform_datastream :content, { thumbnail: { size: "100x100>", datastream: "thumbnail" } }
-      end
-    end
-
-    def validate_checksum! checksum, checksum_type
-      raise DulHydra::Error, "Checksum cannot be validated on unpersisted object." if new_record?
-      if content.checksumType == checksum_type
-        content_checksum = content.checksum
-      else
-        begin
-          digest_class = OpenSSL::Digest.const_get(checksum_type.sub("-", "").to_sym)
-          digest = digest_class.new
-          digest << content.content
-          content_checksum = digest.to_s
-        rescue NameError => e
-          raise ArgumentError, "Checksum type not recognized: #{checksum_type.inspect}"
-        end
-      end
-      if checksum == content_checksum
-        "The checksum [#{checksum_type}: #{checksum}] is valid for the content of #{model_pid}."
-      else
-        raise DulHydra::ChecksumInvalid, "The checksum [#{checksum_type}: #{checksum}] does not match repository checksum [#{checksum_type}: #{content_checksum}] for the content of #{model_pid}."
       end
     end
 
