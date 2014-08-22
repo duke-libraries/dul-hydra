@@ -3,6 +3,31 @@ module DulHydra
 
     DEFAULT_FILE_EXTENSION = "bin"
 
+    def validate_checksum! checksum, checksum_type=nil
+      raise DulHydra::Error, "Checksum cannot be validated on new datastream." if new?
+      raise DulHydra::Error, "Checksum cannot be validated on unpersisted content." if content_changed?
+      algorithm = checksum_type || self.checksumType
+      ds_checksum = if algorithm == self.checksumType
+                      self.checksum
+                    else 
+                      content_digest(algorithm)
+                    end
+      if checksum == ds_checksum
+        "The checksum [#{algorithm}: #{checksum}] is valid."
+      else
+        raise DulHydra::ChecksumInvalid, "The checksum [#{algorithm}: #{checksum}] is not valid. The repository checksum is [#{algorithm}: #{ds_checksum}]."
+      end
+    end
+
+    def content_digest algorithm
+      raise TypeError, "Algorithm must be a string: #{algorithm.inspect}" unless algorithm.is_a?(String)
+      digest_class = OpenSSL::Digest.const_get(algorithm.sub("-", "").to_sym)
+      digest = digest_class.new(self.content)
+      digest.to_s
+    rescue NameError => e
+      raise ArgumentError, "Invalid algorithm: #{algorithm}"
+    end
+
     # Returns a list of the external file paths for all versions of the datastream.
     def file_paths
       raise "The `file_paths' method is valid only for external datastreams." unless external?
@@ -24,7 +49,7 @@ module DulHydra
       File.basename(file_path) rescue nil
     end
 
-    # Returns the 
+    # Returns the size of the external file for the datastream.
     def file_size
       raise "The `file_size' method is valid only for external datastreams." unless external?
       File.size(file_path) rescue nil
