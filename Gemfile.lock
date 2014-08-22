@@ -186,7 +186,7 @@ GEM
     minitest (5.4.0)
     mono_logger (1.1.0)
     multi_json (1.10.1)
-    mysql2 (0.3.11)
+    mysql2 (0.3.16)
     nest (1.1.2)
       redis
     net-http-persistent (1.9)
