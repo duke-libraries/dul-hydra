@@ -16,7 +16,7 @@ describe ThumbnailController do
     end
   end
   context "user with discover policy permission, but not read permission, on asset" do
-    let(:collection) { Collection.create(title: "Test Policy") }
+    let(:collection) { Collection.create(title: ["Test Collection"]) }
     before do
       collection.default_permissions = [{type: 'group', name: 'public', access: 'discover'},
                                         {type: 'group', name: 'registered', access: 'read'}]
