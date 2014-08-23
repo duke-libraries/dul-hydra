@@ -2,6 +2,8 @@ module DulHydra
   module FileManagement
     extend ActiveSupport::Concern
 
+    EXTERNAL_FILE_PERMISSIONS = 0644
+
     included do
       attr_accessor :file_to_add
 
@@ -59,28 +61,29 @@ module DulHydra
       else
         # generate storage path
         file_name = opts[:file_name] || DulHydra::Utils.file_name_for(file)
-        store_path = generate_external_file_path(file_name)
-        # create new directory
-        FileUtils.mkdir_p File.dirname(store_path)
+        store_path = File.join(create_external_directory!, file_name)
         # copy the original file to the storage location
         FileUtils.cp file_path, store_path
       end
 
-      # Set file permissions
-      File.chmod 0644, store_path
+      # set appropriate permissions on the file
+      set_external_file_permissions!(store_path)
 
       ds.dsLocation = DulHydra::Utils.path_to_uri(store_path)
     end
 
+    def create_external_directory!
+      created = FileUtils.mkdir_p(generate_external_directory_path)
+      created.first
+    end
+
     #
-    # Generates a full path storage location for the file_name
+    # Generates a new directory storage location
     #
-    # Example: file_name = "special.doc"
-    # 
-    # => {external_file_store}/1/e/69/1e691815-0631-4f9b-8e23-2dfb2eec9c70/special.doc
+    # => {external_file_store}/1/e/69/1e691815-0631-4f9b-8e23-2dfb2eec9c70
     #
-    def generate_external_file_path file_name
-      File.join(external_file_store, generate_external_file_subpath, file_name)
+    def generate_external_directory_path
+      File.join(external_file_store, generate_external_directory_subpath)
     end
 
     def external_datastreams
@@ -121,12 +124,16 @@ module DulHydra
       DulHydra.external_file_store
     end
 
-    def generate_external_file_dirname
+    def set_external_file_permissions! file_path
+      File.chmod(EXTERNAL_FILE_PERMISSIONS, file_path)
+    end
+
+    def generate_external_directory_name
       SecureRandom.uuid      
     end
 
-    def generate_external_file_subpath 
-      dirname = generate_external_file_dirname
+    def generate_external_directory_subpath 
+      dirname = generate_external_directory_name
       subpath_segments = []
       start = 0
       DulHydra.external_file_subpath_pattern.each do |seg|
