@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe "export_sets/index.html.erb", export_sets: true do
+describe "export_sets/index.html.erb", type: :feature, export_sets: true do
   let(:user) { FactoryGirl.create(:user) }
   before { login_as user }
   context "user has no bookmarks" do
     it "should not have a 'new export set' link" do
       visit export_sets_path
-      page.should_not have_link("New Export Set")
+      expect(page).not_to have_link("New Export Set")
     end
   end
   context "user has bookmarks" do
@@ -18,7 +18,7 @@ describe "export_sets/index.html.erb", export_sets: true do
     end
     it "should have a New Export Set->Content link" do
       visit export_sets_path
-      page.should have_link("Content", href: "#{new_export_set_path}?export_type=content")
+      expect(page).to have_link("Content", href: "#{new_export_set_path}?export_type=content")
     end    
   end
   context "user has an existing export set" do
@@ -31,7 +31,7 @@ describe "export_sets/index.html.erb", export_sets: true do
     end
     it "should list the export set" do
       visit export_sets_path
-      page.should have_link(export_set.id, :href => export_set_path(export_set))
+      expect(page).to have_link(export_set.id, :href => export_set_path(export_set))
     end        
   end
 end

@@ -21,7 +21,7 @@ shared_examples "a successful metadata file processing" do
   end
 end
 
-describe MetadataFile, :metadata_file => true do
+describe MetadataFile, :type => :model, :metadata_file => true do
   
   context "validation" do
 
@@ -70,7 +70,7 @@ describe MetadataFile, :metadata_file => true do
                 "dateSubmitted" => "dateSubmitted"
               }
             }          
-          MetadataFile.any_instance.stub(:effective_options).and_return(options)
+          allow_any_instance_of(MetadataFile).to receive(:effective_options).and_return(options)
         end
         it "should have an attribute name error" do
           expect(metadata_file.validate_data.messages[:metadata].first).to include("#{I18n.t('batch.metadata_file.error.mapped_attribute_name')}: description => invalid")
@@ -95,8 +95,8 @@ describe MetadataFile, :metadata_file => true do
     end
 
     before do
-      MetadataFile.any_instance.stub_chain(:metadata, :path).and_return(delimited_file)
-      MetadataFile.any_instance.stub(:effective_options).and_return(options)
+      allow_any_instance_of(MetadataFile).to receive_message_chain(:metadata, :path).and_return(delimited_file)
+      allow_any_instance_of(MetadataFile).to receive(:effective_options).and_return(options)
       metadata_file.procezz
       @batch = DulHydra::Batch::Models::Batch.all.last
       @batch_object = @batch.batch_objects.first

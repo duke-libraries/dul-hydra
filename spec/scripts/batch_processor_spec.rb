@@ -115,15 +115,15 @@ module DulHydra::Batch::Scripts
     let(:log_dir) { test_dir }
     let(:bp_user) { FactoryGirl.create(:user) }
     before do
-      File.stub(:readable?).and_call_original
-      File.stub(:readable?).with("/tmp/qdc-rdf.nt").and_return(true)
-      File.stub(:read).and_call_original
+      allow(File).to receive(:readable?).and_call_original
+      allow(File).to receive(:readable?).with("/tmp/qdc-rdf.nt").and_return(true)
+      allow(File).to receive(:read).and_call_original
     end
     after { FileUtils.remove_dir test_dir }
     context "ingest" do
       let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
-      before { File.stub(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples) }
+      before { allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples) }
       context "successful initial run" do
         before { bp.execute }
           it_behaves_like "a successful ingest batch"
@@ -138,7 +138,7 @@ module DulHydra::Batch::Scripts
       end
       context "exception during run" do
         before do
-          DulHydra::Batch::Models::IngestBatchObject.any_instance.stub(:populate_datastream).and_raise(RuntimeError)
+          allow_any_instance_of(DulHydra::Batch::Models::IngestBatchObject).to receive(:populate_datastream).and_raise(RuntimeError)
           bp.execute
         end
         it_behaves_like "an interrupted batch run"
@@ -149,7 +149,7 @@ module DulHydra::Batch::Scripts
       let(:repo_object) { TestModelOmnibus.create(:pid => batch.batch_objects.first.pid, :label => 'Object Label') }
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
       before do
-        File.stub(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples("<#{ActiveFedora::Rdf::ObjectResource.base_uri}#{repo_object.pid}>"))
+        allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples("<#{ActiveFedora::Rdf::ObjectResource.base_uri}#{repo_object.pid}>"))
         repo_object.edit_users = [ batch.user.user_key ]
         repo_object.save
       end
@@ -166,7 +166,7 @@ module DulHydra::Batch::Scripts
       end
       context "exception during run" do
         before do
-          DulHydra::Batch::Models::BatchObject.any_instance.stub(:populate_datastream).and_raise(RuntimeError)
+          allow_any_instance_of(DulHydra::Batch::Models::BatchObject).to receive(:populate_datastream).and_raise(RuntimeError)
           bp.execute
         end
         it_behaves_like "an interrupted batch run"

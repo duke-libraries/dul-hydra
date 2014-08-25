@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ExportSet, export_sets: true do
+describe ExportSet, type: :model, export_sets: true do
   
   context "validation" do
     subject { export_set.errors.messages }
@@ -8,9 +8,21 @@ describe ExportSet, export_sets: true do
 
     context "default" do
       before { export_set.valid? }
-      its([:user]) { should == ["can't be blank"] }
-      its([:pids]) { should == ["can't be blank"] }
-      its([:export_type]) { should == ["is not included in the list"] }
+
+      describe '[:user]' do
+        subject { super()[:user] }
+        it { is_expected.to eq(["can't be blank"]) }
+      end
+
+      describe '[:pids]' do
+        subject { super()[:pids] }
+        it { is_expected.to eq(["can't be blank"]) }
+      end
+
+      describe '[:export_type]' do
+        subject { super()[:export_type] }
+        it { is_expected.to eq(["is not included in the list"]) }
+      end
     end
 
     context "has pids" do
@@ -18,7 +30,11 @@ describe ExportSet, export_sets: true do
         export_set.pids = ["foo:bar"]
         export_set.valid?
       end
-      its([:pids]) { should be_nil }
+
+      describe '[:pids]' do
+        subject { super()[:pids] }
+        it { is_expected.to be_nil }
+      end
     end
 
     context "has user" do
@@ -26,7 +42,11 @@ describe ExportSet, export_sets: true do
         export_set.user = User.new
         export_set.valid?
       end
-      its([:user]) { should be_nil }
+
+      describe '[:user]' do
+        subject { super()[:user] }
+        it { is_expected.to be_nil }
+      end
     end
 
     context "invalid export type" do
@@ -34,29 +54,49 @@ describe ExportSet, export_sets: true do
         export_set.export_type = "foo"
         export_set.valid?
       end
-      its([:export_type]) { should == ["is not included in the list"] }
+
+      describe '[:export_type]' do
+        subject { super()[:export_type] }
+        it { is_expected.to eq(["is not included in the list"]) }
+      end
     end
 
     context "description metadata type" do
       before { export_set.export_type = ExportSet::Types::DESCRIPTIVE_METADATA }
       context "default" do
         before { export_set.valid? }
-        its([:export_type]) { should be_nil }
-        its([:csv_col_sep]) { should == ["is not included in the list"] }
+
+        describe '[:export_type]' do
+          subject { super()[:export_type] }
+          it { is_expected.to be_nil }
+        end
+
+        describe '[:csv_col_sep]' do
+          subject { super()[:csv_col_sep] }
+          it { is_expected.to eq(["is not included in the list"]) }
+        end
       end
       context "invalid csv_col_sep" do
         before do
           export_set.csv_col_sep = "foo"
           export_set.valid?
         end
-        its([:csv_col_sep]) { should == ["is not included in the list"] }
+
+        describe '[:csv_col_sep]' do
+          subject { super()[:csv_col_sep] }
+          it { is_expected.to eq(["is not included in the list"]) }
+        end
       end
       context "valid csv_col_sep" do
         before do
           export_set.csv_col_sep = "tab"
           export_set.valid?
         end
-        its([:csv_col_sep]) { should be_nil }
+
+        describe '[:csv_col_sep]' do
+          subject { super()[:csv_col_sep] }
+          it { is_expected.to be_nil }
+        end
       end
     end
     context "content export_type" do
@@ -64,7 +104,11 @@ describe ExportSet, export_sets: true do
         export_set.export_type = ExportSet::Types::CONTENT 
         export_set.valid?
       end
-      its([:export_type]) { should be_nil }
+
+      describe '[:export_type]' do
+        subject { super()[:export_type] }
+        it { is_expected.to be_nil }
+      end
     end
   end
   

@@ -10,7 +10,7 @@ def new_attachment
   get :new, attached_to_id: FactoryGirl.create(:collection).pid
 end
 
-describe AttachmentsController, attachments: true do
+describe AttachmentsController, type: :controller, attachments: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }

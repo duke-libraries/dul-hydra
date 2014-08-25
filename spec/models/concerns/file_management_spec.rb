@@ -19,7 +19,7 @@ shared_examples "a repository external file" do
 end
 
 module DulHydra
-  describe FileManagement do
+  describe FileManagement, :type => :model do
 
     let(:object) { FileManageable.new }
     let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }

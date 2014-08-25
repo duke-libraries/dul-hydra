@@ -17,17 +17,17 @@ module DulHydra::Batch::Models
   shared_examples "a successful ingest" do
     before { object.process(user) }      
     it "should result in a verified repository object" do
-      expect(object.verified).to be_true
+      expect(object.verified).to be_truthy
       expect(object.pid).to eq(assigned_pid) if assigned_pid.present?
       expect(ActiveFedora::Base.find(object.pid).title).to eq(["Test Object Title"])
     end
   end
   
-  describe IngestBatchObject, batch: true, ingest: true do
+  describe IngestBatchObject, type: :model, batch: true, ingest: true do
 
     before do
-      File.stub(:readable?).and_call_original
-      File.stub(:readable?).with("/tmp/qdc-rdf.nt").and_return(true)
+      allow(File).to receive(:readable?).and_call_original
+      allow(File).to receive(:readable?).with("/tmp/qdc-rdf.nt").and_return(true)
     end
 
     context "validate" do
@@ -221,7 +221,7 @@ module DulHydra::Batch::Models
           end
           context "payload type file" do
             let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_file) }
-            before { File.stub(:read).with('/tmp/qdc-rdf.nt').and_return('_:test <http://purl.org/dc/terms/title> "Test Object Title" .') }
+            before { allow(File).to receive(:read).with('/tmp/qdc-rdf.nt').and_return('_:test <http://purl.org/dc/terms/title> "Test Object Title" .') }
             it_behaves_like "a successful ingest"
           end
         end
@@ -249,19 +249,19 @@ module DulHydra::Batch::Models
       
       context "exception during ingest" do
         let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_bytes) }
-        before { DulHydra::Batch::Models::IngestBatchObject.any_instance.stub(:populate_datastream).and_raise(RuntimeError) }
+        before { allow_any_instance_of(DulHydra::Batch::Models::IngestBatchObject).to receive(:populate_datastream).and_raise(RuntimeError) }
         context "error during processing" do
           it "should log a fatal message and re-raise the exception" do
-            Rails.logger.should_receive(:fatal).with(/Error in creating repository object/)
+            expect(Rails.logger).to receive(:fatal).with(/Error in creating repository object/)
             expect { object.process(user) }.to raise_error(RuntimeError)
           end
         end
         context "error while destroying repository object" do
-          before { TestModelOmnibus.any_instance.stub(:destroy).and_raise(RuntimeError) }
-          after { TestModelOmnibus.any_instance.unstub(:destroy) }
+          before { allow_any_instance_of(TestModelOmnibus).to receive(:destroy).and_raise(RuntimeError) }
+          after { allow_any_instance_of(TestModelOmnibus).to receive(:destroy).and_call_original }
           it "should log two fatal messages and re-raise the initial exception" do
-            Rails.logger.should_receive(:fatal).with(/Error in creating repository object/)
-            Rails.logger.should_receive(:fatal).with(/Error deleting repository object/)
+            expect(Rails.logger).to receive(:fatal).with(/Error in creating repository object/)
+            expect(Rails.logger).to receive(:fatal).with(/Error deleting repository object/)
             expect { object.process(user) }.to raise_error(RuntimeError)
           end
         end

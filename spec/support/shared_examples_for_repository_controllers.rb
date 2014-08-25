@@ -57,15 +57,15 @@ shared_examples "a repository object controller" do
         it "should update the permissions" do
           update_rights
           object.reload
-          object.discover_groups.should == ["public"]
-          object.read_groups.should == ["registered"]
-          object.edit_groups.should == ["editors", "managers"]
-          object.discover_users.should == ["Sally", "Mitch"]
-          object.read_users.should == ["Gil", "Ben"]
-          object.edit_users.should == ["Rocky", "Gwen", "Teresa"]
-          object.license_title.should == "No Access"
-          object.license_description.should == "No one can get to it"
-          object.license_url.should == "http://www.example.com"
+          expect(object.discover_groups).to eq(["public"])
+          expect(object.read_groups).to eq(["registered"])
+          expect(object.edit_groups).to eq(["editors", "managers"])
+          expect(object.discover_users).to eq(["Sally", "Mitch"])
+          expect(object.read_users).to eq(["Gil", "Ben"])
+          expect(object.edit_users).to eq(["Rocky", "Gwen", "Teresa"])
+          expect(object.license_title).to eq("No Access")
+          expect(object.license_description).to eq("No one can get to it")
+          expect(object.license_url).to eq("http://www.example.com")
         end
         it "should redirect to the show view" do
           update_rights

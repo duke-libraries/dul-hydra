@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'support/shared_examples_for_repository_views'
 
-describe "Items views", items: true do
+describe "Items views", type: :feature, items: true do
 
   describe "show" do
     context "basic" do

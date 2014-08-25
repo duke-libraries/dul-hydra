@@ -20,7 +20,7 @@ shared_examples "an Item related to a Component" do
   end
 end
 
-describe Item do
+describe Item, :type => :model do
   it_behaves_like "a DulHydra object"
   it_behaves_like "an object that has content metadata"
 

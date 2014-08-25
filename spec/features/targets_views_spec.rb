@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'support/shared_examples_for_repository_views'
 
-describe "Targets views", targets: true do
+describe "Targets views", type: :feature, targets: true do
   let(:object) { FactoryGirl.create(:target) }
   describe "show" do
     it_behaves_like "a repository object show view"

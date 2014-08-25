@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'dul_hydra'
 
-describe "Grouper integration" do
+describe "Grouper integration", :type => :feature do
   let(:user) { FactoryGirl.create(:user) }
   let(:object) { FactoryGirl.create(:collection) }
   before do
@@ -15,7 +15,7 @@ describe "Grouper integration" do
   end
   it "should honor Grouper group access control" do
     visit url_for(object)
-    page.should have_content("Grouper Works!")
+    expect(page).to have_content("Grouper Works!")
   end
   
 end

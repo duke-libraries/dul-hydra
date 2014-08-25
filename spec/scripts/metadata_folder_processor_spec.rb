@@ -21,26 +21,38 @@ module DulHydra::Batch::Scripts
       context "collection" do
         let(:collection) { FactoryGirl.create(:collection) }
         context "pid" do
-          its "collection attribute should contain the appropriate collection" do
+          describe '#collection attribute should contain the appropriate collection' do
+            subject { super().collection attribute is_expected.to contain the appropriate collection }
+            it do
             expect(described_class.new({ folder: folder, collection: collection.pid }).collection).to eq(collection)
+          end
           end          
         end
         context "object" do
-          its "collection attribute should contain the appropriate collection" do
+          describe '#collection attribute should contain the appropriate collection' do
+            subject { super().collection attribute is_expected.to contain the appropriate collection }
+            it do
             expect(described_class.new({ folder: folder, collection: collection }).collection).to eq(collection)
+          end
           end          
         end
       end
       context "user" do
         let(:user) { FactoryGirl.create(:user) }
         context "user key" do
-          its "user attribute should contain the appropriate user" do
+          describe '#user attribute should contain the appropriate user' do
+            subject { super().user attribute is_expected.to contain the appropriate user }
+            it do
             expect(described_class.new({ folder: folder, user: user.user_key }).user).to eq(user)
+          end
           end          
         end
         context "object" do
-          its "user attribute should contain the appropriate user" do
+          describe '#user attribute should contain the appropriate user' do
+            subject { super().user attribute is_expected.to contain the appropriate user }
+            it do
             expect(described_class.new({ folder: folder, user: user }).user).to eq(user)
+          end
           end          
         end
       end
@@ -56,11 +68,11 @@ module DulHydra::Batch::Scripts
       let(:object) { FactoryGirl.create(:test_model) }
       before do
         object.update_attributes(identifier: [ "efghi01003"] )
-        Dir.stub(:foreach).and_call_original
-        Dir.stub(:foreach).with(folder).and_return(["md.xml"].each)
-        File.stub(:directory?).and_call_original
-        File.stub(:directory?).with(File.join(folder, "md.xml")).and_return(false)
-        File.stub(:read).and_call_original
+        allow(Dir).to receive(:foreach).and_call_original
+        allow(Dir).to receive(:foreach).with(folder).and_return(["md.xml"].each)
+        allow(File).to receive(:directory?).and_call_original
+        allow(File).to receive(:directory?).with(File.join(folder, "md.xml")).and_return(false)
+        allow(File).to receive(:read).and_call_original
       end
       context "no warnings or errors" do
         let(:subject_string) { "<#{ActiveFedora::Rdf::ObjectResource.base_uri}#{object.pid}>" }
@@ -68,7 +80,7 @@ module DulHydra::Batch::Scripts
           "#{subject_string} <http://purl.org/dc/terms/identifier> \"efghi01003\" .\n".concat(sample_metadata_triples(subject_string))
         end
         before do
-          File.stub(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_xml)
+          allow(File).to receive(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_xml)
         end
         it "should populate the scanner hash appropriately" do
           mfp.scan
@@ -89,7 +101,7 @@ module DulHydra::Batch::Scripts
         end
       end
       context "element has attribute" do
-        before { File.stub(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_element_attribute) }
+        before { allow(File).to receive(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_element_attribute) }
         it "should report a warning" do
           expect(mfp.logger).to receive(:info).exactly(2).times
           expect(mfp.logger).to receive(:warn).with("Node extent in md.xml has attribute: unit")
@@ -99,7 +111,7 @@ module DulHydra::Batch::Scripts
         end
       end
       context "element has unknown vocabulary term" do
-        before { File.stub(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_unknown_duketerm) }
+        before { allow(File).to receive(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_unknown_duketerm) }
         it "should report an error" do
           expect(mfp.logger).to receive(:info).exactly(2).times
           expect(mfp.logger).to_not receive(:warn)
@@ -110,7 +122,7 @@ module DulHydra::Batch::Scripts
         end
       end
       context "element with no namespace" do
-        before { File.stub(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_no_namespace_element) }
+        before { allow(File).to receive(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_no_namespace_element) }
         it "should report an error" do
           expect(mfp.logger).to receive(:info).exactly(2).times
           expect(mfp.logger).to receive(:warn).with("Cannot validate element name abstract in md.xml")
@@ -120,7 +132,7 @@ module DulHydra::Batch::Scripts
         end
       end
       context "element with unknown namespace" do
-        before { File.stub(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_unknown_namespace) }
+        before { allow(File).to receive(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_unknown_namespace) }
         it "should report an error" do
           expect(mfp.logger).to receive(:info).exactly(2).times
           expect(mfp.logger).to receive(:warn).with("Cannot validate element name extent in namespace special in md.xml")
@@ -130,7 +142,7 @@ module DulHydra::Batch::Scripts
         end
       end
       context "element with invalid namespace href" do
-        before { File.stub(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_invalid_namespace_href) }
+        before { allow(File).to receive(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_with_invalid_namespace_href) }
         it "should report an error" do
           expect(mfp.logger).to receive(:info).exactly(2).times
           expect(mfp.logger).to_not receive(:warn)

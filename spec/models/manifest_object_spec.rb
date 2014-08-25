@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Models
 
-  describe ManifestObject, batch: true do
+  describe ManifestObject, type: :model, batch: true do
   
     shared_examples "a valid manifest object" do
       it "should be valid" do
@@ -161,14 +161,14 @@ module DulHydra::Batch::Models
         context "in object 'checksum'" do
           before { manifest_object.object_hash["checksum"] = "abcdef" }
           it "should return the object 'checksum'" do
-            expect(manifest_object.checksum?).to be_true
+            expect(manifest_object.checksum?).to be_truthy
             expect(manifest_object.checksum).to eq("abcdef")
           end
         end
         context "in object 'checksum''value'" do
           before { manifest_object.object_hash["checksum"] = { "value" => "123456" } }
           it "should return the object 'checksum''value'" do
-            expect(manifest_object.checksum?).to be_true
+            expect(manifest_object.checksum?).to be_truthy
             expect(manifest_object.checksum).to eq("123456")
           end
         end
@@ -177,7 +177,7 @@ module DulHydra::Batch::Models
         let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
         let(:manifest_object) { ManifestObject.new({ "identifier" => "id001" }, manifest) }
         it "should return the checksum from manifest 'checksum' file" do
-          expect(manifest_object.checksum?).to be_true
+          expect(manifest_object.checksum?).to be_truthy
           expect(manifest_object.checksum).to eq("120ad0814f207c45d968b05f7435034ecfee8ac1a0958cd984a070dad31f66f3")
         end
       end
@@ -185,7 +185,7 @@ module DulHydra::Batch::Models
         let(:manifest) { Manifest.new }
         let(:manifest_object) { ManifestObject.new({}, manifest) }
         it "should return nil" do
-          expect(manifest_object.checksum?).to be_false
+          expect(manifest_object.checksum?).to be_falsey
           expect(manifest_object.checksum).to be_nil
         end
       end
@@ -198,7 +198,7 @@ module DulHydra::Batch::Models
         context "in object 'checksum''type'" do
           before { manifest_object.object_hash["checksum"] = { "type" => "SHA-1" } }
           it "should return the object 'checksum''type'" do
-            expect(manifest_object.checksum_type?).to be_true
+            expect(manifest_object.checksum_type?).to be_truthy
             expect(manifest_object.checksum_type).to eq("SHA-1")
           end
         end
@@ -207,7 +207,7 @@ module DulHydra::Batch::Models
         let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
         let(:manifest_object) { ManifestObject.new({ "identifier" => "id001" }, manifest) }
         it "should return the checksum from manifest 'checksum' file" do
-          expect(manifest_object.checksum_type?).to be_true
+          expect(manifest_object.checksum_type?).to be_truthy
           expect(manifest_object.checksum_type).to eq("SHA-256")
         end
       end
@@ -215,7 +215,7 @@ module DulHydra::Batch::Models
         let(:manifest) { Manifest.new }
         let(:manifest_object) { ManifestObject.new({}, manifest) }
         it "should return nil" do
-          expect(manifest_object.checksum_type?).to be_false
+          expect(manifest_object.checksum_type?).to be_falsey
           expect(manifest_object.checksum_type).to be_nil
         end
       end
@@ -365,14 +365,14 @@ module DulHydra::Batch::Models
           context "bare pid" do
             before { manifest_object.object_hash[relationship] = object_relationship_pid }
             it "should return the object pid" do
-              expect(manifest_object.has_relationship?(relationship)).to be_true
+              expect(manifest_object.has_relationship?(relationship)).to be_truthy
               expect(manifest_object.relationship_pid(relationship)).to eq(object_relationship_pid)
             end
           end
           context "pid in 'pid'" do
             before { manifest_object.object_hash[relationship] = { "pid" => object_relationship_pid } }
             it "should return the object pid" do
-              expect(manifest_object.has_relationship?(relationship)).to be_true
+              expect(manifest_object.has_relationship?(relationship)).to be_truthy
               expect(manifest_object.relationship_pid(relationship)).to eq(object_relationship_pid)
             end
           end
@@ -440,14 +440,14 @@ module DulHydra::Batch::Models
           context "bare pid" do
             before { manifest.manifest_hash[relationship] = relationship_pid }
             it "should return the manifest pid" do
-              expect(manifest_object.has_relationship?(relationship)).to be_true
+              expect(manifest_object.has_relationship?(relationship)).to be_truthy
               expect(manifest_object.relationship_pid(relationship)).to eq(relationship_pid)
             end
           end
           context "pid in 'pid'" do
             before { manifest.manifest_hash[relationship] = { "pid" => relationship_pid } }
             it "should return the manifest pid" do
-              expect(manifest_object.has_relationship?(relationship)).to be_true
+              expect(manifest_object.has_relationship?(relationship)).to be_truthy
               expect(manifest_object.relationship_pid(relationship)).to eq(relationship_pid)
             end
           end
@@ -497,7 +497,7 @@ module DulHydra::Batch::Models
       end
       context "no relationship" do
         it "should return false / nil" do
-          expect(manifest_object.has_relationship?(relationship)).to be_false
+          expect(manifest_object.has_relationship?(relationship)).to be_falsey
           expect(manifest_object.relationship_pid(relationship)).to be_nil
         end
       end

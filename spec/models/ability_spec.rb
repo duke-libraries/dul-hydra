@@ -14,7 +14,7 @@ shared_examples "it cannot" do |ability|
   end
 end
 
-describe Ability, abilities: true do
+describe Ability, type: :model, abilities: true do
 
   subject { described_class.new(user) }
   let(:user) { FactoryGirl.build(:user) }

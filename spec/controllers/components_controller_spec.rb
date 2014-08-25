@@ -6,7 +6,7 @@ def create_component opts={}
   post :create, parent_id: item.pid, content: {file: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
 end
 
-describe ComponentsController, components: true do
+describe ComponentsController, type: :controller, components: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }

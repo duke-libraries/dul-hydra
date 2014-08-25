@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'support/shared_examples_for_repository_views'
 
-describe "Components views", components: true do
+describe "Components views", type: :feature, components: true do
 
   describe "show" do
     context "basic" do

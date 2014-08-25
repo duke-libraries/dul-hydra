@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe IngestFoldersController do
+describe IngestFoldersController, :type => :controller do
 
   let(:mount_point_name) { "base" }
   let(:mount_point_path) { "/mount/" }
@@ -27,8 +27,8 @@ describe IngestFoldersController do
             #{user.user_key}:
             - #{mount_point_name}/path/
     EOS
-    IngestFolder.stub(:load_configuration).and_return(YAML.load(config).with_indifferent_access)
-    File.stub(:readable?).and_return(true)
+    allow(IngestFolder).to receive(:load_configuration).and_return(YAML.load(config).with_indifferent_access)
+    allow(File).to receive(:readable?).and_return(true)
   end
   
   describe "#create" do
@@ -39,7 +39,7 @@ describe IngestFoldersController do
     end
 
     it "sets the ingest folder attributes correctly" do
-      expect(assigns[:ingest_folder].add_parents).to be_true
+      expect(assigns[:ingest_folder].add_parents).to be_truthy
       expect(assigns[:ingest_folder].model).to eql(IngestFolder.default_file_model)
       expect(assigns[:ingest_folder].base_path).to eql("base/path/")
       expect(assigns[:ingest_folder].sub_path).to eql('/subpath/subsubpath/')

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Models
 
-  describe Batch, batch: true do
+  describe Batch, type: :model, batch: true do
     
     context "destroy" do
     
@@ -12,10 +12,10 @@ module DulHydra::Batch::Models
         batch.destroy
       end
       it "should destroy all the associated dependent objects" do
-        DulHydra::Batch::Models::Batch.all.should be_empty
-        DulHydra::Batch::Models::BatchObject.all.should be_empty
-        DulHydra::Batch::Models::BatchObjectDatastream.all.should be_empty
-        DulHydra::Batch::Models::BatchObjectRelationship.all.should be_empty
+        expect(DulHydra::Batch::Models::Batch.all).to be_empty
+        expect(DulHydra::Batch::Models::BatchObject.all).to be_empty
+        expect(DulHydra::Batch::Models::BatchObjectDatastream.all).to be_empty
+        expect(DulHydra::Batch::Models::BatchObjectRelationship.all).to be_empty
       end
       
     end
@@ -39,7 +39,7 @@ module DulHydra::Batch::Models
       end
       
       it "should cache the results of looking up relationship objects" do
-        batch.should_receive(:add_found_pid).once.with(parent.pid, "TestParent").and_call_original
+        expect(batch).to receive(:add_found_pid).once.with(parent.pid, "TestParent").and_call_original
         batch.validate
         expect(batch.found_pids).to eq(pid_cache)
       end

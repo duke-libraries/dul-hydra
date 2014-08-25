@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "export sets routing", export_sets: true do
+describe "export sets routing", type: :routing, export_sets: true do
   describe "RESTful routes" do
     it "should have an index route" do
       @route = {controller: 'export_sets', action: 'index'}

@@ -8,7 +8,7 @@ shared_examples "a completed batch fixity check" do
   end  
 end
 
-describe BatchFixityCheckMailer, fixity_check: true do
+describe BatchFixityCheckMailer, type: :mailer, fixity_check: true do
   
   let(:mailto) { "nowhere@example.com" }
 
@@ -29,7 +29,7 @@ describe BatchFixityCheckMailer, fixity_check: true do
     let(:bfc) { DulHydra::Scripts::BatchFixityCheck.new(:limit => 1, :dryrun => true, :report => report_filename) }
     context "no objects in report" do
       before do
-        DulHydra::Scripts::BatchFixityCheck.any_instance.stub(:total).and_return(0)
+        allow_any_instance_of(DulHydra::Scripts::BatchFixityCheck).to receive(:total).and_return(0)
           bfc.execute 
           @email = BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
         end
@@ -40,7 +40,7 @@ describe BatchFixityCheckMailer, fixity_check: true do
     end
     context "objects in report" do
       before do
-        DulHydra::Scripts::BatchFixityCheck.any_instance.stub(:total).and_return(1)
+        allow_any_instance_of(DulHydra::Scripts::BatchFixityCheck).to receive(:total).and_return(1)
         bfc.execute 
         @email = BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
       end

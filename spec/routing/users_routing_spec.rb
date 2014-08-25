@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "users router" do
+describe "users router", :type => :routing do
   it "should not have registration routes" do
     expect(get: "/users/sign_up").not_to be_routable
     expect(get: "/users/edit").not_to be_routable

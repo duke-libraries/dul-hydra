@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BatchesController, batch: true do
+describe BatchesController, type: :controller, batch: true do
 
   shared_examples "a delete-able batch" do
     it "should delete the batch and redirect to the index page" do

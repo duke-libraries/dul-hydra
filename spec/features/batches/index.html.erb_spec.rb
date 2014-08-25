@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe "batches/index.html.erb" do
+describe "batches/index.html.erb", :type => :feature do
   context "ingest folders" do
     let(:user) { FactoryGirl.create(:user) }
     let(:menu_label) { I18n.t('dul_hydra.ingest_folder.new_menu') }
     before { login_as user }
     context "user has no permitted ingest folders" do
       before do
-        IngestFolder.stub(:permitted_folders).with(user).and_return(nil)
+        allow(IngestFolder).to receive(:permitted_folders).with(user).and_return(nil)
         visit batches_path
       end
       it "should not include a link to create an ingest folder" do
@@ -16,7 +16,7 @@ describe "batches/index.html.erb" do
     end
     context "user has permitted ingest folders" do
       before do
-        IngestFolder.stub(:permitted_folders).with(user).and_return(["/base/path/"])
+        allow(IngestFolder).to receive(:permitted_folders).with(user).and_return(["/base/path/"])
         visit batches_path
       end
       it "should include a link to create an ingest folder" do
@@ -110,18 +110,16 @@ describe "batches/index.html.erb" do
         context "not yet validated" do
           before { visit batches_path }
           it "should have a link to validate the batch" do
-            pending "reworking of separate validate action" do
-              within tab_id do
-                expect(page).to have_link(I18n.t('batch.web.action_names.validate'), :href => validate_batch_path(batch))
-              end
+            skip "reworking of separate validate action"
+            within tab_id do
+              expect(page).to have_link(I18n.t('batch.web.action_names.validate'), :href => validate_batch_path(batch))
             end
           end
           it "should return to the index page" do
-            pending "reworking of separate validate action" do
-              within tab_id do
-                click_link I18n.t('batch.web.action_names.validate')
-                expect(current_path).to eq(batches_path)
-              end
+            skip "reworking of separate validate action"
+            within tab_id do
+              click_link I18n.t('batch.web.action_names.validate')
+              expect(current_path).to eq(batches_path)
             end
           end
         end
