@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'support/shared_examples_for_repository_views'
 
-describe "Collections views", collections: true do
+describe "Collections views", type: :feature, collections: true do
 
   describe "show" do
     let(:object) { FactoryGirl.create(:collection) }
@@ -53,11 +53,11 @@ describe "Collections views", collections: true do
     let(:user) { FactoryGirl.create(:user) }
     let(:collection_creator) { Role.new("Collection Creator", ability: :create, model: "Collection") }
     before do
-      allow(User.any_instance).to receive(:roles) { [collection_creator] }
+      allow_any_instance_of(User).to receive(:roles) { [collection_creator] }
       login_as user
     end
     it "should create a collection" do
-      pending "Figuring out how to write the test"
+      skip "Figuring out how to write the test"
       visit new_collection_path
       fill_in 'Title', with: 'New Collection'
       click_button 'Create Collection'

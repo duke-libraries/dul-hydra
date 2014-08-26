@@ -15,12 +15,12 @@ module DulHydra::Batch::Models
     end
   end
   
-  describe UpdateBatchObject, batch: true do
+  describe UpdateBatchObject, type: :model, batch: true do
 
     let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
     let(:object) { batch.batch_objects.first }
 
-    before { File.stub(:readable?).with("/tmp/qdc-rdf.nt").and_return(true) }
+    before { allow(File).to receive(:readable?).with("/tmp/qdc-rdf.nt").and_return(true) }
 
     context "validate", validation: true do
       context "valid object" do
@@ -63,7 +63,7 @@ module DulHydra::Batch::Models
       context "successful update" do
         let(:repo_object) { TestModel.create(pid: object.pid, title: [ "Test Model Title" ]) }
         before do
-          File.stub(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples("<#{repo_object.descMetadata.rdf_subject.to_s}>"))
+          allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples("<#{repo_object.descMetadata.rdf_subject.to_s}>"))
           repo_object.edit_users = [batch.user.user_key]
           repo_object.save!
           object.process(batch.user)

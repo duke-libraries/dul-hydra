@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "export_sets/new.html.erb", export_sets: true do
+describe "export_sets/new.html.erb", type: :feature, export_sets: true do
 
   let(:user) { FactoryGirl.create(:user) }
 
@@ -19,8 +19,8 @@ describe "export_sets/new.html.erb", export_sets: true do
     end
     it "should display a form with content-bearing bookmarked objects on which the user has download permission" do
       visit "#{new_export_set_path}?export_type=#{ExportSet::Types::CONTENT}"
-      page.should_not have_content(object_discover.pid)
-      page.should have_content(object_read.pid)
+      expect(page).not_to have_content(object_discover.pid)
+      expect(page).to have_content(object_read.pid)
     end
   end
 
@@ -38,8 +38,8 @@ describe "export_sets/new.html.erb", export_sets: true do
     end
     it "should display a form with bookmarked objects on which the user has read permission" do
       visit "#{new_export_set_path}?export_type=#{ExportSet::Types::DESCRIPTIVE_METADATA}"
-      page.should_not have_content(object_discover.pid)
-      page.should have_content(object_read.pid)
+      expect(page).not_to have_content(object_discover.pid)
+      expect(page).to have_content(object_read.pid)
     end    
   end
 

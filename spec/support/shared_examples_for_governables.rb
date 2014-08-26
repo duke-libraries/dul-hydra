@@ -11,7 +11,7 @@ shared_examples "a governable object" do
     it "should set its admin policy with #admin_policy= and get with #admin_policy" do
       object.admin_policy = coll
       object.save(validate: false)
-      ActiveFedora::Base.find(object.pid, cast: true).admin_policy.should == coll
+      expect(ActiveFedora::Base.find(object.pid, cast: true).admin_policy).to eq(coll)
     end
   end
 end

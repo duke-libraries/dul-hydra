@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DownloadsController do
+describe DownloadsController, :type => :controller do
   let(:user) { FactoryGirl.create(:user) }
   before do
     obj.read_users = [user.user_key]
@@ -22,14 +22,14 @@ describe DownloadsController do
     let(:obj) { FactoryGirl.create(:collection) }
     it "should download successfully" do
       get :show, id: obj, datastream_id: "descMetadata"
-      response.should be_successful
+      expect(response).to be_successful
     end
   end
   context "rightsMetadata download" do
     let(:obj) { FactoryGirl.create(:test_model) }
     it "should download successfully" do
       get :show, id: obj, datastream_id: "rightsMetadata"
-      response.should be_successful
+      expect(response).to be_successful
     end
   end
 end

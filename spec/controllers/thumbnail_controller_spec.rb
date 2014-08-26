@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ThumbnailController do
+describe ThumbnailController, :type => :controller do
   let(:object) { FactoryGirl.create(:component_with_content) }
   let(:user) { FactoryGirl.create(:user) }
   before(:each) { sign_in user }
@@ -12,7 +12,7 @@ describe ThumbnailController do
     end
     it "should allow user to download thumbnail" do
       get :show, :id => object
-      response.should be_successful
+      expect(response).to be_successful
     end
   end
   context "user with discover policy permission, but not read permission, on asset" do
@@ -26,7 +26,7 @@ describe ThumbnailController do
     end
     it "should allow user to download thumbnail" do
       get :show, :id => object
-      response.should be_successful
+      expect(response).to be_successful
     end
   end
 end

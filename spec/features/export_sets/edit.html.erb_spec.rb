@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'export_sets/edit.html.erb', export_sets: true do
+describe 'export_sets/edit.html.erb', type: :feature, export_sets: true do
   let(:user) { FactoryGirl.create(:user) }
   before { login_as user }
   context "edit content export set title" do
@@ -16,7 +16,7 @@ describe 'export_sets/edit.html.erb', export_sets: true do
       visit edit_export_set_path(export_set)
       fill_in "Title", :with => "New Title"
       click_button "update_export_set_button"
-      ExportSet.find(export_set.id).title.should == "New Title"
+      expect(ExportSet.find(export_set.id).title).to eq("New Title")
     end
   end
   context "descriptive metadata export set edit form" do

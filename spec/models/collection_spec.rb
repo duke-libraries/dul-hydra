@@ -20,7 +20,7 @@ shared_examples "a Collection related to a Target" do
   end
 end
 
-describe Collection do
+describe Collection, :type => :model do
 
   it_behaves_like "a DulHydra object"
 
@@ -32,9 +32,9 @@ describe Collection do
       collection.default_license_url = "http://library.duke.edu"
     end
     it "should set the terms correctly" do
-      collection.defaultRights.license.title.first.should == "License Title"
-      collection.defaultRights.license.description.first.should == "License Description"
-      collection.defaultRights.license.url.first.should == "http://library.duke.edu"
+      expect(collection.defaultRights.license.title.first).to eq("License Title")
+      expect(collection.defaultRights.license.description.first).to eq("License Description")
+      expect(collection.defaultRights.license.url.first).to eq("http://library.duke.edu")
     end
   end
 

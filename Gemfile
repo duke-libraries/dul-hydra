@@ -31,7 +31,7 @@ gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 4.2.0'
 
 group :development, :test do
-  gem 'rspec-rails', '~> 2.99.0'
+  gem 'rspec-rails', '~> 3.0.0'
   gem 'capybara', '~> 2.0'
   gem 'jettywrapper', '~> 1.5'
   gem 'factory_girl_rails', '~> 4.0'

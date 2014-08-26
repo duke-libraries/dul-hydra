@@ -131,7 +131,7 @@ shared_examples "a content-bearing object show view" do
     allow(user).to receive(:groups) { ["public", "registered"] }
   end
   it "should have a download link" do
-    pending
+    skip
     visit url_for(object)
     expect(page).to have_link("download-#{object.safe_id}", href: url_for(controller: 'downloads', action: 'show', id: object))
   end
@@ -141,14 +141,14 @@ shared_examples "a content-bearing object show view" do
       object.save
     end
     it "should have an upload link" do
-      pending
+      skip
       visit url_for(object)
       expect(page).to have_link("upload-content-link", href: url_for(controller: object.controller_name, action: 'upload', id: object))
     end
   end
   context "when the user cannot edit the object" do
     it "should not have an upload link" do
-      pending
+      skip
       visit url_for(object)
       expect(page).not_to have_link("upload-content-link", href: url_for(controller: object.controller_name, action: 'upload', id: object))
     end

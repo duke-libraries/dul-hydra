@@ -10,7 +10,7 @@ def create_item_and_component opts={}
   post :create, parent_id: collection.pid, content: {file: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
 end
 
-describe ItemsController, items: true do
+describe ItemsController, type: :controller, items: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }

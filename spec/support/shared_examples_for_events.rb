@@ -144,22 +144,22 @@ shared_examples "an event" do
 
   describe "object existence" do
     it "should be false if pid is nil" do
-      expect(subject.object_exists?).to be_false
+      expect(subject.object_exists?).to be_falsey
     end
     it "should be false if pid not found in repository" do
       subject.pid = "test:123"
-      expect(subject.object_exists?).to be_false
+      expect(subject.object_exists?).to be_falsey
     end
     it "should be true if object exists in repository" do
       allow(ActiveFedora::Base).to receive(:find).with("test:123") { mock_object }
       subject.pid = "test:123"
-      expect(subject.object_exists?).to be_true
+      expect(subject.object_exists?).to be_truthy
     end
     it "should be true if object instance variable is set" do
       obj = mock_object(pid: "test:123")
       allow(obj).to receive(:new_record?) { false }
       subject.object = obj
-      expect(subject.object_exists?).to be_true
+      expect(subject.object_exists?).to be_truthy
     end
   end
 

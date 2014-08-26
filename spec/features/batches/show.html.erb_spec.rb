@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "batches/show.html.erb" do
+describe "batches/show.html.erb", :type => :feature do
 
   context "batch" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
@@ -26,15 +26,13 @@ describe "batches/show.html.erb" do
         context "not yet validated" do
           before { visit batch_path(batch) }
           it "should have a link to validate the batch" do
-            pending "reworking of separate validate action" do
-              expect(page).to have_link(I18n.t('batch.web.action_names.validate'), :href => validate_batch_path(batch))
-            end
+            skip "reworking of separate validate action"
+            expect(page).to have_link(I18n.t('batch.web.action_names.validate'), :href => validate_batch_path(batch))
           end
           it "should return to the index page" do
-            pending "reworking of separate validate action" do
-              click_link I18n.t('batch.web.action_names.validate')
-              expect(page).to have_text("Batch #{batch.id}")
-            end
+            skip "reworking of separate validate action"
+            click_link I18n.t('batch.web.action_names.validate')
+            expect(page).to have_text("Batch #{batch.id}")
           end
         end
         context "validated" do

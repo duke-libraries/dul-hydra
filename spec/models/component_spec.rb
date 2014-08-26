@@ -21,7 +21,7 @@ shared_examples "a Component with a Target" do
   end
 end
 
-describe Component, components: true do
+describe Component, type: :model, components: true do
 
   it_behaves_like "a DulHydra object"
   it_behaves_like "an object that can have content"
@@ -30,7 +30,11 @@ describe Component, components: true do
     context "orphan component" do
       subject { component }
       let(:component) { FactoryGirl.create(:component) }
-      its(:collection) { should be_nil }
+
+      describe '#collection' do
+        subject { super().collection }
+        it { is_expected.to be_nil }
+      end
     end
     context "belongs to orphan item" do
       subject { component }
@@ -40,7 +44,11 @@ describe Component, components: true do
         component.parent = item
         component.save!
       end
-      its(:collection) { should be_nil }
+
+      describe '#collection' do
+        subject { super().collection }
+        it { is_expected.to be_nil }
+      end
     end
     context "belongs to item in collection" do
       before do
