@@ -3,6 +3,8 @@ module DulHydra
 
     DEFAULT_FILE_EXTENSION = "bin"
 
+    STRFTIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%LZ"
+
     def validate_checksum! checksum, checksum_type=nil
       raise DulHydra::Error, "Checksum cannot be validated on new datastream." if new?
       raise DulHydra::Error, "Checksum cannot be validated on unpersisted content." if content_changed?
@@ -13,19 +15,28 @@ module DulHydra
                       content_digest(algorithm)
                     end
       if checksum == ds_checksum
-        "The checksum [#{algorithm}: #{checksum}] is valid."
+        "The checksum [#{algorithm}]#{checksum} is valid for datastream #{version_info}."
       else
-        raise DulHydra::ChecksumInvalid, "The checksum [#{algorithm}: #{checksum}] is not valid. The repository checksum is [#{algorithm}: #{ds_checksum}]."
+        raise DulHydra::ChecksumInvalid, "The checksum [#{algorithm}]#{checksum} is not valid for datastream #{version_info}."
       end
     end
 
+    def version_uri
+      # E.g., info:fedora/duke:1/content/content.0
+      ["info:fedora", pid, dsid, dsVersionID].join("/") unless new?
+    end
+
+    def version_info
+      # E.g., info:fedora/duke:1/content/content.0 [2013-09-26T20:00:03.357Z]
+      "#{version_uri} [#{DulHydra::Utils.ds_as_of_date_time(self)}]" unless new?
+    end
+    
+    def create_date_string
+      dsCreateDate.strftime(STRFTIME_FORMAT) if dsCreateDate
+    end
+
     def content_digest algorithm
-      raise TypeError, "Algorithm must be a string: #{algorithm.inspect}" unless algorithm.is_a?(String)
-      digest_class = OpenSSL::Digest.const_get(algorithm.sub("-", "").to_sym)
-      digest = digest_class.new(self.content)
-      digest.to_s
-    rescue NameError => e
-      raise ArgumentError, "Invalid algorithm: #{algorithm}"
+      DulHydra::Utils.digest(self.content, algorithm)
     end
 
     # Returns a list of the external file paths for all versions of the datastream.

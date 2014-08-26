@@ -1,6 +1,16 @@
+require 'openssl'
+
 module DulHydra::Utils
 
   DEFAULT_MIME_TYPE = "application/octet-stream"
+
+  def self.digest content, algorithm
+    raise TypeError, "Algorithm must be a string: #{algorithm.inspect}" unless algorithm.is_a?(String)
+    digest_class = OpenSSL::Digest.const_get(algorithm.sub("-", "").to_sym)
+    digest_class.new(content).to_s
+  rescue NameError => e
+    raise ArgumentError, "Invalid algorithm: #{algorithm}"
+  end
 
   # Return a mime type for the file, using the file_name if necessary
   # file can be a File object or file path (String)
@@ -60,7 +70,7 @@ module DulHydra::Utils
   end
 
   def self.ds_as_of_date_time(ds)
-    ds.dsCreateDate.strftime("%Y-%m-%dT%H:%M:%S.%LZ")
+    ds.create_date_string
   end
   
   # Find an object with a given identifier and return its PID.

@@ -24,6 +24,8 @@ module ActiveFedora
       context "with persisted content" do
         before do
           allow(subject).to receive(:new?) { false }
+          allow(subject).to receive(:pid) { "foobar:1" }
+          allow(subject).to receive(:dsCreateDate) { DateTime.now }
           allow(subject).to receive(:checksum) { checksum }
           allow(subject).to receive(:checksumType) { checksum_type }
         end
