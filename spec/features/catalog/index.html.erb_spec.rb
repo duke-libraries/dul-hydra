@@ -13,6 +13,24 @@ describe "catalog/index.html.erb" do
       expect(page).to have_link(I18n.t('dul_hydra.contact.label'), "mailto:#{DulHydra.contact_email}")
     end
   end
+  describe "facet results" do
+    let(:collection1) { FactoryGirl.create(:collection, title: ["XYZ"]) }
+    let(:collection2) { FactoryGirl.create(:collection, title: ["ABC"]) }
+    before do
+      collection1.discover_groups = ["public"]
+      collection1.save!
+      collection2.discover_groups = ["public"]
+      collection2.save!
+      visit catalog_index_path
+      click_link "Collection"
+    end
+    it "should display the results in title order" do
+      expect("ABC").to appear_before("XYZ")
+    end
+    it "should have 'Title' in the sort selector" do
+      expect(page).to have_button("Sort by Title")
+    end
+  end
   describe "search options" do
     before do
       object.discover_groups = ["public"]

@@ -130,8 +130,8 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc', :label => 'Relevance'
-    config.add_sort_field "#{DulHydra::IndexFields::TITLE} asc", :label => 'Title'
+    config.add_sort_field 'score desc', :label => 'Relevance', :default_for_user_query => true
+    config.add_sort_field "#{DulHydra::IndexFields::TITLE} asc", :label => 'Title', :default => true
     config.add_sort_field "#{DulHydra::IndexFields::IDENTIFIER} asc", :label => 'Identifier'
 
     # If there are more than this many search results, no spelling ("did you 
