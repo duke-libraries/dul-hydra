@@ -41,6 +41,7 @@ module DulHydra::Batch::Scripts
     private
     
     def validate_batch
+      @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_VALIDATING)
       valid = true
       errors = @batch.validate
       unless errors.empty?
@@ -50,10 +51,12 @@ module DulHydra::Batch::Scripts
           @bp_log.error(message)
         end
       end
+      @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_RUNNING)
       return valid
     end
     
     def process_batch
+      @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_PROCESSING, processing_step_start: DateTime.now)
       @batch.batch_objects.each do |object|
         begin
           process_object(object)
@@ -62,6 +65,7 @@ module DulHydra::Batch::Scripts
         end
         sleep 2
       end
+      @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_RUNNING) if @batch.status == DulHydra::Batch::Models::Batch::STATUS_PROCESSING
     end
     
     def initiate_batch_run

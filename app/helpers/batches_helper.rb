@@ -2,8 +2,6 @@ module BatchesHelper
 
   def batch_action(batch)
     case batch.status
-    when nil
-      "New"
     when DulHydra::Batch::Models::Batch::STATUS_READY
       # Temporarily remove the functionality requiring a separate validation step before processing
       # cf. issue #760
@@ -14,7 +12,24 @@ module BatchesHelper
     when DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
       link_to(I18n.t('batch.web.action_names.restart'), procezz_batch_path(batch))
     else
+      "--"
+    end
+  end
+
+  def batch_status_message(batch)
+    case batch.status
+    when nil
+      "NEW"
+    when DulHydra::Batch::Models::Batch::STATUS_PROCESSING
+      "#{batch.status}&nbsp;#{batch.completed_count}/#{batch.batch_objects.count}<br /><em>#{est_time_to_complete(batch)}</em>".html_safe
+    else
       batch.status
+    end
+  end
+
+  def est_time_to_complete(batch)
+    if batch.time_to_complete
+      "#{distance_of_time_in_words(Time.now, Time.now + batch.time_to_complete)} remaining"
     end
   end
 
