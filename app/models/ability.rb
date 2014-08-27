@@ -141,7 +141,7 @@ class Ability
 
   # Mimics Hydra::Ability#test_read + Hydra::PolicyAwareAbility#test_read in one method
   def test_discover(pid)
-    logger.debug("[CANCAN] Checking discover permissions for user: #{current_user.user_key} with groups: #{user_groups.inspect}")
+    Rails.logger.debug("[CANCAN] Checking discover permissions for user: #{current_user.user_key} with groups: #{user_groups.inspect}")
     group_intersection = user_groups & discover_groups(pid)
     result = !group_intersection.empty? || discover_persons(pid).include?(current_user.user_key)
     result || test_discover_from_policy(pid)
@@ -153,10 +153,10 @@ class Ability
     if policy_pid.nil?
       return false
     else
-      logger.debug("[CANCAN] -policy- Does the POLICY #{policy_pid} provide DISCOVER permissions for #{current_user.user_key}?")
+      Rails.logger.debug("[CANCAN] -policy- Does the POLICY #{policy_pid} provide DISCOVER permissions for #{current_user.user_key}?")
       group_intersection = user_groups & discover_groups_from_policy(policy_pid)
       result = !group_intersection.empty? || discover_persons_from_policy(policy_pid).include?(current_user.user_key)
-      logger.debug("[CANCAN] -policy- decision: #{result}")
+      Rails.logger.debug("[CANCAN] -policy- decision: #{result}")
       result
     end
   end 
@@ -166,7 +166,7 @@ class Ability
     doc = permissions_doc(pid)
     return [] if doc.nil?
     dg = edit_groups(pid) | read_groups(pid) | (doc[self.class.discover_group_field] || [])
-    logger.debug("[CANCAN] discover_groups: #{dg.inspect}")
+    Rails.logger.debug("[CANCAN] discover_groups: #{dg.inspect}")
     return dg
   end
 
@@ -175,7 +175,7 @@ class Ability
     policy_permissions = policy_permissions_doc(policy_pid)
     discover_group_field = Hydra.config[:permissions][:inheritable][:discover][:group]
     dg = edit_groups_from_policy(policy_pid) | read_groups_from_policy(policy_pid) | ((policy_permissions == nil || policy_permissions.fetch(discover_group_field, nil) == nil) ? [] : policy_permissions.fetch(discover_group_field, nil))
-    logger.debug("[CANCAN] -policy- discover_groups: #{dg.inspect}")
+    Rails.logger.debug("[CANCAN] -policy- discover_groups: #{dg.inspect}")
     return dg
   end
 
@@ -184,7 +184,7 @@ class Ability
     doc = permissions_doc(pid)
     return [] if doc.nil?
     dp = edit_persons(pid) | read_persons(pid) | (doc[self.class.discover_person_field] || [])
-    logger.debug("[CANCAN] discover_persons: #{dp.inspect}")
+    Rails.logger.debug("[CANCAN] discover_persons: #{dp.inspect}")
     return dp
   end
 
@@ -192,7 +192,7 @@ class Ability
     policy_permissions = policy_permissions_doc(policy_pid)
     discover_individual_field = Hydra.config[:permissions][:inheritable][:discover][:individual]
     dp = edit_persons_from_policy(policy_pid) | read_persons_from_policy(policy_pid) | ((policy_permissions == nil || policy_permissions.fetch(discover_individual_field, nil) == nil) ? [] : policy_permissions.fetch(discover_individual_field, nil))
-    logger.debug("[CANCAN] -policy- discover_persons: #{dp.inspect}")
+    Rails.logger.debug("[CANCAN] -policy- discover_persons: #{dp.inspect}")
     return dp
   end
 

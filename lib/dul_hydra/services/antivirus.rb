@@ -11,7 +11,7 @@ module DulHydra
           result = scan_one(DulHydra::Utils.file_path(file)) # raises ArgumentError
           raise DulHydra::VirusFoundError, result if result.has_virus?
           raise DulHydra::Error, "Antivirus error (#{result.version})" if result.error?
-          logger.info result
+          Rails.logger.info result
           result
         rescue ArgumentError => e
           raise ArgumentError, "Can't run virus scan on blob (not a File or file path)"
