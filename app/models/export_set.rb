@@ -62,7 +62,7 @@ class ExportSet < ActiveRecord::Base
   end
 
   def bookmarked_objects_for_export
-    @bookmarked_objects_for_export ||= get_objects_for_pids(self.user.bookmarked_document_ids)
+    @bookmarked_objects_for_export ||= get_objects_for_pids(self.user.bookmarks.pluck(:document_id))
   end
 
   def objects
