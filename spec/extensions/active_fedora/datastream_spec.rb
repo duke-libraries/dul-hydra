@@ -29,32 +29,41 @@ module ActiveFedora
           allow(subject).to receive(:checksum) { checksum }
           allow(subject).to receive(:checksumType) { checksum_type }
         end
-        context "and the checksum type is invalid" do
-          it "should raise an exception" do
-            expect { subject.validate_checksum!("0123456789abcdef", "FOO-BAR") }.to raise_error
+        context "and the repository internal checksum in invalid" do
+          before { allow(subject).to receive(:dsChecksumValid) { false } }
+          it "should raise an error" do
+            expect { subject.validate_checksum!(checksum, checksum_type) }.to raise_error
           end
         end
-        context "and the checksum type is nil" do
-          it "should compare the provided checksum with the datastream checksum" do
-            expect { subject.validate_checksum!(checksum) }.not_to raise_error
+        context "and the repository internal checksum is valid" do
+          before { allow(subject).to receive(:dsChecksumValid) { true } }
+          context "and the checksum type is invalid" do
+            it "should raise an exception" do
+              expect { subject.validate_checksum!("0123456789abcdef", "FOO-BAR") }.to raise_error
+            end
           end
-        end
-        context "and the checksum type is the same as the datastream checksum type" do
-          it "should compare the provided checksum with the datastream checksum" do
-            expect { subject.validate_checksum!(checksum, checksum_type) }.not_to raise_error
+          context "and the checksum type is nil" do
+            it "should compare the provided checksum with the datastream checksum" do
+              expect { subject.validate_checksum!(checksum) }.not_to raise_error
+            end
           end
-        end
-        context "and the checksum type differs from the datastream checksum type" do 
-          let!(:md5digest) { "273ae0f4aa60d94e89bc0e0652ae2c8f" }
-          it "should generate a checksum for comparison" do
-            expect(subject).not_to receive(:checksum)
-            allow(subject).to receive(:content_digest).with("MD5") { md5digest }
-            expect { subject.validate_checksum!(md5digest, "MD5") }.not_to raise_error
+          context "and the checksum type is the same as the datastream checksum type" do
+            it "should compare the provided checksum with the datastream checksum" do
+              expect { subject.validate_checksum!(checksum, checksum_type) }.not_to raise_error
+            end
           end
-        end
-        context "and the checksum doesn't match" do
-          it "should raise an exception" do
-            expect { subject.validate_checksum!("0123456789abcdef", checksum_type) }.to raise_error
+          context "and the checksum type differs from the datastream checksum type" do 
+            let!(:md5digest) { "273ae0f4aa60d94e89bc0e0652ae2c8f" }
+            it "should generate a checksum for comparison" do
+              expect(subject).not_to receive(:checksum)
+              allow(subject).to receive(:content_digest).with("MD5") { md5digest }
+              expect { subject.validate_checksum!(md5digest, "MD5") }.not_to raise_error
+            end
+          end
+          context "and the checksum doesn't match" do
+            it "should raise an exception" do
+              expect { subject.validate_checksum!("0123456789abcdef", checksum_type) }.to raise_error
+            end
           end
         end
       end

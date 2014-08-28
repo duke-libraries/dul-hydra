@@ -8,6 +8,7 @@ module DulHydra
     def validate_checksum! checksum, checksum_type=nil
       raise DulHydra::Error, "Checksum cannot be validated on new datastream." if new?
       raise DulHydra::Error, "Checksum cannot be validated on unpersisted content." if content_changed?
+      raise DulHydra::ChecksumInvalid, "The repository internal checksum validation failed." unless dsChecksumValid
       algorithm = checksum_type || self.checksumType
       ds_checksum = if algorithm == self.checksumType
                       self.checksum
