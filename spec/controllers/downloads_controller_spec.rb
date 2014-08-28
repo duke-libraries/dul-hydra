@@ -9,13 +9,15 @@ describe DownloadsController, :type => :controller do
   end
   context "object (i.e. content) download" do
     let(:obj) { FactoryGirl.create(:test_content) }
+    before { get :show, id: obj }
     it "should download successfully" do
-      get :show, id: obj
       expect(response).to be_successful
     end
     it "should attach the file using the original filename" do
-      get :show, id: obj
       expect(response.headers["Content-Disposition"]).to match(/filename="#{obj.original_filename}"/)
+    end
+    it "shouls have a Content-Length matching the size of the content" do
+      expect(response.header["Content-Length"]).to eq obj.content_size
     end
   end
   context "descMetadata download" do

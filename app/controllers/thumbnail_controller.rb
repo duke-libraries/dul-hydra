@@ -1,5 +1,7 @@
 class ThumbnailController < ApplicationController
+
   include Hydra::Controller::DownloadBehavior
+  include DulHydra::Controller::DownloadBehavior
 
   def datastream_name
     "#{asset.pid.sub(/:/, "-")}-thumbnail"
