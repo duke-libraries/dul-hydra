@@ -14,10 +14,10 @@ module DulHydra
         unless response.headers.include?("Content-Length")
           if datastream.external? 
             if content_length = datastream.file_size 
-              response.headers["Content-Length"] = content_length
+              response.headers["Content-Length"] = content_length.to_s
             end
           else
-            response.headers["Content-Length"] = datastream.dsSize
+            response.headers["Content-Length"] = datastream.dsSize.to_s
           end
         end
       end
