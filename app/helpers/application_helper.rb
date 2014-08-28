@@ -45,7 +45,7 @@ module ApplicationHelper
   end
 
   def public_icon
-    image_tag("silk/world.png", size: "16x16", alt: "world")
+    content_tag :span, nil, class: "glyphicon glyphicon-globe"
   end
 
   def group_display_name(group)
