@@ -10,9 +10,11 @@ module DulHydra::Batch::Models
     OUTCOME_FAILURE = "FAILURE"
     
     STATUS_READY = "READY"
+    STATUS_VALIDATING = "VALIDATING"
     STATUS_INVALID = "INVALID"
     STATUS_VALIDATED = "VALIDATED"
     STATUS_QUEUED = "QUEUED"
+    STATUS_PROCESSING = "PROCESSING"
     STATUS_RUNNING = "RUNNING"
     STATUS_FINISHED = "FINISHED"
     STATUS_INTERRUPTED = "INTERRUPTED"
@@ -31,7 +33,18 @@ module DulHydra::Batch::Models
       end
       errors.flatten
     end
-    
+
+    def completed_count
+      batch_objects.where(verified: true).count
+    end
+
+    def time_to_complete
+      unless processing_step_start.nil?
+        completed = completed_count
+        ((Time.now - processing_step_start.to_time) / completed) * (batch_objects.count - completed)
+      end
+    end
+
     def found_pids
       @found_pids ||= {}
     end

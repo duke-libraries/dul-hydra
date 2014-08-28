@@ -68,6 +68,7 @@ describe "batches/show.html.erb", :type => :feature do
         end
         context "not delete-able" do
           [ DulHydra::Batch::Models::Batch::STATUS_QUEUED, DulHydra::Batch::Models::Batch::STATUS_RUNNING,
+            DulHydra::Batch::Models::Batch::STATUS_VALIDATING, DulHydra::Batch::Models::Batch::STATUS_PROCESSING,
             DulHydra::Batch::Models::Batch::STATUS_FINISHED, DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED,
             DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE ].each do |status|
             context "status #{status}" do
