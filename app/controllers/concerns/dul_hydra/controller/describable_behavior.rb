@@ -7,8 +7,12 @@ module DulHydra
       end
 
       def update
-        set_desc_metadata
-        if current_object.save
+        begin
+          set_desc_metadata
+        rescue ActionController::ParameterMissing
+          current_object.errors.add(:base, t('dul_hydra.tabs.descriptive_metadata.errors.empty_form_submission'))
+        end
+        if current_object.errors.empty? && current_object.save
           notify_update(summary: "Descriptive metadata updated")
           flash[:success] = "Descriptive metadata updated."
           redirect_to action: "show", tab: "descriptive_metadata"

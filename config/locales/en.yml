@@ -115,6 +115,8 @@ en:
         actions:
           edit: Edit
           download: "Download N-Triples"
+        errors:
+          empty_form_submission: "You can't submit a form containing no descriptive metadata.  Use 'Cancel' to exit Edit mode."
       permissions:
         label: Permissions
         actions:
