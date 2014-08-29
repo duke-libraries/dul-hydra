@@ -59,10 +59,6 @@
 		<%= content_tag(:td, object_display_title(@ingest_folder.collection_pid)) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
-		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.admin_policy_pid')) %>
-		<%= content_tag(:td, admin_policy_title) %>
-	<% end %>
-	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.parent_id_length')) %>
 		<%= content_tag(:td, @ingest_folder.parent_id_length) %>
 	<% end %>
