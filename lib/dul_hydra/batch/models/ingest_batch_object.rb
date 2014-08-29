@@ -42,7 +42,7 @@ module DulHydra::Batch::Models
         IngestionEvent.new.tap do |event|
           event.object = repo_object
           event.user = user
-          event.summary = PRESERVATION_EVENT_DETAIL % {
+          event.summary = EVENT_SUMMARY % {
             :label => "Object ingestion",
             :batch_id => id,
             :identifier => identifier,
@@ -63,7 +63,7 @@ module DulHydra::Batch::Models
         ValidationEvent.new.tap do |event|
           event.object = repo_object
           event.failure! unless verified
-          event.summary = PRESERVATION_EVENT_DETAIL % {
+          event.summary = EVENT_SUMMARY % {
             :label => "Object ingestion validation",
             :batch_id => id,
             :identifier => identifier,
