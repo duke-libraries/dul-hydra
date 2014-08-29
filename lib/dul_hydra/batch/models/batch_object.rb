@@ -11,7 +11,7 @@ module DulHydra::Batch::Models
     VERIFICATION_PASS = "PASS"
     VERIFICATION_FAIL = "FAIL"
     
-    PRESERVATION_EVENT_DETAIL = <<-EOS
+    EVENT_SUMMARY = <<-EOS
 %{label}
 Batch object database id: %{batch_id}
 Batch object identifier: %{identifier}
