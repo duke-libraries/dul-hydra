@@ -2,8 +2,6 @@ class IngestFolder < ActiveRecord::Base
   
   include ActiveModel::Validations
   
-  after_initialize :init
-  
   belongs_to :user, :inverse_of => :ingest_folders
   
   validates_presence_of :collection_pid, :sub_path
@@ -16,12 +14,6 @@ class IngestFolder < ActiveRecord::Base
   
   ScanResults = Struct.new(:total_count, :file_count, :parent_count, :target_count, :excluded_files)
   
-  def init
-    if self.new_record?
-      self.checksum_type = IngestFolder.default_checksum_type
-    end
-  end
-    
   def self.load_configuration
     @@configuration ||= YAML::load(File.read(CONFIG_FILE)).with_indifferent_access
   end
@@ -85,7 +77,8 @@ class IngestFolder < ActiveRecord::Base
     case
     when checksum_file.blank?
       path_parts = sub_path.split(File::SEPARATOR).reject { |p| p.empty? }
-      File.join(full_checksum_path, "#{path_parts.first}-#{mount_point_base_key}-sha256.txt")
+      ctype = checksum_type.gsub("-","").downcase
+      File.join(full_checksum_path, "#{path_parts.first}-#{mount_point_base_key}-#{ctype}.txt")
     when checksum_file.start_with?(File::SEPARATOR)
       checksum_file
     else

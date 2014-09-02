@@ -70,12 +70,6 @@ describe IngestFolder, type: :model, ingest: true do
     allow(File).to receive(:readable?).and_return(true)
     allow(IngestFolder).to receive(:load_configuration).and_return(YAML.load(test_ingest_folder_config).with_indifferent_access)
   end
-  context "initialization" do
-    let(:ingest_folder) { IngestFolder.new }
-    it "should set the checksum type to the default" do
-      expect(ingest_folder.checksum_type).to eql(checksum_type)
-    end
-  end
   context "validation" do
     before do
       allow(File).to receive(:readable?).with("/mount/base/path/unreadable/").and_return(false)
