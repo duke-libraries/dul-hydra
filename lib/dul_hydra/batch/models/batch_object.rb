@@ -196,8 +196,12 @@ Model: %{model}
     end
     
     def verify_datastream_external_checksum(repo_object, datastream)
-      datastreamProfile = repo_object.datastreams[datastream.name].profile
-      datastreamProfile["dsChecksum"].eql?(datastream.checksum) ? VERIFICATION_PASS : VERIFICATION_FAIL
+      begin
+        repo_object.datastreams[datastream.name].validate_checksum! datastream.checksum, datastream.checksum_type
+        return VERIFICATION_PASS
+      rescue DulHydra::ChecksumInvalid
+        return VERIFICATION_FAIL
+      end
     end
     
     def verify_relationship(repo_object, relationship)

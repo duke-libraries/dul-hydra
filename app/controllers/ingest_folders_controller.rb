@@ -16,7 +16,7 @@ class IngestFoldersController < ApplicationController
     @ingest_folder.model = IngestFolder.default_file_model
     @ingest_folder.add_parents = true
     @ingest_folder.checksum_file = @ingest_folder.checksum_file_location
-    @ingest_folder.checksum_type = IngestFolder.default_checksum_type
+    @ingest_folder.checksum_type ||= IngestFolder.default_checksum_type
     if @ingest_folder.save
       redirect_to :action => :show, :id => @ingest_folder
     else
@@ -36,7 +36,7 @@ class IngestFoldersController < ApplicationController
   private
   
   def ingest_folder_params
-    params.require(:ingest_folder).permit(:admin_policy_pid, :collection_pid, :model, :file_creator, :base_path, :sub_path, :checksum_file, :checksum_type, :add_parents, :parent_id_length)
+    params.require(:ingest_folder).permit(:collection_pid, :model, :file_creator, :base_path, :sub_path, :checksum_file, :checksum_type, :add_parents, :parent_id_length)
   end
     
 end

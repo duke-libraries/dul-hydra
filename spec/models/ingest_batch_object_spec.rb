@@ -267,6 +267,28 @@ module DulHydra::Batch::Models
         end
       end
       
+      context "external checksum verification failure" do
+        let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_bytes) }
+        before do
+          object.batch_object_datastreams.each do |ds|
+            if ds.name == "content"
+              ds.checksum = "badabcdef0123456789"
+              object.save!
+            end
+          end
+        end
+        it "should not result in a verified ingest" do
+          object.process(user)
+          expect(object.verified).to be_falsey
+          ActiveFedora::Base.find(object.pid).events.each do |e|
+            if e.is_a?(ValidationEvent)
+              expect(e.outcome).to eq(Event::FAILURE)
+              expect(e.detail).to include("content external checksum match...FAIL")
+            end
+          end
+        end
+      end
+
     end
       
   end
