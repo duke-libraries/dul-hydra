@@ -107,7 +107,7 @@ module DulHydra
             report << [result.pid,
                        dsid,
                        profile["dsVersionID"],
-                       profile["dsCreateDate"],
+                       profile["dsCreateDate"].localtime,
                        profile["dsChecksumType"],
                        profile["dsChecksum"],
                        profile["dsChecksumValid"]

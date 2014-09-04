@@ -50,7 +50,9 @@ module DulHydra
             expect(row["PID"]).to match(/^[a-z]+:\d+$/)
             expect(datastreams_with_content).to include(row["Datastream"])
             expect(row["dsVersionID"]).to match(/^#{row["Datastream"]}/)
-            expect(DateTime.parse(row["dsCreateDate"])).to be_a(DateTime)
+            createDate = Time.parse(row["dsCreateDate"])
+            expect(createDate).to be_a Time
+            expect(createDate).to_not be_utc
             expect(row["dsChecksumType"]).to eq("SHA-256")
             expect(row["dsChecksum"]).to match(/^\h{64}$/)
             expect(row["dsChecksumValid"]).to match(/^(true|false)$/)
