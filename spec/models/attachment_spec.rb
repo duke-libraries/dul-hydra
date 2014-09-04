@@ -42,9 +42,6 @@ describe Attachment, type: :model, attachments: true do
   context "validations" do
     subject { described_class.new }
     before { subject.valid? }
-    it "should have a title" do
-      expect(subject.errors.messages).to have_key(:title)
-    end
     it "should have content" do
       expect(subject.errors.messages).to have_key(:content)
     end
