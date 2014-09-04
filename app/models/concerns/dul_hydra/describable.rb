@@ -13,6 +13,10 @@ module DulHydra
                      multiple: true
     end
 
+    def has_desc_metadata?
+      descMetadata.has_content?
+    end
+
     def desc_metadata_terms *args
       return DulHydra::Datastreams::DescriptiveMetadataDatastream.term_names if args.empty?
       arg = args.pop
