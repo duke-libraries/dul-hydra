@@ -42,9 +42,27 @@ shared_examples "a repository object show view" do
       visit url_for(object)
       expect(page).to have_css(tab)
     end
-    it "should have a link to download the N-Triples" do
-      visit url_for(object)
-      expect(find(tab)).to have_link("Download N-Triples")
+    context "when there is metadata" do
+      it "should have a link to download the N-Triples" do
+        visit url_for(object)
+        expect(find(tab)).to have_link("Download N-Triples")
+      end
+    end
+    context "when there is no content" do
+      before do
+        if object.has_desc_metadata?
+          object.descMetadata.delete
+          object.reload
+        end
+      end
+      it "should display an alert" do
+        visit url_for(object)
+        expect(find(tab)).to have_content "This object has no descriptive metadata"
+      end
+      it "should not have a link to download the N-Triples" do
+        visit url_for(object)
+        expect(find(tab)).to_not have_link("Download N-Triples")
+      end
     end
     context "when the user can edit the object" do
       before do
