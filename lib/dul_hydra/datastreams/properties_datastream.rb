@@ -5,6 +5,7 @@ module DulHydra
       set_terminology do |t|
         t.root(:path => "fields")
         t.original_filename
+        t.permanent_id
       end
 
       def prefix

@@ -10,7 +10,8 @@ module DulHydra
       fields = {
         DulHydra::IndexFields::TITLE => title_display,
         DulHydra::IndexFields::INTERNAL_URI => internal_uri,
-        DulHydra::IndexFields::IDENTIFIER => identifier_sort
+        DulHydra::IndexFields::IDENTIFIER => identifier_sort,
+        DulHydra::IndexFields::PERMANENT_ID => permanent_id
       }
       if respond_to? :fixity_checks
         last_fixity_check = fixity_checks.last

@@ -29,6 +29,7 @@ module DulHydra::IndexFields
   OBJECT_CREATE_DATE        = solr_name :system_create, :stored_sortable, type: :date
   OBJECT_MODIFIED_DATE      = solr_name :system_modified, :stored_sortable, type: :date
   ORIGINAL_FILENAME         = solr_name :original_filename, :symbol
+  PERMANENT_ID              = solr_name :permanent_id, :symbol
   TITLE                     = solr_name :title, :stored_sortable
 
 end

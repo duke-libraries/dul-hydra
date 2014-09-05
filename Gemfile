@@ -30,6 +30,9 @@ gem 'mime-types', '~> 1.19'
 gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 4.2.0'
 
+# Noids
+gem 'noid', '~> 0.7'
+
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.0'
   gem 'capybara', '~> 2.0'

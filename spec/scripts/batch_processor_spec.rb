@@ -63,14 +63,7 @@ module DulHydra::Batch::Scripts
         expect(obj).to be_an_instance_of(batch_obj.model.constantize)
         expect(obj.label).to eq(batch_obj.label) if batch_obj.label
         expect(obj.title.first).to eq('Sample title')
-        update_event_count = 0
-        obj.events.each do |event|
-          if event.is_a? UpdateEvent
-            update_event_count += 1
-            expect(event.user).to eq(bp_user)
-          end
-        end
-        expect(update_event_count).to eq(1)
+        expect(obj.update_events.last.user).to eq(bp_user)
         batch_obj_ds = batch_obj.batch_object_datastreams
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
         batch_obj_rs = batch_obj.batch_object_relationships
