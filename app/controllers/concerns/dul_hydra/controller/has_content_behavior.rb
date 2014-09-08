@@ -5,6 +5,7 @@ module DulHydra
 
       included do
         before_action :upload_content, only: :create
+        self.tabs.unshift :tab_content_info
       end
 
       def upload
@@ -50,6 +51,22 @@ module DulHydra
 
       def checksum_params
         content_params.values_at :checksum, :checksum_type
+      end
+
+      def tab_content_info
+        Tab.new("content_info",
+                actions: [
+                          TabAction.new("download",
+                                        url_for(controller: "downloads", action: "show", id: current_object),
+                                        current_object.has_content? && can?(:download, current_object)
+                                        ),
+                          TabAction.new("upload",
+                                        url_for(action: "upload"),
+                                        can?(:upload, current_object)
+                                        )
+                         ]
+                )
+
       end
 
     end
