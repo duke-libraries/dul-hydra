@@ -69,6 +69,8 @@
 
   function trackChangesHandler(e) {
     $(e.target).data('changed', true);
+    // enable form submit and comment field
+    $('#desc-metadata-form-submit').add('#comment').prop('disabled', false);
   }
 
   function clearChangesHandler(e) {
@@ -99,5 +101,7 @@
     formFieldValueInputs().change(trackChangesHandler);
     $('.desc-metadata-form').submit(clearChangesHandler);
     $(window).on('beforeunload', changesAlertHandler);
+    // disable the form submit and comment field
+    $('#desc-metadata-form-submit').add('#comment').prop('disabled', true);
   });
 </script>
