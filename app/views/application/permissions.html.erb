@@ -2,5 +2,5 @@
   Modify Permissions
 <% end %>
 
-<%= render 'permissions_alerts' %>
+<%= inherited_permissions_alert if current_object.has_admin_policy? %>
 <%= render partial: 'rights_form', locals: {license: current_object.license} %>

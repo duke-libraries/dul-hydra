@@ -313,7 +313,7 @@ module ApplicationHelper
   end
 
   def inherited_permissions_alert
-    apo_link = link_to(current_object.admin_policy_id, default_permissions_path(current_object.admin_policy_id))
+    apo_link = link_to(current_object.admin_policy_id, collection_path(current_object.admin_policy_id))
     alert = I18n.t('dul_hydra.permissions.alerts.inherited') % apo_link
     alert.html_safe
   end
