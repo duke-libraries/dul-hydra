@@ -30,6 +30,10 @@ DulHydra.configure do |config|
   config.external_file_store = ENV['EXTERNAL_FILE_STORE']
 
   config.external_file_subpath_pattern = [1, 1, 2]
+  
+  config.noid_template = "2.reeddeeddk"
+  
+  config.minter_statefile = Rails.env.test? ? "/tmp/minter-state" : ENV['MINTER_STATEFILE']
 end
 
 # Load configuration for Grouper service, if present

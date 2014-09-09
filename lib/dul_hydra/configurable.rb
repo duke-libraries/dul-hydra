@@ -46,6 +46,13 @@ module DulHydra
       # Example:
       # - [1, 1, 2]
       mattr_accessor :external_file_subpath_pattern
+      
+      # Pattern (template) for constructing noids
+      mattr_accessor :noid_template
+
+      # Noid minter state file location
+      mattr_accessor :minter_statefile
+
     end
 
     module ClassMethods

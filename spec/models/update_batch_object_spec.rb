@@ -73,8 +73,8 @@ module DulHydra::Batch::Models
           expect(repo_object.title.first).to eq('Sample title')
         end
         it "should create an event log for the update" do
-          expect(repo_object.update_events.count).to eq(1)
-          expect(repo_object.update_events.first.comment).to eq("Updated by batch process (Batch #{object.batch.id}, BatchObject #{object.id})")
+          expect(repo_object.update_events.count).to eq(2)
+          expect(repo_object.update_events.last.comment).to eq("Updated by batch process (Batch #{object.batch.id}, BatchObject #{object.id})")
         end
         
       end

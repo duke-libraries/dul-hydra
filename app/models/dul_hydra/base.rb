@@ -12,6 +12,7 @@ module DulHydra
     include FixityCheckable
     include FileManagement
     include Indexing
+    include PermanentIdentification
     include Hydra::Validations
 
     def copy_admin_policy_or_permissions_from(other)
