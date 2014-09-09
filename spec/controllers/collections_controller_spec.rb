@@ -24,7 +24,7 @@ describe CollectionsController, type: :controller, collections: true do
   end
 
   describe "#items" do
-    let(:collection) { FactoryGirl.create(:collection_has_item) }
+    let(:collection) { FactoryGirl.create(:collection, :has_item) }
     context "when the user can read the collection" do
       before do
         collection.permissions_attributes = [{type: "user", access: "read", name: user.user_key}]
@@ -71,7 +71,7 @@ describe CollectionsController, type: :controller, collections: true do
   end
 
   describe "#targets" do
-    let(:collection) { FactoryGirl.create(:collection_has_target) }
+    let(:collection) { FactoryGirl.create(:collection, :has_target) }
     context "when the user can read the collection" do
       before do
         collection.permissions_attributes = [{type: "user", access: "read", name: user.user_key}]
@@ -96,7 +96,7 @@ describe CollectionsController, type: :controller, collections: true do
     let(:items) { FactoryGirl.create_list(:item, 3) }
     before do
       items.each do |item|
-        item.children = FactoryGirl.create_list(:component_with_content, 2)
+        item.children = FactoryGirl.create_list(:component, 2)
         item.parent = collection
         item.save
       end

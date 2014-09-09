@@ -9,7 +9,7 @@ describe "Items views", type: :feature, items: true do
       it_behaves_like "a repository object show view"
     end
     context "has parent" do
-      let(:object) { FactoryGirl.create(:item_in_collection) }
+      let(:object) { FactoryGirl.create(:item, :member_of_collection) }
       it_behaves_like "a child object show view"
     end
   end

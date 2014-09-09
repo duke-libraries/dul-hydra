@@ -84,7 +84,7 @@ module DulHydra::Batch::Models
       begin
         repo_object = model.constantize.new(:pid => repo_pid)
         repo_object.label = label if label
-        repo_object.save
+        repo_object.save(validate: false)
         batch_object_datastreams.each {|d| repo_object = populate_datastream(repo_object, d)} if batch_object_datastreams
         batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
         repo_object.save

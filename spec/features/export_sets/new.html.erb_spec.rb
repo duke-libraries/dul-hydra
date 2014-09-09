@@ -5,8 +5,8 @@ describe "export_sets/new.html.erb", type: :feature, export_sets: true do
   let(:user) { FactoryGirl.create(:user) }
 
   context "export_type == 'content'" do
-    let(:object_read) { FactoryGirl.create(:component_with_content) }
-    let(:object_discover) { FactoryGirl.create(:component_with_content) }
+    let(:object_read) { FactoryGirl.create(:component) }
+    let(:object_discover) { FactoryGirl.create(:component) }
     before do
       object_read.read_users = [user.username]
       object_read.save

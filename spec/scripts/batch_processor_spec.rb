@@ -54,7 +54,7 @@ module DulHydra::Batch::Scripts
     before do
       batch.reload
       @repo_objects = []
-      batch.batch_objects.each { |obj| @repo_objects << ActiveFedora::Base.find(obj.pid, :cast => true) }
+      batch.batch_objects.each { |obj| @repo_objects << ActiveFedora::Base.find(obj.pid) }
     end
     it "should update the objects in the repository" do
       expect(@repo_objects.size).to eq(batch.batch_objects.size)
@@ -139,7 +139,12 @@ module DulHydra::Batch::Scripts
     end
     context "update" do
       let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
-      let(:repo_object) { TestModelOmnibus.create(:pid => batch.batch_objects.first.pid, :label => 'Object Label') }
+      let(:repo_object) do
+        r_obj = TestModelOmnibus.new(:pid => batch.batch_objects.first.pid, :label => 'Object Label')
+        r_obj.add_file("#{Rails.root}/spec/fixtures/library-devil.tiff", DulHydra::Datastreams::CONTENT)
+        r_obj.save
+        r_obj
+      end
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
       before do
         allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples("<#{ActiveFedora::Rdf::ObjectResource.base_uri}#{repo_object.pid}>"))
