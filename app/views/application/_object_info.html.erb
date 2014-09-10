@@ -4,6 +4,16 @@
 	Object Info
   </li>
 
+  <% if current_object.permanent_id %>
+    <li class="list-group-item">
+  	  <span class="pull-right"><%= current_object.permanent_id %></span>
+	</li>
+  <% else %>
+    <li class="list-group-item list-group-item-warning">
+	  Permanent ID Not Assigned
+	</li>
+  <% end %>
+
   <li class="list-group-item">
 	<span class="pull-right"><%= render_object_date current_object.create_date %></span>
 	Created
