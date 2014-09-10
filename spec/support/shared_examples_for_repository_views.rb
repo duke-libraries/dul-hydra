@@ -10,24 +10,40 @@ shared_examples "a repository object show view" do
   before { setup }
 
   describe "object summary" do
-    before { visit url_for(object) }
     it "should display the title" do
+      visit url_for(object)
       expect(find("#object-title")).to have_content(object.title_display)
     end
     it "should display the thumbnail" do
+      visit url_for(object)
       expect(page).to have_css("#object-thumbnail img.img-thumbnail")
     end
     it "should display the PID" do
+      visit url_for(object)
       expect(find("#object-summary")).to have_content(object.pid)
     end
   end
 
   describe "object info" do
-    before { visit url_for(object) }
+    describe "when object has a permanent id" do
+      it "should display the permanent id" do
+        visit url_for(object)
+        expect(find("#object-info")).to have_content(object.permanent_id)
+      end
+    end
+    describe "when object does not have a permanent id" do
+      before { object.permanent_id = nil; object.save }
+      it "should display the a 'not assigned' label" do
+        visit url_for(object)
+        expect(find("#object-info")).to have_content("Permanent ID Not Assigned")
+      end
+    end
     it "should display the object creation date" do
+      visit url_for(object)
       expect(find("#object-info")).to have_content("Created")
     end
     it "should display the object modification date" do
+      visit url_for(object)
       expect(find("#object-info")).to have_content("Modified")
     end
   end
