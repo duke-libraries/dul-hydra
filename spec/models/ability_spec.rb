@@ -106,7 +106,7 @@ describe Ability, type: :model, abilities: true do
         let(:resource) { obj.content }
 
         context "and object is a Component", components: true do
-          let(:obj) { FactoryGirl.build(:component_with_content) }
+          let(:obj) { FactoryGirl.build(:component) }
           context "and user does not have the Component Downloader role" do
             context "and user has read permission on the object" do
               before { subject.can(:read, obj.pid) }

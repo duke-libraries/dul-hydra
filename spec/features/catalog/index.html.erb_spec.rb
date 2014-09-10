@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "catalog/index.html.erb", :type => :feature do
   let(:user) { FactoryGirl.create(:user) }
-  let(:object) { FactoryGirl.create(:component_with_content) }
+  let(:object) { FactoryGirl.create(:component) }
   before(:each) { login_as user }
   describe "footer" do
     before { visit catalog_index_path }

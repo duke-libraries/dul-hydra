@@ -71,6 +71,7 @@ FactoryGirl.define do
     
     factory :basic_ingest_batch_object do
       has_model
+      with_add_content_datastream
     end
     
     factory :generic_ingest_batch_object do
@@ -89,10 +90,10 @@ FactoryGirl.define do
 
     end
     
-
     factory :target_ingest_batch_object do
       model "Target"
       is_target_for_collection
+      with_add_content_datastream
     end
   end
   

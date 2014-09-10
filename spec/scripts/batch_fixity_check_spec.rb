@@ -32,7 +32,7 @@ module DulHydra
         let(:csv) { CSV.read(report.path, headers: true) }
         let(:datastreams_with_content) { ["DC", "RELS-EXT", "descMetadata", "content", "thumbnail", "properties"] }
         before do
-          @objects = FactoryGirl.create_list(:component_with_content, 5)
+          @objects = FactoryGirl.create_list(:component, 5)
           bfc.execute 
         end
         it "should have a header row" do

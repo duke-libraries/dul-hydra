@@ -241,7 +241,8 @@ module DulHydra::Batch::Models
             object.pid = assigned_pid
             object.verified = true
             object.save
-            object.model.constantize.create(:pid => assigned_pid, title: ["Test Object Title"])
+            repo_object = object.model.constantize.new(:pid => assigned_pid, title: ["Test Object Title"])
+            repo_object.save(validate: false)
           end
           it_behaves_like "a successful ingest"          
         end

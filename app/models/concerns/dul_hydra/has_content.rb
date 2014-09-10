@@ -10,6 +10,8 @@ module DulHydra
                           label: "Content file for this object",
                           control_group: "E"
 
+      validates_presence_of :content
+
       include Hydra::Derivatives
 
       around_save :update_thumbnail, if: :content_changed?

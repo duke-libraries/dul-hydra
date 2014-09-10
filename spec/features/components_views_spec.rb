@@ -9,11 +9,11 @@ describe "Components views", type: :feature, components: true do
       it_behaves_like "a repository object show view"
     end
     context "content-bearing" do
-      let(:object) { FactoryGirl.create(:component_with_content) }
+      let(:object) { FactoryGirl.create(:component) }
       it_behaves_like "a content-bearing object show view"
     end
     context "has parent" do
-      let(:object) { FactoryGirl.create(:component_has_parent) }
+      let(:object) { FactoryGirl.create(:component, :has_parent) }
       it_behaves_like "a child object show view"
     end
   end

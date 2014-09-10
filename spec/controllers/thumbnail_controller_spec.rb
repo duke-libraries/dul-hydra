@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe ThumbnailController, :type => :controller do
-  let(:object) { FactoryGirl.create(:component_with_content) }
+  let(:object) { FactoryGirl.create(:component) }
   let(:user) { FactoryGirl.create(:user) }
   before(:each) { sign_in user }
   context "user with discover permssion but not read permission on asset" do

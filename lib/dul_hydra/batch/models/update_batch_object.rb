@@ -59,7 +59,7 @@ module DulHydra::Batch::Models
     def update_repository_object(user, opts = {})
       repo_object = nil
       begin
-        repo_object = ActiveFedora::Base.find(pid, :cast => true)
+        repo_object = ActiveFedora::Base.find(pid)
         if batch_object_datastreams
           batch_object_datastreams.each do |d|
             repo_object = case
