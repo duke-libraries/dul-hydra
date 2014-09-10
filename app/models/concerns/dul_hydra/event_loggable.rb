@@ -16,16 +16,6 @@ module DulHydra
       DulHydra::Notifications.notify_event(type, args.merge(pid: pid))
     end
 
-    def log_event(type, args={})
-      Deprecation.warn(DulHydra::EventLoggable, "The `log_event' method is deprecated and will be removed in version 2.1.0 (final)", caller)
-      klass = event_class(type)
-      klass.new.tap do |event|
-        event.object = self
-        event.attributes = args
-        event.save!
-      end
-    end
-
     def has_events?
       events.count > 0
     end
