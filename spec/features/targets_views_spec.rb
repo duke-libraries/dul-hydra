@@ -4,6 +4,7 @@ require 'support/shared_examples_for_repository_views'
 describe "Targets views", type: :feature, targets: true do
   let(:object) { FactoryGirl.create(:target) }
   describe "show" do
+    before { object.upload! fixture_file_upload('target.png', 'image/png') }
     it_behaves_like "a repository object show view"
     it_behaves_like "a content-bearing object show view"
   end

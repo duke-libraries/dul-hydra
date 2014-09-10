@@ -110,6 +110,8 @@ en:
         alerts:
             changed: "Rights successfully changed."
     tabs:
+      content_info: 
+        label: "Content Info"
       descriptive_metadata:
         label: "Descriptive Metadata"
         actions:
