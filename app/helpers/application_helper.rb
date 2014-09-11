@@ -200,7 +200,8 @@ module ApplicationHelper
 
   def event_outcome_label(event)
     if event.outcome
-      content_tag :span, event.outcome.capitalize, :class => "label label-#{event.success? ? 'success' : 'important'}"
+      label = event.success? ? 'success' : 'danger'
+      content_tag :span, event.outcome.capitalize, class: "event-outcome label label-#{label}"
     end
   end
 
