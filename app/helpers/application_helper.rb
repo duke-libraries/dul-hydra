@@ -67,10 +67,6 @@ module ApplicationHelper
     end
   end
 
-  def render_object_date(date)
-    format_date Time.parse(date).localtime
-  end
-
   def render_tab(tab)
     content_tag :li do
       link_to(tab.label, "##{tab.css_id}", "data-toggle" => "tab")
@@ -156,7 +152,10 @@ module ApplicationHelper
   end
 
   def format_date(date)
-    date.to_formatted_s(:db) if date
+    if date
+      date = Time.parse(date) if !date.respond_to?(:localtime)
+      date.localtime.to_s
+    end 
   end
 
   def render_permission_grantees(access)
