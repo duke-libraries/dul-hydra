@@ -16,12 +16,12 @@
   <% end %>
 
   <li class="list-group-item">
-	<span class="pull-right"><%= render_object_date current_object.create_date %></span>
+	<span class="pull-right"><%= format_date current_object.create_date %></span>
 	Created
   </li>
 
   <li class="list-group-item">
-	<span class="pull-right"><%= render_object_date current_object.modified_date %></span>
+	<span class="pull-right"><%= format_date current_object.modified_date %></span>
 	Modified
   </li>
 
