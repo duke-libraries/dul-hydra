@@ -71,3 +71,7 @@ table.access-controls td ul {
 	margin-bottom: 0.5em;
 	margin-left: 1em;
 }
+
+span.label.event-outcome { /* event outcome label */
+	font-size: medium;
+}

@@ -1,7 +1,13 @@
 <% content_for :main_content do %>
 <div class="col-md-8">
-  <h2>
-	<%= content_for(:page_heading)%> <%= content_for(:page_subheading) %>
+  <% unless current_page?(action: "show") %>
+    <h4 class="object-page-superheading">
+	  <%= link_to current_object.title_display, url_for(current_object) %>
+	  <!-- <small><%= current_object.model_pid %></small> -->
+    </h4>
+  <% end %>
+  <h2 class="object-page-heading">
+	<%= content_for :page_heading %>
   </h2>
   <%= yield %>
 </div>

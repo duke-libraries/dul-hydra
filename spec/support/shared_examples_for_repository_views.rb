@@ -28,6 +28,7 @@ shared_examples "a repository object show view" do
     describe "when object has a permanent id" do
       it "should display the permanent id" do
         visit url_for(object)
+        expect(find("#object-info")).to have_content("Permanent ID")
         expect(find("#object-info")).to have_content(object.permanent_id)
       end
     end
