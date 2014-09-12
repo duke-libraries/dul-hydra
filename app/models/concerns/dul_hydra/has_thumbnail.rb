@@ -9,16 +9,6 @@ module DulHydra
                           control_group: 'M'
     end
 
-    # Abstract thumbnail setting method
-    def set_thumbnail
-      raise NotImplementedError
-    end
-
-    def set_thumbnail!
-      set_thumbnail 
-      thumbnail_changed? && save
-    end
-
     def thumbnail_changed?
       thumbnail.content_changed?
     end
