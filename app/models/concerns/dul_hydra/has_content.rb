@@ -67,11 +67,14 @@ module DulHydra
       content_type == "application/pdf"
     end
 
-    def set_thumbnail
-      return unless has_content?
-      if image? or pdf?
-        transform_datastream :content, { thumbnail: { size: "100x100>", datastream: "thumbnail" } }
-      end
+    def generate_thumbnail
+      return false unless thumbnailable?
+      transform_datastream :content, { thumbnail: { size: "100x100>", datastream: "thumbnail" } }
+      thumbnail_changed?
+    end
+
+    def generate_thumbnail!
+      generate_thumbnail && save
     end
 
     def virus_checks
@@ -86,7 +89,15 @@ module DulHydra
 
     def update_thumbnail
       yield
-      set_thumbnail!
+      if thumbnailable?
+        generate_thumbnail!
+      else
+        thumbnail.delete
+      end
+    end
+
+    def thumbnailable?
+      has_content? && (image? || pdf?)
     end
 
     def default_content_type
