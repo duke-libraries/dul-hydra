@@ -70,7 +70,13 @@ module DulHydra
     # Return default file extension for datastream based on MIME type
     def default_file_extension
       mimetypes = MIME::Types[mimeType]
-      mimetypes.empty? ? DEFAULT_FILE_EXTENSION : mimetypes.first.extensions.first
+      return mimetypes.first.extensions.first unless mimetypes.empty?
+      case mimeType
+      when 'application/n-triples'
+        'txt'
+      else
+        DEFAULT_FILE_EXTENSION
+      end
     end
 
     # Return default file name prefix based on object PID
