@@ -1,8 +1,9 @@
 <div class="form-group">
   <%= label_tag :attached_to_id, "Attached To" %>
   <%= link_to attached_to.title_display, url_for(attached_to) %>
-  <%= text_field_tag :attached_to_id, attached_to.pid, readonly: "readonly", class: "form-control" %>
+  <%= hidden_field_tag :attached_to_id, attached_to.pid %>
 </div>
 
 <%= render 'title_field' %>
+
 <%= render 'select_content_file' %>

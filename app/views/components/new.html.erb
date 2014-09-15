@@ -3,11 +3,7 @@
   <span class="formn-control-static"><%= link_to collection.title_display, url_for(collection) %></span>
 </div>
 
-<div class="form-group">
-  <%= label_tag :parent_id, "Part of Item" %> 
-  <%= link_to parent.title_display, url_for(parent) %>
-  <%= text_field_tag :parent_id, parent.pid, readonly: "readonly", class: "form-control" %>
-</div>
+<%= render partial: 'parent_field', locals: {label: "Part of Item"} %>
 
 <%= render 'select_content_file' %>
 
