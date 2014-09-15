@@ -12,6 +12,8 @@ class DownloadsController < ApplicationController
     if datastream.external?
       file_path = DulHydra::Utils.path_from_uri(datastream.dsLocation)
       return File.basename(file_path)
+    elsif datastream.dsid == DulHydra::Datastreams::DESC_METADATA
+      return "#{datastream.default_file_prefix}.txt"
     elsif datastream.dsid == DulHydra::Datastreams::CONTENT
       return asset.original_filename if asset.original_filename.present?
       if asset.identifier.present? # Identifier may be file name minus extension

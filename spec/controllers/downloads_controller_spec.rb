@@ -22,9 +22,14 @@ describe DownloadsController, :type => :controller do
   end
   context "descMetadata download" do
     let(:obj) { FactoryGirl.create(:collection) }
+    let(:download_name) { "#{obj.descMetadata.default_file_prefix}.txt" }
     it "should download successfully" do
       get :show, id: obj, datastream_id: "descMetadata"
       expect(response).to be_successful
+    end
+    it "should have a .txt filename extension" do
+      get :show, id: obj, datastream_id: "descMetadata"
+      expect(response.header["Content-Disposition"]).to match(/filename="#{download_name}"/)
     end
   end
   context "rightsMetadata download" do
