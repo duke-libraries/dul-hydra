@@ -1,0 +1,5 @@
+<div class="form-group">
+  <%= label_tag :parent_id, label %>
+  <%= link_to parent.title_display, url_for(parent) %>
+  <%= hidden_field_tag :parent_id, parent.pid %>
+</div>
