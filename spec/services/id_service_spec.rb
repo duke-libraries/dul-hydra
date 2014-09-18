@@ -15,16 +15,15 @@ describe DulHydra::Services::IdService do
   context "duplicate identifiers" do
     before do
       allow(DulHydra::Services::IdService).to receive(:noid_template).and_return(".rd")
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '0').and_return(true)
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '1').and_return(true)
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '2').and_return(true)
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '3').and_return(true)
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '4').and_return(true)
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '5').and_return(false)
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '6').and_return(true)
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '7').and_return(true)
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '8').and_return(true)
-      allow(ActiveFedora::Base).to receive(:exists?).with(DulHydra::IndexFields::PERMANENT_ID => '9').and_return(true)
+      MintedId.create(minted_id: '0')
+      MintedId.create(minted_id: '1')
+      MintedId.create(minted_id: '2')
+      MintedId.create(minted_id: '3')
+      MintedId.create(minted_id: '4')
+      MintedId.create(minted_id: '6')
+      MintedId.create(minted_id: '7')
+      MintedId.create(minted_id: '8')
+      MintedId.create(minted_id: '9')
     end
     it "should not mint an already existing identifier" do
       expect(DulHydra::Services::IdService.mint).to eq('5') 
