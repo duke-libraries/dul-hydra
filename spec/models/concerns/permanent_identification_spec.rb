@@ -9,6 +9,9 @@ module DulHydra
     it "should have an appropriate update event" do
       expect(object.update_events.map(&:summary)).to include("Assigned permanent ID")
     end
+    it "should be a referent for the permanent id" do
+      expect(MintedId.find_by(minted_id: object.permanent_id).referent).to eql(object.pid)
+    end
   end
 
   describe PermanentIdentification, type: :model do
