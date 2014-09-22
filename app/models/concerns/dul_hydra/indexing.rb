@@ -25,6 +25,7 @@ module DulHydra
         fields[DulHydra::IndexFields::ORIGINAL_FILENAME] = original_filename
       end
       if has_content?
+        fields[DulHydra::IndexFields::CONTENT_CONTROL_GROUP] = content.controlGroup
         fields[DulHydra::IndexFields::CONTENT_SIZE] = content_size
         fields[DulHydra::IndexFields::CONTENT_SIZE_HUMAN] = content_human_size
         fields[DulHydra::IndexFields::MEDIA_TYPE] = content_type
