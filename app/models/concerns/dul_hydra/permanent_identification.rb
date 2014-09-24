@@ -15,9 +15,13 @@ module DulHydra
         event_args = { pid: self.pid, summary: "Assigned permanent ID" }
         begin
           self.permanent_id = DulHydra::Services::IdService.mint
-          save
-          event_args[:outcome] = Event::SUCCESS
-          event_args[:detail] = "Assigned permanent ID #{self.permanent_id} to #{self.pid}"
+          if save(validate: false)
+            MintedId.find_by(minted_id: self.permanent_id).update(referent: self.pid)
+            event_args[:outcome] = Event::SUCCESS
+            event_args[:detail] = "Assigned permanent ID #{self.permanent_id} to #{self.pid}"
+          else
+            raise "Could not save object #{self.pid} with permanent identifier #{self.permanent_id}"
+          end
         rescue Exception => e
           event_args[:outcome] = Event::FAILURE
           event_args[:detail] = "Unable to assign permanent ID to #{self.pid}"

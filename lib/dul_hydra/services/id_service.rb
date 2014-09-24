@@ -18,8 +18,8 @@ module DulHydra
       def self.mint
         @semaphore.synchronize do
           while true
-            noid = self.next_id
-            return noid unless ActiveFedora::Base.exists?(DulHydra::IndexFields::PERMANENT_ID => noid)
+            minted = MintedId.new(minted_id: self.next_id)
+            return minted.minted_id if minted.save
           end
         end
       end

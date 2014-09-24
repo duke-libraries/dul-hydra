@@ -1,9 +1,13 @@
-<div class="form-group">
-  <%= label_tag :parent_id, "Member of Collection" %>
-  <%= link_to parent.title_display, url_for(parent) %>
-  <%= text_field_tag :parent_id, parent.pid, readonly: "readonly", class: "form-control" %>
-</div>
+<%= render partial: 'parent_field', locals: {label: "Member of Collection"} %>
 
-<h4><span class="glyphicon glyphicon-plus"></span> Component <small>Optional</small></h4>
-<p class="text-muted">You can also add (more) components to the new item later.</p>
+<h4>
+  <span class="glyphicon glyphicon-plus"></span> 
+  Component 
+  <small>Optional</small>
+</h4>
+
+<p class="text-muted">
+  You can also add (more) components to the new item later.
+</p>
+
 <%= render 'select_content_file' %>

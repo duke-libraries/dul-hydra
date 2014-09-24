@@ -134,13 +134,8 @@ module DulHydra
 
     def generate_external_directory_subpath 
       dirname = generate_external_directory_name
-      subpath_segments = []
-      start = 0
-      DulHydra.external_file_subpath_pattern.each do |seg|
-        finish = start + seg - 1
-        subpath_segments << dirname[start..finish]
-        start = finish + 1
-      end
+      m = DulHydra.external_file_subpath_regexp.match(dirname)
+      subpath_segments = m.to_a[1..-1]
       subpath_segments << dirname
       File.join *subpath_segments
     end

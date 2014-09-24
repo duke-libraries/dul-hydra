@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140826201812) do
+ActiveRecord::Schema.define(version: 20140918165438) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -141,6 +141,16 @@ ActiveRecord::Schema.define(version: 20140826201812) do
     t.integer  "metadata_file_size"
     t.datetime "metadata_updated_at"
   end
+
+  create_table "minted_ids", force: true do |t|
+    t.string   "minted_id"
+    t.string   "referent"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "minted_ids", ["minted_id"], name: "index_minted_ids_on_minted_id", unique: true
+  add_index "minted_ids", ["referent"], name: "index_minted_ids_on_referent"
 
   create_table "preservation_events", force: true do |t|
     t.datetime "event_date_time"

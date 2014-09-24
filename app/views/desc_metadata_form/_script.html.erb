@@ -30,10 +30,11 @@
                             .appendTo( fieldset.children('.field-values') );
       newInputId = fieldsetClass + '__' + counter.toString();
       newFieldValue.children('label')
+                   .addClass('sr-only')
                    .attr('for', newInputId);
       newFieldValue.children('.field-value-input')
                    .attr('id', newInputId)
-                   .data('changed', true)
+                   .change(trackChangesHandler)
                    .focus();
   
       // close bootstrap dropdown
@@ -46,7 +47,6 @@
     var btn = $(e.target).closest('button');
     btn.closest('.field-value').children('.form-control')
        .prop("disabled", true)
-       .data("changed", true)
        .css("text-decoration", "line-through");
     btn.children('.glyphicon').toggleClass(icon_classes);
     btn.toggleClass(btn_classes)
@@ -81,6 +81,10 @@
     return $('.desc-metadata-form').find('.field-value-input').add('#comment');
   }
 
+  function formFieldValueLabels() {
+    return $('.desc-metadata-form').find('.field-value').find('label');
+  }
+
   function formChanges() {
     return formFieldValueInputs().filter(function() { return $(this).data('changed'); });
   }
@@ -96,9 +100,10 @@
   }
 
   $(function() {
-    $('.field-value button').click(removeFieldValueHandler);
+    $('.field-value button').click(removeFieldValueHandler).click(trackChangesHandler);
     $('.add-field-button').click(addFieldValueHandler);
     formFieldValueInputs().change(trackChangesHandler);
+    formFieldValueLabels().addClass('sr-only');
     $('.desc-metadata-form').submit(clearChangesHandler);
     $(window).on('beforeunload', changesAlertHandler);
     // disable the form submit and comment field

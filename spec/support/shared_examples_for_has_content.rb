@@ -11,6 +11,14 @@ shared_examples "an object that can have content" do
     object.validate_checksum!(checksum, "SHA-256")
   end
 
+  describe "indexing" do
+    let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+    before { object.upload file }
+    it "should index the content ds control group" do
+      expect(object.to_solr).to include(DulHydra::IndexFields::CONTENT_CONTROL_GROUP)
+    end
+  end
+
   describe "adding a file" do
     let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
     before { object.add_file file, "content" }

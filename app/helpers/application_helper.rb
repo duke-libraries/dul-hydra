@@ -339,11 +339,7 @@ module ApplicationHelper
   end
 
   def desc_metadata_form_field_label field, counter=nil
-    opts = {
-      class: "sr-only",
-      for: counter ? desc_metadata_form_field_id(field, counter) : nil
-      }
-    label_tag field, nil, opts
+    label_tag field, nil, for: counter ? desc_metadata_form_field_id(field, counter) : nil
   end
 
   def desc_metadata_form_field_tag field, value=nil, counter=nil
