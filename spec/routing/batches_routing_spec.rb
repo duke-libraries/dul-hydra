@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "batches routing", batch: true do
+describe "batches routing", type: :routing, batch: true do
   describe "RESTful routes" do
     it "should have an index route" do
       @route = {controller: 'batches', action: 'index'}

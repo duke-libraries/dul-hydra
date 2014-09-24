@@ -3,22 +3,18 @@ module DulHydra::Batch::Scripts
     
     LOG_CONFIG_FILEPATH = File.join(Rails.root, 'config', 'log4r_batch_processor.yml')
     DEFAULT_LOG_DIR = File.join(Rails.root, 'log')
-    DEFAULT_LOG_FILE = "batch_processor.log"
+    DEFAULT_LOG_FILE = "batch_processor_log.txt"
     PASS = "PASS"
     FAIL = "FAIL"
     
     # Options
-    #   :batch_id - required - database id of batch to process
     #   :log_dir - optional - directory for log file - default is given in DEFAULT_LOG_DIR
     #   :log_file - optional - filename of log file - default is given in DEFAULT_LOG_FILE
     #   :skip_validation - optional - whether to skip batch object validation step when processing - default is false
     #   :ignore_validation_errors - optional - whether to continue processing even if batch object validation errors occur - default is false
-    def initialize(opts={})
-      begin
-        @batch_id = opts.fetch(:batch_id)
-      rescue KeyError
-        puts "Must specify :batch_id in options; e.g., :batch_id => 2"
-      end
+    def initialize(batch, user=nil, opts={})
+      @batch = batch
+      @bp_user = user
       @bp_log_dir = opts.fetch(:log_dir, DEFAULT_LOG_DIR)
       @bp_log_file = opts.fetch(:log_file, DEFAULT_LOG_FILE)
       @skip_validation = opts.fetch(:skip_validation, false)
@@ -27,11 +23,6 @@ module DulHydra::Batch::Scripts
     
     def execute
       config_logger
-      begin
-        @batch = DulHydra::Batch::Models::Batch.find(@batch_id)
-      rescue ActiveRecord::RecordNotFound
-        @bp_log.error "Unable to find batch with batch_id: #{@batch_id}"
-      end
       if @batch
         initiate_batch_run
         unless @skip_validation
@@ -50,6 +41,7 @@ module DulHydra::Batch::Scripts
     private
     
     def validate_batch
+      @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_VALIDATING)
       valid = true
       errors = @batch.validate
       unless errors.empty?
@@ -59,10 +51,12 @@ module DulHydra::Batch::Scripts
           @bp_log.error(message)
         end
       end
+      @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_RUNNING)
       return valid
     end
     
     def process_batch
+      @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_PROCESSING, processing_step_start: DateTime.now)
       @batch.batch_objects.each do |object|
         begin
           process_object(object)
@@ -71,6 +65,7 @@ module DulHydra::Batch::Scripts
         end
         sleep 2
       end
+      @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_RUNNING) if @batch.status == DulHydra::Batch::Models::Batch::STATUS_PROCESSING
     end
     
     def initiate_batch_run
@@ -119,7 +114,7 @@ module DulHydra::Batch::Scripts
     
     def process_object(object)
       @bp_log.debug "Processing object: #{object.identifier}"
-      repository_object = object.process
+      repository_object = object.process(@bp_user)
       update_results_tracker(object.type, repository_object.present? ? repository_object.class.name : object.model, object.verified)
       if object.verified
         @successes += 1
@@ -141,7 +136,7 @@ module DulHydra::Batch::Scripts
       @bp_log.outputters.each do |outputter|
         @logfilename = outputter.filename if outputter.respond_to?(:filename)
       end
-      @batch.update_attributes({:logfile => File.new(@logfilename)}) if @logfilename
+      @batch.update!({ logfile: File.new(@logfilename) }) if @logfilename
     end
     
     def send_notification

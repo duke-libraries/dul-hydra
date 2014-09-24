@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Models
 
-  describe Manifest, batch: true do
+  describe Manifest, type: :model, batch: true do
   
     shared_examples "a valid manifest" do
       it "should be valid" do
@@ -17,9 +17,9 @@ module DulHydra::Batch::Models
     end
   
     context "validate" do
-      let(:admin_policy_pid) { "duke-apo:adminPolicy" }
+      let(:collection_pid) { "test:1" }
       context "valid" do
-        let!(:admin_policy) { AdminPolicy.create(:pid => admin_policy_pid, :title => "Test Policy") }
+        let!(:collection) { Collection.create(:pid => collection_pid, :title => ["Test Collection"]) }
         context "manifest with files" do
           let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'manifest_with_files.yml')) }
           before { manifest.manifest_hash['basepath'] = File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous') }
@@ -161,7 +161,7 @@ module DulHydra::Batch::Models
           context "pid" do
             context "object not in repository" do
               let(:key) { BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY }
-              let(:pid) { "duke-apo:adminPolicy" }
+              let(:pid) { "test:1" }
               let(:error_message) { I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => key, :pid => pid) }
               before { manifest.manifest_hash[key] = pid }
               it_behaves_like "an invalid manifest"
@@ -280,7 +280,7 @@ module DulHydra::Batch::Models
             it "should use the provided values" do
               expect(manifest.checksum_identifier_element).to eq(identifier_element)
               expect(manifest.checksum_node_xpath).to eq(node_xpath)
-              expect(manifest.checksum_type?).to be_true
+              expect(manifest.checksum_type?).to be_truthy
               expect(manifest.checksum_type).to eq(type)
               expect(manifest.checksum_type_xpath).to eq(type_xpath)
               expect(manifest.checksum_value_xpath).to eq(value_xpath)
@@ -290,7 +290,7 @@ module DulHydra::Batch::Models
             it "should use the default values if any" do
               expect(manifest.checksum_identifier_element).to eq("id")
               expect(manifest.checksum_node_xpath).to eq("/checksums/checksum")
-              expect(manifest.checksum_type?).to be_false
+              expect(manifest.checksum_type?).to be_falsey
               expect(manifest.checksum_type).to be_nil
               expect(manifest.checksum_type_xpath).to eq("type")
               expect(manifest.checksum_value_xpath).to eq("value")
@@ -302,7 +302,7 @@ module DulHydra::Batch::Models
           let(:checksums_document) { File.open(checksums_filepath) { |f| Nokogiri.XML(f) } }
           before { manifest.manifest_hash = HashWithIndifferentAccess.new("checksum" => { "location" => checksums_filepath }) }
           it "should open the XML document" do
-            expect(manifest.checksums?).to be_true
+            expect(manifest.checksums?).to be_truthy
             expect(manifest.checksums).to be_equivalent_to(checksums_document)
           end
         end

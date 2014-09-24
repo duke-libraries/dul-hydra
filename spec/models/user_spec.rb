@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-describe User do
+describe User, :type => :model do
 
   describe "#member_of?" do
     let(:user) { FactoryGirl.build(:user) }
     it "should return true if the user is a member of the group" do
-      user.stub(:groups).and_return(["foo", "bar"])
-      user.should be_member_of("foo")
+      allow(user).to receive(:groups).and_return(["foo", "bar"])
+      expect(user).to be_member_of("foo")
     end
     it "should return false if the user is not a member of the group" do
-      user.stub(:groups).and_return(["foo", "bar"])
-      user.should_not be_member_of("baz")
+      allow(user).to receive(:groups).and_return(["foo", "bar"])
+      expect(user).not_to be_member_of("baz")
     end
   end
 
@@ -18,17 +18,17 @@ describe User do
     let(:user) { FactoryGirl.build(:user) }
     it "should return false if the superuser group is not defined (nil)" do
       DulHydra.superuser_group = nil
-      user.should_not be_superuser
+      expect(user).not_to be_superuser
     end
     it "should return false if the user is not a member of the superuser group" do
       DulHydra.superuser_group = "superusers"
-      user.stub(:groups).and_return(["normal"])
-      user.should_not be_superuser
+      allow(user).to receive(:groups).and_return(["normal"])
+      expect(user).not_to be_superuser
     end
     it "should return true if the user is a member of the superuser group" do
       DulHydra.superuser_group = "superusers"
-      user.stub(:groups).and_return(["superusers"])
-      user.should be_superuser
+      allow(user).to receive(:groups).and_return(["superusers"])
+      expect(user).to be_superuser
     end
   end
 
@@ -37,12 +37,12 @@ describe User do
     let(:role) { Role.new(name: "Admin") }
     before { allow(user).to receive(:effective_roles) { [role] } }
     it "should accept a string parameter" do
-      expect(user.has_role?("Admin")).to be_true
-      expect(user.has_role?("Super")).to be_false
+      expect(user.has_role?("Admin")).to be_truthy
+      expect(user.has_role?("Super")).to be_falsey
     end
     it "should accept a Role parameter" do
-      expect(user.has_role?(role)).to be_true
-      expect(user.has_role?(Role.new(name: "Super"))).to be_false      
+      expect(user.has_role?(role)).to be_truthy
+      expect(user.has_role?(Role.new(name: "Super"))).to be_falsey      
     end
   end
 

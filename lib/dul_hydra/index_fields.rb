@@ -1,34 +1,36 @@
 module DulHydra::IndexFields
+
+  def self.solr_name(*args)
+    ActiveFedora::SolrService.solr_name(*args)
+  end
   
-  ACTIVE_FEDORA_MODEL = ActiveFedora::SolrService.solr_name(:active_fedora_model, :stored_sortable)
-  CONTENT_METADATA_PARSED = ActiveFedora::SolrService.solr_name(:content_metadata_parsed, :symbol)
-  EVENT_DATE_TIME = ActiveFedora::SolrService.solr_name(:event_date_time, :stored_sortable, type: :date)
-  EVENT_OUTCOME = ActiveFedora::SolrService.solr_name(:event_outcome, :symbol)
-  EVENT_OUTCOME_DETAIL_NOTE = ActiveFedora::SolrService.solr_name(:event_outcome_detail_note, :displayable)
-  EVENT_ID_TYPE = ActiveFedora::SolrService.solr_name(:event_id_type, :symbol)
-  EVENT_ID_VALUE = ActiveFedora::SolrService.solr_name(:event_id_value, :symbol)
-  EVENT_TYPE = ActiveFedora::SolrService.solr_name(:event_type, :symbol)
-  HAS_MODEL = ActiveFedora::SolrService.solr_name(:has_model, :symbol)
-  IDENTIFIER = ActiveFedora::SolrService.solr_name(:identifier, :stored_sortable)
-  INTERNAL_URI = ActiveFedora::SolrService.solr_name(:internal_uri, :symbol)
-  IS_ATTACHED_TO = ActiveFedora::SolrService.solr_name(:is_attached_to, :symbol)
-  IS_EXTERNAL_TARGET_FOR = ActiveFedora::SolrService.solr_name(:is_external_target_for, :symbol)
-  IS_GOVERNED_BY = ActiveFedora::SolrService.solr_name(:is_governed_by, :symbol)
-  IS_MEMBER_OF = ActiveFedora::SolrService.solr_name(:is_member_of, :symbol)
-  IS_MEMBER_OF_COLLECTION = ActiveFedora::SolrService.solr_name(:is_member_of_collection, :symbol)
-  IS_PART_OF = ActiveFedora::SolrService.solr_name(:is_part_of, :symbol)
-  IS_PRESERVATION_EVENT_FOR = ActiveFedora::SolrService.solr_name(:is_preservation_event_for, :symbol)
-  LAST_FIXITY_CHECK_ON = ActiveFedora::SolrService.solr_name(:last_fixity_check_on, :stored_sortable, type: :date)
-  LAST_FIXITY_CHECK_OUTCOME = ActiveFedora::SolrService.solr_name(:last_fixity_check_outcome, :symbol)
-  LAST_VIRUS_CHECK_ON = ActiveFedora::SolrService.solr_name(:last_virus_check_on, :stored_sortable, type: :date)
-  LAST_VIRUS_CHECK_OUTCOME = ActiveFedora::SolrService.solr_name(:last_virus_check_outcome, :symbol)
-  LINKING_OBJECT_ID_TYPE = ActiveFedora::SolrService.solr_name(:linking_object_id_type, :symbol)
-  LINKING_OBJECT_ID_VALUE = ActiveFedora::SolrService.solr_name(:linking_object_id_value, :symbol)
-  OBJECT_PROFILE = ActiveFedora::SolrService.solr_name(:object_profile, :displayable)
-  OBJECT_STATE = ActiveFedora::SolrService.solr_name(:object_state, :stored_sortable)
-  OBJECT_CREATE_DATE = ActiveFedora::SolrService.solr_name(:system_create, :stored_sortable, type: :date)
-  OBJECT_MODIFIED_DATE = ActiveFedora::SolrService.solr_name(:system_modified, :stored_sortable, type: :date)
-  ORIGINAL_FILENAME = ActiveFedora::SolrService.solr_name(:original_filename, :symbol)
-  TITLE = ActiveFedora::SolrService.solr_name(:title, :stored_sortable)
+  ACTIVE_FEDORA_MODEL       = solr_name :active_fedora_model, :stored_sortable
+  CONTENT_CONTROL_GROUP     = solr_name :content_control_group, :searchable, type: :string
+  CONTENT_METADATA_PARSED   = solr_name :content_metadata_parsed, :symbol
+  CONTENT_SIZE              = solr_name :content_size, :stored_sortable, type: :integer
+  CONTENT_SIZE_HUMAN        = solr_name :content_size_human, :symbol
+  HAS_MODEL                 = solr_name :has_model, :symbol
+  IDENTIFIER                = solr_name :identifier, :stored_sortable
+  INTERNAL_URI              = solr_name :internal_uri, :symbol
+  IS_ATTACHED_TO            = solr_name :is_attached_to, :symbol
+  IS_EXTERNAL_TARGET_FOR    = solr_name :is_external_target_for, :symbol
+  IS_GOVERNED_BY            = solr_name :is_governed_by, :symbol
+  IS_MEMBER_OF              = solr_name :is_member_of, :symbol
+  IS_MEMBER_OF_COLLECTION   = solr_name :is_member_of_collection, :symbol
+  IS_PART_OF                = solr_name :is_part_of, :symbol
+  LAST_FIXITY_CHECK_ON      = solr_name :last_fixity_check_on, :stored_sortable, type: :date
+  LAST_FIXITY_CHECK_OUTCOME = solr_name :last_fixity_check_outcome, :symbol
+  LAST_VIRUS_CHECK_ON       = solr_name :last_virus_check_on, :stored_sortable, type: :date
+  LAST_VIRUS_CHECK_OUTCOME  = solr_name :last_virus_check_outcome, :symbol
+  MEDIA_SUB_TYPE            = solr_name :content_media_sub_type, :facetable
+  MEDIA_MAJOR_TYPE          = solr_name :content_media_major_type, :facetable
+  MEDIA_TYPE                = solr_name :content_media_type, :symbol
+  OBJECT_PROFILE            = solr_name :object_profile, :displayable
+  OBJECT_STATE              = solr_name :object_state, :stored_sortable
+  OBJECT_CREATE_DATE        = solr_name :system_create, :stored_sortable, type: :date
+  OBJECT_MODIFIED_DATE      = solr_name :system_modified, :stored_sortable, type: :date
+  ORIGINAL_FILENAME         = solr_name :original_filename, :symbol
+  PERMANENT_ID              = solr_name :permanent_id, :symbol
+  TITLE                     = solr_name :title, :stored_sortable
 
 end

@@ -20,9 +20,23 @@ shared_examples "a Collection related to a Target" do
   end
 end
 
-describe Collection do
+describe Collection, :type => :model do
 
   it_behaves_like "a DulHydra object"
+
+  describe "terms delegated to defaultRights" do
+    let(:collection) { Collection.new }
+    before do
+      collection.default_license_title = "License Title"
+      collection.default_license_description = "License Description"
+      collection.default_license_url = "http://library.duke.edu"
+    end
+    it "should set the terms correctly" do
+      expect(collection.defaultRights.license.title.first).to eq("License Title")
+      expect(collection.defaultRights.license.description.first).to eq("License Description")
+      expect(collection.defaultRights.license.url.first).to eq("http://library.duke.edu")
+    end
+  end
 
   context "collection-item relationships" do
     let!(:collection) { FactoryGirl.create(:collection) }
@@ -48,10 +62,9 @@ describe Collection do
 
   context "validation" do
     let(:collection) { Collection.new }
-    it "should require a title and admin policy" do
+    it "should require a title" do
       expect(collection).to_not be_valid
       expect(collection.errors.messages).to have_key(:title)
-      expect(collection.errors.messages).to have_key(:admin_policy)
     end
   end
 

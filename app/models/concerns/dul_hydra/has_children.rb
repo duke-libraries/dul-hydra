@@ -15,9 +15,5 @@ module DulHydra
       end
     end
 
-    def set_thumbnail
-      copy_thumbnail_from first_child
-    end
-
   end
 end

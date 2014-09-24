@@ -1,77 +1,137 @@
 require 'spec_helper'
+require 'openssl'
 
 shared_examples "an object that can have content" do
-  let(:object) { described_class.new(title: "I Have Content!") }
-  context "when new content is saved" do
-    context "and the content is a file" do
-      let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
-      before { object.content.content = file }
-      it "should run a virus scan" do
-        expect(VirusCheck).to receive(:execute).with(object, file).and_call_original
-        object.save
+
+  let(:object) { described_class.new(title: [ "I Have Content!" ]) }
+
+  it "should delegate :validate_checksum! to :content" do
+    checksum = "dea56f15b309e47b74fa24797f85245dda0ca3d274644a96804438bbd659555a"
+    expect(object.content).to receive(:validate_checksum!).with(checksum, "SHA-256")
+    object.validate_checksum!(checksum, "SHA-256")
+  end
+
+  describe "indexing" do
+    let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+    before { object.upload file }
+    it "should index the content ds control group" do
+      expect(object.to_solr).to include(DulHydra::IndexFields::CONTENT_CONTROL_GROUP)
+    end
+  end
+
+  describe "adding a file" do
+    let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+    before { object.add_file file, "content" }
+    it "should have an original_filename" do
+      expect(object.original_filename).to eq("library-devil.tiff")
+    end
+    it "should have a content_type" do
+      expect(object.content_type).to eq("image/tiff")
+    end
+    it "should create a 'virus check' event for the object" do
+      expect { object.save }.to change { object.virus_checks.count }.by(1)
+    end
+  end
+
+  describe "save" do
+
+    describe "when content is not present" do
+      it "should not save" do
+        expect(object.save).to be false
+        expect(object.errors[:content]).to include "can't be blank"
       end
-      context "and a virus is found" do
-        before { allow(VirusCheck).to receive(:execute).with(object, file).and_raise(DulHydra::VirusFoundError) }
-        it "should not persist the object" do
-          expect { object.save }.to raise_error
-          expect(object).to be_new_record
+    end
+
+    describe "when new content is present" do
+
+      context "and it's a new object" do
+        before { object.add_file file, "content" }
+
+        context "and the content is an image" do
+          let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+          it "should generate a thumbnail" do
+            expect(object.thumbnail).not_to be_present
+            object.save
+            expect(object.thumbnail).to be_present
+          end
+        end
+        context "and the content is a pdf" do
+          let(:file) { fixture_file_upload("sample.pdf", "application/pdf") }
+          it "should generate a thumbnail" do
+            expect(object.thumbnail).not_to be_present
+            object.save
+            expect(object.thumbnail).to be_present
+          end
+        end
+        context "and the content is neither an image nor a pdf" do
+          let(:file) { fixture_file_upload("sample.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document") }
+          it "should not generate a thumbnail" do
+            expect(object.thumbnail).not_to be_present
+            object.save
+            expect(object.thumbnail).not_to be_present
+          end
         end
       end
-      context "and no virus is found" do
-        before { object.save(validate: false) }
-        it "should create a 'virus check' event for the object" do
-          expect(VirusCheckEvent.for_object(object).count).to eq(1)
+
+      context "and it's an existing object with content" do
+        before { object.upload! fixture_file_upload('library-devil.tiff', 'image/tiff') }
+
+        context "and the content is an image" do
+          let(:file) { fixture_file_upload("image1.tiff", "image/tiff") }
+          it "should generate a new thumbnail" do
+            expect(object.thumbnail).to be_present
+            expect { object.upload! file }.to change { object.thumbnail.content }
+          end
+        end
+        context "and the content is a pdf" do
+          let(:file) { fixture_file_upload("sample.pdf", "application/pdf") }
+          it "should generate a new thumbnail" do
+            expect(object.thumbnail).to be_present
+            expect { object.upload! file }.to change { object.thumbnail.content }
+          end
+        end
+        context "and the content is neither an image nor a pdf" do
+          let(:file) { fixture_file_upload("sample.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document") }
+          it "should delete the thumbnail" do
+            expect(object.thumbnail).to be_present
+            object.upload! file
+            expect(object.thumbnail).to_not be_present
+          end
         end
       end
     end
-    context "and the content is not a file" do
-      before { object.content.content = "A string" }
-      it "should not run a virus scan" do
-        expect(VirusCheck).not_to receive(:execute)
-        object.save!
-      end
+  end
+
+  describe "#upload" do
+    let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+    it "should change the content location" do
+      expect { object.upload file }.to change { object.content.dsLocation }
+    end
+    it "should check the file for viruses" do
+      expect(DulHydra::Services::Antivirus).to receive(:scan).with(file)
+      object.upload file
     end
   end
-  context "after content is uploaded" do
-    before do
-      object.upload fixture_file_upload("library-devil.tiff", "image/tiff")
-    end
-    it "should have content" do
-      expect(object).to have_content
-    end
-    context "after saving the object" do
-      before { object.save(validate: false) }
-      it "should have an original_filename" do
-        expect(object.original_filename).to eq("library-devil.tiff")
-      end
-      it "should have a content_type" do
-        expect(object.content_type).to eq("image/tiff")
-      end
-      it "should have a thumbnail (if it's an appropriate type)" do
-        expect(object.thumbnail).to be_present
-      end
-    end # after saving
-  end
-  context "after content is uploaded with a checksum" do
-    context "and the checksum matches" do
-      before do
-        object.upload fixture_file_upload("library-devil.tiff", "image/tiff"), checksum: "dea56f15b309e47b74fa24797f85245dda0ca3d274644a96804438bbd659555a"      
-        object.save(validate: false)
-      end
-      it "should have content" do
-        expect(object).to have_content
-      end
-    end
-    context "and the checksum doesn't match" do
-      it "should raise an exception" do
-        expect { object.upload fixture_file_upload("library-devil.tiff", "image/tiff"), checksum: "dea56f15b309e47b74fa24797f85245dda0ca3d274644a96804438bbd659555b" }.to raise_error(DulHydra::ChecksumInvalid)
-        expect { object.upload! fixture_file_upload("library-devil.tiff", "image/tiff"), checksum: "dea56f15b309e47b74fa24797f85245dda0ca3d274644a96804438bbd659555b" }.to raise_error(DulHydra::ChecksumInvalid)
-      end
+
+  describe "#upload!" do 
+    let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
+    it "should change the content" do
+      expect { object.upload! file }.to change { object.content.content }
+    end    
+    it "should save the object" do
+      expect(object).to receive(:save)
+      object.upload! file
     end
   end
-  context "before content is uploaded" do
-    it "should not have content" do
-      expect(object).not_to have_content
+
+  describe "deleting" do
+    before { object.upload! fixture_file_upload("library-devil.tiff", "image/tiff") }
+    it "should delete the content file" do
+      path = object.content.file_path
+      expect(File.exists?(path)).to be true
+      object.destroy
+      expect(File.exists?(path)).to be false
     end
   end
+
 end

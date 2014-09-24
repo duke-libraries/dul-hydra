@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'digest'
 
 module DulHydra::Scripts
   
@@ -10,9 +9,33 @@ module DulHydra::Scripts
     context "thumbnail does not exist" do
       
       context "child has thumbnail" do
-        let(:collection) { FactoryGirl.create(:collection_with_items_and_components) }
-        let(:items) { collection.children }
-        let(:item) { items[0] }
+        let(:collection) { FactoryGirl.create(:collection) }
+        let(:items) do
+          item1 = FactoryGirl.create(:item)
+          item1.children << Component.new.tap do |c| 
+            c.identifier = ["comp01"]
+            c.upload! fixture_file_upload('image1.tiff', 'image/tiff')
+          end
+          item1.children << Component.new.tap do |c| 
+            c.identifier = ["comp02"]
+            c.upload! fixture_file_upload('image2.tiff', 'image/tiff')
+          end
+          item1.parent = collection
+          item1.save
+          item2 = FactoryGirl.create(:item)
+          item2.children << Component.new.tap do |c| 
+            c.identifier = ["comp03"]
+            c.upload! fixture_file_upload('image3.tiff', 'image/tiff')
+          end
+          item2.children << Component.new.tap do |c| 
+            c.identifier = ["comp04"]
+            c.upload! fixture_file_upload('image4.tiff', 'image/tiff') 
+          end
+          item2.parent = collection
+          item2.save          
+          [item1, item2]
+        end
+        let(:item) { items.first }
         let(:children) { item.children }
         context "contentMetadata" do
           before do
@@ -53,10 +76,10 @@ module DulHydra::Scripts
         end
         context "no contentMetadata" do
           before do
-            iden = children[0].identifier
-            children[0].identifier = children[1].identifier
+            iden = children[0].identifier.first
+            children[0].identifier = [ children[1].identifier.first ]
             children[0].save
-            children[1].identifier = iden
+            children[1].identifier = [ iden ]
             children[1].save
             thumbnails_script.execute
             item.reload
@@ -74,6 +97,7 @@ module DulHydra::Scripts
         before do
           item.children << component
           collection.children << item
+          component.thumbnail.delete
           thumbnails_script.execute
           item.reload
         end
@@ -85,10 +109,13 @@ module DulHydra::Scripts
     end
     
     context "thumbnail already exists" do
-      let(:collection) { FactoryGirl.create(:collection_with_items_and_components) }
-      let(:item) { collection.children[0] }
+      let(:collection) { FactoryGirl.create(:collection) }
+      let(:item) { FactoryGirl.create(:item) }
+      let(:component) { FactoryGirl.create(:component) }
       let(:content) { StringIO.new("awesome image") }
       before do
+        item.parent = collection
+        item.children << component
         item.datastreams["thumbnail"].content = content
         item.save!
         thumbnails_script.execute

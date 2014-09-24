@@ -3,14 +3,18 @@ class CollectionsController < ApplicationController
   include DulHydra::Controller::RepositoryBehavior
   include DulHydra::Controller::HasChildrenBehavior
   include DulHydra::Controller::HasAttachmentsBehavior
+  include DulHydra::Controller::HasTargetsBehavior
+  include DulHydra::Controller::PolicyBehavior
 
-  self.tabs.unshift :tab_items
+  self.tabs << :tab_default_permissions
   self.tabs << :tab_collection_info
 
-  require_read_permission! only: :collection_info
-  before_action :set_admin_policy, only: :create
   helper_method :collection_report
 
+  def items
+    get_children
+  end
+  
   # HTML format intended for tab content loaded via ajax
   def collection_info
     respond_to do |format|
@@ -24,10 +28,8 @@ class CollectionsController < ApplicationController
 
   protected
 
-  def set_admin_policy
-    if params[:admin_policy_id].present?
-      current_object.admin_policy = AdminPolicy.find(params[:admin_policy_id])
-    end
+  def create_params
+    params.require(:descMetadata).permit(title: [])
   end
 
   def collection_report
@@ -51,10 +53,6 @@ class CollectionsController < ApplicationController
   end
 
   # tabs
-
-  def tab_items
-    tab_children("items")
-  end
 
   def tab_collection_info
     Tab.new("collection_info", href: url_for(action: "collection_info"))

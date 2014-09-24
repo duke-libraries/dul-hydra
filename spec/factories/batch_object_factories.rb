@@ -41,10 +41,21 @@ FactoryGirl.define do
     end
   end
   
-  trait :with_add_datastreams do
+  trait :with_add_content_datastream do
+    after(:create) do |batch_object|
+      FactoryGirl.create(:batch_object_add_content_datastream, :batch_object => batch_object)          
+    end      
+  end
+
+  trait :with_add_desc_metadata_datastream_bytes do
+    after(:create) do |batch_object|
+      FactoryGirl.create(:batch_object_add_desc_metadata_datastream_bytes, :batch_object => batch_object)
+    end      
+  end
+
+  trait :with_add_desc_metadata_datastream_file do
     after(:create) do |batch_object|
       FactoryGirl.create(:batch_object_add_desc_metadata_datastream_file, :batch_object => batch_object)
-      FactoryGirl.create(:batch_object_add_content_datastream, :batch_object => batch_object)          
     end      
   end
 
@@ -60,18 +71,29 @@ FactoryGirl.define do
     
     factory :basic_ingest_batch_object do
       has_model
+      with_add_content_datastream
     end
     
     factory :generic_ingest_batch_object do
       has_model
       has_admin_policy
       has_parent
-      with_add_datastreams
+      with_add_content_datastream
+      
+      factory :generic_ingest_batch_object_with_bytes do
+        with_add_desc_metadata_datastream_bytes
+      end
+      
+      factory :generic_ingest_batch_object_with_file do
+        with_add_desc_metadata_datastream_file
+      end
+
     end
     
     factory :target_ingest_batch_object do
       model "Target"
       is_target_for_collection
+      with_add_content_datastream
     end
   end
   

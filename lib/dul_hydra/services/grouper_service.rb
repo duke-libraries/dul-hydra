@@ -48,7 +48,7 @@ module DulHydra
             end
           end
         rescue StandardError => e
-          logger.error e
+          Rails.logger.error e
         end
         groups
       end

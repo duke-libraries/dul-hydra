@@ -1,49 +1,58 @@
-require 'digest'
+require 'openssl'
 
 module DulHydra
   module HasContent
     extend ActiveSupport::Concern
 
     included do
-      has_file_datastream name: DulHydra::Datastreams::CONTENT, 
-                          type: DulHydra::Datastreams::FileContentDatastream,
+      has_file_datastream name: DulHydra::Datastreams::CONTENT,
                           versionable: true, 
-                          label: "Content file for this object", 
-                          control_group: 'M'
+                          label: "Content file for this object",
+                          control_group: "E"
+
+      validates_presence_of :content
 
       include Hydra::Derivatives
-      include DulHydra::VirusCheckable
 
-      # Original file name of content file should be stored in this property
-      has_attributes :original_filename, datastream: DulHydra::Datastreams::PROPERTIES, multiple: false
-
-      before_save :set_original_filename, if: :content_changed?, unless: :original_filename_changed?
-      before_save :set_content_type, if: :content_changed?
       around_save :update_thumbnail, if: :content_changed?
+
+      delegate :validate_checksum!, to: :content
     end
 
-    def content_changed?
-      content.content_changed?
+    def original_filename
+      # The fallback is here in case we don't convert all content datastreams from managed to external
+      content.external? ? content.file_name : properties.original_filename.first
     end
 
-    # Set content to file and return boolean for changed (true)/not changed (false)
-    # If :checksum option is a non-empty string, it must match the SHA-256 digest for the file,
-    # or the upload will raise an exception (DulHydra::ChecksumInvalid).
-    def upload file, opts = Hash.new
-      raise ArgumentError, "Missing file argument" unless file
-      validate_file_checksum! file, opts[:checksum] if opts[:checksum].present?
-      self.content.content = file
-      content_changed?
+    # Convenience method wrapping FileManagement#add_file
+    def upload file, opts={}
+      add_file(file, DulHydra::Datastreams::CONTENT, opts)
     end
 
-    # Set content to file and save if changed.
-    # Return boolean for success of upload and save.
-    def upload! file, opts = Hash.new
-      upload(file, opts) && save
+    # Set content to file and save
+    def upload! file, opts={}
+      upload(file, opts)
+      save
+    end
+
+    def content_size
+      content.external? ? content.file_size : content.dsSize
+    end
+
+    def content_human_size
+      ActiveSupport::NumberHelper.number_to_human_size(content_size) if content_size
     end
 
     def content_type
       content.mimeType
+    end
+
+    def content_major_type
+      content_type.split("/").first
+    end
+
+    def content_sub_type
+      content_type.split("/").last
     end
 
     def content_type= mime_type
@@ -51,59 +60,48 @@ module DulHydra
     end
 
     def image?
-      content_type =~ /image\//
+      content_major_type == "image"
     end
 
     def pdf?
       content_type == "application/pdf"
     end
 
-    def has_content?
-      content.has_content?
+    def generate_thumbnail
+      return false unless thumbnailable?
+      transform_datastream :content, { thumbnail: { size: "100x100>", datastream: "thumbnail" } }
+      thumbnail_changed?
     end
 
-    def set_thumbnail
-      return unless has_content?
-      if image? or pdf?
-        transform_datastream :content, { thumbnail: { size: "100x100>", datastream: "thumbnail" } }
-      end
+    def generate_thumbnail!
+      generate_thumbnail && save
+    end
+
+    def virus_checks
+      VirusCheckEvent.for_object(self)
+    end
+
+    def content_changed?
+      content.dsLocation_changed?
     end
 
     protected
 
-    def set_original_filename
-      file = content.content
-      if file.respond_to?(:original_filename)
-        self.original_filename = file.original_filename
-      elsif file.respond_to?(:path)
-        self.original_filename = File.basename(file.path)
-      end
-    end
-
-    def set_content_type
-      file = content.content
-      self.content_type = file.content_type if file.respond_to?(:content_type)
-    end
-
     def update_thumbnail
       yield
-      set_thumbnail!
+      if thumbnailable?
+        generate_thumbnail!
+      else
+        thumbnail.delete
+      end
     end
 
-    def validate_file_checksum! file, checksum
-      digest = Digest::SHA256.new
-      digest << file.read
-      unless checksum == digest.to_s
-        raise DulHydra::ChecksumInvalid, "The checksum provided [#{checksum}] does not match the digest generated for the file [#{digest.to_s}]"
-      end
-    ensure
-      file.rewind
+    def thumbnailable?
+      has_content? && (image? || pdf?)
     end
 
-    def validate_content_checksum! checksum
-      unless checksum == content.checksum
-        raise DulHydra::ChecksumInvalid, "The checksum provided [#{checksum}] does not match the repository checksum for the object content [#{digest}]"
-      end
+    def default_content_type
+      "application/octet-stream"
     end
 
   end

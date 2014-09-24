@@ -6,6 +6,8 @@ DulHydra::Application.routes.draw do
   Blacklight.add_routes(self)
   devise_for :users
 
+  get 'id/:permanent_id' => 'permanent_ids#show'
+
   def pid_constraint
     /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
   end
@@ -33,12 +35,9 @@ DulHydra::Application.routes.draw do
     get 'download' => 'downloads#show'
   end
 
-  def tab_routes
-    get ':tab' => '#show', constraints: {tab: tab_constraint}
-  end
-
   def event_routes
     get 'events'
+    get 'events/:event_id' => :event
   end
 
   def thumbnail_routes
@@ -91,8 +90,14 @@ DulHydra::Application.routes.draw do
 
   repository_resource :collections do
     get 'collection_info'
+    get 'items'
+    get 'attachments'
+    get 'targets'
+    policy_routes
   end
-  repository_resource :items
+  repository_resource :items do
+    get 'components'
+  end
   repository_content_resource :components
   repository_content_resource :attachments
   repository_content_resource :targets
@@ -105,8 +110,6 @@ DulHydra::Application.routes.draw do
     end
   end
   resources :thumbnail, only: :show, constraints: {id: pid_constraint}
-
-  resources :events, :only => [:index, :show], constraints: {id: /[1-9][0-9]*/, pid: pid_constraint}
 
   resources :export_sets do
     member do

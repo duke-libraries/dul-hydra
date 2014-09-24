@@ -1,7 +1,4 @@
 en:
-  hydra_editor:
-    form:
-      title: 'Edit Descriptive Metadata'
   dul_hydra:
     ingest_folder:
       new_menu: "Folder Ingest"
@@ -46,8 +43,8 @@ en:
           descriptive_metadata: "You have bookmarked no objects with descriptive metadata that you have permission to export."
         warn_change_csv_col_sep: "WARNING: If you change the CSV Column Separator, the existing archive file will be deleted and you will need to re-create it."
     associations:
-      is_part_of: 'Part of'
-      is_member_of_collection: 'Member of'
+      is_part_of: 'Part of Item'
+      is_member_of_collection: 'Member of Collection'
       is_attached_to: 'Attached to'
     prompts:
       select: "Select %s ..."
@@ -68,7 +65,6 @@ en:
         object_create_date: 'Created'
         object_modified_date: 'Modified'
         metadata: 'Metadata'
-        preservation_events: 'Preservation Events'
         collection_report: 'Collection Report'
         last_fixity_check_on: 'Checked'
         last_fixity_check_outcome: 'Outcome'
@@ -102,10 +98,10 @@ en:
         edit_default_permissions: "Modify Default Permissions"
         edit: "Modify Permissions"
       alerts:
-        inherited: 'This object is governed by the Admin Policy %s. Permissions granted on this page are <strong>added to</strong> the inherited permissions (if any) shown below the select boxes.'
-        default_permissions: "These settings are <strong>inherited</strong> by objects governed by this policy. They do <strong>not</strong> apply to this Admin Policy object itself."
+        inherited: 'This object is governed by the Collection %s. Permissions granted on this page are <strong>added to</strong> the inherited permissions (if any) shown below the select boxes.'
+        default_permissions: "These settings are <strong>inherited</strong> by objects governed by this collection. They do <strong>not</strong> apply to this Collection object itself."
         permissions_will_change: "The permissions will be overwritten with your selections."
-        default_permissions_will_change: "The default permissions will be overwritten with your selections and be applied to all objects governed by this policy."
+        default_permissions_will_change: "The default permissions will be overwritten with your selections and be applied to all objects governed by this collection."
       descriptions:
         discover: 'Find object via search and view summary data'
         read: 'View object and download content (includes Discover)'
@@ -114,23 +110,23 @@ en:
         alerts:
             changed: "Rights successfully changed."
     tabs:
-      items:
-        label: Items
-      components:
-        label: Components
+      content_info: 
+        label: "Content Info"
       descriptive_metadata:
         label: "Descriptive Metadata"
         actions:
           edit: Edit
-          download: "Download XML"
+          download: "Download N-Triples"
+        errors:
+          empty_form_submission: "You can't submit a form containing no descriptive metadata.  Use 'Cancel' to exit Edit mode."
       permissions:
         label: Permissions
         actions:
           edit: Modify
           download: "Download XML"
         alerts:
-          is_admin_policy: "These settings apply to this Admin Policy object itself. They are <strong>not inherited</strong> by objects governed by this policy."
-          has_admin_policy: "This object is governed by the Admin Policy %s. Permissions inherited from the policy are shown below."
+          is_admin_policy: "These settings apply to this Collection object itself. They are <strong>not inherited</strong> by objects governed by this collection."
+          has_admin_policy: "This object is governed by the Collection %s. Permissions inherited from the collection are shown below."
       default_permissions:
         label: "Default Permissions"
         actions:
@@ -140,10 +136,6 @@ en:
         label: "Collection Info"
         actions:
           download: "Download CSV Report"
-      events:
-        label: "Events"
-      attachments:
-        label: Attachments
       pending_batches:
           label: Pending
       finished_batches:

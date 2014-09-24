@@ -1,21 +1,21 @@
-#
-# AdminPolicy does not subclass DulHydra::Base
-# b/c Hydra::AdminPolicy provides all the datastreams it needs.
-#
-class AdminPolicy < Hydra::AdminPolicy
+class AdminPolicy < ActiveFedora::Base
+
+  include Hydra::AdminPolicyBehavior
 
   include ActiveFedora::Auditable
+  include DulHydra::Describable
   include DulHydra::Licensable
   include DulHydra::EventLoggable
   include DulHydra::AccessControllable
-  include DulHydra::Validations
+  include DulHydra::Indexing
+  include Hydra::Validations
 
   has_attributes :default_license_title, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :title], multiple: false
   has_attributes :default_license_description, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :description], multiple: false
   has_attributes :default_license_url, datastream: DulHydra::Datastreams::DEFAULT_RIGHTS, at: [:license, :url], multiple: false
 
   validates_presence_of :title
-  validates_uniqueness_of :title, index_field: DulHydra::IndexFields::TITLE
+  validates_uniqueness_of :title, solr_name: DulHydra::IndexFields::TITLE
 
   def default_license
     if default_license_title.present? or default_license_description.present? or default_license_url.present?
@@ -31,21 +31,6 @@ class AdminPolicy < Hydra::AdminPolicy
     self.default_license_url = l[:url]
   end
 
-  def descriptive_metadata_terms
-    [:title, :description]
-  end
-
-  # hydra-editor integration
-  def terms_for_editing
-    descriptive_metadata_terms
-  end
-
-  def to_solr(solr_doc=Hash.new, opts={})
-    solr_doc = super(solr_doc, opts)
-    solr_doc.merge!(DulHydra::IndexFields::TITLE => title || pid)
-    solr_doc
-  end
-
   def set_initial_permissions(creator_user = nil)
     super
     # Grant read to authenticated users
@@ -54,10 +39,6 @@ class AdminPolicy < Hydra::AdminPolicy
 
   def default_entities_for_permission(type, access)
     default_permissions.collect { |p| p[:name] if p[:type] == type and p[:access] == access }.compact
-  end
-
-  def title_display
-    title
   end
   
   ["discover", "read", "edit"].each do |access|

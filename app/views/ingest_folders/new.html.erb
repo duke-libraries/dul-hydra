@@ -23,12 +23,16 @@
 			<%= f.text_field :sub_path, class: 'form-control' %>
 		</div>
 		<div class="form-group">
+			<%= f.label :checksum_type %>
+			<%= f.select :checksum_type, options_for_select(DulHydra::Datastreams::CHECKSUM_TYPES, @ingest_folder.checksum_type || IngestFolder.default_checksum_type), class: 'form-control' %>
+		</div>
+		<div class="form-group">
 			<%= f.label :file_creator %>
 			<%= f.select :file_creator, options_for_select(IngestFolder.file_creators.invert), {prompt: t('dul_hydra.prompts.select') % "File Creator (if applicable)" }, {class: 'form-control'} %>
 		</div>
 		<div class="form-group">
 			<%= f.label :collection_pid %>
-			<%= f.select :collection_pid, model_options_for_select(Collection, :add_children), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {class: 'form-control'} %>
+			<%= f.select :collection_pid, model_options_for_select(Collection, access: :add_children), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {class: 'form-control'} %>
 		</div>
 		<div class="form-group">
 			<%= f.label :parent_id_length %>

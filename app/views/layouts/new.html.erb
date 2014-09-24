@@ -1,35 +1,10 @@
-<% html_opts = {role: "form", class: "form-horizontal"} %>
-<% html_opts[:enctype] = "multipart/form-data" if current_object.can_have_content? %>
 <% content_for :main_content do %>
   <h2>New <%= current_object.class.to_s %></h2>
   <div class="col-md-6">
-    <%= form_for current_object, html: html_opts do |f| %>
+    <%= form_for current_object, html: {role: "form", class: "form-horizontal", enctype: "multipart/form-data"} do |f| %>
       <%= render 'form_errors' %>
-      <% if content_for? :form_top %>
-	    <%= yield :form_top %>
-	  <% end %>
-	  <% if content_for? :form_body %>
-	    <%= yield :form_body %>
-	  <% else %>
-  	    <div class="form-group">
-		  <%= f.label :title %>
-		  <%= text_field_tag "#{resource_instance_name}[title]", resource.title.present? ? resource.title.first : nil, class: "form-control" %>
-		</div>
-		<div class="form-group">
-		  <%= f.label :description %>
-		  <%= text_area_tag "#{resource_instance_name}[description]", resource.description.present? ? resource.description.first : nil, class: "form-control" %>
-		</div>
-	  <% end %>
-	  <% if current_object.can_have_content? %>
-	    <%= render 'select_content_file' %>
-      <% end %>
-      <% if content_for? :form_bottom %>
-  	    <%= yield :form_bottom %>
-	  <% end %>    
-      <div class="well form-group">
-		<%= f.submit data: {confirm: "#{t('dul_hydra.repository_objects.alerts.creation_confirmation', model: f.object.class.to_s)}" }, class: "btn btn-primary" %>
-		<%= cancel_button data: {confirm: "#{t('dul_hydra.repository_objects.alerts.cancellation_confirmation', model: f.object.class.to_s)}" } %>
-	  </div>
+  	  <%= yield %>
+	  <%= render partial: 'form_actions', locals: {f: f} %>
 	<% end %>
   </div>
 <% end %>

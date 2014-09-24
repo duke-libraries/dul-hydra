@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'helpers/metadata_helper'
 
 module DulHydra::Batch::Scripts
   
@@ -19,17 +20,17 @@ module DulHydra::Batch::Scripts
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
         batch_obj_rs = batch_obj.batch_object_relationships
         batch_obj_rs.each { |r| expect(obj.send(r.name).pid).to eq(r.object) }
-        expect(obj.events.count).to eq(4)
         obj.events.each do |event|
           expect(event).to be_success
           expect(event.pid).to eq(obj.pid)
           expect(event.event_date_time).to be_within(3.minutes).of(DateTime.now)
           case event.type
           when "FixityCheckEvent"
-            expect(event.detail).to include(FixityCheck::VALID)
-            expect(event.detail).to_not include(FixityCheck::INVALID)
+            expect(event.detail).to include(FixityCheckEvent::VALID)
+            expect(event.detail).to_not include(FixityCheckEvent::INVALID)
           when "IngestionEvent"
             expect(event.summary).to include("Batch object identifier: #{batch_obj.identifier}")
+            expect(event.user).to eq(bp_user)
           when "ValidationEvent"
             expect(event.detail).to include(DulHydra::Batch::Scripts::BatchProcessor::PASS)
             expect(event.detail).to_not include(DulHydra::Batch::Scripts::BatchProcessor::FAIL)
@@ -53,7 +54,7 @@ module DulHydra::Batch::Scripts
     before do
       batch.reload
       @repo_objects = []
-      batch.batch_objects.each { |obj| @repo_objects << ActiveFedora::Base.find(obj.pid, :cast => true) }
+      batch.batch_objects.each { |obj| @repo_objects << ActiveFedora::Base.find(obj.pid) }
     end
     it "should update the objects in the repository" do
       expect(@repo_objects.size).to eq(batch.batch_objects.size)
@@ -61,7 +62,8 @@ module DulHydra::Batch::Scripts
         batch_obj = batch.batch_objects[index]
         expect(obj).to be_an_instance_of(batch_obj.model.constantize)
         expect(obj.label).to eq(batch_obj.label) if batch_obj.label
-        expect(obj.title.first).to eq('Sample updated title')
+        expect(obj.title.first).to eq('Sample title')
+        expect(obj.update_events.last.user).to eq(bp_user)
         batch_obj_ds = batch_obj.batch_object_datastreams
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
         batch_obj_rs = batch_obj.batch_object_relationships
@@ -104,17 +106,24 @@ module DulHydra::Batch::Scripts
   describe BatchProcessor do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:log_dir) { test_dir }
+    let(:bp_user) { FactoryGirl.create(:user) }
+    before do
+      allow(File).to receive(:readable?).and_call_original
+      allow(File).to receive(:readable?).with("/tmp/qdc-rdf.nt").and_return(true)
+      allow(File).to receive(:read).and_call_original
+    end
     after { FileUtils.remove_dir test_dir }
     context "ingest" do
       let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
-      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
+      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
+      before { allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples) }
       context "successful initial run" do
         before { bp.execute }
-        it_behaves_like "a successful ingest batch"
+          it_behaves_like "a successful ingest batch"
       end
       context "successful restart run" do
         before do
-          batch.batch_objects.first.process
+          batch.batch_objects.first.process(bp_user)
           batch.update_attributes(:status => DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE)
           bp.execute
         end
@@ -122,7 +131,7 @@ module DulHydra::Batch::Scripts
       end
       context "exception during run" do
         before do
-          DulHydra::Batch::Models::IngestBatchObject.any_instance.stub(:populate_datastream).and_raise(RuntimeError)
+          allow_any_instance_of(DulHydra::Batch::Models::IngestBatchObject).to receive(:populate_datastream).and_raise(RuntimeError)
           bp.execute
         end
         it_behaves_like "an interrupted batch run"
@@ -130,9 +139,15 @@ module DulHydra::Batch::Scripts
     end
     context "update" do
       let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
-      let(:repo_object) { TestModelOmnibus.create(:pid => batch.batch_objects.first.pid, :label => 'Object Label') }
-      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(:batch_id => batch.id, :log_dir => log_dir) }
+      let(:repo_object) do
+        r_obj = TestModelOmnibus.new(:pid => batch.batch_objects.first.pid, :label => 'Object Label')
+        r_obj.add_file("#{Rails.root}/spec/fixtures/library-devil.tiff", DulHydra::Datastreams::CONTENT)
+        r_obj.save
+        r_obj
+      end
+      let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
       before do
+        allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples("<#{ActiveFedora::Rdf::ObjectResource.base_uri}#{repo_object.pid}>"))
         repo_object.edit_users = [ batch.user.user_key ]
         repo_object.save
       end
@@ -149,7 +164,7 @@ module DulHydra::Batch::Scripts
       end
       context "exception during run" do
         before do
-          DulHydra::Batch::Models::BatchObject.any_instance.stub(:populate_datastream).and_raise(RuntimeError)
+          allow_any_instance_of(DulHydra::Batch::Models::BatchObject).to receive(:populate_datastream).and_raise(RuntimeError)
           bp.execute
         end
         it_behaves_like "an interrupted batch run"

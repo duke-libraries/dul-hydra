@@ -7,6 +7,7 @@ class ExportSet < ActiveRecord::Base
 
   belongs_to :user
   has_attached_file :archive
+  do_not_validate_attachment_file_type :archive
   serialize :pids
 
   module Types
@@ -61,7 +62,7 @@ class ExportSet < ActiveRecord::Base
   end
 
   def bookmarked_objects_for_export
-    @bookmarked_objects_for_export ||= get_objects_for_pids(self.user.bookmarked_document_ids)
+    @bookmarked_objects_for_export ||= get_objects_for_pids(self.user.bookmarks.pluck(:document_id))
   end
 
   def objects

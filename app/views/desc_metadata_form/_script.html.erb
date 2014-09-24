@@ -1,0 +1,112 @@
+<script type="text/javascript">
+  var icon_classes = "glyphicon-remove glyphicon-refresh";
+  var btn_classes = "btn-default btn-warning";
+
+  function addFieldValueHandler(e) {
+      var field = $(e.target).text(); // e.g., 'title'
+      var fieldsetClass = 'descMetadata__' + field; 
+
+      // find existing fieldset for field
+      var fieldset = $('.' + fieldsetClass);         
+
+      var counter; // the field value number (1-based)
+      // if not found, clone and append to fieldsets wrapper element
+      if ( fieldset.length == 0) {        
+        fieldset = $('#clone-fieldset fieldset')
+                       .clone()
+                       .appendTo( $('#desc-metadata-fieldsets') )
+                       .addClass(fieldsetClass);
+        fieldset.children('legend').html(field);
+        counter = 1;
+      } else {
+        counter = fieldset.find('.field-value').length + 1;
+      }
+
+      // clone a new field value wrapper element and append to fieldset
+      var fieldValueCloneClass = fieldsetClass + '__clone';
+      var newFieldValue = $('#clone-field-value .' + fieldValueCloneClass)
+                            .clone(true)
+                            .removeClass(fieldValueCloneClass)
+                            .appendTo( fieldset.children('.field-values') );
+      newInputId = fieldsetClass + '__' + counter.toString();
+      newFieldValue.children('label')
+                   .addClass('sr-only')
+                   .attr('for', newInputId);
+      newFieldValue.children('.field-value-input')
+                   .attr('id', newInputId)
+                   .change(trackChangesHandler)
+                   .focus();
+  
+      // close bootstrap dropdown
+      $(e.target).closest('.dropdown-menu').prev().dropdown('toggle');
+
+      return false;
+  }
+
+  function removeFieldValueHandler(e) {
+    var btn = $(e.target).closest('button');
+    btn.closest('.field-value').children('.form-control')
+       .prop("disabled", true)
+       .css("text-decoration", "line-through");
+    btn.children('.glyphicon').toggleClass(icon_classes);
+    btn.toggleClass(btn_classes)
+       .unbind("click", removeFieldValueHandler)
+       .click(restoreFieldValueHandler)
+       .attr("title", "Restore this value");
+  }
+
+  function restoreFieldValueHandler(e) {
+    var btn = $(e.target).closest('button');
+    btn.closest('.field-value').children('.form-control')
+       .prop("disabled", false)
+       .css("text-decoration", "none");
+    btn.children('.glyphicon').toggleClass(icon_classes);
+    btn.toggleClass(btn_classes)
+       .unbind("click", restoreFieldValueHandler)
+       .click(removeFieldValueHandler)
+       .attr("title", "Remove this value");
+  }
+
+  function trackChangesHandler(e) {
+    $(e.target).data('changed', true);
+    // enable form submit and comment field
+    $('#desc-metadata-form-submit').add('#comment').prop('disabled', false);
+  }
+
+  function clearChangesHandler(e) {
+    formChanges().data('changed', false);
+  }
+
+  function formFieldValueInputs() {
+    return $('.desc-metadata-form').find('.field-value-input').add('#comment');
+  }
+
+  function formFieldValueLabels() {
+    return $('.desc-metadata-form').find('.field-value').find('label');
+  }
+
+  function formChanges() {
+    return formFieldValueInputs().filter(function() { return $(this).data('changed'); });
+  }
+
+  function formHasChanges() {
+    return formChanges().length;
+  }
+
+  function changesAlertHandler(e) {
+    if ( formHasChanges() ) {
+      return "You are about leave this page without saving your changes! Continue?";
+    }
+  }
+
+  $(function() {
+    $('.field-value button').click(removeFieldValueHandler).click(trackChangesHandler);
+    $('.add-field-button').click(addFieldValueHandler);
+    formFieldValueInputs().change(trackChangesHandler);
+    formFieldValueLabels().addClass('sr-only');
+    $('.desc-metadata-form').submit(clearChangesHandler);
+    $(window).on('beforeunload', changesAlertHandler);
+    // disable the form submit and comment field
+    $('#desc-metadata-form-submit').add('#comment').prop('disabled', true);
+  });
+</script>

@@ -2,8 +2,6 @@ class IngestFolder < ActiveRecord::Base
   
   include ActiveModel::Validations
   
-  after_initialize :init
-  
   belongs_to :user, :inverse_of => :ingest_folders
   
   validates_presence_of :collection_pid, :sub_path
@@ -16,12 +14,6 @@ class IngestFolder < ActiveRecord::Base
   
   ScanResults = Struct.new(:total_count, :file_count, :parent_count, :target_count, :excluded_files)
   
-  def init
-    if self.new_record?
-      self.checksum_type = IngestFolder.default_checksum_type
-    end
-  end
-    
   def self.load_configuration
     @@configuration ||= YAML::load(File.read(CONFIG_FILE)).with_indifferent_access
   end
@@ -85,7 +77,8 @@ class IngestFolder < ActiveRecord::Base
     case
     when checksum_file.blank?
       path_parts = sub_path.split(File::SEPARATOR).reject { |p| p.empty? }
-      File.join(full_checksum_path, "#{path_parts.first}-#{mount_point_base_key}-sha256.txt")
+      ctype = checksum_type.gsub("-","").downcase
+      File.join(full_checksum_path, "#{path_parts.first}-#{mount_point_base_key}-#{ctype}.txt")
     when checksum_file.start_with?(File::SEPARATOR)
       checksum_file
     else
@@ -130,12 +123,8 @@ class IngestFolder < ActiveRecord::Base
     @excluded_files = []
     @parent_hash = {} if add_parents
     @checksum_hash = checksums if checksum_file.present?
-    if collection_admin_policy.blank? && collection_permissions_attributes.present?
-      temp_surrogate = DulHydra::Base.new
-      temp_surrogate.permissions_attributes = collection_permissions_attributes
-      @rights_metadata_content = temp_surrogate.rightsMetadata.content
-    end
     scan_files(full_path, true)
+    @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_READY)
   end
   
   def file_checksum(file_entry)
@@ -202,6 +191,7 @@ class IngestFolder < ActiveRecord::Base
   def create_batch_object_for_parent(parent_identifier)
     parent_model = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, "parent")).name
     parent_pid = ActiveFedora::Base.connection_for_pid('0').mint
+    policy_pid = collection_admin_policy ? collection_admin_policy.pid : collection_pid
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
             :batch => @batch,
             :identifier => parent_identifier,
@@ -214,17 +204,11 @@ class IngestFolder < ActiveRecord::Base
             desc_metadata(parent_identifier),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
-    add_datastream(
-            obj,
-            DulHydra::Datastreams::RIGHTS_METADATA,
-            @rights_metadata_content,
-            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES            
-            ) if @rights_metadata_content
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
-            collection_admin_policy.pid
-            ) if collection_admin_policy
+            policy_pid
+            )
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
@@ -256,6 +240,7 @@ class IngestFolder < ActiveRecord::Base
         @parent_hash[parent_id] = parent_pid
       end
     end
+    policy_pid = collection_admin_policy ? collection_admin_policy.pid : collection_pid
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
             :batch => @batch,
             :identifier => file_identifier,
@@ -275,17 +260,11 @@ class IngestFolder < ActiveRecord::Base
             checksum_file.present? ? file_checksum(File.join(dirpath, file_entry)) : nil,
             checksum_file.present? ? checksum_type : nil
             )
-    add_datastream(
-            obj,
-            DulHydra::Datastreams::RIGHTS_METADATA,
-            @rights_metadata_content,
-            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES            
-            ) if @rights_metadata_content
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
-            collection_admin_policy.pid
-            ) if collection_admin_policy
+            policy_pid
+            )
     add_relationship(
             obj,
             DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
@@ -323,8 +302,8 @@ class IngestFolder < ActiveRecord::Base
   
   def desc_metadata(identifier, creator=nil)
     base = DulHydra::Base.new
-    base.identifier = identifier if identifier.present?
-    base.creator = creator if creator.present?
+    base.identifier = [ identifier ] if identifier.present?
+    base.creator = [ creator ] if creator.present?
     base.descMetadata.content
   end
   

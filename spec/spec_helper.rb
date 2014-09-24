@@ -2,7 +2,6 @@
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
-require 'rspec/autorun'
 require 'capybara/rails'
 require 'capybara/rspec'
 require 'dul_hydra'
@@ -44,6 +43,10 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.clean
     ActiveFedora::Base.destroy_all
+    DulHydra.external_file_store = Dir.mktmpdir
+  end
+  config.after(:suite) do
+    FileUtils.remove_entry_secure DulHydra.external_file_store
   end
   config.after(:each) { ActiveFedora::Base.destroy_all }
   config.after(:each, type: :feature) { Warden.test_reset! }

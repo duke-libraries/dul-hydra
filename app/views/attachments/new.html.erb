@@ -1,9 +1,9 @@
-<% content_for :form_top do %>
-  <%= hidden_field_tag "attach_to", attach_to.pid %>
-  <div class="form-group">
-	<label class="control-label">Attach To <%= attach_to.class.to_s %> <%= attach_to.pid %></label>
-	<p class="form-control-static">
-	  <%= link_to attach_to.title_display, url_for(attach_to) %>
-	<p>
-  </div>
-<% end %>
+<div class="form-group">
+  <%= label_tag :attached_to_id, "Attached To" %>
+  <%= link_to attached_to.title_display, url_for(attached_to) %>
+  <%= hidden_field_tag :attached_to_id, attached_to.pid %>
+</div>
+
+<%= render 'title_field' %>
+
+<%= render 'select_content_file' %>

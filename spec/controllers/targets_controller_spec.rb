@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
-describe TargetsController, targets: true do
+describe TargetsController, type: :controller, targets: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }

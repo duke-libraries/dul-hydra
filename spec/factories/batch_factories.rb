@@ -18,7 +18,7 @@ FactoryGirl.define do
         object_count 3
       end
       after(:create) do |batch, evaluator|
-        FactoryGirl.create_list(:generic_ingest_batch_object, evaluator.object_count, :batch => batch)
+        FactoryGirl.create_list(:generic_ingest_batch_object_with_bytes, evaluator.object_count, :batch => batch)
       end
     end
 

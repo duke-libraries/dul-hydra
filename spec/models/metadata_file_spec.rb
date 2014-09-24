@@ -1,4 +1,7 @@
 require 'spec_helper'
+require 'rdf/isomorphic'
+
+include RDF::Isomorphic
 
 shared_examples "an invalid metadata file" do
   it "should not be valid" do
@@ -9,19 +12,21 @@ end
 
 shared_examples "a successful metadata file processing" do
   it "should create a batch with an appropriate UpdateBatchObject" do
+    expect(@batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_READY)
     expect(@batch_object).to be_a(DulHydra::Batch::Models::UpdateBatchObject)
     expect(@datastream.name).to eq(DulHydra::Datastreams::DESC_METADATA)
     expect(@datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
     expect(@datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
-    expect(Nokogiri::XML(@datastream.payload)).to be_equivalent_to(Nokogiri::XML(expected_md))
+    expect(RDF::Reader.for(:ntriples).new(@datastream.payload)).to be_isomorphic_with(RDF::Reader.for(:ntriples).new(expected_md))
   end
 end
 
-describe MetadataFile, :metadata_file => true do
+describe MetadataFile, :type => :model, :metadata_file => true do
   
-  let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
-
   context "validation" do
+
+    let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
+
     context "valid" do
       it "should have a valid factory" do
         expect(metadata_file).to be_valid
@@ -65,7 +70,7 @@ describe MetadataFile, :metadata_file => true do
                 "dateSubmitted" => "dateSubmitted"
               }
             }          
-          MetadataFile.any_instance.stub(:effective_options).and_return(options)
+          allow_any_instance_of(MetadataFile).to receive(:effective_options).and_return(options)
         end
         it "should have an attribute name error" do
           expect(metadata_file.validate_data.messages[:metadata].first).to include("#{I18n.t('batch.metadata_file.error.mapped_attribute_name')}: description => invalid")
@@ -76,20 +81,22 @@ describe MetadataFile, :metadata_file => true do
 
   context "successful processing", batch: true do
 
+    let(:metadata_file) { FactoryGirl.build(:metadata_file) }
+
     let(:expected_md) do
-      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new
+      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new(nil, 'descMetadata')
       ds.title = "Updated Title"
       ds.identifier = "test12345"
       ds.description = 'This is some description; this is "some more" description.'
       ds.subject = [ "Alpha", "Beta", "Gamma" , "Delta", "Epsilon" ]
       ds.dateSubmitted = "2010-01-22"
       ds.arranger = "John Doe"
-      ds.content
+      ds.resource.dump :ntriples
     end
 
     before do
-      MetadataFile.any_instance.stub_chain(:metadata, :path).and_return(delimited_file)
-      MetadataFile.any_instance.stub(:effective_options).and_return(options)
+      allow_any_instance_of(MetadataFile).to receive_message_chain(:metadata, :path).and_return(delimited_file)
+      allow_any_instance_of(MetadataFile).to receive(:effective_options).and_return(options)
       metadata_file.procezz
       @batch = DulHydra::Batch::Models::Batch.all.last
       @batch_object = @batch.batch_objects.first

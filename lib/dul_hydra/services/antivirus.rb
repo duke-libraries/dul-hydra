@@ -8,16 +8,17 @@ module DulHydra
 
       class << self
         def scan(file)
-          result = scan_one file
+          result = scan_one(DulHydra::Utils.file_path(file)) # raises ArgumentError
           raise DulHydra::VirusFoundError, result if result.has_virus?
           raise DulHydra::Error, "Antivirus error (#{result.version})" if result.error?
-          logger.info result
+          Rails.logger.info result
           result
+        rescue ArgumentError => e
+          raise ArgumentError, "Can't run virus scan on blob (not a File or file path)"
         end
 
-        def scan_one(file)
+        def scan_one(path)
           loaded? ? reload! : load!
-          path = get_file_path file
           raw_result = engine.scanfile path
           ScanResult.new raw_result, path
         end
@@ -58,28 +59,17 @@ module DulHydra
           version(true)
         end
 
-        def get_file_path(file)
-          path = if file.is_a? String
-                   file
-                 elsif file.respond_to? :path
-                   file.path
-                 else
-                   raise TypeError, "`file' argument must be a file or file path: #{file.inspect}"
-                 end
-          File.absolute_path path
-        end
-
         def engine
           ClamAV.instance
         end
       end
 
       class ScanResult
-        attr_reader :raw, :file, :scanned_at, :version
+        attr_reader :raw, :file_path, :scanned_at, :version
 
-        def initialize(raw, file, opts={})
+        def initialize(raw, file_path, opts={})
           @raw = raw
-          @file = file
+          @file_path = file_path
           @scanned_at = opts.fetch(:scanned_at, Time.now.utc)
           @version = DulHydra::Services::Antivirus.version
         end
@@ -111,7 +101,7 @@ module DulHydra
         end
 
         def to_s
-          "Virus scan: #{status} - #{file} (#{version})"
+          "Virus scan: #{status} - #{file_path} (#{version})"
         end
       end
 

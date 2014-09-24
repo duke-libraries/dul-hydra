@@ -1,10 +1,13 @@
-<% content_for :form_top do %>
-  <%= hidden_field_tag "parent", parent.pid %>
-  <div class="form-group">
-	<label class="control-label">Add to Collection <%= parent.pid %></label>
-	<p class="form-control-static">
-	  <%= link_to parent.title.first, url_for(parent) %>
-	</p>
-  </div>
-<% end %>
+<%= render partial: 'parent_field', locals: {label: "Member of Collection"} %>
 
+<h4>
+  <span class="glyphicon glyphicon-plus"></span> 
+  Component 
+  <small>Optional</small>
+</h4>
+
+<p class="text-muted">
+  You can also add (more) components to the new item later.
+</p>
+
+<%= render 'select_content_file' %>

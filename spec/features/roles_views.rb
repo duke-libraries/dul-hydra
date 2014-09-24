@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "roles views" do
+describe "roles views", :type => :feature do
   let(:user) { FactoryGirl.create(:user) }
   before { login_as user }
   describe "index" do

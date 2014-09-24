@@ -3,32 +3,25 @@ module DulHydra
     module EventBehavior
       extend ActiveSupport::Concern
 
-      included do
-        class_attribute :log_actions
-        self.log_actions = []
-        after_action :log_action, if: :log_action?
+      def events
+        @events = current_object.events.reorder("event_date_time DESC")
+      end
+
+      def event
+        @event = Event.find(params[:event_id])
       end
 
       protected
 
-      def log_action
-        current_object.log_event event_type, user: current_user, comment: event_comment
+      def notify_event type, args={}
+        args[:pid] ||= current_object.pid
+        args[:user_id] ||= current_user.id
+        args.merge! event_params
+        DulHydra::Notifications.notify_event(type, args)
       end
 
-      def no_errors?
-        current_object.errors.empty?
-      end
-      
-      def log_action?
-        configured_to_log_action? && request_to_change? && no_errors?
-      end
-
-      def configured_to_log_action?
-        self.class.log_actions.include? params[:action].to_sym
-      end 
-
-      def request_to_change?
-        [:post, :put, :patch, :delete].include? request.request_method_symbol
+      def notify_update args={}
+        notify_event :update, args
       end
 
       def tab_events
@@ -37,18 +30,8 @@ module DulHydra
                 guard: current_object.has_events?)
       end
 
-      def event_comment
-        params[:comment] if params[:comment].present?
-      end
-
-      def event_type
-        params[:action] == "create" ? :creation : :update
-      end
-
-      private
-
-      def log_defaults
-        {comment: params[:comment], user: current_user}
+      def event_params
+        params.permit(:comment)
       end
 
     end

@@ -1,3 +1,6 @@
-<h4><%= t('dul_hydra.permissions.page_titles.edit') %></h4>
-<%= render 'permissions_alerts' %>
+<% content_for :page_heading do %>
+  Modify Permissions
+<% end %>
+
+<%= inherited_permissions_alert if current_object.has_admin_policy? %>
 <%= render partial: 'rights_form', locals: {license: current_object.license} %>

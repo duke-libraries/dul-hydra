@@ -1,43 +1,54 @@
-<div class="panel panel-default">
-  <div class="panel-heading">Object Info</div>
-  <div class="list-group" id="object-info">
-	<div class="list-group-item">
-	  <p class="list-group-item-heading">Created</p>
-	  <p class="list-group-item-text">
-		<%= render_object_date current_object.create_date %>
-	  </p>
-	</div>
-	<div class="list-group-item">
-	  <p class="list-group-item-heading">Modified</p>
-	  <p class="list-group-item-text">
-		<%= render_object_date current_object.modified_date %>
-	  </p>
-	</div>
-	<% if fixity_checkable? %>
-	<div class="list-group-item">
-	  <p class="list-group-item-heading">Fixity Checked</p>
-	  <p class="list-group-item-text">
-		<% if current_document.last_fixity_check_outcome.present? %>
- 	      <%= format_date current_document.last_fixity_check_on %>
-	      <%= render_event_outcome current_document.last_fixity_check_outcome %>
-		<% else %>
-	      [not checked]
-	    <% end %>
-	  </p>
-	</div>
+<ul class="list-group" id="object-info">
+
+  <li class="list-group-item active">
+	Object Info
+  </li>
+
+  <% if current_object.permanent_id %>
+    <li class="list-group-item">
+  	  <strong class="pull-right"><%= current_object.permanent_id %></strong>
+	  Permanent ID
+	</li>
+  <% else %>
+    <li class="list-group-item list-group-item-warning">
+	  Permanent ID Not Assigned
+	</li>
+  <% end %>
+
+  <li class="list-group-item">
+	<span class="pull-right"><%= format_date current_object.create_date %></span>
+	Created
+  </li>
+
+  <li class="list-group-item">
+	<span class="pull-right"><%= format_date current_object.modified_date %></span>
+	Modified
+  </li>
+
+<% if fixity_checkable? %>
+	<% if current_document.last_fixity_check_outcome.present? %>
+	  <%= render 'last_fixity_check' %>
+	<% else %>
+      <li class="list-group-item list-group-item-warning">
+	    Not Fixity Checked
+	  </li>
 	<% end %>
-	<% if virus_checkable? %>
-	<div class="list-group-item">
-	  <p class="list-group-item-heading">Virus Scanned</p>
-	  <p class="list-group-item-text">
-		<% if current_document.last_virus_check_outcome.present? %>
- 	      <%= format_date current_document.last_virus_check_on %>
-	      <%= render_event_outcome current_document.last_virus_check_outcome %>
-		<% else %>
-	      [not scanned]
-	    <% end %>
-	  </p>
-	</div>
-	<% end %>
-  </div>
-</div>
+<% end %>
+
+<% if virus_checkable? %>
+  <% if current_document.last_virus_check_outcome.present? %>
+    <%= render 'last_virus_scan' %>
+  <% else %>
+    <li class="list-group-item list-group-item-warning">
+	  Not Virus Scanned
+	</li>
+  <% end %>
+<% end %>
+
+<%# events %>
+  <li class="list-group-item">
+	<span class="badge"><%= current_object.events.count %></span>
+	<%= link_to_unless_current "Events", {action: "events"} %>
+  </li>
+
+</ul>

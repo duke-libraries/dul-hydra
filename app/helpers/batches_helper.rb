@@ -2,7 +2,7 @@ module BatchesHelper
 
   def batch_action(batch)
     case batch.status
-    when nil
+    when DulHydra::Batch::Models::Batch::STATUS_READY
       # Temporarily remove the functionality requiring a separate validation step before processing
       # cf. issue #760
       #   link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
@@ -12,7 +12,24 @@ module BatchesHelper
     when DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
       link_to(I18n.t('batch.web.action_names.restart'), procezz_batch_path(batch))
     else
+      "--"
+    end
+  end
+
+  def batch_status_message(batch)
+    case batch.status
+    when nil
+      "NEW"
+    when DulHydra::Batch::Models::Batch::STATUS_PROCESSING
+      "#{batch.status}&nbsp;#{batch.completed_count}/#{batch.batch_objects.count}<br /><em>#{est_time_to_complete(batch)}</em>".html_safe
+    else
       batch.status
+    end
+  end
+
+  def est_time_to_complete(batch)
+    if batch.time_to_complete
+      "#{distance_of_time_in_words(Time.now, Time.now + batch.time_to_complete)} remaining"
     end
   end
 
@@ -63,7 +80,7 @@ module BatchesHelper
   
     def render_batch_delete_link(batch)
       case batch.status
-      when nil, DulHydra::Batch::Models::Batch::STATUS_VALIDATED, DulHydra::Batch::Models::Batch::STATUS_INVALID
+      when nil, DulHydra::Batch::Models::Batch::STATUS_READY, DulHydra::Batch::Models::Batch::STATUS_VALIDATED, DulHydra::Batch::Models::Batch::STATUS_INVALID
         link_to content_tag(:span, "", :class => "glyphicon glyphicon-trash"), {:action => 'destroy', :id => batch}, :method => 'delete', :id => "batch_delete_#{batch.id}", :data => { :confirm => "#{t('batch.web.batch_deletion_confirmation', batch_id: batch.id)}" }
       end
     end

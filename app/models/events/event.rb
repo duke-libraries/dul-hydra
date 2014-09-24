@@ -7,12 +7,16 @@ class Event < ActiveRecord::Base
 
   # set default ordering
   DEFAULT_SORT_ORDER = "event_date_time ASC"
-  default_scope order(DEFAULT_SORT_ORDER)
+  default_scope { order(DEFAULT_SORT_ORDER) }
 
   # Outcomes
   SUCCESS = "success"
   FAILURE = "failure"
   OUTCOMES = [SUCCESS, FAILURE]
+
+  # Validation constants
+  VALID = "VALID"
+  INVALID = "INVALID"
 
   # For rendering "performed by" when no associated user
   SYSTEM = "SYSTEM"
@@ -27,10 +31,17 @@ class Event < ActiveRecord::Base
  
   after_initialize :set_defaults
 
-  # Ugly hack to get repository version -- e.g., "Fedora Repository 3.7.0"
+  # Receive message sent by ActiveSupport::Notifications
+  def self.call(*args)
+    notification = ActiveSupport::Notifications::Event.new(*args)
+    create(notification.payload)
+  end
+
+  # Repository software version -- e.g., "Fedora Repository 3.7.0"
   def self.repository_software
     @@repository_software ||= ActiveFedora::Base.connection_for_pid(0).repository_profile
-                                .values_at(:repositoryName, :repositoryVersion).join(" ")
+                                                .values_at(:repositoryName, :repositoryVersion)
+                                                .join(" ")
   end
 
   # Scopes

@@ -1,16 +1,14 @@
 source 'http://rubygems.org'
 
-gem 'rails', '~> 4.0.3'
+gem 'rails', '~> 4.1.4'
 
-# gem 'hydra-head', github: 'projecthydra/hydra-head'
-gem 'hydra-head', '7.0.1'
-# gem 'active-fedora', github: 'projecthydra/active_fedora'
-gem 'active-fedora', '7.0.2'
+gem 'hydra-head', '~> 7.2.0'
+gem 'hydra-validations', '~> 0.2'
+gem 'hydra-derivatives'
+
 gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user', '0.3.0'
 gem 'grouper-rest-client'
-gem 'hydra-editor', '0.2.2'
-gem 'hydra-derivatives'
 gem 'deprecation'
 gem 'clamav'
 
@@ -30,13 +28,16 @@ gem 'mime-types', '~> 1.19'
 
 # Export sets
 gem 'rubyzip', '< 1.0.0'
-gem 'paperclip', '~> 3.4.2'
+gem 'paperclip', '~> 4.2.0'
+
+# Noids
+gem 'noid', '~> 0.7'
 
 group :development, :test do
-  gem 'rspec-rails', '~> 2.14.1'
+  gem 'rspec-rails', '~> 3.0.0'
   gem 'capybara', '~> 2.0'
   gem 'jettywrapper', '~> 1.5'
-  gem 'factory_girl_rails', '~> 4.0'
+  gem 'factory_girl_rails', '~> 4.4'
   gem 'orderly'
   gem 'launchy'
   gem 'database_cleaner'

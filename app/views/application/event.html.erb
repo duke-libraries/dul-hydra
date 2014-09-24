@@ -1,0 +1,50 @@
+<% content_for :page_heading do %>
+  <%= @event.display_type %> Event 
+<% end %>
+
+<table class="table event">
+  <tbody>
+	<!--
+	<tr>
+	  <th scope="row">Object</th>
+	  <td><%= link_to current_object.pid, current_object %></td>
+	</tr>
+	-->
+	<tr>
+	  <th scope="row">Event Date/Time</th>
+	  <td><%= format_date @event.event_date_time %></td>
+	</tr>
+	<tr>
+	  <th scope="row">Summary</th>
+	  <td><%= simple_format @event.summary %></td>
+	</tr>
+	<tr>
+	  <th scope="row">Outcome</th>
+	  <td><%= event_outcome_label @event %></td>
+	</tr>
+	<% if @event.detail %>
+	<tr>
+	  <th scope="row">Detail</th>
+	  <td style="white-space: pre-wrap"><%= @event.detail %></td>
+	</tr>
+	<% end %>
+	<tr>
+	  <th scope="row">Performed By</th>
+	  <td><%= @event.performed_by %></td>
+	</tr>
+	<tr>
+	  <th scope="row">Software</th>
+	  <td><%= @event.software %></td>
+	</tr>
+	<% if @event.comment.present? %>
+	<tr>
+	  <th scope="row">Comment</th>
+	  <td><%= simple_format @event.comment %></td>
+	</tr>
+	<% end %>
+	<tr>
+	  <th scope="row">Event ID</th>
+	  <td><%= @event.id %></td>
+	</tr>
+  </tbody>
+</table>	

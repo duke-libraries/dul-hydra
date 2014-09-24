@@ -5,27 +5,27 @@ module DulHydra
       extend ActiveSupport::Concern
 
       included do
-        # The order of included modules is important!
+        # Order is important!
+        layout :dul_hydra_layout
+        load_and_authorize_resource instance_name: :current_object
+        attr_reader :current_object
+
         include Blacklight::Base
         include DulHydra::Controller::TabbedViewBehavior
-        include DulHydra::Controller::Authorization
         include DulHydra::Controller::EventBehavior
+        include DulHydra::Controller::CreatableBehavior
         include DulHydra::Controller::DescribableBehavior
         include DulHydra::Controller::RightsBehavior
 
         self.tabs = [:tab_descriptive_metadata,
-                     :tab_permissions,
-                     :tab_events]
-
-        layout 'objects', except: [:new, :create]
-
-        require_read_permission! only: :show
-
-        before_action :set_initial_permissions, only: :create
+                     :tab_permissions]
 
         helper_method :current_object
         helper_method :current_document
+        helper_method :current_bookmarks
         helper_method :get_solr_response_for_field_values
+
+        copy_blacklight_config_from CatalogController
       end
 
       def show
@@ -33,17 +33,21 @@ module DulHydra
 
       protected
 
-      def set_initial_permissions
-        current_object.set_initial_permissions current_user
-      end
-
-      def current_object
-        # :resource is defined by HydraEditor and included here through DescribableBehavior
-        @current_object ||= (resource || ActiveFedora::Base.find(params[:id], cast: true))
+      def dul_hydra_layout
+        case params[:action].to_sym
+        when :new, :create then 'new'
+        else 'objects'
+        end
       end
 
       def current_document
         @document ||= get_solr_response_for_doc_id[1]
+      end
+
+      # override Blacklight::CatalogHelperBehavior
+      def current_bookmarks
+        @current_bookmarks ||= 
+          current_user.bookmarks_for_documents(@response ? @response.documents << current_document : [current_document])
       end
 
     end

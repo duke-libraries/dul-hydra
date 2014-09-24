@@ -1,6 +1,7 @@
 module DulHydra
   module EventLoggable
     extend ActiveSupport::Concern
+    extend Deprecation
 
     def events
       Event.for_object(self)
@@ -10,13 +11,9 @@ module DulHydra
       UpdateEvent.for_object(self)
     end
 
-    def log_event(type, args={})
-      klass = event_class(type)
-      klass.new.tap do |event|
-        event.object = self
-        event.attributes = args
-        event.save!
-      end
+    # TESTME
+    def notify_event(type, args={})
+      DulHydra::Notifications.notify_event(type, args.merge(pid: pid))
     end
 
     def has_events?
@@ -25,9 +22,12 @@ module DulHydra
 
     private 
 
-    def event_class(token)
-      class_name = "#{token.to_s.camelize}Event"
-      class_name.constantize
+    def event_class_name token
+      "#{token.to_s.camelize}Event"
+    end
+
+    def event_class token
+      event_class_name(token).constantize
     end
 
   end

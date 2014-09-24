@@ -5,41 +5,81 @@ def setup
 end
 
 shared_examples "a repository object show view" do
+
   let(:user) { FactoryGirl.create(:user) }
   before { setup }
+
   describe "object summary" do
-    before { visit url_for(object) }
     it "should display the title" do
+      visit url_for(object)
       expect(find("#object-title")).to have_content(object.title_display)
     end
     it "should display the thumbnail" do
+      visit url_for(object)
       expect(page).to have_css("#object-thumbnail img.img-thumbnail")
     end
     it "should display the PID" do
+      visit url_for(object)
       expect(find("#object-summary")).to have_content(object.pid)
     end
   end
+
   describe "object info" do
-    before { visit url_for(object) }
+    describe "when object has a permanent id" do
+      it "should display the permanent id" do
+        visit url_for(object)
+        expect(find("#object-info")).to have_content("Permanent ID")
+        expect(find("#object-info")).to have_content(object.permanent_id)
+      end
+    end
+    describe "when object does not have a permanent id" do
+      before { object.permanent_id = nil; object.save }
+      it "should display the a 'not assigned' label" do
+        visit url_for(object)
+        expect(find("#object-info")).to have_content("Permanent ID Not Assigned")
+      end
+    end
     it "should display the object creation date" do
+      visit url_for(object)
       expect(find("#object-info")).to have_content("Created")
     end
     it "should display the object modification date" do
+      visit url_for(object)
       expect(find("#object-info")).to have_content("Modified")
     end
   end
+
   describe "tools" do
     it "should have bookmark toggle control"
   end
+
   describe "descriptive metadata" do
     let(:tab) { "#tab_descriptive_metadata" }
     it "should display the descriptive metadata" do
       visit url_for(object)
       expect(page).to have_css(tab)
     end
-    it "should have a link to download the XML" do
-      visit url_for(object)
-      expect(find(tab)).to have_link("Download XML")
+    context "when there is metadata" do
+      it "should have a link to download the N-Triples" do
+        visit url_for(object)
+        expect(find(tab)).to have_link("Download N-Triples")
+      end
+    end
+    context "when there is no content" do
+      before do
+        if object.has_desc_metadata?
+          object.descMetadata.delete
+          object.reload
+        end
+      end
+      it "should display an alert" do
+        visit url_for(object)
+        expect(find(tab)).to have_content "This object has no descriptive metadata"
+      end
+      it "should not have a link to download the N-Triples" do
+        visit url_for(object)
+        expect(find(tab)).to_not have_link("Download N-Triples")
+      end
     end
     context "when the user can edit the object" do
       before do
@@ -58,6 +98,7 @@ shared_examples "a repository object show view" do
       end
     end
   end
+
   describe "rights metadata" do
     let(:tab) { "#tab_permissions" }
     it "should display the rights metadata" do
@@ -87,19 +128,19 @@ shared_examples "a repository object show view" do
       end
     end
   end
+
   describe "events" do
-    let(:tab) { "#tab_events" }
     before do
-      object.fixity_check!
+      object.fixity_check
       object.reload
     end
     it "should display the last fixity check" do
       visit url_for(object)
       expect(find("#object-info")).to have_content("Fixity Check")
     end
-    it "should display the events" do
+    it "should link to the events" do
       visit url_for(object)
-      expect(page).to have_css(tab)
+      expect(page).to have_link("Events")
     end
   end
 end
@@ -125,9 +166,8 @@ shared_examples "a content-bearing object show view" do
     allow(user).to receive(:groups) { ["public", "registered"] }
   end
   it "should have a download link" do
-    pending
     visit url_for(object)
-    expect(page).to have_link("download-#{object.safe_id}", href: url_for(controller: 'downloads', action: 'show', id: object))
+    expect(page).to have_link("Download", href: url_for(controller: 'downloads', action: 'show', id: object))
   end
   context "when the user can edit the object" do
     before do
@@ -135,17 +175,63 @@ shared_examples "a content-bearing object show view" do
       object.save
     end
     it "should have an upload link" do
-      pending
       visit url_for(object)
-      expect(page).to have_link("upload-content-link", href: url_for(controller: object.controller_name, action: 'upload', id: object))
+      expect(page).to have_link("Upload", href: url_for(controller: object.controller_name, action: 'upload', id: object))
     end
   end
   context "when the user cannot edit the object" do
     it "should not have an upload link" do
-      pending
       visit url_for(object)
-      expect(page).not_to have_link("upload-content-link", href: url_for(controller: object.controller_name, action: 'upload', id: object))
+      expect(page).not_to have_link("Upload", href: url_for(controller: object.controller_name, action: 'upload', id: object))
     end
+  end
+end
+
+shared_examples "a repository object descriptive metadata editing view" do
+  let(:user) { FactoryGirl.create(:user) }
+  before do
+    object.edit_users = [user.user_key]
+    object.save
+    login_as user
+  end
+  context "where there are existing empty string values" do
+    before do
+      object.descMetadata.creator = [""]
+      object.save
+    end
+    it "should remove them" do
+      visit url_for(controller: object.controller_name, action: 'edit', id: object)
+      click_button "desc-metadata-form-submit"
+      object.reload
+      expect(object.descMetadata.creator).to be_empty
+    end
+  end
+  context "where new empty values are submitted" do
+    it "should not add them" do
+      visit url_for(controller: object.controller_name, action: 'edit', id: object)
+      click_link "creator"
+      click_button "desc-metadata-form-submit"
+      object.reload
+      expect(object.descMetadata.creator).to be_empty
+    end
+  end
+  context "where there are existing non-empty values" do
+    before do
+      object.descMetadata.creator = ["Duke University Libraries"]
+      object.save
+      visit url_for(controller: object.controller_name, action: 'edit', id: object)
+    end
+    it "should preserve values that are not changed" do
+      click_button "desc-metadata-form-submit"
+      object.reload
+      expect(object.descMetadata.creator).to eq ["Duke University Libraries"]
+    end
+  end
+  it "should permit a comment" do
+    visit url_for(controller: object.controller_name, action: 'edit', id: object)
+    fill_in "Comment", with: "Just for fun!"
+    click_button "desc-metadata-form-submit"
+    expect(object.update_events.last.comment).to eq "Just for fun!"
   end
 end
 
@@ -201,16 +287,16 @@ shared_examples "a governable repository object rights editing view" do
 
   it_behaves_like "a repository object rights editing view"
 
-  context "when the object is governed by an admin policy" do
-    let(:admin_policy) { FactoryGirl.create(:admin_policy) }
+  context "when the object is governed by a collection" do
+    let(:coll) { FactoryGirl.create(:collection) }
     let(:user) { FactoryGirl.create(:user) }
     before do
       setup
-      admin_policy.default_permissions = [{type: "user", name: "Bob", access: "read"},
-                                          {type: "group", name: "Special People", access: "edit"}]
-      admin_policy.save
+      coll.default_permissions = [{type: "user", name: "Bob", access: "read"},
+                                  {type: "group", name: "Special People", access: "edit"}]
+      coll.save
       object.edit_users = [user.user_key]
-      object.admin_policy = admin_policy
+      object.admin_policy = coll
       object.save
     end
     it "should display the inherited permissions" do

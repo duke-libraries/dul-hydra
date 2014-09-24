@@ -1,6 +1,11 @@
+<% content_for :page_heading do %>
+  <%= current_object.title_display %>
+<% end %>
+
 <ul class="nav nav-tabs" id="object-show-tabs">
   <%= render_tabs %>
 </ul>
+
 <div class="tab-content">
   <%= render_tabs_content %>
 </div>

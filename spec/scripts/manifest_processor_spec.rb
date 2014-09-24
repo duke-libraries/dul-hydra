@@ -32,7 +32,7 @@ module DulHydra::Batch::Scripts
         expect(relationship.object_type).to eq(DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID)
         case relationship.name
         when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY
-          expect(relationship.object).to eq(apo.pid)
+          expect(relationship.object).to eq(coll.pid)
         when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT
           expect(relationship.object).to eq(parent_batch_object.pid)
         when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ATTACHED_TO
@@ -49,7 +49,7 @@ module DulHydra::Batch::Scripts
     end
     it "should log the manifest errors" do
       expect(log).to include(I18n.t('batch.manifest.errors.basepath_error', :path => 'placeholder'))
-      expect(log).to include(I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => 'admin_policy', :pid => 'duke-apo:adminPolicy'))
+      expect(log).to include(I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => 'admin_policy', :pid => 'test:1'))
       expect(log).to include(I18n.t('batch.manifest.validation_failed'))
     end
   end
@@ -58,7 +58,7 @@ module DulHydra::Batch::Scripts
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:manifest_file) { File.join(test_dir, 'manifest.yml') }
     let(:log_dir) { test_dir }
-    let(:apo) { AdminPolicy.create(title: "Test Policy") }
+    let(:coll) { Collection.create(title: ["Test Collection"]) }
     after do
       FileUtils.remove_dir test_dir
     end
@@ -71,7 +71,7 @@ module DulHydra::Batch::Scripts
       context "successful processing run" do
         before do
           @manifest.manifest_hash[DulHydra::Batch::Models::Manifest::BASEPATH] = test_dir
-          @manifest.manifest_hash['admin_policy'] = apo.pid
+          @manifest.manifest_hash['admin_policy'] = coll.pid
           File.write(manifest_file, @manifest.manifest_hash.to_yaml)
           mp = DulHydra::Batch::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir)
           mp.execute
@@ -92,7 +92,7 @@ module DulHydra::Batch::Scripts
         FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'manifests', 'attachment_manifest.yml'), manifest_file
         @manifest = DulHydra::Batch::Models::Manifest.new(manifest_file)
         @manifest.manifest_hash[DulHydra::Batch::Models::Manifest::BASEPATH] = test_dir
-        @manifest.manifest_hash['admin_policy'] = apo.pid
+        @manifest.manifest_hash['admin_policy'] = coll.pid
         File.write(manifest_file, @manifest.manifest_hash.to_yaml)
         mp = DulHydra::Batch::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir)
         mp.execute

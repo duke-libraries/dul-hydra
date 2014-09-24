@@ -11,7 +11,7 @@ module DulHydra::Batch::Models
     VERIFICATION_PASS = "PASS"
     VERIFICATION_FAIL = "FAIL"
     
-    PRESERVATION_EVENT_DETAIL = <<-EOS
+    EVENT_SUMMARY = <<-EOS
 %{label}
 Batch object database id: %{batch_id}
 Batch object identifier: %{identifier}
@@ -48,7 +48,7 @@ Model: %{model}
       raise NotImplementedError
     end
     
-    def process
+    def process(user, opts = {})
       raise NotImplementedError
     end
 
@@ -164,8 +164,8 @@ Model: %{model}
             verifications["#{r.name} relationship is correct"] = verify_relationship(repo_object, r)
           end
         end
-        event = FixityCheck.execute! repo_object
-        verifications["Fixity check"] = event.success? ? VERIFICATION_PASS : VERIFICATION_FAIL
+        result = FixityCheck.execute repo_object
+        verifications["Fixity check"] = result.success ? VERIFICATION_PASS : VERIFICATION_FAIL
       end
       verifications
     end
@@ -187,9 +187,8 @@ Model: %{model}
     end
     
     def verify_datastream(repo_object, datastream)
-      if repo_object.datastreams.keys.include?(datastream.name) &&
-          !repo_object.datastreams[datastream.name].profile.empty? &&
-          !repo_object.datastreams[datastream.name].size.eql?(0)
+      if repo_object.datastreams.include?(datastream.name) && 
+          repo_object.datastreams[datastream.name].has_content?
         VERIFICATION_PASS
       else
         VERIFICATION_FAIL
@@ -197,8 +196,12 @@ Model: %{model}
     end
     
     def verify_datastream_external_checksum(repo_object, datastream)
-      datastreamProfile = repo_object.datastreams[datastream.name].profile
-      datastreamProfile["dsChecksum"].eql?(datastream.checksum) ? VERIFICATION_PASS : VERIFICATION_FAIL
+      begin
+        repo_object.datastreams[datastream.name].validate_checksum! datastream.checksum, datastream.checksum_type
+        return VERIFICATION_PASS
+      rescue DulHydra::ChecksumInvalid
+        return VERIFICATION_FAIL
+      end
     end
     
     def verify_relationship(repo_object, relationship)
@@ -217,17 +220,23 @@ Model: %{model}
     def populate_datastream(repo_object, datastream)
       case datastream[:payload_type]
       when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
-        repo_object.datastreams[datastream[:name]].content = datastream[:payload]
-      when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-        if repo_object.datastreams[datastream[:name]].is_a? ActiveFedora::OmDatastream
-          repo_object.datastreams[datastream[:name]].content = File.read(datastream[:payload])
-          repo_object.save
-        else
-          datastream_file = File.open(datastream[:payload])
-          repo_object.datastreams[datastream[:name]].content = datastream_file
-          repo_object.save
-          datastream_file.close
+        ds_content = datastream[:payload]
+        if repo_object.datastreams[datastream[:name]].is_a? ActiveFedora::RDFDatastream
+          ds_content = set_rdf_subject(repo_object, ds_content)
         end
+        repo_object.datastreams[datastream[:name]].content = ds_content
+      when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
+        if repo_object.datastreams[datastream[:name]].is_a? ActiveFedora::RDFDatastream
+          ds_content = set_rdf_subject(repo_object, File.read(datastream[:payload]))
+          mime_type = "application/n-triples"
+        else
+          ds_content = File.new(datastream[:payload])
+        end
+        file_name = File.basename(datastream[:payload])
+        dsid = datastream[:name]
+        opts = { filename: file_name }
+        opts.merge({ mime_type: mime_type }) if mime_type
+        repo_object.add_file(ds_content, dsid, opts)
       end
       return repo_object
     end
@@ -241,6 +250,19 @@ Model: %{model}
       return repo_object
     end
     
+    def set_rdf_subject(repo_object, ds_content)
+      graph = RDF::Graph.new
+      RDF::Reader.for(:ntriples).new(ds_content) do |reader|
+        reader.each_statement do |statement|
+          if statement.subject.is_a? RDF::Node
+            statement.subject = RDF::URI(repo_object.internal_uri)
+          end
+          graph.insert(statement)
+        end
+      end
+      graph.dump :ntriples
+    end
+
   end
 
 end

@@ -1,0 +1,12 @@
+<li class="dropdown">
+  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+	<%= label %> <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+	<% terms.each do |term| %>
+	<li>
+	  <%= link_to term, "#", class: "add-field-button" %>
+	</li>
+	<% end %>
+  </ul>
+</li>

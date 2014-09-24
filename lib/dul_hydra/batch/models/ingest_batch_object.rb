@@ -13,8 +13,8 @@ module DulHydra::Batch::Models
       model.constantize.new.datastreams.keys
     end
         
-    def process(opts = {})
-      ingest(opts) unless verified
+    def process(user, opts = {})
+      ingest(user, opts) unless verified
     end
     
     def results_message
@@ -34,14 +34,15 @@ module DulHydra::Batch::Models
       return errs      
     end
     
-    def ingest(opts = {})
+    def ingest(user, opts = {})
       repo_object = create_repository_object
       if !repo_object.nil? && !repo_object.new_record?
         ingest_outcome_detail = []
         ingest_outcome_detail << "Ingested #{model} #{identifier} into #{repo_object.pid}"
         IngestionEvent.new.tap do |event|
           event.object = repo_object
-          event.summary = PRESERVATION_EVENT_DETAIL % {
+          event.user = user
+          event.summary = EVENT_SUMMARY % {
             :label => "Object ingestion",
             :batch_id => id,
             :identifier => identifier,
@@ -62,7 +63,7 @@ module DulHydra::Batch::Models
         ValidationEvent.new.tap do |event|
           event.object = repo_object
           event.failure! unless verified
-          event.summary = PRESERVATION_EVENT_DETAIL % {
+          event.summary = EVENT_SUMMARY % {
             :label => "Object ingestion validation",
             :batch_id => id,
             :identifier => identifier,
@@ -83,7 +84,7 @@ module DulHydra::Batch::Models
       begin
         repo_object = model.constantize.new(:pid => repo_pid)
         repo_object.label = label if label
-        repo_object.save
+        repo_object.save(validate: false)
         batch_object_datastreams.each {|d| repo_object = populate_datastream(repo_object, d)} if batch_object_datastreams
         batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
         repo_object.save

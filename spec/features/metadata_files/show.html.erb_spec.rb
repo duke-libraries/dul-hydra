@@ -27,7 +27,7 @@ shared_examples "metadata file show page" do
   end  
 end
 
-describe "metadata_files/show.html.erb", :metadata_file => true do
+describe "metadata_files/show.html.erb", :type => :feature, :metadata_file => true do
   
   let(:csv_table) { CSV.read(metadata_file.metadata.path, metadata_file.effective_options[:csv]) }
   let(:form_data_id) { '#form_data' }

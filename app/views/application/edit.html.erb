@@ -1,0 +1,16 @@
+<% content_for :page_heading do %>
+  Edit Descriptive Metadata
+<% end %>
+
+<%= render 'desc_metadata_form/navbar' %>
+
+<%= form_for current_object, html: {role: "form", class: "desc-metadata-form"} do |form| %>
+  <%= render 'form_errors' %>
+  <%= render 'desc_metadata_form/fields' %>
+  <%= render 'form_comment' %>
+  <%= render partial: 'desc_metadata_form/actions', locals: {form: form} %>
+<% end %>
+
+<%= render 'desc_metadata_form/clones' %>
+
+<%= render 'desc_metadata_form/script' %>

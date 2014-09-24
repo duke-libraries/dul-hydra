@@ -3,7 +3,6 @@
 	padding-top: 8px;
 }
 #header-navbar .navbar-brand { 
-	background-image: url(/assets/dul_hydra/ddr_logo.png);
 	min-height: 42px;
 	min-width: 200px;
 	padding-bottom: 0;
@@ -65,15 +64,14 @@ table.access-controls td ul {
 	content: 'will not map';
 }
 
-#object-info .list-group-item-heading {
-	font-weight: bold;
+.desc-metadata-form fieldset {
+	margin: 1em 0;
 }
-#object-info .list-group-item-text {
-	font-size: smaller;
+.desc-metadata-form .field-value {
+	margin-bottom: 0.5em;
+	margin-left: 1em;
 }
-#object-info .list-group-item-text .label {
-	font-size: small;
-}
-#object-sidebar .panel-heading {
-	font-weight: bold;
+
+span.label.event-outcome { /* event outcome label */
+	font-size: medium;
 }

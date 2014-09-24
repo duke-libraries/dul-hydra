@@ -4,6 +4,7 @@ class MetadataFile < ActiveRecord::Base
 
   belongs_to :user, :inverse_of => :metadata_files
   has_attached_file :metadata
+  do_not_validate_attachment_file_type :metadata
   
   validates_presence_of :metadata, :profile
   
@@ -87,7 +88,7 @@ class MetadataFile < ActiveRecord::Base
       obj.model = row.field("model") if row.headers.include?("model")
       obj.pid = row.field("pid") if row.headers.include?("pid")
       obj.save
-      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new
+      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new(nil, 'descMetadata')
       row.headers.each_with_index do |header, idx|
         if effective_options[:parse][:include_empty_fields] || !row.field(header, idx).blank?
           if header.eql?(effective_options[:parse][:local_identifier])
@@ -104,7 +105,7 @@ class MetadataFile < ActiveRecord::Base
                 :batch_object => obj,
                 :name => DulHydra::Datastreams::DESC_METADATA,
                 :operation => DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE,
-                :payload => ds.content,
+                :payload => ds.resource.dump(:ntriples),
                 :payload_type => DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
                 )
       unless obj.pid.present?
@@ -114,11 +115,12 @@ class MetadataFile < ActiveRecord::Base
           else
             @collection = nil
           end
-          obj.pid = determine_pid_from_identifier(obj.identifier, model(row), @collection)
+          obj.pid = DulHydra::Utils.pid_for_identifier(obj.identifier, {model: model(row), collection: @collection})
           obj.save
         end
       end
     end
+    @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_READY)
   end
   
   def downcase_repeatable_field_names
@@ -133,28 +135,6 @@ class MetadataFile < ActiveRecord::Base
     end
   end
   
-  def determine_pid_from_identifier(identifier, model, collection)
-    objs = []
-    ActiveFedora::Base.find_each( { DulHydra::IndexFields::IDENTIFIER => identifier }, { :cast => true } ) { |o| objs << o }
-    pids = []
-    objs.each { |obj| pids << obj.pid }
-    if model.present?
-      objs.each { |obj| pids.delete(obj.pid) unless obj.is_a?(model.constantize) }
-    end
-    if collection.present?
-      objs.each { |obj| pids.delete(obj.pid) unless obj == collection || collection.children.include?(obj) }
-    end
-    pid = case pids.size
-    when 0
-      nil
-    when 1
-      pids.first
-    else
-      raise DulHydra::Error, I18n.t('dul_hydra.errors.multiple_object_matches', :criteria => "identifier #{identifier}")
-    end
-    return pid
-  end
-
   def as_csv_table
     CSV.read(metadata.path, effective_options[:csv])
   end

@@ -20,7 +20,7 @@ shared_examples "a Target related to a Collection" do
   end
 end
 
-describe Target do
+describe Target, type: :model, targets: true do
 
   it_behaves_like "a DulHydra object"
   it_behaves_like "an object that can have content"

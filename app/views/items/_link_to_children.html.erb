@@ -1,0 +1,10 @@
+<% if count > 0 %> 
+  <%= link_to_unless_current("Components", {action: "components"}) %>
+<% else %>
+  Components
+<% end %>
+<% if can?(:create, Component) && can?(:add_children, current_object) %>
+  <%= link_to new_component_path(parent_id: current_object), class: "btn btn-success btn-xs", title: "Create a new Component" do %>
+    <span class="glyphicon glyphicon-plus"></span>
+  <% end %>
+<% end %>

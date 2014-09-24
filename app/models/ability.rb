@@ -15,9 +15,9 @@ class Ability
   end
 
   def custom_permissions
+    action_aliases
     discover_permissions
     export_sets_permissions
-    preservation_events_permissions
     events_permissions
     batches_permissions
     ingest_folders_permissions
@@ -26,6 +26,13 @@ class Ability
     children_permissions
     upload_permissions
     role_permissions
+  end
+
+  def action_aliases
+    # read aliases
+    alias_action :attachments, :collection_info, :components, :event, :events, :items, :targets, to: :read
+    # edit/update aliases
+    alias_action :permissions, :default_permissions, to: :update
   end
 
   def role_permissions
@@ -49,12 +56,6 @@ class Ability
   def export_sets_permissions
     can :create, ExportSet if authenticated_user?
     can :manage, ExportSet, user: current_user
-  end
-
-  def preservation_events_permissions
-    can :read, PreservationEvent do |pe|
-      pe.for_object? and can?(:read, pe.for_object)
-    end
   end
 
   def events_permissions
@@ -140,7 +141,7 @@ class Ability
 
   # Mimics Hydra::Ability#test_read + Hydra::PolicyAwareAbility#test_read in one method
   def test_discover(pid)
-    logger.debug("[CANCAN] Checking discover permissions for user: #{current_user.user_key} with groups: #{user_groups.inspect}")
+    Rails.logger.debug("[CANCAN] Checking discover permissions for user: #{current_user.user_key} with groups: #{user_groups.inspect}")
     group_intersection = user_groups & discover_groups(pid)
     result = !group_intersection.empty? || discover_persons(pid).include?(current_user.user_key)
     result || test_discover_from_policy(pid)
@@ -152,10 +153,10 @@ class Ability
     if policy_pid.nil?
       return false
     else
-      logger.debug("[CANCAN] -policy- Does the POLICY #{policy_pid} provide DISCOVER permissions for #{current_user.user_key}?")
+      Rails.logger.debug("[CANCAN] -policy- Does the POLICY #{policy_pid} provide DISCOVER permissions for #{current_user.user_key}?")
       group_intersection = user_groups & discover_groups_from_policy(policy_pid)
       result = !group_intersection.empty? || discover_persons_from_policy(policy_pid).include?(current_user.user_key)
-      logger.debug("[CANCAN] -policy- decision: #{result}")
+      Rails.logger.debug("[CANCAN] -policy- decision: #{result}")
       result
     end
   end 
@@ -165,7 +166,7 @@ class Ability
     doc = permissions_doc(pid)
     return [] if doc.nil?
     dg = edit_groups(pid) | read_groups(pid) | (doc[self.class.discover_group_field] || [])
-    logger.debug("[CANCAN] discover_groups: #{dg.inspect}")
+    Rails.logger.debug("[CANCAN] discover_groups: #{dg.inspect}")
     return dg
   end
 
@@ -174,7 +175,7 @@ class Ability
     policy_permissions = policy_permissions_doc(policy_pid)
     discover_group_field = Hydra.config[:permissions][:inheritable][:discover][:group]
     dg = edit_groups_from_policy(policy_pid) | read_groups_from_policy(policy_pid) | ((policy_permissions == nil || policy_permissions.fetch(discover_group_field, nil) == nil) ? [] : policy_permissions.fetch(discover_group_field, nil))
-    logger.debug("[CANCAN] -policy- discover_groups: #{dg.inspect}")
+    Rails.logger.debug("[CANCAN] -policy- discover_groups: #{dg.inspect}")
     return dg
   end
 
@@ -183,7 +184,7 @@ class Ability
     doc = permissions_doc(pid)
     return [] if doc.nil?
     dp = edit_persons(pid) | read_persons(pid) | (doc[self.class.discover_person_field] || [])
-    logger.debug("[CANCAN] discover_persons: #{dp.inspect}")
+    Rails.logger.debug("[CANCAN] discover_persons: #{dp.inspect}")
     return dp
   end
 
@@ -191,7 +192,7 @@ class Ability
     policy_permissions = policy_permissions_doc(policy_pid)
     discover_individual_field = Hydra.config[:permissions][:inheritable][:discover][:individual]
     dp = edit_persons_from_policy(policy_pid) | read_persons_from_policy(policy_pid) | ((policy_permissions == nil || policy_permissions.fetch(discover_individual_field, nil) == nil) ? [] : policy_permissions.fetch(discover_individual_field, nil))
-    logger.debug("[CANCAN] -policy- discover_persons: #{dp.inspect}")
+    Rails.logger.debug("[CANCAN] -policy- discover_persons: #{dp.inspect}")
     return dp
   end
 

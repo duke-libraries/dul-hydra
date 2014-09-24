@@ -88,6 +88,7 @@ module DulHydra
     def title
       get(DulHydra::IndexFields::TITLE)
     end
+    alias_method :title_display, :title # duck-type DulHydra::Base
 
     def identifier
       # We want the multivalued version here
@@ -117,7 +118,11 @@ module DulHydra
     alias_method :content_type, :content_mime_type
 
     def content_size
-      content_ds["dsSize"] rescue nil
+      get(DulHydra::IndexFields::CONTENT_SIZE)
+    end
+
+    def content_size_human
+      get(DulHydra::IndexFields::CONTENT_SIZE_HUMAN)
     end
     
     def content_checksum

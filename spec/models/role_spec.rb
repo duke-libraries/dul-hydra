@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Role do
+describe Role, :type => :model do
   let(:role) { Role.new(name: "Test Role") }
   describe "#to_s" do
     it "should render the name" do

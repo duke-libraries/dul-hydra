@@ -13,6 +13,7 @@ shared_examples "a proper set of batch objects" do
     expect(user.batches.count).to eql(1)
     expect(user.batches.first.name).to eql(I18n.t('batch.ingest_folder.batch_name'))
     expect(user.batches.first.description).to eql(ingest_folder.abbreviated_path)
+    expect(user.batches.first.status).to eql(DulHydra::Batch::Models::Batch::STATUS_READY)
     expect(objects.fetch('f').model).to eql(parent_model)
     expect(objects.fetch('file01001').model).to eql(IngestFolder.default_file_model)
     expect(objects.fetch('file01002').model).to eql(IngestFolder.default_file_model)
@@ -56,7 +57,7 @@ shared_examples "batch objects without individual permissions" do
   end
 end
 
-describe IngestFolder, ingest: true do
+describe IngestFolder, type: :model, ingest: true do
 
   let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user) }
   let(:mount_point_name) { "base" }
@@ -66,19 +67,13 @@ describe IngestFolder, ingest: true do
   let(:checksum_type) { "sha256" }
   let(:user) { FactoryGirl.create(:user) }
   before do
-    File.stub(:readable?).and_return(true)
-    IngestFolder.stub(:load_configuration).and_return(YAML.load(test_ingest_folder_config).with_indifferent_access)
-  end
-  context "initialization" do
-    let(:ingest_folder) { IngestFolder.new }
-    it "should set the checksum type to the default" do
-      expect(ingest_folder.checksum_type).to eql(checksum_type)
-    end
+    allow(File).to receive(:readable?).and_return(true)
+    allow(IngestFolder).to receive(:load_configuration).and_return(YAML.load(test_ingest_folder_config).with_indifferent_access)
   end
   context "validation" do
     before do
-      File.stub(:readable?).with("/mount/base/path/unreadable/").and_return(false)
-      File.stub(:readable?).with(File.join(checksum_directory, "unreadable.txt")).and_return(false)      
+      allow(File).to receive(:readable?).with("/mount/base/path/unreadable/").and_return(false)
+      allow(File).to receive(:readable?).with(File.join(checksum_directory, "unreadable.txt")).and_return(false)      
     end
     it "should have a valid factory" do
       expect(ingest_folder).to be_valid
@@ -142,18 +137,18 @@ describe IngestFolder, ingest: true do
     let(:collection) { FactoryGirl.create(:collection) }
     let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user, :collection_pid => collection.pid) }
     before do
-      Dir.stub(:foreach).with("/mount/base/path/subpath").and_return(
+      allow(Dir).to receive(:foreach).with("/mount/base/path/subpath").and_return(
         Enumerator.new { |y| y << "Thumbs.db" << "movie.mp4" << "file01001.tif" << "file01002.tif" << "pdf" << "targets" }
       )
-      Dir.stub(:foreach).with("/mount/base/path/subpath/pdf").and_return(
+      allow(Dir).to receive(:foreach).with("/mount/base/path/subpath/pdf").and_return(
         Enumerator.new { |y| y << "file01.pdf" << "track01.wav" }
       )
-      Dir.stub(:foreach).with("/mount/base/path/subpath/targets").and_return(
+      allow(Dir).to receive(:foreach).with("/mount/base/path/subpath/targets").and_return(
         Enumerator.new { |y| y << "Thumbs.db" << "T001.tiff" << "T002.tiff"}
       )
-      File.stub(:directory?).and_return(false)
-      File.stub(:directory?).with("/mount/base/path/subpath/pdf").and_return(true)
-      File.stub(:directory?).with("/mount/base/path/subpath/targets").and_return(true)
+      allow(File).to receive(:directory?).and_return(false)
+      allow(File).to receive(:directory?).with("/mount/base/path/subpath/pdf").and_return(true)
+      allow(File).to receive(:directory?).with("/mount/base/path/subpath/targets").and_return(true)
     end
     context "scan" do
       context "no warnings" do
@@ -170,7 +165,7 @@ describe IngestFolder, ingest: true do
       context "checksum warnings" do
         before do
           ingest_folder.checksum_file = "test.txt"
-          IngestFolder.any_instance.stub(:checksums).and_return({})
+          allow_any_instance_of(IngestFolder).to receive(:checksums).and_return({})
           ingest_folder.scan
         end
         it "should have mising checksum warnings" do
@@ -184,16 +179,18 @@ describe IngestFolder, ingest: true do
       let(:dss) { {} }
       let(:rels) { {} }
       let(:parent_model) { DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
-      before { IngestFolder.any_instance.stub(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) }
+      before { allow_any_instance_of(IngestFolder).to receive(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) }
       
       context "collection has admin policy" do
         before do
+          collection.admin_policy = collection
+          collection.save
           ingest_folder.procezz
           objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
         end
         it_behaves_like "a proper set of batch objects"
         it_behaves_like "batch objects without individual permissions"
-        it "should have an admin_policy relationship" do
+        it "should have an admin_policy relationship with the collection's admin policy" do
           user.batches.first.batch_objects.each do |obj|
             expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.admin_policy.pid)
           end
@@ -201,10 +198,6 @@ describe IngestFolder, ingest: true do
       end
       
       context "collection has no admin policy" do
-        before do
-          collection.admin_policy = nil
-          collection.save(validate: false)
-        end
         context "collection has individual permissions" do
           before do
             collection.permissions_attributes = [ { type: 'user', name: 'person1', access: 'read' } ]
@@ -213,12 +206,12 @@ describe IngestFolder, ingest: true do
             objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
           it_behaves_like "a proper set of batch objects"
-          it_behaves_like "batch objects without an admin policy"
-          it "should have rightsMetadata datatream" do
+          it_behaves_like "batch objects without individual permissions"
+          it "should have an admin_policy relationship with the collection" do
             user.batches.first.batch_objects.each do |obj|
-              expect(dss.fetch(obj.identifier).fetch('rightsMetadata').payload).to eql(collection.rightsMetadata.content)
+              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
             end
-          end
+          end  
         end
 
         context "collection has no individual permissions" do
@@ -227,8 +220,12 @@ describe IngestFolder, ingest: true do
             objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
           it_behaves_like "a proper set of batch objects"
-          it_behaves_like "batch objects without an admin policy"
           it_behaves_like "batch objects without individual permissions"        
+          it "should have an admin_policy relationship with the collection" do
+            user.batches.first.batch_objects.each do |obj|
+              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
+            end
+          end  
         end
 
       end

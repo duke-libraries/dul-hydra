@@ -1,25 +1,14 @@
 require 'dul_hydra'
-require 'dul_hydra/decorators/active_fedora/base_decorator'
-require 'dul_hydra/decorators/active_fedora/datastream_decorator'
-require 'dul_hydra/decorators/blacklight/solr_helper_decorator'
 
 DulHydra.configure do |config|
   config.collection_report_fields = [:pid, :identifier, :content_size, :content_checksum]
-
   config.remote_groups_env_key = "ismemberof"
-
   config.remote_groups_env_value_delim = ";"
-
   config.remote_groups_env_value_sub = [/^urn:mace:duke\.edu:groups/, "duke"]
-
   config.remote_groups_name_filter = "duke:library:repository:ddr:"
-
   config.superuser_group = ENV['SUPERUSER_GROUP']
-
   config.contact_email = ENV['CONTACT_EMAIL']
-
   config.help_url = Rails.env.test? ? "http://www.loc.gov" : ENV['HELP_URL']
-
   config.csv_options = { 
     encoding: "UTF-8",
     col_sep: "\t",
@@ -27,8 +16,11 @@ DulHydra.configure do |config|
     write_headers: true,
     header_converters: :symbol
   }
-
-  config.create_menu_models = ["AdminPolicy", "Collection", "Role", "IngestFolder", "MetadataFile"]
+  config.create_menu_models = ["Collection", "Role", "IngestFolder", "MetadataFile"]
+  config.external_file_store = ENV['EXTERNAL_FILE_STORE']
+  config.external_file_subpath_pattern = Rails.env.test? ? "--" : ENV['EXTERNAL_FILE_SUBPATH_PATTERN']
+  config.noid_template = "2.reeddeeddk"
+  config.minter_statefile = Rails.env.test? ? "/tmp/minter-state" : ENV['MINTER_STATEFILE']
 end
 
 # Load configuration for Grouper service, if present
@@ -61,3 +53,4 @@ end
 Blacklight::Configuration.default_values[:http_method] = :post
 
 DulHydra::Services::Antivirus.load!
+

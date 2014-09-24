@@ -10,12 +10,11 @@ module DulHydra
       DEFAULT_LIMIT = 1000
       DEFAULT_PERIOD = "60DAYS"
 
-      attr_reader :limit, :dryrun, :log, :period, :report, :report_file, :summary, :executed
+      attr_reader :limit, :log, :period, :report, :report_file, :summary, :executed
 
       def initialize(opts={})
         @limit = opts.fetch(:limit, DEFAULT_LIMIT).to_i
         @period = opts.fetch(:period, DEFAULT_PERIOD)
-        @dryrun = opts.fetch(:dryrun, false)
         @summary = {objects: {}, at: nil}
         @report_file = opts[:report]
       end
@@ -66,7 +65,6 @@ module DulHydra
         logconfig.load_yaml_file File.join(Rails.root, 'config', 'log4r_fixity_check.yml')
         @log = Log4r::Logger['fixity_check']
         log.info "Starting fixity check routine ..."
-        log.info "DRY RUN -- No changes will be made to the repository." if dryrun
       end
 
       def finish_log
@@ -84,20 +82,17 @@ module DulHydra
 
       def check_objects
         objects_to_check.each do |obj| 
-          event = check_object(obj)
-          log_outcome(event)
-          report_outcome(obj) # pass obj so we have dsChecksumValid
-          update_summary(event)
+          result = obj.fixity_check
+          outcome = result.success ? Event::SUCCESS : Event::FAILURE
+          log_outcome(result, outcome)
+          report_result(result) # pass obj so we have dsChecksumValid
+          update_summary(result, outcome)
         end
       end
 
-      def check_object(obj)
-        dryrun ? FixityCheck.execute(obj) : FixityCheck.execute!(obj)
-      end
-
-      def log_outcome(event)
-        msg = "Fixity check outcome for #{event.pid} -- #{event.outcome.upcase}."
-        event.success? ? log.info(msg) : log.error(msg)
+      def log_outcome(result, outcome)
+        msg = "Fixity check outcome for #{result.pid} -- #{outcome.upcase}."
+        result.success ? log.info(msg) : log.error(msg)
       end
 
       def write_report_header
@@ -106,25 +101,23 @@ module DulHydra
         end
       end
 
-      def report_outcome(obj)
+      def report_result(result)
         if report?
-          obj.datastreams
-            .reject { |dsid, ds| ds.profile.empty? }
-            .each do |dsid, ds|
-            report << [ds.pid,
+          result.results.each do |dsid, profile|
+            report << [result.pid,
                        dsid,
-                       ds.profile["dsVersionID"],
-                       ds.profile["dsCreateDate"],
-                       ds.profile["dsChecksumType"],
-                       ds.profile["dsChecksum"],
-                       ds.profile["dsChecksumValid"]
+                       profile["dsVersionID"],
+                       profile["dsCreateDate"].localtime,
+                       profile["dsChecksumType"],
+                       profile["dsChecksum"],
+                       profile["dsChecksumValid"]
                       ]
           end
         end
       end
 
-      def update_summary(event)
-        summary[:objects][event.pid] = event.outcome
+      def update_summary(result, outcome)
+        summary[:objects][result.pid] = outcome
       end
 
       def objects_to_check
@@ -143,7 +136,7 @@ module DulHydra
       end
 
       def objects_never_checked(rows)
-        q = "-#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO *] NOT #{DulHydra::IndexFields::ACTIVE_FEDORA_MODEL}:AdminPolicy"
+        q = "-#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO *]"
         ActiveFedora::SolrService.query(q, rows: rows)
       end
 

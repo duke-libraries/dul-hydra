@@ -3,11 +3,6 @@ module DulHydra
     module RightsBehavior
       extend ActiveSupport::Concern
 
-      included do
-        require_edit_permission! only: :permissions
-        self.log_actions << :permissions
-      end
-
       def permissions
         if request.patch?
           new_permissions = {"group" => {}, "person" => {}}
@@ -22,8 +17,9 @@ module DulHydra
           current_object.rightsMetadata.permissions = new_permissions
           current_object.license = params[:license]
           if current_object.save
+            notify_update(summary: "Rights updated")
             flash[:success] = I18n.t('dul_hydra.rights.alerts.changed')
-            redirect_to action: "show", tab: "permissions"
+            redirect_to(action: "show", tab: "permissions") and return
           end
         end        
       end
@@ -35,7 +31,7 @@ module DulHydra
                 actions: [
                           TabAction.new("edit", 
                                         url_for(action: "permissions"),
-                                        can?(:edit, current_object)),
+                                        can?(:permissions, current_object)),
                           TabAction.new("download",
                                         datastream_download_url_for("rightsMetadata"),
                                         show_ds_download_link?(current_object.rightsMetadata))

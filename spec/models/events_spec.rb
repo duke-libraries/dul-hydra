@@ -1,12 +1,12 @@
 require 'spec_helper'
 require 'support/shared_examples_for_events'
 
-describe Event, events: true do  
+describe Event, type: :model, events: true do  
   it_behaves_like "an event"
   it_behaves_like "a DulHydra software event"
 end
 
-describe UpdateEvent, events: true do
+describe UpdateEvent, type: :model, events: true do
   it_behaves_like "an event"
   it_behaves_like "a DulHydra software event"
   it "should have a display type" do
@@ -14,7 +14,7 @@ describe UpdateEvent, events: true do
   end
 end
 
-describe CreationEvent, events: true do
+describe CreationEvent, type: :model, events: true do
   it_behaves_like "an event"
   it_behaves_like "a preservation-related event"
   it_behaves_like "a DulHydra software event"
@@ -23,7 +23,7 @@ describe CreationEvent, events: true do
   end
 end
 
-describe FixityCheckEvent, events: true do
+describe FixityCheckEvent, type: :model, events: true do
   it_behaves_like "an event"
   it_behaves_like "a preservation-related event"
   it_behaves_like "an event that reindexes its object after save"
@@ -35,9 +35,15 @@ describe FixityCheckEvent, events: true do
       expect(subject.software).to match /^Fedora Repository \d\.\d\.\d$/
     end
   end
+  describe "subscriptions" do
+    let!(:obj) { FactoryGirl.create(:test_model) }
+    it "should subscribe to fixity checks" do
+      expect { FixityCheck.execute(obj) }.to change { obj.fixity_checks.count }.by 1
+    end
+  end
 end
 
-describe VirusCheckEvent, events: true do
+describe VirusCheckEvent, type: :model, events: true do
   it_behaves_like "an event"
   it_behaves_like "a preservation-related event"
   it_behaves_like "an event that reindexes its object after save"
@@ -46,7 +52,7 @@ describe VirusCheckEvent, events: true do
   end
 end
 
-describe IngestionEvent, events: true do
+describe IngestionEvent, type: :model, events: true do
   it_behaves_like "an event"
   it_behaves_like "a preservation-related event"
   it_behaves_like "a DulHydra software event"
@@ -55,7 +61,7 @@ describe IngestionEvent, events: true do
   end
 end
 
-describe ValidationEvent, events: true do
+describe ValidationEvent, type: :model, events: true do
   it_behaves_like "an event"
   it_behaves_like "a preservation-related event"
   it_behaves_like "a DulHydra software event"

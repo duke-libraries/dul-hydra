@@ -8,44 +8,31 @@ module DulHydra
       after { report.close! }
       context "with an object that was just checked" do
         let(:obj) { FactoryGirl.create(:component) }
-        before { obj.fixity_check! }
+        before { obj.fixity_check }
         it "should not check the object" do
-          expect(obj.fixity_checks.count).to eq(1)
           expect { bfc.execute }.not_to change{ obj.fixity_checks.count }
         end
       end
       context "with an object that has not previously been checked" do
-        let(:obj) { FactoryGirl.create(:component) }
+        let!(:obj) { FactoryGirl.create(:component) }
         it "should check the object" do
-          expect(obj.fixity_checks.count).to eq(0)
           expect { bfc.execute }.to change{ obj.fixity_checks.count }.by(1)
         end
       end
       context "with an object that was last checked one year ago" do
-        let(:obj) { FactoryGirl.create(:component) }
+        let!(:obj) { FactoryGirl.create(:component) }
         before do
-          fc = obj.fixity_check
-          fc.event_date_time = Time.now.ago(1.year).utc
-          fc.save   
+          FixityCheckEvent.create(pid: obj.pid, event_date_time: Time.now.ago(1.year).utc)
         end
         it "should check the object" do
-          expect(obj.fixity_checks.count).to eq(1)
           expect { bfc.execute }.to change{ obj.fixity_checks.count }.by(1)
-        end
-      end
-      context "with an object that doesn't have preservation events" do
-        let(:obj) { FactoryGirl.create(:admin_policy) }
-        it "should not check the object" do
-          expect(obj).not_to receive(:fixity_check!)
-          expect(obj).not_to receive(:fixity_check)
-          bfc.execute
         end
       end
       describe "the report" do
         let(:csv) { CSV.read(report.path, headers: true) }
         let(:datastreams_with_content) { ["DC", "RELS-EXT", "descMetadata", "content", "thumbnail", "properties"] }
         before do
-          @objects = FactoryGirl.create_list(:component_with_content, 5)
+          @objects = FactoryGirl.create_list(:component, 5)
           bfc.execute 
         end
         it "should have a header row" do
@@ -63,7 +50,9 @@ module DulHydra
             expect(row["PID"]).to match(/^[a-z]+:\d+$/)
             expect(datastreams_with_content).to include(row["Datastream"])
             expect(row["dsVersionID"]).to match(/^#{row["Datastream"]}/)
-            expect(DateTime.parse(row["dsCreateDate"])).to be_a(DateTime)
+            createDate = Time.parse(row["dsCreateDate"])
+            expect(createDate).to be_a Time
+            expect(createDate).to_not be_utc
             expect(row["dsChecksumType"]).to eq("SHA-256")
             expect(row["dsChecksum"]).to match(/^\h{64}$/)
             expect(row["dsChecksumValid"]).to match(/^(true|false)$/)

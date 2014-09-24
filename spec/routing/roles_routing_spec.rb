@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "the roles router" do
+describe "the roles router", :type => :routing do
   it "should have all the RESTful routes" do
     expect(get: '/roles').to route_to(controller: 'roles', action: 'index')
     expect(get: '/roles/new').to route_to(controller: 'roles', action: 'new')

@@ -1,14 +1,23 @@
-<% if current_user.superuser? %>
+<% if manage_menu.present? %>
 <div class="btn-group pull-right" style="margin-left: 1em">
   <a class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" href="#">
 	<span class="glyphicon glyphicon-cog"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
-    <li>
-	  <%= link_to roles_path do %>
-	    <span class="glyphicon glyphicon-user"></span> Roles
-      <% end %>
-    </li>
+	<% if manage_menu.include?(Queue) %>
+	    <li>
+		  <%= link_to admin_resque_server_path do %>
+		    <span class="glyphicon glyphicon-tasks"></span> Queues
+	      <% end %>
+	    </li>
+	<% end %>
+	<% if manage_menu.include?(Role) %>
+	    <li>
+		  <%= link_to roles_path do %>
+		    <span class="glyphicon glyphicon-user"></span> Roles
+	      <% end %>
+	    </li>
+	<% end %>
   </ul>
 </div>
 <% end %>

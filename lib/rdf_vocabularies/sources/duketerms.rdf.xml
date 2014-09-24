@@ -1,0 +1,856 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY rdfns 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+    <!ENTITY rdfsns 'http://www.w3.org/2000/01/rdf-schema#'>
+    <!ENTITY dcns 'http://purl.org/dc/elements/1.1/'>
+    <!ENTITY dctermsns 'http://purl.org/dc/terms/'>
+    <!ENTITY dctypens 'http://purl.org/dc/dcmitype/'>
+    <!ENTITY dcamns 'http://purl.org/dc/dcam/'>
+    <!ENTITY skosns 'http://www.w3.org/2004/02/skos/core#'>
+]>
+<rdf:RDF xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcam="http://purl.org/dc/dcam/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms">
+        <dcterms:title xml:lang="en-US">Duke metadata terms in the /duke/ namespace</dcterms:title>
+        <dcterms:publisher rdf:resource="http://library.duke.edu/metadata"/>
+        <dcterms:modified>2010-10-29</dcterms:modified>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/time_of_photo">
+        <rdfs:label xml:lang="en-US">Time of Photo</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/description"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/tone">
+        <rdfs:label xml:lang="en-US">Tone</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/description"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/setting">
+        <rdfs:label xml:lang="en-US">Setting</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/description"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/tag">
+        <rdfs:label xml:lang="en-US">Tag</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/pubregion">
+        <rdfs:label xml:lang="en-US">Region of Publication</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/pubcountry">
+        <rdfs:label xml:lang="en-US">Country of Publication</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/pubcity">
+        <rdfs:label xml:lang="en-US">City of Publication</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/pubstate">
+        <rdfs:label xml:lang="en-US">State of Publication</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/genre">
+        <rdfs:label xml:lang="en-US">Genre</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The nature or genre of the resource.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-10-29</dcterms:issued>
+        <dcterms:modified>2010-10-29</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/type"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/dcmitype">
+        <rdfs:label xml:lang="en-US">DCMI Type</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The nature or genre of the resource.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/type"/>
+    </rdf:Description>
+
+    <!-- sheetmusic properties -->
+
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/instrumentation">
+        <rdfs:label xml:lang="en-US">Instrumentation</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The instrumentation.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/description"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/composer">
+        <rdfs:label xml:lang="en-US">Composer</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/creator"/>
+    </rdf:Description>
+    
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/lyricist">
+        <rdfs:label xml:lang="en-US">Lyricist</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/creator"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/illustrator">
+        <rdfs:label xml:lang="en-US">Illustrator</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/illustrated">
+        <rdfs:label xml:lang="en-US">Illustrated</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/description"/>
+    </rdf:Description>
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/lithographer">
+        <rdfs:label xml:lang="en-US">Lithographer</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/dedicatee">
+        <rdfs:label xml:lang="en-US">Dedicatee</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/producer">
+        <rdfs:label xml:lang="en-US">Producer</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/artist">
+        <rdfs:label xml:lang="en-US">Artist</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/arranger">
+        <rdfs:label xml:lang="en-US">Arranger</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/engraver">
+        <rdfs:label xml:lang="en-US">Engraver</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/staging">
+        <rdfs:label xml:lang="en-US">Staging</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/choreographer">
+        <rdfs:label xml:lang="en-US">Choreographer</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/performer">
+        <rdfs:label xml:lang="en-US">Performer</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The .</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+
+
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/instrumentation">
+        <rdfs:label xml:lang="en-US">Instrumentation</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The instrumentation.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/description"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/first_line">
+        <rdfs:label xml:lang="en-US">First Line</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The first line of the song.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/alternative"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/refrain">
+        <rdfs:label xml:lang="en-US">Refrain</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The first line of the refrain of the song.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/alternative"/>
+    </rdf:Description>
+    <!-- /sheetmusic properties -->
+
+    <!-- advertising properties -->
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/company">
+        <rdfs:label xml:lang="en-US">Company</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The company.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/creator"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/product">
+        <rdfs:label xml:lang="en-US">Product</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The product.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/placement_company">
+        <rdfs:label xml:lang="en-US">Placement Company</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The placement company.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/sponsor">
+        <rdfs:label xml:lang="en-US">Sponsor</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The sponsor.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/contributor"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/headline">
+        <rdfs:label xml:lang="en-US">Headline</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The text in bold.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/title"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/publication">
+        <rdfs:label xml:lang="en-US">Publication</rdfs:label>
+        <rdfs:comment xml:lang="en-US">The publication in which the ad appeared.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/source"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/awards">
+        <rdfs:label xml:lang="en-US">Awards</rdfs:label>
+        <rdfs:comment xml:lang="en-US">Awards the ad received.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/season">
+        <rdfs:label xml:lang="en-US">Season</rdfs:label>
+        <rdfs:comment xml:lang="en-US">.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/people">
+        <rdfs:label xml:lang="en-US">People</rdfs:label>
+        <rdfs:comment xml:lang="en-US">Noted people depicted.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/race">
+        <rdfs:label xml:lang="en-US">Race</rdfs:label>
+        <rdfs:comment xml:lang="en-US">Racial characteristics of people depicted.</rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2010-11-03</dcterms:issued>
+        <dcterms:modified>2010-11-03</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/negative_number">
+        <rdfs:label xml:lang="en-US">Negative Number</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-04-26</dcterms:issued>
+        <dcterms:modified>2011-04-26</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/box_number">
+        <rdfs:label xml:lang="en-US">Box Number</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-04-26</dcterms:issued>
+        <dcterms:modified>2011-04-26</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/folder">
+        <rdfs:label xml:lang="en-US">Folder</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-04-26</dcterms:issued>
+        <dcterms:modified>2011-04-26</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/call_number">
+        <rdfs:label xml:lang="en-US">Call Number</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-04-26</dcterms:issued>
+        <dcterms:modified>2011-04-26</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/oclc_number">
+        <rdfs:label xml:lang="en-US">OCLC Number</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-04-26</dcterms:issued>
+        <dcterms:modified>2011-04-26</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/roll_number">
+        <rdfs:label xml:lang="en-US">Roll Number</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-04-26</dcterms:issued>
+        <dcterms:modified>2011-04-26</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/chimpanzee">
+        <rdfs:label xml:lang="en-US">Chimpanzee</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/series">
+        <rdfs:label xml:lang="en-US">Series</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/subseries">
+        <rdfs:label xml:lang="en-US">Subseries</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-10-12</dcterms:issued>
+        <dcterms:modified>2011-10-212</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/record_type">
+        <rdfs:label xml:lang="en-US">Record Type</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/type"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interview_number">
+        <rdfs:label xml:lang="en-US">Interview Number</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interview_date">
+        <rdfs:label xml:lang="en-US">Interview Date</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/date"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interview_location">
+        <rdfs:label xml:lang="en-US">Interview Location</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interview_state">
+        <rdfs:label xml:lang="en-US">Interview State</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interviewee_state_of_birth">
+        <rdfs:label xml:lang="en-US">Interviewee State of Birth</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interviewee_date_of_birth">
+        <rdfs:label xml:lang="en-US">Interviewee Date of Birth</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/date"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interviewee_gender">
+        <rdfs:label xml:lang="en-US">Interviewee Gender</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interviewee_residence">
+        <rdfs:label xml:lang="en-US">Interviewee Residence</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2014-01-30</dcterms:issued>
+        <dcterms:modified>2014-01-30</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interviewee_occupation">
+        <rdfs:label xml:lang="en-US">Interviewee Occupation</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interviewee_birthplace">
+        <rdfs:label xml:lang="en-US">Interviewee Birthplace</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/interviewer_name">
+        <rdfs:label xml:lang="en-US">Interviewer Name</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-03-23</dcterms:issued>
+        <dcterms:modified>2011-03-23</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/creator"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/print_number">
+        <rdfs:label xml:lang="en-US">Print Number</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2011-10-10</dcterms:issued>
+        <dcterms:modified>2011-10-10</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/source_collection">
+        <rdfs:label xml:lang="en-US">Source Collection</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2012-03-07</dcterms:issued>
+        <dcterms:modified>2012-03-07</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/isPartOf"/>
+    </rdf:Description>
+
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/volume">
+        <rdfs:label xml:lang="en-US">Volume</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2013-06-25</dcterms:issued>
+        <dcterms:modified>2013-06-25</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/issue_number">
+        <rdfs:label xml:lang="en-US">Issue Number</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2012-03-07</dcterms:issued>
+        <dcterms:modified>2012-03-07</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/identifier"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/issue_date">
+        <rdfs:label xml:lang="en-US">Issue Date</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2012-03-07</dcterms:issued>
+        <dcterms:modified>2012-03-07</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/date"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/duke_opponent">
+        <rdfs:label xml:lang="en-US">Duke Opponent</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2012-03-07</dcterms:issued>
+        <dcterms:modified>2012-03-07</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/subject"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/site_alignment">
+        <rdfs:label xml:lang="en-US">Site Alignment</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2012-03-07</dcterms:issued>
+        <dcterms:modified>2012-03-07</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/venue">
+        <rdfs:label xml:lang="en-US">Venue</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2012-03-07</dcterms:issued>
+        <dcterms:modified>2012-03-07</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/spatial"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/digitized">
+        <rdfs:label xml:lang="en-US">Digitized</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2012-03-07</dcterms:issued>
+        <dcterms:modified>2012-03-07</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/hasVersion"/>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://library.duke.edu/metadata/terms/category">
+        <rdfs:label xml:lang="en-US">Category</rdfs:label>
+        <rdfs:comment xml:lang="en-US"></rdfs:comment>
+        <dcterms:description xml:lang="en-US">Recommended best practice is to </dcterms:description>
+        <rdfs:isDefinedBy rdf:resource="http://purl.org/dc/terms/"/>
+        <dcterms:issued>2012-03-07</dcterms:issued>
+        <dcterms:modified>2012-03-07</dcterms:modified>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/IsPartOf"/>
+    </rdf:Description>
+
+
+
+
+
+
+
+
+
+
+
+</rdf:RDF>

@@ -61,13 +61,13 @@ shared_examples "an object that has content metadata" do
     context "#parse" do
       it "should produce the appropriate result" do
         result = object.contentMetadata.parse
-        result.should eq(expected_result)
+        expect(result).to eq(expected_result)
       end
     end
     context "#to_solr" do
       let(:solr_result) { ActiveFedora::SolrService.query("id:#{object.pid.gsub(':', '\\:')}").first }
       it "should add the parsed contentMetadata to the index" do
-        JSON.parse(solr_result[ActiveFedora::SolrService.solr_name(:content_metadata_parsed, :symbol)].first).should eq(expected_result)
+        expect(JSON.parse(solr_result[ActiveFedora::SolrService.solr_name(:content_metadata_parsed, :symbol)].first)).to eq(expected_result)
       end
     end
   end

@@ -6,7 +6,7 @@ FactoryGirl.define do
       
       factory :batch_object_add_admin_policy do
         name "admin_policy"
-        object { create(:public_read_policy).pid }
+        object { create(:collection).pid }
         object_type DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID
       end
       

@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'support/shared_examples_for_dul_hydra_objects'
 require 'support/shared_examples_for_has_content'
 
-describe Attachment, attachments: true do
+describe Attachment, type: :model, attachments: true do
 
   it_behaves_like "a DulHydra object"
   it_behaves_like "an object that can have content"
@@ -33,7 +33,7 @@ describe Attachment, attachments: true do
         expect(object.attachments.first).to eq(attachment)
       end
       it "should be attached to the object" do
-        pending "Unable to determine cause of test failure - works at console"
+        skip "Unable to determine cause of test failure - works at console"
         expect(attachment.attached_to).to eq(object)
       end
     end
@@ -42,11 +42,8 @@ describe Attachment, attachments: true do
   context "validations" do
     subject { described_class.new }
     before { subject.valid? }
-    it "should have a title" do
-      subject.errors.messages.should have_key(:title)
-    end
     it "should have content" do
-      subject.errors.messages.should have_key(:content)
+      expect(subject.errors.messages).to have_key(:content)
     end
   end
 end

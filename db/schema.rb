@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140603220359) do
+ActiveRecord::Schema.define(version: 20140918165438) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -47,49 +47,39 @@ ActiveRecord::Schema.define(version: 20140603220359) do
     t.boolean  "verified",   default: false
   end
 
+  add_index "batch_objects", ["verified"], name: "index_batch_objects_on_verified"
+
   create_table "batches", force: true do |t|
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
+    t.datetime "created_at",                        null: false
+    t.datetime "updated_at",                        null: false
     t.integer  "user_id"
     t.string   "status"
     t.datetime "start"
     t.datetime "stop"
     t.string   "outcome"
-    t.integer  "failure",              default: 0
-    t.integer  "success",              default: 0
+    t.integer  "failure",               default: 0
+    t.integer  "success",               default: 0
     t.string   "version"
     t.string   "logfile_file_name"
     t.string   "logfile_content_type"
     t.integer  "logfile_file_size"
     t.datetime "logfile_updated_at"
+    t.datetime "processing_step_start"
   end
 
   create_table "bookmarks", force: true do |t|
-    t.integer  "user_id",     null: false
+    t.integer  "user_id",       null: false
     t.string   "document_id"
     t.string   "title"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
     t.string   "user_type"
+    t.string   "document_type"
   end
 
-  create_table "delayed_jobs", force: true do |t|
-    t.integer  "priority",   default: 0, null: false
-    t.integer  "attempts",   default: 0, null: false
-    t.text     "handler",                null: false
-    t.text     "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
-    t.string   "locked_by"
-    t.string   "queue"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
-  end
-
-  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
+  add_index "bookmarks", ["user_id"], name: "index_bookmarks_on_user_id"
 
   create_table "events", force: true do |t|
     t.datetime "event_date_time"
@@ -151,6 +141,16 @@ ActiveRecord::Schema.define(version: 20140603220359) do
     t.integer  "metadata_file_size"
     t.datetime "metadata_updated_at"
   end
+
+  create_table "minted_ids", force: true do |t|
+    t.string   "minted_id"
+    t.string   "referent"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "minted_ids", ["minted_id"], name: "index_minted_ids_on_minted_id", unique: true
+  add_index "minted_ids", ["referent"], name: "index_minted_ids_on_referent"
 
   create_table "preservation_events", force: true do |t|
     t.datetime "event_date_time"
