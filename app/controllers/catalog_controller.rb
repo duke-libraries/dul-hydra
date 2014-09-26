@@ -52,7 +52,9 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
+    config.add_facet_field DulHydra::IndexFields::CREATOR, label: 'Creator'
+    config.add_facet_field DulHydra::IndexFields::SUBJECT, label: 'Subject'
+    config.add_facet_field DulHydra::IndexFields::METADATA_TYPE, label: 'Type'
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
