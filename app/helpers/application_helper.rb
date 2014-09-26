@@ -408,4 +408,8 @@ module ApplicationHelper
     end
   end
 
+  def collection_list
+    ActiveFedora::Base.where("#{DulHydra::IndexFields::ACTIVE_FEDORA_MODEL}:Collection").order("#{DulHydra::IndexFields::TITLE} asc")
+  end
+
 end
