@@ -14,15 +14,15 @@ describe "catalog/index.html.erb", :type => :feature do
     end
   end
   describe "facet results" do
-    let(:collection1) { FactoryGirl.create(:collection, title: ["XYZ"], subject: ["Test Subject"]) }
-    let(:collection2) { FactoryGirl.create(:collection, title: ["ABC"], subject: ["Test Subject"]) }
+    let(:collection1) { FactoryGirl.create(:collection, title: ["XYZ"]) }
+    let(:collection2) { FactoryGirl.create(:collection, title: ["ABC"]) }
     before do
       collection1.discover_groups = ["public"]
       collection1.save!
       collection2.discover_groups = ["public"]
       collection2.save!
       visit catalog_index_path
-      click_link "Test Subject"
+      click_link "Collection"
     end
     it "should display the results in title order" do
       expect("ABC").to appear_before("XYZ")

@@ -1,17 +1,5 @@
 <h3><%= t('blacklight.welcome') %></h3>
 
 <p>
-	Browse the collections in <%= t('blacklight.application_name') %>
+  To browse the repository by category, use the facets on the left side of this page.
 </p>
-
-<div id="collections">
-	<% collection_list.each do |coll| %>
-		<div class="row">
-			<div class="col-md-2"><%= render_thumbnail coll, true %></div>
-			<div class="col-md-8">
-				<strong><%= link_to coll.title_display, catalog_path(coll) %></strong><br />
-				<em><%= coll.children.size %> items; <%= coll.components_from_solr.size %> files</em>
-			</div>
-		</div>
-	<% end %>
-</div>

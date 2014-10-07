@@ -8,13 +8,10 @@ module DulHydra
 
     def index_fields
       fields = {
-        DulHydra::IndexFields::CREATOR => creator,
-        DulHydra::IndexFields::IDENTIFIER => identifier_sort,
+        DulHydra::IndexFields::TITLE => title_display,
         DulHydra::IndexFields::INTERNAL_URI => internal_uri,
-        DulHydra::IndexFields::METADATA_TYPE => metadata_type,
-        DulHydra::IndexFields::PERMANENT_ID => permanent_id,
-        DulHydra::IndexFields::SUBJECT => subject,
-        DulHydra::IndexFields::TITLE => title_display
+        DulHydra::IndexFields::IDENTIFIER => identifier_sort,
+        DulHydra::IndexFields::PERMANENT_ID => permanent_id
       }
       if respond_to? :fixity_checks
         last_fixity_check = fixity_checks.last
@@ -47,10 +44,6 @@ module DulHydra
 
     def identifier_sort
       identifier.first
-    end
-
-    def metadata_type
-      type.concat(descMetadata.dcmitype)
     end
 
   end
