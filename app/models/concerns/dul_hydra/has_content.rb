@@ -8,20 +8,24 @@ module DulHydra
       has_file_datastream name: DulHydra::Datastreams::CONTENT,
                           versionable: true, 
                           label: "Content file for this object",
-                          control_group: "E"
+                          control_group: "M"
+
+      has_attributes :original_filename, datastream: "properties", multiple: false
 
       validates_presence_of :content
 
       include Hydra::Derivatives
+      include FileManagement unless include?(FileManagement)
 
       around_save :update_thumbnail, if: :content_changed?
 
-      delegate :validate_checksum!, to: :content
-    end
+      after_add_file do
+        if file_to_add.original_name && file_to_add.dsid == "content"
+          self.original_filename = file_to_add.original_name 
+        end
+      end
 
-    def original_filename
-      # The fallback is here in case we don't convert all content datastreams from managed to external
-      content.external? ? content.file_name : properties.original_filename.first
+      delegate :validate_checksum!, to: :content
     end
 
     # Convenience method wrapping FileManagement#add_file
@@ -82,11 +86,11 @@ module DulHydra
     end
 
     def content_changed?
-      content.dsLocation_changed?
+      content.external? ? content.dsLocation_changed? : content.content_changed?
     end
 
     protected
-
+    
     def update_thumbnail
       yield
       if thumbnailable?

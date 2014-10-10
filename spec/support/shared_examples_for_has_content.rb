@@ -21,15 +21,29 @@ shared_examples "an object that can have content" do
 
   describe "adding a file" do
     let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
-    before { object.add_file file, "content" }
-    it "should have an original_filename" do
-      expect(object.original_filename).to eq("library-devil.tiff")
+    context "defaults" do
+      before { object.add_file file, "content" }
+      it "should have an original_filename" do
+        expect(object.original_filename).to eq("library-devil.tiff")
+      end
+      it "should have a content_type" do
+        expect(object.content_type).to eq("image/tiff")
+      end
+      it "should create a 'virus check' event for the object" do
+        expect { object.save }.to change { object.virus_checks.count }.by(1)
+      end
     end
-    it "should have a content_type" do
-      expect(object.content_type).to eq("image/tiff")
+    context "with option `:original_name=>false`" do
+      before { object.add_file file, "content", original_name: false }
+      it "should not have an original_filename" do
+        expect(object.original_filename).to be_nil
+      end
     end
-    it "should create a 'virus check' event for the object" do
-      expect { object.save }.to change { object.virus_checks.count }.by(1)
+    context "with `:original_name` option set to a string" do
+      before { object.add_file file, "content", original_name: "another-name.tiff" }
+      it "should have an original_filename" do
+        expect(object.original_filename).to eq("another-name.tiff")
+      end
     end
   end
 
@@ -104,8 +118,8 @@ shared_examples "an object that can have content" do
 
   describe "#upload" do
     let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
-    it "should change the content location" do
-      expect { object.upload file }.to change { object.content.dsLocation }
+    it "should change the content" do
+      expect { object.upload file }.to change(object, :content_changed?).from(false).to(true)
     end
     it "should check the file for viruses" do
       expect(DulHydra::Services::Antivirus).to receive(:scan).with(file)
@@ -121,16 +135,6 @@ shared_examples "an object that can have content" do
     it "should save the object" do
       expect(object).to receive(:save)
       object.upload! file
-    end
-  end
-
-  describe "deleting" do
-    before { object.upload! fixture_file_upload("library-devil.tiff", "image/tiff") }
-    it "should delete the content file" do
-      path = object.content.file_path
-      expect(File.exists?(path)).to be true
-      object.destroy
-      expect(File.exists?(path)).to be false
     end
   end
 
