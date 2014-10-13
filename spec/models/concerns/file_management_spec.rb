@@ -47,11 +47,11 @@ module DulHydra
         object.add_file file, "m_content"
       end
       it "should call add_external_file when dsid spec is external" do
-        expect(object).to receive(:add_external_file).with(file, "e_content", {mime_type: file.content_type, file_name: file.original_filename})
+        expect(object).to receive(:add_external_file).with(file, "e_content", {mime_type: file.content_type})
         object.add_file file, "e_content"
       end
       it "should call add_external_file when :external => true option passed" do
-        expect(object).to receive(:add_external_file).with(file, "random_ds_2", {mime_type: file.content_type, file_name: file.original_filename})
+        expect(object).to receive(:add_external_file).with(file, "random_ds_2", {mime_type: file.content_type})
         object.add_file file, "random_ds_2", external: true
       end
     end
@@ -73,29 +73,27 @@ module DulHydra
         object.add_external_file(file, "e_content")
       end
       context "storage path generation" do
-        it "should generate a UUID for the directory" do
+        it "should generate a UUID for the for the file name" do
           expect(SecureRandom).to receive(:uuid).and_call_original
           object.add_external_file(file, "e_content")
+        end
+        it "should set the file name to the UUID" do
+          uuid = "dfa9fd19-3ec6-4d59-ac34-f7a796902397"
+          allow(object).to receive(:generate_external_file_name) { uuid }          
+          object.add_external_file(file, "e_content")
+          expect(object.e_content.file_name).to eq uuid
         end
         it "should prepend the configured external file store base directory" do
           object.add_external_file(file, "e_content")
           expect(object.e_content.file_path.start_with?(DulHydra.external_file_store)).to be true
         end
-        it "should add a subpath using the configured pattern and UUID" do
-          uuid = SecureRandom.uuid
-          allow(object).to receive(:generate_external_directory_name) { uuid }
+        it "should add a subpath using the configured pattern" do
+          uuid = "dfa9fd19-3ec6-4d59-ac34-f7a796902397"
+          allow(object).to receive(:generate_external_file_name) { uuid }
           object.add_external_file(file, "e_content")
           path = object.e_content.file_path
           subpath = File.dirname(path.sub(DulHydra.external_file_store, "").sub("/", ""))
-          expect(File.basename(subpath)).to eq uuid
-        end
-        it "should use the original file name by default" do
-          object.add_external_file(file, "e_content")
-          expect(object.e_content.file_name).to eq file.original_filename
-        end
-        it "should use the file name passed in :file_name option" do
-          object.add_external_file(file, "e_content", file_name: "My own file name.tiff")
-          expect(object.e_content.file_name).to eq "My own file name.tiff"
+          expect(DulHydra.external_file_subpath_regexp.match(uuid)[0]).to eq subpath
         end
       end
       it "should set dsLocation to URI for generated file path by default" do
@@ -103,10 +101,6 @@ module DulHydra
         expect(object.e_content.dsLocation).not_to eq URI.escape("file:#{file.path}")
         expect(object.e_content.dsLocation).not_to be_nil
         expect(File.exists?(object.e_content.file_path)).to be true
-      end
-      it "should URI escape the file path when setting the dsLocation" do
-        object.add_external_file(file, "e_content", file_name: "Funky file name!")
-        expect(object.e_content.dsLocation.split("/").last).to eq "Funky%20file%20name!"
       end
       it "should set dsLocation to URI for original file path if :use_original => true option" do
         expect(object.e_content).to receive(:dsLocation=).with(URI.escape("file:#{file.path}"))
