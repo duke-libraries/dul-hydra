@@ -89,9 +89,9 @@ describe "catalog/index.html.erb", :type => :feature do
         expect(page).to have_xpath("//a[@href = \"#{url_for(controller: 'downloads', action: 'show', id: object)}\"]")
       end
     end
-    context "user is superuser" do
+    context "user acting as superuser" do
       before do
-        allow_any_instance_of(User).to receive(:superuser?).and_return(true)
+        login_as user, scope: :superuser
         visit catalog_index_path
         fill_in "q", :with => object.title.first
         click_button "search"

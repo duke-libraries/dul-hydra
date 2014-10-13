@@ -2,18 +2,19 @@ require 'spec_helper'
 
 describe "roles views", :type => :feature do
   let(:user) { FactoryGirl.create(:user) }
-  before { login_as user }
+  before do
+    login_as user
+    login_as user, scope: :superuser
+  end
   describe "index" do
     let!(:role) { Role.create(name: "Manager") }
     it "should list the roles" do
-      allow(user).to receive(:superuser?) { true }
       visit roles_path
       expect(page).to have_link("Manager", href: role_path(role))
     end
   end
   describe "new" do
     it "should render a new role form" do
-      allow(user).to receive(:superuser?) { true }
       visit new_role_path
       expect(page).to have_css("form#new_role")
       # fill_in "Name", with: "Manager"
@@ -33,7 +34,6 @@ describe "roles views", :type => :feature do
   describe "edit" do
     let(:role) { Role.create(name: "Manager") }
     it "should render an edit role form" do
-      allow(user).to receive(:superuser?) { true }
       visit edit_role_path(role)
       expect(page).to have_css("form.edit_role")
     end
@@ -41,7 +41,6 @@ describe "roles views", :type => :feature do
   describe "show" do
     let(:role) { Role.create(name: "Manager") }
     it "should render a show template" do
-      allow(user).to receive(:superuser?) { true }
       visit role_path(role)
       expect(page).to have_content("Manager")
     end    

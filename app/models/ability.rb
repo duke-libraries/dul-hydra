@@ -6,14 +6,6 @@ class Ability
 
   delegate :role_abilities, :has_role?, to: :current_user
 
-  def hydra_default_permissions
-    if current_user.superuser?
-      can :manage, :all
-    else
-      super
-    end
-  end
-
   def custom_permissions
     action_aliases
     discover_permissions

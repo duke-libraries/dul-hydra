@@ -14,21 +14,21 @@ describe User, :type => :model do
     end
   end
 
-  describe "#superuser?" do
+  describe "#authorized_to_act_as_superuser?" do
     let(:user) { FactoryGirl.build(:user) }
     it "should return false if the superuser group is not defined (nil)" do
       DulHydra.superuser_group = nil
-      expect(user).not_to be_superuser
+      expect(user).not_to be_authorized_to_act_as_superuser
     end
     it "should return false if the user is not a member of the superuser group" do
       DulHydra.superuser_group = "superusers"
       allow(user).to receive(:groups).and_return(["normal"])
-      expect(user).not_to be_superuser
+      expect(user).not_to be_authorized_to_act_as_superuser
     end
     it "should return true if the user is a member of the superuser group" do
       DulHydra.superuser_group = "superusers"
       allow(user).to receive(:groups).and_return(["superusers"])
-      expect(user).to be_superuser
+      expect(user).to be_authorized_to_act_as_superuser
     end
   end
 

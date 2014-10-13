@@ -15,20 +15,26 @@ class ApplicationController < ActionController::Base
   helper_method :group_service
   helper_method :all_permissions
   helper_method :find_models_with_gated_discovery
+  helper_method :acting_as_superuser?
 
   rescue_from CanCan::AccessDenied do |exception|
     render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
   end
 
   def current_ability
+    return Superuser.new if acting_as_superuser?
     current_user ? current_user.ability : Ability.new(nil)
   end
 
   protected
 
+  def acting_as_superuser?
+    signed_in?(:superuser)
+  end
+
   # Override Hydra::PolicyAwareAccessControlsEnforcement
   def gated_discovery_filters
-    return [] if current_user.superuser?
+    return [] if acting_as_superuser?
     super
   end
 

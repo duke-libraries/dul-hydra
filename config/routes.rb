@@ -6,6 +6,8 @@ DulHydra::Application.routes.draw do
   Blacklight.add_routes(self)
   devise_for :users
 
+  get 'superuser' => 'superuser#toggle'
+
   get 'id/:permanent_id' => 'permanent_ids#show'
 
   def pid_constraint

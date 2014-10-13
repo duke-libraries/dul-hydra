@@ -1,9 +1,23 @@
 <div class="btn-group">
-  <a class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" href="#">
+  <a class="btn <%= acting_as_superuser? ? 'btn-danger' : 'btn-primary' %> btn-sm dropdown-toggle" 
+	 data-toggle="dropdown" href="#">
+    <% if acting_as_superuser? %><span class="glyphicon glyphicon-eye-open"></span><% end %>
 	<%= current_user.to_s %>
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+	<% if current_user.authorized_to_act_as_superuser? %>
+	  <li>
+		<%= link_to superuser_path do %>
+		  <% if acting_as_superuser? %> 
+ 	        <span class="glyphicon glyphicon-eye-close"></span> Stop acting as Superuser
+		  <% else %>
+		    <span class="glyphicon glyphicon-eye-open"></span> Act as Superuser
+		  <% end %>
+		<% end %>
+	  </li>
+	  <li class="divider"></li>
+	<% end %>
 	<li>
 	  <%= link_to bookmarks_path do %>
 	    <span class="glyphicon glyphicon-bookmark"></span> Bookmarks
