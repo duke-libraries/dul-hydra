@@ -4,7 +4,7 @@ describe ActiveFedora::Base do
   describe "attachments", attachments: true do
     before do
       class AttachToable < ActiveFedora::Base
-        include DulHydra::HasAttachments
+        include Ddr::Models::HasAttachments
       end
     end
     after do
@@ -56,7 +56,7 @@ describe ActiveFedora::Base do
   describe "thumbnail" do
     before do
       class Thumbnailable < ActiveFedora::Base
-        include DulHydra::HasThumbnail
+        include Ddr::Models::HasThumbnail
       end
     end
     after do
@@ -70,7 +70,7 @@ describe ActiveFedora::Base do
     end
     describe "#has_thumbnail?" do
       let(:thumbnailable) { Thumbnailable.new }
-      before { allow(thumbnailable.datastreams[DulHydra::Datastreams::THUMBNAIL]).to receive(:has_content?).and_return(true) }
+      before { allow(thumbnailable.datastreams[Ddr::Datastreams::THUMBNAIL]).to receive(:has_content?).and_return(true) }
       it "should return true if object has a thumbnail, else false" do
         expect(thumbnailable).to have_thumbnail
         expect(Thumbnailable.new).not_to have_thumbnail
@@ -82,7 +82,7 @@ describe ActiveFedora::Base do
   describe "content" do
     before do
       class Contentable < ActiveFedora::Base
-        include DulHydra::HasContent
+        include Ddr::Models::HasContent
       end
     end
     after do
@@ -96,7 +96,7 @@ describe ActiveFedora::Base do
     end
     describe "#has_content?" do
       let(:contentable) { Contentable.new }
-      before { allow(contentable.datastreams[DulHydra::Datastreams::CONTENT]).to receive(:has_content?).and_return(true) }
+      before { allow(contentable.datastreams[Ddr::Datastreams::CONTENT]).to receive(:has_content?).and_return(true) }
       it "should return true if object has content, else false" do
         expect(contentable).to have_content
         expect(Contentable.new).not_to have_content

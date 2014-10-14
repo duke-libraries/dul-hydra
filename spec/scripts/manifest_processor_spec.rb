@@ -22,7 +22,7 @@ module DulHydra::Batch::Scripts
         expect(datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME)
         expect(datastream.batch_object).to eq(batch_object)
         expect(datastream.payload).to eq(@manifest.objects.first.datastream_filepath(datastream.name))
-        if datastream.name.eql?(DulHydra::Datastreams::CONTENT)
+        if datastream.name.eql?(Ddr::Datastreams::CONTENT)
           expect(datastream.checksum).to eq(@manifest.objects.first.checksum) if @manifest.objects.first.checksum?
           expect(datastream.checksum_type).to eq(@manifest.objects.first.checksum_type) if @manifest.objects.first.checksum_type?
         end

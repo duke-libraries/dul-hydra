@@ -25,7 +25,7 @@ module IngestFoldersHelper
   end
   
   def parent_model
-    DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(@ingest_folder.model, "parent")).name
+    Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(@ingest_folder.model, "parent")).name
   end
   
   def target_count

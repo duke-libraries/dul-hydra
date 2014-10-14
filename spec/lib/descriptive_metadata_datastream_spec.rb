@@ -4,23 +4,23 @@ require 'rdf/isomorphic'
 
 include RDF::Isomorphic
 
-describe DulHydra::Datastreams::DescriptiveMetadataDatastream do
+describe Ddr::Datastreams::DescriptiveMetadataDatastream do
   context "terminology" do
     subject { described_class.term_names }
     it "should have a term for each term name in the RDF::DC vocab" do
-      expect(subject).to include(*DulHydra::Metadata::Vocabulary.term_names(RDF::DC))
+      expect(subject).to include(*Ddr::Metadata::Vocabulary.term_names(RDF::DC))
     end
     it "should have a term for each term name in the DukeTerms vocab" do
-      expect(subject).to include(*DulHydra::Metadata::Vocabulary.term_names(DukeTerms))
+      expect(subject).to include(*Ddr::Metadata::Vocabulary.term_names(Ddr::Metadata::DukeTerms))
     end
   end
   context "properties" do
     subject { described_class.properties.map { |prop| prop[1].predicate } }
     it "should include all the RDF::DC predicates" do
-      expect(subject).to include(*DulHydra::Metadata::Vocabulary.property_terms(RDF::DC))
+      expect(subject).to include(*Ddr::Metadata::Vocabulary.property_terms(RDF::DC))
     end
     it "should include all the DukeTerms predicates" do
-      expect(subject).to include(*DulHydra::Metadata::Vocabulary.property_terms(DukeTerms))
+      expect(subject).to include(*Ddr::Metadata::Vocabulary.property_terms(Ddr::Metadata::DukeTerms))
     end
   end
   context "raw content" do

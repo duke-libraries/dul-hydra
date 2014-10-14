@@ -3,13 +3,13 @@
 ##
 
 # Fixity Checks
-ActiveSupport::Notifications.subscribe(DulHydra::Notifications::FIXITY_CHECK, FixityCheckEvent)
+ActiveSupport::Notifications.subscribe(Ddr::Notifications::FIXITY_CHECK, Ddr::Events::FixityCheckEvent)
 
 # Virus Checks
-ActiveSupport::Notifications.subscribe(DulHydra::Notifications::VIRUS_CHECK, VirusCheckEvent)
+ActiveSupport::Notifications.subscribe(Ddr::Notifications::VIRUS_CHECK, Ddr::Events::VirusCheckEvent)
 
 # Creation
-ActiveSupport::Notifications.subscribe(DulHydra::Notifications::CREATION, CreationEvent)
+ActiveSupport::Notifications.subscribe(Ddr::Notifications::CREATION, Ddr::Events::CreationEvent)
 
 # Update
-ActiveSupport::Notifications.subscribe(DulHydra::Notifications::UPDATE, UpdateEvent)
+ActiveSupport::Notifications.subscribe(Ddr::Notifications::UPDATE, Ddr::Events::UpdateEvent)

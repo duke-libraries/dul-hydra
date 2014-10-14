@@ -4,10 +4,10 @@ module DulHydra::Batch::Models
 #    attr_accessible :name, :operation, :payload, :payload_type, :checksum, :checksum_type, :batch_object
     belongs_to :batch_object, :inverse_of => :batch_object_datastreams
     
-    DATASTREAMS = [ DulHydra::Datastreams::CONTENT,
-                    DulHydra::Datastreams::CONTENT_METADATA,
-                    DulHydra::Datastreams::DESC_METADATA,
-                    DulHydra::Datastreams::RIGHTS_METADATA ]
+    DATASTREAMS = [ Ddr::Datastreams::CONTENT,
+                    Ddr::Datastreams::CONTENT_METADATA,
+                    Ddr::Datastreams::DESC_METADATA,
+                    Ddr::Datastreams::RIGHTS_METADATA ]
     
     OPERATION_ADD = "ADD" # add this datastream to the object -- considered an error if datastream already exists
     OPERATION_ADDUPDATE = "ADDUPDATE" # add this datastream to or update this datastream in the object

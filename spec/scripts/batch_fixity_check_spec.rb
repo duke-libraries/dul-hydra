@@ -22,7 +22,7 @@ module DulHydra
       context "with an object that was last checked one year ago" do
         let!(:obj) { FactoryGirl.create(:component) }
         before do
-          FixityCheckEvent.create(pid: obj.pid, event_date_time: Time.now.ago(1.year).utc)
+          Ddr::Events::FixityCheckEvent.create(pid: obj.pid, event_date_time: Time.now.ago(1.year).utc)
         end
         it "should check the object" do
           expect { bfc.execute }.to change{ obj.fixity_checks.count }.by(1)

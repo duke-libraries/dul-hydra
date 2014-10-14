@@ -95,7 +95,7 @@ describe AttachmentsController, type: :controller, attachments: true do
         #     expect{ create_attachment checksum = "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }.not_to change{ Attachment.count }
         #   end
         #   it "should not create an event" do
-        #     expect{ create_attachment checksum = "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }.not_to change{ CreationEvent.count }
+        #     expect{ create_attachment checksum = "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }.not_to change{ Ddr::Events::CreationEvent.count }
         #   end
         # end
       end

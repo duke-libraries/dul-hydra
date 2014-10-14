@@ -9,7 +9,7 @@ class DownloadsController < ApplicationController
   end
 
   def datastream_name
-    if datastream.dsid == DulHydra::Datastreams::CONTENT
+    if datastream.dsid == Ddr::Datastreams::CONTENT
       return asset.original_filename if asset.original_filename.present?
       if asset.identifier.present? # Identifier may be file name minus extension
         identifier = asset.identifier.first

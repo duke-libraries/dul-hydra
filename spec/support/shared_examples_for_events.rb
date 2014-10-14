@@ -2,10 +2,10 @@ def mock_object(opts={})
   double("object", {create_date: "2014-01-01T01:01:01.000Z", modified_date: "2014-06-01T01:01:01.000Z"}.merge(opts))
 end
 
-shared_examples "a DulHydra software event" do
-  it "should set software to the DulHydra version" do
+shared_examples "a Ddr::Models software event" do
+  it "should set software to the Ddr::Models version" do
     subject.valid?
-    expect(subject.software).to eq "DulHydra #{DulHydra::VERSION}"
+    expect(subject.software).to eq "DDR #{Ddr::Models::VERSION}"
   end
 end
 
@@ -22,7 +22,7 @@ end
 
 shared_examples "an event that reindexes its object after save" do
   it "should implement the reindexing concern" do
-    expect(subject).to be_a DulHydra::Events::ReindexObjectAfterSave
+    expect(subject).to be_a Ddr::Events::ReindexObjectAfterSave
   end
   context "when object is present" do
     let(:object) { mock_object }
@@ -63,10 +63,10 @@ shared_examples "an event" do
       expect(subject.errors[:event_date_time]).to include "can't be blank"
     end
     it "should require a valid outcome" do
-      subject.outcome = Event::SUCCESS
+      subject.outcome = Ddr::Events::Event::SUCCESS
       subject.valid?
       expect(subject.errors).not_to have_key :outcome
-      subject.outcome = Event::FAILURE
+      subject.outcome = Ddr::Events::Event::FAILURE
       subject.valid?
       expect(subject.errors).not_to have_key :outcome
       subject.outcome = "Some other value"
@@ -78,10 +78,10 @@ shared_examples "an event" do
   describe "outcome setters and getters" do
     it "should encapsulate access" do
       subject.success!
-      expect(subject.outcome).to eq Event::SUCCESS
+      expect(subject.outcome).to eq Ddr::Events::Event::SUCCESS
       expect(subject).to be_success
       subject.failure!
-      expect(subject.outcome).to eq Event::FAILURE
+      expect(subject.outcome).to eq Ddr::Events::Event::FAILURE
       expect(subject).to be_failure
     end
   end
@@ -89,7 +89,7 @@ shared_examples "an event" do
   describe "setting defaults" do
     context "after initialization" do
       it "should set outcome to 'success'" do
-        expect(subject.outcome).to eq Event::SUCCESS
+        expect(subject.outcome).to eq Ddr::Events::Event::SUCCESS
       end
       it "should set event_date_time" do
         expect(subject.event_date_time).to be_present
@@ -104,7 +104,7 @@ shared_examples "an event" do
     end
     context "when attributes are set" do
       let(:obj) { ActiveFedora::Base.create }
-      let(:event) { described_class.new(pid: obj.pid, outcome: Event::FAILURE, event_date_time: Time.utc(2013), software: "Test", summary: "A terrible disaster") }
+      let(:event) { described_class.new(pid: obj.pid, outcome: Ddr::Events::Event::FAILURE, event_date_time: Time.utc(2013), software: "Test", summary: "A terrible disaster") }
       it "should not overwrite attributes" do
         expect { event.send(:set_defaults) }.not_to change { event.outcome }
         expect { event.send(:set_defaults) }.not_to change { event.event_date_time }

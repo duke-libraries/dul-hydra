@@ -9,7 +9,7 @@ module ApplicationHelper
     # Depends on Blacklight::SolrHelper#get_solr_response_for_doc_id 
     # having been added as a helper method to CatalogController
     response, doc = get_solr_response_for_doc_id(pid)
-    # XXX This is not consistent with DulHydra::Base#title_display
+    # XXX This is not consistent with Ddr::Models::Base#title_display
     title = doc.nil? ? pid : doc.fetch(DulHydra::IndexFields::TITLE, pid)
     link_to(title, catalog_path(pid), :class => "parent-link").html_safe
   end
@@ -101,7 +101,7 @@ module ApplicationHelper
   end
 
   def render_event_outcome(outcome)
-    label = outcome == Event::SUCCESS ? "success" : "danger"
+    label = outcome == Ddr::Events::Event::SUCCESS ? "success" : "danger"
     render_label outcome.capitalize, label
   end
 

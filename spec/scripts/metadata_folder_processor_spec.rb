@@ -194,7 +194,7 @@ module DulHydra::Batch::Scripts
         expect(batch_object.pid).to eq(object[:pid])
         expect(batch_object.batch_object_datastreams.size).to eq(1)
         metadata_datastream = batch_object.batch_object_datastreams.first
-        expect(metadata_datastream.name).to eq(DulHydra::Datastreams::DESC_METADATA)
+        expect(metadata_datastream.name).to eq(Ddr::Datastreams::DESC_METADATA)
         expect(metadata_datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
         expect(metadata_datastream.payload).to eq("testing")
         expect(metadata_datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)

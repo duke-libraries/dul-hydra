@@ -151,7 +151,7 @@ namespace :dul_hydra do
         task :all => :environment do
             ActiveFedora::Base.find_each do |obj|
                 print "Validating #{obj.pid} ... "
-                puts obj.valid? ? Event::VALID : Event::INVALID
+                puts obj.valid? ? Ddr::Events::Event::VALID : Ddr::Events::Event::INVALID
             end
         end
     end

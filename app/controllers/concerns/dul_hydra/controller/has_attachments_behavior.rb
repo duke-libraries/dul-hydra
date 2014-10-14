@@ -17,7 +17,7 @@ module DulHydra
       def configure_blacklight_for_attachments
         blacklight_config.configure do |config|
           config.sort_fields.clear
-          config.add_sort_field "#{DulHydra::IndexFields::TITLE} asc", label: "Title"
+          config.add_sort_field "#{Ddr::IndexFields::TITLE} asc", label: "Title"
         end
       end
 

@@ -39,7 +39,7 @@ module DulHydra::Batch::Models
       if !repo_object.nil? && !repo_object.new_record?
         ingest_outcome_detail = []
         ingest_outcome_detail << "Ingested #{model} #{identifier} into #{repo_object.pid}"
-        IngestionEvent.new.tap do |event|
+        Ddr::Events::IngestionEvent.new.tap do |event|
           event.object = repo_object
           event.user = user
           event.summary = EVENT_SUMMARY % {
@@ -60,7 +60,7 @@ module DulHydra::Batch::Models
           verified = false if value.eql?(VERIFICATION_FAIL)
         end
         update_attributes(:verified => verified)
-        ValidationEvent.new.tap do |event|
+        Ddr::Events::ValidationEvent.new.tap do |event|
           event.object = repo_object
           event.failure! unless verified
           event.summary = EVENT_SUMMARY % {

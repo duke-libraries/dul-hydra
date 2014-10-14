@@ -25,13 +25,13 @@ module DulHydra::Batch::Scripts
           expect(event.pid).to eq(obj.pid)
           expect(event.event_date_time).to be_within(3.minutes).of(DateTime.now)
           case event.type
-          when "FixityCheckEvent"
-            expect(event.detail).to include(FixityCheckEvent::VALID)
-            expect(event.detail).to_not include(FixityCheckEvent::INVALID)
-          when "IngestionEvent"
+          when "Ddr::Events::FixityCheckEvent"
+            expect(event.detail).to include(Ddr::Events::FixityCheckEvent::VALID)
+            expect(event.detail).to_not include(Ddr::Events::FixityCheckEvent::INVALID)
+          when "Ddr::Events::IngestionEvent"
             expect(event.summary).to include("Batch object identifier: #{batch_obj.identifier}")
             expect(event.user).to eq(bp_user)
-          when "ValidationEvent"
+          when "Ddr::Events::ValidationEvent"
             expect(event.detail).to include(DulHydra::Batch::Scripts::BatchProcessor::PASS)
             expect(event.detail).to_not include(DulHydra::Batch::Scripts::BatchProcessor::FAIL)
           end
@@ -141,7 +141,7 @@ module DulHydra::Batch::Scripts
       let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
       let(:repo_object) do
         r_obj = TestModelOmnibus.new(:pid => batch.batch_objects.first.pid, :label => 'Object Label')
-        r_obj.add_file("#{Rails.root}/spec/fixtures/library-devil.tiff", DulHydra::Datastreams::CONTENT)
+        r_obj.add_file("#{Rails.root}/spec/fixtures/library-devil.tiff", Ddr::Datastreams::CONTENT)
         r_obj.save
         r_obj
       end

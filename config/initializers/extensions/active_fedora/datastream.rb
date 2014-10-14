@@ -1,5 +1,5 @@
 module ActiveFedora
   class Datastream
-    include DulHydra::DatastreamBehavior
+    include Ddr::Datastreams::DatastreamBehavior
   end
 end

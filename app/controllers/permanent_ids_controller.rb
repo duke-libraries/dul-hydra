@@ -8,7 +8,7 @@ class PermanentIdsController < ApplicationController
 
   def resolve_id
     permanent_id = params.require(:permanent_id)
-    results = ActiveFedora::Base.find(DulHydra::IndexFields::PERMANENT_ID => permanent_id)
+    results = ActiveFedora::Base.find(Ddr::IndexFields::PERMANENT_ID => permanent_id)
     if results.empty?
       raise ActiveFedora::ObjectNotFoundError, "Object having permanent_id \"#{permanent_id}\" was not found." 
     end
