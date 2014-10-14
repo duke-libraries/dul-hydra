@@ -221,6 +221,12 @@ Devise.setup do |config|
     # manager.default_strategies(:scope => :user).unshift :remote_user_authenticatable
   # end
 
+  config.warden do |manager|
+    # :superuser scope
+    manager.serialize_into_session(:superuser) { |superuser| superuser.id }
+    manager.serialize_from_session(:superuser) { |id| User.find(id) }
+  end
+
   # ==> Mountable engine configurations
   # When using Devise inside an engine, let's call it `MyEngine`, and this engine
   # is mountable, there are some extra configurations to be taken into account.

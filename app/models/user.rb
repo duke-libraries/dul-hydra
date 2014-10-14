@@ -43,7 +43,7 @@ class User < ActiveRecord::Base
     group ? self.groups.include?(group) : false
   end
   
-  def superuser?
+  def authorized_to_act_as_superuser?
     member_of? group_service.superuser_group
   end
 

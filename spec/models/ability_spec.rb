@@ -211,15 +211,6 @@ describe Ability, type: :model, abilities: true do
     end
   end
 
-  describe "#superuser_permissions", superusers: true do
-    let(:resource) { :all }
-    before do
-      allow(DulHydra).to receive(:superuser_group).and_return("superusers")
-      allow(user).to receive(:groups).and_return(["superusers"])
-    end
-    it_behaves_like "it can", :manage
-  end
-
   describe "#attachment_permissions", attachments: true do
     context "object can have attachments" do
       let(:resource) { FactoryGirl.build(:test_model_omnibus) }
