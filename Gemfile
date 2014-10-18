@@ -6,7 +6,7 @@ gem 'hydra-head', '~> 7.2.0'
 gem 'hydra-validations', '~> 0.2'
 gem 'hydra-derivatives'
 
-gem 'ddr-models', github: 'duke-libraries/ddr-models', tag: 'v1.0.0'
+gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: '9d5f0e898ede6758546daa765c2b344dc433ff28'
 
 gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user', '0.3.0'

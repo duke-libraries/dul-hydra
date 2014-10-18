@@ -162,7 +162,8 @@ shared_examples "a content-bearing object show view" do
   let(:user) { FactoryGirl.create(:user) }
   before do
     setup
-    allow(user).to receive(:has_role?).with("Component Downloader") { true } # required for Components
+    object.roleAssignments.downloader << user.principal_name # require for Components
+    object.save
     allow(user).to receive(:groups) { ["public", "registered"] }
   end
   it "should have a download link" do

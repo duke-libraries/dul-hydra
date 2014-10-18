@@ -1,9 +1,9 @@
 GIT
   remote: git://github.com/duke-libraries/ddr-models.git
-  revision: 555215efd6a5c3881e14e8fc22e60d95d4febdfe
-  tag: v1.0.0
+  revision: 9d5f0e898ede6758546daa765c2b344dc433ff28
+  ref: 9d5f0e898ede6758546daa765c2b344dc433ff28
   specs:
-    ddr-models (1.0.0)
+    ddr-models (1.1.0.pre)
       clamav
       hydra-derivatives
       hydra-head (~> 7.2.0)

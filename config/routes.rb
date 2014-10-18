@@ -146,8 +146,6 @@ DulHydra::Application.routes.draw do
     end
   end
 
-  resources :roles
-  
   get '/help', to: redirect(DulHydra.help_url)
 
 end

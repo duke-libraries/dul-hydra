@@ -2,47 +2,20 @@ require 'spec_helper'
 require 'dul_hydra'
 require 'cancan/matchers'
 
-shared_examples "it can" do |ability|
-  it "should be able to" do
-    expect(subject).to be_able_to(ability, resource)
-  end
-end
-
-shared_examples "it cannot" do |ability|
-  it "should not be able" do
-    expect(subject).not_to be_able_to(ability, resource)
-  end
-end
-
 describe Ability, type: :model, abilities: true do
 
   subject { described_class.new(user) }
-  let(:user) { FactoryGirl.build(:user) }
-
-  describe "#role_permissions", roles: true do
-    context "when the user has a role that specifies an ability and a model" do
-      before { allow(user).to receive(:role_abilities) { [[:create, Collection]] } }
-      it "should have the ability on the model" do
-        expect(subject).to be_able_to(:create, Collection)
-      end
-    end
-    context "when the user has a role that specifies an ability but no model" do
-      before { allow(user).to receive(:role_abilities) { [[:create, :all]] } }
-      it "should have the ability on all" do
-        expect(subject).to be_able_to(:create, :all)
-      end
-    end
-  end
+  let(:user) { FactoryGirl.create(:user) }
 
   describe "#upload_permissions", uploads: true do
-    let!(:resource) { FactoryGirl.build(:component) }
+    let(:resource) { FactoryGirl.build(:component) }
     context "user has edit permission" do
       before { subject.can(:edit, resource) }
-      it_behaves_like "it can", :upload
+      it { is_expected.to be_able_to(:upload, resource) }
     end
     context "user does not have edit permission" do
       before { subject.cannot(:edit, resource) }
-      it_behaves_like "it cannot", :upload
+      it { is_expected.not_to be_able_to(:upload, resource) }
     end
   end
 
@@ -50,52 +23,62 @@ describe Ability, type: :model, abilities: true do
     context "on an object" do
       context "which is a Component", components: true do
         let!(:resource) { FactoryGirl.create(:component) }
-        context "and user does NOT have the Component Downloader role" do
-          before do
-            allow(subject).to receive(:has_role?).with("Component Downloader") { false }
-          end
+        context "and user does NOT have the downloader role" do
           context "and user has edit permission" do
-            before { subject.can(:edit, resource) }
-            it_behaves_like "it can", :download
+            before do
+              resource.edit_users = [user.user_key]
+              resource.save
+            end
+            it { is_expected.to be_able_to(:download, resource) }
           end
           context "and user has read permission" do
-            before { subject.can(:read, resource) }
-            it_behaves_like "it cannot", :download
+            before do
+              resource.read_users = [user.user_key]
+              resource.save
+            end
+            it { is_expected.not_to be_able_to(:download, resource) }
           end
           context "and user lacks read permission" do
-            before { subject.cannot(:read, resource) }
-            it_behaves_like "it cannot", :download
+            it { is_expected.not_to be_able_to(:download, resource) }
           end
         end
 
-        context "and user has the Component Downloader role", roles: true do
+        context "and user has the downloader role", roles: true do
           before do
-            allow(subject).to receive(:has_role?).with("Component Downloader") { true }
+            resource.roleAssignments.downloader << user.principal_name
+            resource.save
           end
           context "and user has edit permission" do
-            before { subject.can(:edit, resource) }
-            it_behaves_like "it can", :download
+            before do
+              resource.edit_users = [user.user_key]
+              resource.save
+            end
+            it { is_expected.to be_able_to(:download, resource) }
           end
           context "and user has read permission" do
-            before { subject.can(:read, resource) }
-            it_behaves_like "it can", :download
+            before do
+              resource.read_users = [user.user_key]
+              resource.save
+            end
+            it { is_expected.to be_able_to(:download, resource) }
           end
           context "and user lacks read permission" do
-            before { subject.cannot(:read, resource) }
-            it_behaves_like "it cannot", :download
+            it { is_expected.not_to be_able_to(:download, resource) }
           end          
         end
       end
 
       context "which is not a Component" do
-        let(:resource) { FactoryGirl.build(:test_content) }
+        let(:resource) { FactoryGirl.create(:test_content) }
         context "and user has read permission" do
-          before { subject.can(:read, resource) }
-          it_behaves_like "it can", :download
+          before do
+            resource.read_users = [user.user_key]
+            resource.save
+          end
+          it { is_expected.to be_able_to(:download, resource) }
         end
         context "and user lacks read permission" do
-          before { subject.cannot(:read, resource) }
-          it_behaves_like "it cannot", :download
+          it { is_expected.not_to be_able_to(:download, resource) }
         end                  
       end
     end
@@ -104,29 +87,35 @@ describe Ability, type: :model, abilities: true do
 
       context "named 'content'", content: true do
         let(:resource) { obj.content }
-
         context "and object is a Component", components: true do
-          let(:obj) { FactoryGirl.build(:component) }
-          context "and user does not have the Component Downloader role" do
+          let(:obj) { FactoryGirl.create(:component) }
+          context "and user does not have the downloader role" do
             context "and user has read permission on the object" do
-              before { subject.can(:read, obj.pid) }
-              it_behaves_like "it cannot", :download
+              before do
+                obj.read_users = [user.user_key]
+                obj.save
+              end
+              it { is_expected.not_to be_able_to(:download, resource) }
             end
             context "and user lacks read permission on the object" do
-              before { subject.cannot(:read, obj.pid) }
-              it_behaves_like "it cannot", :download
+              it { is_expected.not_to be_able_to(:download, resource) }
             end
           end
 
-          context "and user has the Component Downloader role", roles: true do
-            before { allow(subject).to receive(:has_role?).with("Component Downloader") { true } }
+          context "and user has the downloader role", roles: true do
+            before do
+              obj.roleAssignments.downloader << user.principal_name
+              obj.save
+            end
             context "and user has read permission on the object" do
-              before { subject.can(:read, obj.pid) }
-              it_behaves_like "it can", :download
+              before do
+                obj.read_users = [user.user_key]
+                obj.save
+              end
+              it { is_expected.to be_able_to(:download, resource) }
             end
             context "and user lacks read permission on the object" do
-              before { subject.cannot(:read, obj.pid) }
-              it_behaves_like "it cannot", :download
+              it { is_expected.not_to be_able_to(:download, resource) }
             end          
           end
         end
@@ -134,27 +123,31 @@ describe Ability, type: :model, abilities: true do
         context "and object is not a Component" do
           let(:obj) { FactoryGirl.create(:test_content) }
           context "and user has read permission on the object" do
-            before { subject.can(:read, obj.pid) }
-            it_behaves_like "it can", :download
+            before do
+              obj.read_users = [user.user_key]
+              obj.save
+            end
+            it { is_expected.to be_able_to(:download, resource) }
           end
           context "and user lacks read permission on the object" do
-            before { subject.cannot(:read, obj.pid) }
-            it_behaves_like "it cannot", :download
+            it { is_expected.not_to be_able_to(:download, resource) }
           end                  
         end
 
       end
 
       context "not named 'content'" do
-        let(:obj) { FactoryGirl.build(:test_model) }
+        let(:obj) { FactoryGirl.create(:test_model) }
         let(:resource) { obj.descMetadata }
         context "and user has read permission on the object" do
-          before { subject.can(:read, obj.pid) }
-          it_behaves_like "it can", :download
+          before do
+            obj.read_users = [user.user_key]
+            obj.save
+          end
+          it { is_expected.to be_able_to(:download, resource) }
         end
         context "and user lacks read permission on the object" do
-          before { subject.cannot(:read, obj.pid) }
-          it_behaves_like "it cannot", :download
+          it { is_expected.not_to be_able_to(:download, resource) }
         end        
       end
 
@@ -171,7 +164,7 @@ describe Ability, type: :model, abilities: true do
     let(:resource) { Ddr::Events::Event.new(pid: object.pid) }
     context "event is associated with a user" do
       before { resource.user = user }
-      it_behaves_like "it can", :read
+      it { is_expected.to be_able_to(:read, resource) }
     end
     context "event is not associated with a user" do      
       context "and can read object" do
@@ -179,10 +172,10 @@ describe Ability, type: :model, abilities: true do
           object.read_users = [user.user_key]
           object.save!
         end
-        it_behaves_like "it can", :read
+        it { is_expected.to be_able_to(:read, resource) }
       end
       context "and cannot read object" do
-        it_behaves_like "it cannot", :read
+        it { is_expected.not_to be_able_to(:read, resource) }
       end
     end
   end
@@ -190,12 +183,12 @@ describe Ability, type: :model, abilities: true do
   describe "#export_sets_permissions", export_sets: true do
     let(:resource) { ExportSet.new(user: user) }
     context "associated user" do
-      it_behaves_like "it can", :manage
+      it { is_expected.to be_able_to(:manage, resource) }
     end
     context "other user" do
       subject { described_class.new(other_user) }
       let(:other_user) { FactoryGirl.create(:user) }
-      it_behaves_like "it cannot", :read
+      it { is_expected.not_to be_able_to(:read, resource) }
     end
   end
   
@@ -203,11 +196,11 @@ describe Ability, type: :model, abilities: true do
     let(:resource) { IngestFolder }
     context "user has no permitted ingest folders" do
       before { allow(resource).to receive(:permitted_folders).with(user).and_return([]) }
-      it_behaves_like "it cannot", :create
+      it { is_expected.not_to be_able_to(:create, resource) }
     end
     context "user has at least one permitted ingest folder" do
       before { allow(resource).to receive(:permitted_folders).with(user).and_return(['dir']) }
-      it_behaves_like "it can", :create
+      it { is_expected.to be_able_to(:create, resource) }
     end
   end
 
@@ -216,17 +209,17 @@ describe Ability, type: :model, abilities: true do
       let(:resource) { FactoryGirl.build(:test_model_omnibus) }
       context "and user lacks edit rights" do
         before { subject.cannot(:edit, resource) }
-        it_behaves_like "it cannot", :add_attachment
+        it { is_expected.not_to be_able_to(:add_attachment, resource) }
       end
       context "and user has edit rights" do
         before { subject.can(:edit, resource) }
-        it_behaves_like "it can", :add_attachment
+        it { is_expected.to be_able_to(:add_attachment, resource) }
       end
     end
     context "object cannot have attachments" do
       let(:resource) { FactoryGirl.build(:test_model) }
       before { subject.can(:edit, resource) }
-      it_behaves_like "it cannot", :add_attachment
+      it { is_expected.not_to be_able_to(:add_attachment, resource) }
     end
   end
 
@@ -235,17 +228,17 @@ describe Ability, type: :model, abilities: true do
       before { subject.can(:edit, resource) }
       context "and object can have children" do
         let(:resource) { FactoryGirl.build(:collection) }
-        it_behaves_like "it can", :add_children
+        it { is_expected.to be_able_to(:add_children, resource) }
       end
       context "but object cannot have children" do
         let(:resource) { FactoryGirl.build(:component) }
-        it_behaves_like "it cannot", :add_children
+        it { is_expected.not_to be_able_to(:add_children, resource) }
       end
     end
     context "user lacks edit rights on attached_to object" do
       let(:resource) { FactoryGirl.build(:collection) }
       before { subject.cannot(:edit, resource) }
-      it_behaves_like "it cannot", :add_children
+      it { is_expected.not_to be_able_to(:add_children, resource) }
     end    
   end
 

@@ -9,8 +9,6 @@ class User < ActiveRecord::Base
   has_many :export_sets, :dependent => :destroy
   has_many :events, :inverse_of => :user
 
-  has_and_belongs_to_many :roles
-
   delegate :can?, :cannot?, to: :ability
 
   validates_uniqueness_of :username, :case_sensitive => false
@@ -47,26 +45,16 @@ class User < ActiveRecord::Base
     member_of? group_service.superuser_group
   end
 
-  def effective_roles
-    @effective_roles ||= (roles | Role.where.not(groups: nil).reject { |r| (r.groups & groups).empty? })
+  def principal_name
+    user_key
   end
 
-  def role_names
-    effective_roles.map(&:name)
+  def principals
+    groups.dup << principal_name
   end
 
-  def role_abilities
-    effective_roles.map(&:ability_params).compact
-  end
-
-  def has_role? role
-    if role.is_a? Role
-      effective_roles.include? role
-    elsif role.is_a? String
-      role_names.include? role
-    else
-      raise ArgumentError, "role must be a Role or a String"
-    end
+  def has_role?(obj, role)
+    obj.principal_has_role?(principals, role)
   end
 
 end
