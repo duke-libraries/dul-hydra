@@ -52,7 +52,7 @@ module DulHydra::Batch::Models
             it_behaves_like "an invalid manifest"
           end
           context "invalid manifest sublevel key" do
-            let(:key) { DulHydra::Datastreams::DESC_METADATA }
+            let(:key) { Ddr::Datastreams::DESC_METADATA }
             let(:error_message) { I18n.t('batch.manifest.errors.invalid_subkey', :key => key, :subkey => badkey) }
             before { manifest.manifest_hash[key] = { badkey => value } }
             it_behaves_like "an invalid manifest"
@@ -67,7 +67,7 @@ module DulHydra::Batch::Models
             it_behaves_like "an invalid manifest"
           end
           context "datastream filepath" do
-            let(:key) { DulHydra::Datastreams::DESC_METADATA }
+            let(:key) { Ddr::Datastreams::DESC_METADATA }
             let(:bad_location) { File.join(File::SEPARATOR, 'tmp', 'unreadable','filepath') }
             let(:error_message) { I18n.t('batch.manifest.errors.datastream_filepath_error', :datastream => key, :filepath => bad_location) }
             before { manifest.manifest_hash[key] = { Manifest::LOCATION => bad_location } }

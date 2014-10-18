@@ -110,7 +110,7 @@ class ExportSet < ActiveRecord::Base
       logger.debug "Export set descriptive metadata written to file."
     end
     unless File.size?(file_name)
-      raise DulHydra::Error, "Unable to archive empty or non-existent file." 
+      raise Ddr::Models::Error, "Unable to archive empty or non-existent file." 
     end
     update_archive(file_name)
   ensure
@@ -145,7 +145,7 @@ class ExportSet < ActiveRecord::Base
         end # objects.each      
       end # Zip::ZipFile.open
       unless File.size?(zip_path)
-        raise DulHydra::Error, "Unable to archive empty or non-existent file." 
+        raise Ddr::Models::Error, "Unable to archive empty or non-existent file." 
       end
       # update seems to be the way to get paperclip to work 
       # when not using file upload form submission to create the attachment

@@ -112,7 +112,7 @@ module DulHydra::Batch::Models
           errs << I18n.t('batch.manifest.errors.relationship_object_not_found', :relationship => relationship, :pid => pid)
         end
         if obj && model
-          object_class = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, relationship))
+          object_class = Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(model, relationship))
           errs << I18n.t('batch.manifest.errors.relationship_object_class_mismatch', :relationship => relationship, :exp_class => object_class, :actual_class => obj.class) unless obj.is_a?(object_class)
         end
       else
@@ -140,7 +140,7 @@ module DulHydra::Batch::Models
   
     def validate_checksum_type
       errs = []
-      unless DulHydra::Datastreams::CHECKSUM_TYPES.include?(checksum_type)
+      unless Ddr::Datastreams::CHECKSUM_TYPES.include?(checksum_type)
         errs << I18n.t('batch.manifest.errors.checksum_type_invalid', :type => checksum_type)
       end
       return errs

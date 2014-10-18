@@ -32,7 +32,7 @@ shared_examples "a repository object controller" do
 
   describe "#event" do
     let!(:object) { FactoryGirl.create(object_symbol) }
-    let(:event) { UpdateEvent.create(pid: object.pid) }
+    let(:event) { Ddr::Events::UpdateEvent.create(pid: object.pid) }
     before { controller.current_ability.can(:read, object) }
     it "should render the event" do
       get :event, id: object, event_id: event
@@ -124,7 +124,7 @@ shared_examples "a repository object controller" do
         expect(assigns(:current_object).edit_users).to include(user.user_key)
       end
       it "should record a creation event" do
-        expect{ create_object.call }.to change { CreationEvent.count }.by(1)
+        expect{ create_object.call }.to change { Ddr::Events::CreationEvent.count }.by(1)
       end
       it "should redirect after creating the new object" do
         expect(controller).to receive(:after_create_redirect).and_call_original

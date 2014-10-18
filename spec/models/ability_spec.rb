@@ -168,7 +168,7 @@ describe Ability, type: :model, abilities: true do
 
   describe "#events_permissions", events: true do
     let(:object) { FactoryGirl.create(:test_model) }
-    let(:resource) { Event.new(pid: object.pid) }
+    let(:resource) { Ddr::Events::Event.new(pid: object.pid) }
     context "event is associated with a user" do
       before { resource.user = user }
       it_behaves_like "it can", :read

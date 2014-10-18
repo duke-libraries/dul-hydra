@@ -51,8 +51,8 @@ class Ability
   end
 
   def events_permissions
-    can :read, Event, user: current_user
-    can :read, Event do |e|
+    can :read, Ddr::Events::Event, user: current_user
+    can :read, Ddr::Events::Event do |e|
       can? :read, e.pid
     end
   end
@@ -89,7 +89,7 @@ class Ability
       end
     end
     can :download, ActiveFedora::Datastream do |ds|
-      if ds.dsid == DulHydra::Datastreams::CONTENT and ds.digital_object.original_class == Component
+      if ds.dsid == Ddr::Datastreams::CONTENT and ds.digital_object.original_class == Component
         can?(:read, ds) and has_role?("Component Downloader")
       else
         can? :read, ds
@@ -98,13 +98,13 @@ class Ability
   end
 
   def upload_permissions
-    can :upload, DulHydra::HasContent do |obj|
+    can :upload, Ddr::Models::HasContent do |obj|
       can?(:edit, obj)
     end
   end
 
   def children_permissions
-    can :add_children, DulHydra::HasChildren do |obj|
+    can :add_children, Ddr::Models::HasChildren do |obj|
       can?(:edit, obj)
     end
   end
@@ -126,7 +126,7 @@ class Ability
   end
 
   def attachment_permissions
-    can :add_attachment, DulHydra::HasAttachments do |obj|
+    can :add_attachment, Ddr::Models::HasAttachments do |obj|
       can?(:edit, obj)
     end
   end

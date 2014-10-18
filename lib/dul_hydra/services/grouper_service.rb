@@ -19,7 +19,7 @@ module DulHydra
             g = c.groups(DulHydra.remote_groups_name_filter)
             groups = g if c.ok?
           end
-        rescue DulHydra::Error
+        rescue Ddr::Models::Error
         end
         groups
       end
@@ -64,7 +64,7 @@ module DulHydra
       private
 
       def self.client
-        raise DulHydra::Error unless configured?
+        raise Ddr::Models::Error unless configured?
         yield Grouper::Rest::Client::Resource.new(config["url"], 
                                                   user: config["user"], 
                                                   password: config["password"],

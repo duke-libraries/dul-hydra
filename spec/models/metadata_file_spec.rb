@@ -14,7 +14,7 @@ shared_examples "a successful metadata file processing" do
   it "should create a batch with an appropriate UpdateBatchObject" do
     expect(@batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_READY)
     expect(@batch_object).to be_a(DulHydra::Batch::Models::UpdateBatchObject)
-    expect(@datastream.name).to eq(DulHydra::Datastreams::DESC_METADATA)
+    expect(@datastream.name).to eq(Ddr::Datastreams::DESC_METADATA)
     expect(@datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
     expect(@datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
     expect(RDF::Reader.for(:ntriples).new(@datastream.payload)).to be_isomorphic_with(RDF::Reader.for(:ntriples).new(expected_md))
@@ -84,7 +84,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
     let(:metadata_file) { FactoryGirl.build(:metadata_file) }
 
     let(:expected_md) do
-      ds = DulHydra::Datastreams::DescriptiveMetadataDatastream.new(nil, 'descMetadata')
+      ds = Ddr::Datastreams::DescriptiveMetadataDatastream.new(nil, 'descMetadata')
       ds.title = "Updated Title"
       ds.identifier = "test12345"
       ds.description = 'This is some description; this is "some more" description.'

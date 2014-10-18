@@ -124,8 +124,8 @@ module DulHydra::Batch::Scripts
                                           :payload_type => payload_type,
                                           :batch_object => batch_object)
         # For now, we assume that the only datastream for which we might have a checksum
-        # in the DulHydra::Datastreams::CONTENT datastream
-        if datastream.eql?(DulHydra::Datastreams::CONTENT)
+        # in the Ddr::Datastreams::CONTENT datastream
+        if datastream.eql?(Ddr::Datastreams::CONTENT)
           ds.checksum = manifest_object.checksum if manifest_object.checksum?
           ds.checksum_type = manifest_object.checksum_type if manifest_object.checksum_type?
         end

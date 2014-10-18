@@ -77,7 +77,7 @@ describe ComponentsController, type: :controller, components: true do
           expect(assigns(:current_object)).to have_thumbnail
         end
         it "should create an event" do
-          expect{ create_component }.to change{ CreationEvent.count }.by(1)
+          expect{ create_component }.to change{ Ddr::Events::CreationEvent.count }.by(1)
         end
         it "should redirect to the component edit page" do
           create_component
@@ -99,7 +99,7 @@ describe ComponentsController, type: :controller, components: true do
         #     expect{ create_component checksum = bad_checksum }.not_to change{ Component.count }
         #   end
         #   it "should not create an event" do
-        #     expect{ create_component checksum = bad_checksum }.not_to change{ CreationEvent.count }
+        #     expect{ create_component checksum = bad_checksum }.not_to change{ Ddr::Events::CreationEvent.count }
         #   end
         # end
       end

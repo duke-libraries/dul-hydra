@@ -26,11 +26,11 @@ module ActiveFedora
     end
 
     def has_content_metadata?
-      self.is_a?(DulHydra::HasContentMetadata) && self.datastreams[DulHydra::Datastreams::CONTENT_METADATA].has_content?
+      self.is_a?(DulHydra::HasContentMetadata) && self.datastreams[Ddr::Datastreams::CONTENT_METADATA].has_content?
     end
 
     def describable?
-      self.is_a? DulHydra::Describable
+      self.is_a? Ddr::Models::Describable
     end
 
     def governable?
@@ -42,7 +42,7 @@ module ActiveFedora
     end
 
     def has_rights_metadata?
-      ds = self.datastreams[DulHydra::Datastreams::RIGHTS_METADATA]
+      ds = self.datastreams[Ddr::Datastreams::RIGHTS_METADATA]
       ds && ds.size && ds.size > 0
     end
     

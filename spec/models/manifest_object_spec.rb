@@ -74,11 +74,11 @@ module DulHydra::Batch::Models
           end
           context "datastream filepath" do
             let(:key1) { ManifestObject::DATASTREAMS }
-            let(:key2) { DulHydra::Datastreams::DESC_METADATA }
+            let(:key2) { Ddr::Datastreams::DESC_METADATA }
             let(:bad_location) { File.join(File::SEPARATOR, 'tmp', 'unreadable','filepath', 'metadata.xml') }
             let(:error_message) { I18n.t('batch.manifest_object.errors.datastream_filepath_error', :identifier => identifier, :datastream => key2, :filepath => bad_location) }
             before do
-              manifest_object.object_hash[key1] = [ DulHydra::Datastreams::DESC_METADATA ]
+              manifest_object.object_hash[key1] = [ Ddr::Datastreams::DESC_METADATA ]
               manifest_object.object_hash[key2] = bad_location
             end
             it_behaves_like "an invalid manifest object"

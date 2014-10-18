@@ -11,15 +11,15 @@ shared_examples "a describable object" do
   end
   describe "#desc_metadata_terms" do
     it "should have a default value" do
-      expect(object.desc_metadata_terms).to eq DulHydra::Datastreams::DescriptiveMetadataDatastream.term_names
+      expect(object.desc_metadata_terms).to eq Ddr::Datastreams::DescriptiveMetadataDatastream.term_names
     end
     describe "arguments" do
       it "with fixed results" do
-        expect(object.desc_metadata_terms(:dcterms)).to eq(DulHydra::Metadata::Vocabulary.term_names(RDF::DC11) + (DulHydra::Metadata::Vocabulary.term_names(RDF::DC) - DulHydra::Metadata::Vocabulary.term_names(RDF::DC11)))
-        expect(object.desc_metadata_terms(:dcterms)).to match_array DulHydra::Metadata::Vocabulary.term_names(RDF::DC)
-        expect(object.desc_metadata_terms(:duke)).to eq DulHydra::Metadata::Vocabulary.term_names(DukeTerms)
-        expect(object.desc_metadata_terms(:dcterms_elements11)).to eq DulHydra::Metadata::Vocabulary.term_names(RDF::DC11)
-        expect(object.desc_metadata_terms(:defined_attributes)).to match_array DulHydra::Metadata::Vocabulary.term_names(RDF::DC11)
+        expect(object.desc_metadata_terms(:dcterms)).to eq(Ddr::Metadata::Vocabulary.term_names(RDF::DC11) + (Ddr::Metadata::Vocabulary.term_names(RDF::DC) - Ddr::Metadata::Vocabulary.term_names(RDF::DC11)))
+        expect(object.desc_metadata_terms(:dcterms)).to match_array Ddr::Metadata::Vocabulary.term_names(RDF::DC)
+        expect(object.desc_metadata_terms(:duke)).to eq Ddr::Metadata::Vocabulary.term_names(Ddr::Metadata::DukeTerms)
+        expect(object.desc_metadata_terms(:dcterms_elements11)).to eq Ddr::Metadata::Vocabulary.term_names(RDF::DC11)
+        expect(object.desc_metadata_terms(:defined_attributes)).to match_array Ddr::Metadata::Vocabulary.term_names(RDF::DC11)
       end
       context "with variable results" do
         before do

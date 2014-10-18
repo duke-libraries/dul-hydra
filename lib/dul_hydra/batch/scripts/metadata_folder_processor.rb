@@ -67,7 +67,7 @@ module DulHydra::Batch::Scripts
     def create_batch_object_md_datastream(batch_object, scanner_object)
       DulHydra::Batch::Models::BatchObjectDatastream.create(
           batch_object: batch_object,
-          name: DulHydra::Datastreams::DESC_METADATA,
+          name: Ddr::Datastreams::DESC_METADATA,
           operation: DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE,
           payload: scanner_object[:md],
           payload_type: DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
@@ -98,9 +98,9 @@ module DulHydra::Batch::Scripts
                     dmdsec_id.partition(COLLECTION_ID_SEPARATOR).last :
                     dmdsec_id
           begin
-            obj_pid = DulHydra::Utils.pid_for_identifier(obj_id, collection: @collection)
+            obj_pid = Ddr::Utils.pid_for_identifier(obj_id, collection: @collection)
             warning("Repository object not found for identifier #{obj_id} in #{abbrev_file_loc}") unless obj_pid.present?
-          rescue DulHydra::Error => e
+          rescue Ddr::Models::Error => e
             error(e.message)
           end
           source_metadata = dmdsec.xpath("mdWrap/xmlData")
@@ -112,7 +112,7 @@ module DulHydra::Batch::Scripts
     end
     
     def object_metadata(xml_metadata, identifier, pid)
-      obj = DulHydra::Base.new(pid: pid)
+      obj = Ddr::Models::Base.new(pid: pid)
       obj.descMetadata.identifier << identifier
       nodeset = xml_metadata.children
       nodeset.each do |node|
@@ -140,10 +140,10 @@ module DulHydra::Batch::Scripts
         when "dcterms"
           RDF::DC
         when "duke"
-          DukeTerms
+          Ddr::Metadata::DukeTerms
         end
         if vocabulary.present?
-          unless DulHydra::Metadata::Vocabulary.term_names(vocabulary).include?(node.name.to_sym)
+          unless Ddr::Metadata::Vocabulary.term_names(vocabulary).include?(node.name.to_sym)
             error("Unknown element name #{node.name} in #{abbrev_file_loc}")              
           end
         else

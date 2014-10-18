@@ -15,7 +15,7 @@ shared_examples "an object that can have content" do
     let(:file) { fixture_file_upload("library-devil.tiff", "image/tiff") }
     before { object.upload file }
     it "should index the content ds control group" do
-      expect(object.to_solr).to include(DulHydra::IndexFields::CONTENT_CONTROL_GROUP)
+      expect(object.to_solr).to include(Ddr::IndexFields::CONTENT_CONTROL_GROUP)
     end
   end
 
@@ -122,7 +122,7 @@ shared_examples "an object that can have content" do
       expect { object.upload file }.to change(object, :content_changed?).from(false).to(true)
     end
     it "should check the file for viruses" do
-      expect(DulHydra::Services::Antivirus).to receive(:scan).with(file)
+      expect(Ddr::Services::Antivirus).to receive(:scan).with(file)
       object.upload file
     end
   end

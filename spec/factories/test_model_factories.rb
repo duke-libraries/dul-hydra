@@ -1,12 +1,12 @@
-class TestModel < DulHydra::Base
+class TestModel < Ddr::Models::Base
 end
 
 class TestContent < TestModel
-  include DulHydra::HasContent
+  include Ddr::Models::HasContent
 end
 
 class TestParent < TestModel
-  include DulHydra::HasChildren
+  include Ddr::Models::HasChildren
   has_many :children, property: :is_part_of, class_name: 'TestChild'
 end
 
@@ -15,14 +15,14 @@ class TestChild < TestModel
 end
 
 class TestContentMetadata < TestParent
-  include DulHydra::HasContentMetadata
+  include Ddr::Models::HasContentMetadata
 end
 
 class TestModelOmnibus < TestModel
-  include DulHydra::Governable
-  include DulHydra::HasContent
-  include DulHydra::HasContentMetadata
-  include DulHydra::HasAttachments
+  include Ddr::Models::Governable
+  include Ddr::Models::HasContent
+  include Ddr::Models::HasContentMetadata
+  include Ddr::Models::HasAttachments
   has_many :children, property: :is_part_of, class_name: 'TestChild'
   belongs_to :parent, property: :is_part_of, class_name: 'TestParent'
 end
