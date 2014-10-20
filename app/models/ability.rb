@@ -4,8 +4,6 @@ class Ability
 
   include Hydra::PolicyAwareAbility
 
-  delegate :role_abilities, :has_role?, to: :current_user
-
   def custom_permissions
     action_aliases
     discover_permissions
@@ -17,7 +15,6 @@ class Ability
     attachment_permissions
     children_permissions
     upload_permissions
-    role_permissions
   end
 
   def action_aliases
@@ -25,10 +22,6 @@ class Ability
     alias_action :attachments, :collection_info, :components, :event, :events, :items, :targets, to: :read
     # edit/update aliases
     alias_action :permissions, :default_permissions, to: :update
-  end
-
-  def role_permissions
-    role_abilities.each { |role_ability| can(*role_ability) }
   end
 
   def read_permissions
@@ -75,24 +68,24 @@ class Ability
   
   def download_permissions
     can :download, ActiveFedora::Base do |obj|
-      if obj.class == Component
-        can?(:edit, obj) or (can?(:read, obj) and has_role?("Component Downloader"))
+      if obj.is_a? Component
+        can?(:edit, obj) || (can?(:read, obj) && current_user.has_role?(obj, :downloader))
       else
         can? :read, obj
       end
     end
     can :download, SolrDocument do |doc|
       if doc.active_fedora_model == "Component"
-        can?(:read, doc) and has_role?("Component Downloader")
+        can?(:edit, doc) || (can?(:read, doc) && current_user.has_role?(doc, :downloader))
       else
         can? :read, doc
       end
     end
     can :download, ActiveFedora::Datastream do |ds|
       if ds.dsid == Ddr::Datastreams::CONTENT and ds.digital_object.original_class == Component
-        can?(:read, ds) and has_role?("Component Downloader")
+        can?(:edit, ds.pid) || (can?(:read, ds.pid) && current_user.has_role?(solr_doc(ds.pid), :downloader))
       else
-        can? :read, ds
+        can? :read, ds.pid
       end
     end
   end
@@ -200,6 +193,10 @@ class Ability
 
   def authenticated_user?
     current_user.persisted?
+  end
+
+  def solr_doc(pid)
+    SolrDocument.new(ActiveFedora::SolrService.query("id:\"#{pid}\"", rows: 1).first)
   end
 
 end

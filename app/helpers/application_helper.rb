@@ -238,7 +238,7 @@ module ApplicationHelper
   end
 
   def manage_menu
-    session[:manage_menu] ||= [Queue, Role].select { |entity| can? :manage, entity }
+    session[:manage_menu] ||= [Queue].select { |entity| can? :manage, entity }
   end
 
   def cancel_button args={}

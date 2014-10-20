@@ -16,11 +16,7 @@ DulHydra.configure do |config|
     write_headers: true,
     header_converters: :symbol
   }
-  config.create_menu_models = ["Collection", "Role", "IngestFolder", "MetadataFile"]
-  # config.external_file_store = ENV['EXTERNAL_FILE_STORE']
-  # config.external_file_subpath_pattern = Rails.env.test? ? "--" : ENV['EXTERNAL_FILE_SUBPATH_PATTERN']
-  # config.noid_template = "2.reeddeeddk"
-  # config.minter_statefile = Rails.env.test? ? "/tmp/minter-state" : ENV['MINTER_STATEFILE']
+  config.create_menu_models = ["Collection", "IngestFolder", "MetadataFile"]
 end
 
 # Load configuration for Grouper service, if present

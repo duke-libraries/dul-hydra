@@ -14,7 +14,8 @@ describe "export_sets/new.html.erb", type: :feature, export_sets: true do
       object_discover.save
       user.bookmarks.create(:document_id => object_read.pid)
       user.bookmarks.create(:document_id => object_discover.pid)
-      allow(user).to receive(:has_role?).with("Component Downloader") { true }
+      allow(user).to receive(:has_role?).with(object_read, :downloader) { true }
+      allow(user).to receive(:has_role?).with(object_discover, :downloader) { true }
       login_as user
     end
     it "should display a form with content-bearing bookmarked objects on which the user has download permission" do
