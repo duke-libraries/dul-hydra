@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
   def find_models_with_gated_discovery(model, opts={})
     solr_opts = {
       fq: gated_discovery_filters.join(" OR "), 
-      sort: "#{DulHydra::IndexFields::TITLE} ASC",
+      sort: "#{Ddr::IndexFields::TITLE} ASC",
       rows: 9999
     }
     solr_opts.merge! opts
