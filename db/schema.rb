@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141016183756) do
+ActiveRecord::Schema.define(version: 20141023185717) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"

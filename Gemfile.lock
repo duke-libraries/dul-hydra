@@ -1,13 +1,14 @@
 GIT
   remote: git://github.com/duke-libraries/ddr-models.git
-  revision: 9d5f0e898ede6758546daa765c2b344dc433ff28
-  ref: 9d5f0e898ede6758546daa765c2b344dc433ff28
+  revision: cff722c3f93e0c77709473d69ede8a0bbcac3c1a
+  ref: cff722c3f93e0c77709473d69ede8a0bbcac3c1a
   specs:
     ddr-models (1.1.0.pre)
+      active-fedora (~> 7.0)
       clamav
+      hydra-core (~> 7.2)
       hydra-derivatives
-      hydra-head (~> 7.2.0)
-      hydra-validations (~> 0.2)
+      hydra-validations
       noid (~> 0.7)
       rails (~> 4.1.6)
 
@@ -395,6 +396,7 @@ DEPENDENCIES
   deprecation
   devise (~> 3.1.1)
   devise-remote-user (= 0.3.0)
+  equivalent-xml
   factory_girl_rails (~> 4.4)
   grouper-rest-client
   hydra-derivatives
