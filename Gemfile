@@ -6,7 +6,8 @@ gem 'hydra-head', '~> 7.2.0'
 gem 'hydra-validations', '~> 0.2'
 gem 'hydra-derivatives'
 
-gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: '9d5f0e898ede6758546daa765c2b344dc433ff28'
+gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: 'cff722c3f93e0c77709473d69ede8a0bbcac3c1a'
+#gem 'ddr-models', github: 'duke-libraries/ddr-models', branch: 'develop'
 
 gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user', '0.3.0'
@@ -43,6 +44,10 @@ group :development, :test do
   gem 'orderly'
   gem 'launchy'
   gem 'database_cleaner'
+end
+
+group :test do
+  gem 'equivalent-xml'
 end
 
 group :production do
