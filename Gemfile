@@ -6,14 +6,12 @@ gem 'hydra-head', '~> 7.2.0'
 gem 'hydra-validations', '~> 0.2'
 gem 'hydra-derivatives'
 
-gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: 'cff722c3f93e0c77709473d69ede8a0bbcac3c1a'
-#gem 'ddr-models', github: 'duke-libraries/ddr-models', branch: 'develop'
+gem 'ddr-models', github: 'duke-libraries/ddr-models', tag: 'v1.1.0'
 
 gem 'devise', '~> 3.1.1'
 gem 'devise-remote-user', '0.3.0'
 gem 'grouper-rest-client'
 gem 'deprecation'
-gem 'clamav'
 
 gem 'sqlite3'
 gem 'log4r'
@@ -32,9 +30,6 @@ gem 'mime-types', '~> 1.19'
 # Export sets
 gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 4.2.0'
-
-# Noids
-gem 'noid', '~> 0.7'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.0.0'
