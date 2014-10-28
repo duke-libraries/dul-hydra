@@ -1,9 +1,9 @@
 GIT
   remote: git://github.com/duke-libraries/ddr-models.git
-  revision: cff722c3f93e0c77709473d69ede8a0bbcac3c1a
-  ref: cff722c3f93e0c77709473d69ede8a0bbcac3c1a
+  revision: 818a3832445752e7304e3d18eb6ead971f1f1c0c
+  tag: v1.1.0
   specs:
-    ddr-models (1.1.0.pre)
+    ddr-models (1.1.0)
       active-fedora (~> 7.0)
       clamav
       hydra-core (~> 7.2)
@@ -204,7 +204,7 @@ GEM
       redis
     net-http-persistent (1.9)
     netrc (0.7.7)
-    noid (0.7.0)
+    noid (0.7.1)
     nokogiri (1.6.3.1)
       mini_portile (= 0.6.0)
     nom-xml (0.5.1)
@@ -390,7 +390,6 @@ PLATFORMS
 
 DEPENDENCIES
   capybara (~> 2.0)
-  clamav
   database_cleaner
   ddr-models!
   deprecation
@@ -409,7 +408,6 @@ DEPENDENCIES
   mime-types (~> 1.19)
   mysql2
   nest (= 1.1.2)
-  noid (~> 0.7)
   orderly
   paperclip (~> 4.2.0)
   rails (~> 4.1.6)
