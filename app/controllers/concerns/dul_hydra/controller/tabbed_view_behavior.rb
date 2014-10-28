@@ -14,10 +14,6 @@ module DulHydra
         @current_tabs ||= Tabs.new(self)
       end
 
-      def datastream_download_url_for dsid
-        url_for controller: "downloads", action: "show", id: current_object, datastream_id: dsid
-      end
-
       def show_ds_download_link? ds
         ds.has_content? && can?(:download, ds)
       end
