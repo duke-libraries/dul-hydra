@@ -112,7 +112,7 @@ module ApplicationHelper
   def render_download_link(args = {})
     return unless args[:document]
     label = args.fetch(:label, "Download")
-    link_to label, download_url_for(args[:document]), class: args[:css_class], id: args[:css_id]
+    link_to label, download_path(args[:document]), class: args[:css_class], id: args[:css_id]
   end
   
   def render_download_icon(args = {})
@@ -218,10 +218,6 @@ module ApplicationHelper
 
   def document_or_object_url(doc_or_obj)
     url_for controller: doc_or_obj.controller_name, action: "show", id: doc_or_obj
-  end
-
-  def download_url_for(doc_or_obj)
-    url_for controller: "downloads", action: "show", id: doc_or_obj
   end
 
   def model_options_for_select(model, opts={})

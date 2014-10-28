@@ -32,20 +32,11 @@ DulHydra::Application.routes.draw do
   def content_routes
     get 'upload'
     patch 'upload'
-    get 'download' => 'downloads#show'
   end
 
   def event_routes
     get 'events'
     get 'events/:event_id' => :event
-  end
-
-  def thumbnail_routes
-    get 'thumbnail' => 'thumbnail#show'
-  end
-
-  def datastream_routes
-    get 'datastreams/:datastream_id' => 'downloads#show'
   end
 
   def policy_routes
@@ -56,7 +47,6 @@ DulHydra::Application.routes.draw do
   def repository_routes
     rights_routes
     event_routes
-    datastream_routes
   end
 
   def repository_contraints
@@ -105,11 +95,13 @@ DulHydra::Application.routes.draw do
     member do
       rights_routes
       policy_routes
-      datastream_routes
       event_routes
     end
   end
   resources :thumbnail, only: :show, constraints: {id: pid_constraint}
+
+  # Downloads
+  get 'download/:id(/:datastream_id)' => 'downloads#show', :constraints => {id: pid_constraint}, as: 'download'
 
   resources :export_sets do
     member do

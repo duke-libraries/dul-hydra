@@ -33,7 +33,7 @@ module DulHydra
                                         url_for(action: "permissions"),
                                         can?(:permissions, current_object)),
                           TabAction.new("download",
-                                        datastream_download_url_for("rightsMetadata"),
+                                        download_path(current_object, "rightsMetadata"),
                                         show_ds_download_link?(current_object.rightsMetadata))
                          ]
                 )

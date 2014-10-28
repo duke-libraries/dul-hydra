@@ -24,18 +24,9 @@ shared_examples "a repository object router" do
   it "should have an event route" do
     expect(get: "/#{controller}/duke:1/events/1").to route_to(controller: controller, action: "event", id: "duke:1", event_id: "1")
   end
-  it "should have a thumbnail route" do
-    expect(:get => "/thumbnail/duke:1").to route_to(controller: "thumbnail", action: "show", id: "duke:1")
-  end
-  it "should have datastream routes" do
-    expect(:get => "/#{controller}/duke:1/datastreams/descMetadata").to route_to(controller: "downloads", action: "show", id: "duke:1", datastream_id: "descMetadata")
-  end
 end
 
 shared_examples "a content-bearing object router" do
-  it "should have a download route" do
-    expect(get: "/#{controller}/duke:1/download").to route_to(controller: "downloads", action: "show", id: "duke:1")
-  end
   it "should have a upload routes" do
     expect(get: "/#{controller}/duke:1/upload").to route_to(controller: controller, action: "upload", id: "duke:1")
     expect(patch: "/#{controller}/duke:1/upload").to route_to(controller: controller, action: "upload", id: "duke:1")
