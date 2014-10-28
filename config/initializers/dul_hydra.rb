@@ -47,6 +47,3 @@ Warden::Manager.after_set_user do |user, auth, opts|
 end
 
 Blacklight::Configuration.default_values[:http_method] = :post
-
-Ddr::Services::Antivirus.load!
-
