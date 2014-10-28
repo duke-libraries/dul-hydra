@@ -39,7 +39,7 @@ module DulHydra
                                         url_for(action: "edit"),
                                         can?(:edit, current_object)),
                           TabAction.new("download",
-                                        datastream_download_url_for("descMetadata"),
+                                        download_path(current_object, "descMetadata"),
                                         show_ds_download_link?(current_object.descMetadata))
                          ]
                 )

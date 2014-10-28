@@ -38,7 +38,7 @@ module DulHydra
                                         url_for(action: "default_permissions"),
                                         can?(:default_permissions, current_object)),
                           TabAction.new("download",
-                                        datastream_download_url_for("defaultRights"),
+                                        download_path(current_object, "defaultRights"),
                                         show_ds_download_link?(current_object.defaultRights))
                          ]
                 )
