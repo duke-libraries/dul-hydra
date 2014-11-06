@@ -1,16 +1,9 @@
 source 'http://rubygems.org'
 
 gem 'rails', '~> 4.1.6'
-
 gem 'hydra-head', '~> 7.2.0'
-gem 'hydra-validations', '~> 0.2'
-gem 'hydra-derivatives'
-
-gem 'ddr-models', github: 'duke-libraries/ddr-models', tag: 'v1.1.0'
-
+gem 'ddr-models', '~> 1.2.0'
 gem 'devise', '~> 3.1.1'
-gem 'devise-remote-user', '0.3.0'
-gem 'grouper-rest-client'
 gem 'deprecation'
 
 gem 'sqlite3'

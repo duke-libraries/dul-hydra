@@ -12,6 +12,9 @@ require 'database_cleaner'
 
 DatabaseCleaner.strategy = :truncation
 
+Ddr::Antivirus.scanner_adapter = :null
+Ddr::Antivirus.logger = Logger.new(File::NULL)
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
