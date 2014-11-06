@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    return Superuser.new if acting_as_superuser?
+    return Ddr::Auth::Superuser.new if acting_as_superuser?
     current_user ? current_user.ability : Ability.new(nil)
   end
 
@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
   end
 
   def group_service
-    @group_service ||= DulHydra::Services::RemoteGroupService.new(request.env)
+    @group_service ||= Ddr::Auth::RemoteGroupService.new(request.env)
   end
 
   def all_permissions

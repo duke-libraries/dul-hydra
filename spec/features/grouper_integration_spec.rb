@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'dul_hydra'
 
 describe "Grouper integration", :type => :feature do
   let(:user) { FactoryGirl.create(:user) }
@@ -9,7 +8,7 @@ describe "Grouper integration", :type => :feature do
     object.read_groups = ["duke:library:repository:ddr:foo:bar"]
     object.save!
     Warden.on_next_request do |proxy|
-      proxy.env[DulHydra.remote_groups_env_key] = "urn:mace:duke.edu:groups:library:repository:ddr:foo:bar"
+      proxy.env[Ddr::Auth.remote_groups_env_key] = "urn:mace:duke.edu:groups:library:repository:ddr:foo:bar"
       proxy.set_user user
     end
   end
