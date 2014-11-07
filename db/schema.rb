@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141107191329) do
+ActiveRecord::Schema.define(version: 20141107192133) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -151,20 +151,6 @@ ActiveRecord::Schema.define(version: 20141107191329) do
 
   add_index "minted_ids", ["minted_id"], name: "index_minted_ids_on_minted_id", unique: true
   add_index "minted_ids", ["referent"], name: "index_minted_ids_on_referent"
-
-  create_table "preservation_events", force: true do |t|
-    t.datetime "event_date_time"
-    t.text     "event_detail"
-    t.string   "event_type"
-    t.string   "event_id_type"
-    t.string   "event_id_value"
-    t.string   "event_outcome"
-    t.text     "event_outcome_detail_note"
-    t.string   "linking_object_id_type"
-    t.string   "linking_object_id_value"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-  end
 
   create_table "searches", force: true do |t|
     t.text     "query_params"
