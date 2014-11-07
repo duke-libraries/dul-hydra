@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141106183220) do
+ActiveRecord::Schema.define(version: 20141107191329) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -175,10 +175,6 @@ ActiveRecord::Schema.define(version: 20141106183220) do
   end
 
   add_index "searches", ["user_id"], name: "index_searches_on_user_id"
-
-  create_table "superusers", force: true do |t|
-    t.integer "user_id", null: false
-  end
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false
