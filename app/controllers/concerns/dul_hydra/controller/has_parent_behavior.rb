@@ -5,6 +5,7 @@ module DulHydra
 
       included do
         helper_method :parent
+        before_action :find_parent, only: [:new, :create]
         before_action :authorize_add_children!, only: [:new, :create]
         before_action :set_parent, only: :create
         before_action :copy_admin_policy_or_permissions, only: :create
@@ -17,7 +18,11 @@ module DulHydra
       end
 
       def parent
-        @parent ||= ActiveFedora::Base.find parent_param
+        @parent ||= current_object.parent
+      end
+
+      def find_parent
+        @parent = ActiveFedora::Base.find(parent_param)
       end
 
       def parent_param

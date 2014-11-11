@@ -134,23 +134,6 @@ module ApplicationHelper
     render partial: 'document_summary', locals: {document: document}
   end
 
-  def get_associated_document(document)
-    [:is_member_of_collection, :is_part_of, :is_attached_to].each do |assoc|
-      associated_pid = document.association(assoc)
-      return [assoc, get_solr_response_for_field_values(:id, associated_pid)[1].first] if associated_pid
-    end
-    nil
-  end
-
-  def associated_documents(document)
-    results = []
-    while result = get_associated_document(document) do
-      results << result
-      document = result[1]
-    end
-    results
-  end
-
   def format_date(date)
     if date
       date = Time.parse(date) if !date.respond_to?(:localtime)

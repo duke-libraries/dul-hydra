@@ -13,7 +13,9 @@
 </div>
 <div class="col-md-4" id="object-sidebar">
   <%= render 'object_summary' %>
-  <%= render 'related_objects' %>
+  <ul class="list-group" id="related-objects">
+	<%= render 'related_objects' %>
+  </ul>
   <%= render 'object_info' %>
 </div>
 <% end %>
