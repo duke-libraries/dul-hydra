@@ -49,6 +49,7 @@ en:
       is_part_of: 'Part of Item'
       is_member_of_collection: 'Member of Collection'
       is_attached_to: 'Attached to'
+      is_external_target_for: 'External Target for'
     prompts:
       select: "Select %s ..."
     user:

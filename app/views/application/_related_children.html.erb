@@ -1,0 +1,5 @@
+<% count = current_object.children.count %>
+<li class="list-group-item">
+  <span class="badge"><%= count %></span>
+  <%= render partial: 'link_to_children', locals: {count: count} %>
+</li>

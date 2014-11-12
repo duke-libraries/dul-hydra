@@ -1,0 +1,27 @@
+<%= render "related_children" %>
+
+<li class="list-group-item">
+  <% count = current_object.attachments.count %>
+  <span class="badge"><%= count %></span>
+  <% if count > 0 %>
+    <%= link_to_unless_current("Attachments", {action: "attachments"}) %>
+  <% else %>
+    Attachments
+  <% end %>
+  <% if can?(:create, Attachment) && can?(:add_attachment, current_object) %>
+    <%= link_to new_attachment_path(attached_to_id: current_object), class: "btn btn-success btn-xs", title: "Create a new Attachment" do %>
+      <span class="glyphicon glyphicon-plus"></span>
+    <% end %>
+  <% end %>
+</li>
+
+<li class="list-group-item">
+  <% count = current_object.targets.count %>
+  <span class="badge"><%= count %></span>
+  <% if count > 0 %>
+    <%= link_to_unless_current "Targets", {action: "targets"} %>
+  <% else %>
+    Targets
+  <% end %>
+</li>
+

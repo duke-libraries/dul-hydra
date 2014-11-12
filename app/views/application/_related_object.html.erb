@@ -1,0 +1,6 @@
+<% if related %>
+<li class="list-group-item">
+  <%= t("dul_hydra.associations.#{property}") %>:
+  <%= link_to related.title_display, related %>
+</li>
+<% end %>
