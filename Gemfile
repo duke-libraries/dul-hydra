@@ -36,6 +36,7 @@ end
 
 group :test do
   gem 'equivalent-xml'
+  gem "coveralls", require: false
 end
 
 group :production do
