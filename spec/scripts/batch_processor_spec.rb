@@ -119,7 +119,7 @@ module DulHydra::Batch::Scripts
       before { allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples) }
       context "successful initial run" do
         before { bp.execute }
-          it_behaves_like "a successful ingest batch"
+        it_behaves_like "a successful ingest batch"
       end
       context "successful restart run" do
         before do
