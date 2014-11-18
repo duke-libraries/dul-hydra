@@ -21,39 +21,27 @@ module DulHydra::Batch::Scripts
       context "collection" do
         let(:collection) { FactoryGirl.create(:collection) }
         context "pid" do
-          describe '#collection attribute should contain the appropriate collection' do
-            subject { super().collection attribute is_expected.to contain the appropriate collection }
-            it do
+          it "should have a collection attribute containing the appropriate collection" do
             expect(described_class.new({ folder: folder, collection: collection.pid }).collection).to eq(collection)
           end
-          end          
         end
         context "object" do
-          describe '#collection attribute should contain the appropriate collection' do
-            subject { super().collection attribute is_expected.to contain the appropriate collection }
-            it do
+          it 'should have a collection attribute containing the appropriate collection' do
             expect(described_class.new({ folder: folder, collection: collection }).collection).to eq(collection)
-          end
           end          
         end
       end
       context "user" do
         let(:user) { FactoryGirl.create(:user) }
         context "user key" do
-          describe '#user attribute should contain the appropriate user' do
-            subject { super().user attribute is_expected.to contain the appropriate user }
-            it do
+          it 'should have a user attribute set to the appropriate user' do
             expect(described_class.new({ folder: folder, user: user.user_key }).user).to eq(user)
-          end
           end          
         end
         context "object" do
-          describe '#user attribute should contain the appropriate user' do
-            subject { super().user attribute is_expected.to contain the appropriate user }
-            it do
+          it 'should have a user attribute set to the appropriate user' do
             expect(described_class.new({ folder: folder, user: user }).user).to eq(user)
           end
-          end          
         end
       end
       context "logger" do
