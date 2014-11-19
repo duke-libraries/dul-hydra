@@ -36,7 +36,7 @@ class IngestFoldersController < ApplicationController
   private
   
   def ingest_folder_params
-    params.require(:ingest_folder).permit(:collection_pid, :model, :file_creator, :base_path, :sub_path, :checksum_file, :checksum_type, :add_parents, :parent_id_length)
+    params.require(:ingest_folder).permit(:collection_pid, :model, :base_path, :sub_path, :checksum_file, :checksum_type, :add_parents, :parent_id_length)
   end
     
 end

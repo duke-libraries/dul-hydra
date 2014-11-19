@@ -2,12 +2,10 @@ en:
     activerecord:
         attributes:
             ingest_folder:
-                admin_policy_pid: Admin Policy
                 base_path: Base Path
                 checksum_file: Checksum File
                 checksum_type: Checksum Type
                 collection_pid: Collection
-                file_creator: File Creator
                 parent_id_length: Length of Item Identifier
                 sub_path: Folder Sub-Path
                 total_files_scanned: Files Scanned
