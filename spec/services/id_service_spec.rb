@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe DulHydra::Services::IdService do
 
+  before { skip }
+
   before { FileUtils.rm(DulHydra.minter_statefile) if File.exists?(DulHydra.minter_statefile)}
   after { FileUtils.rm(DulHydra.minter_statefile) }
   
