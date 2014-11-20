@@ -244,13 +244,8 @@ class IngestFolder < ActiveRecord::Base
             )
     add_datastream(
             obj,
-<<<<<<< HEAD
             Ddr::Datastreams::DESC_METADATA,
-            desc_metadata(file_identifier, file_creator),
-=======
-            DulHydra::Datastreams::DESC_METADATA,
             desc_metadata(file_identifier),
->>>>>>> hotfix-1217
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
     add_datastream(
