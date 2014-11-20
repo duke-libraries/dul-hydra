@@ -5,8 +5,6 @@ config:
     checksum_file:
         location: /dir/fixity/fedora_ingest/
         type: SHA-256
-    file_creators:
-        ABC: Alpha Bravo Charlie
 files:
     included_extensions:
         - .pdf

@@ -38,10 +38,6 @@ class IngestFolder < ActiveRecord::Base
     self.load_configuration.fetch(:config).fetch(:target_folder)
   end
   
-  def self.file_creators
-    self.load_configuration.fetch(:config).fetch(:file_creators)
-  end
-  
   def self.permitted_folders(user)
     user ||= User.new
     self.load_configuration.fetch(:files).fetch(:permissions).fetch(user.user_key, [])
@@ -249,7 +245,7 @@ class IngestFolder < ActiveRecord::Base
     add_datastream(
             obj,
             DulHydra::Datastreams::DESC_METADATA,
-            desc_metadata(file_identifier, file_creator),
+            desc_metadata(file_identifier),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
     add_datastream(
@@ -300,10 +296,9 @@ class IngestFolder < ActiveRecord::Base
     )    
   end
   
-  def desc_metadata(identifier, creator=nil)
+  def desc_metadata(identifier)
     base = DulHydra::Base.new
     base.identifier = [ identifier ] if identifier.present?
-    base.creator = [ creator ] if creator.present?
     base.descMetadata.content
   end
   
