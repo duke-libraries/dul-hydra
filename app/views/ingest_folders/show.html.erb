@@ -19,10 +19,6 @@
 		<%= content_tag(:td, @ingest_folder.abbreviated_path) %>
 	<% end %>
 	<%= content_tag(:tr) do %>
-		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.file_creator')) %>
-		<%= content_tag(:td, file_creator) %>
-	<% end %>
-	<%= content_tag(:tr) do %>
 		<%= content_tag(:td, I18n.t('activerecord.attributes.ingest_folder.total_files_scanned')) %>
 		<%= content_tag(:td, @scan_results.total_count) %>
 	<% end %>
