@@ -78,9 +78,9 @@ GEM
       thor
     daemons (1.1.9)
     database_cleaner (1.3.0)
-    ddr-antivirus (1.2.0)
+    ddr-antivirus (1.3.0)
       activesupport (~> 4.0)
-    ddr-models (1.3.0)
+    ddr-models (1.4.0)
       active-fedora (~> 7.0)
       ddr-antivirus (~> 1.2)
       devise-remote-user
@@ -196,7 +196,7 @@ GEM
       mime-types (>= 1.16, < 3)
     mediashelf-loggable (0.4.9)
     mime-types (1.25.1)
-    mini_magick (4.0.0)
+    mini_magick (4.0.1)
     mini_portile (0.6.0)
     minitest (5.4.2)
     mono_logger (1.1.0)
@@ -401,7 +401,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   coveralls
   database_cleaner
-  ddr-models (~> 1.3.0)
+  ddr-models (~> 1.4.0)
   deprecation
   devise (~> 3.1.1)
   equivalent-xml
