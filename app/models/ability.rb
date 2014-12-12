@@ -20,6 +20,7 @@ class Ability < Ddr::Auth::Ability
   end
   
   def metadata_files_permissions
+    can :create, MetadataFile if current_user.groups.include?(DulHydra.metadata_file_creators_group)
     can [:show, :procezz], MetadataFile, user: current_user
   end
   

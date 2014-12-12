@@ -11,6 +11,7 @@ DulHydra.configure do |config|
     write_headers: true,
     header_converters: :symbol
   }
+  config.metadata_file_creators_group = ENV['METADATA_FILE_CREATORS_GROUP']
   config.create_menu_models = ["Collection", "IngestFolder", "MetadataFile"]
 end
 
