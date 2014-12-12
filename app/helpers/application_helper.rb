@@ -217,7 +217,9 @@ module ApplicationHelper
   end
 
   def manage_menu
-    session[:manage_menu] ||= [Queue].select { |entity| can? :manage, entity }
+    # By default, the session :manage_menu is empty
+    # Signing into the :superuser cope will add Queue to the :manage_menu and signing out of that scope will remove it
+    session[:manage_menu] ||= []
   end
 
   def cancel_button args={}
