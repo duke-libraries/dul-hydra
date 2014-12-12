@@ -35,12 +35,12 @@ module DulHydra::Batch::Scripts
         let(:user) { FactoryGirl.create(:user) }
         context "user key" do
           it 'should have a user attribute set to the appropriate user' do
-            expect(described_class.new({ folder: folder, user: user.user_key }).user).to eq(user)
+            expect(described_class.new({ folder: folder, batch_user: user.user_key }).batch_user).to eq(user)
           end          
         end
         context "object" do
           it 'should have a user attribute set to the appropriate user' do
-            expect(described_class.new({ folder: folder, user: user }).user).to eq(user)
+            expect(described_class.new({ folder: folder, batch_user: user }).batch_user).to eq(user)
           end
         end
       end
@@ -167,7 +167,7 @@ module DulHydra::Batch::Scripts
     describe "#create_batch" do
       let(:user) { FactoryGirl.create(:user) }
       let(:object) { { id: "id_1", pid: "test:1" } }
-      let(:mfp) { described_class.new({ folder: folder, user: user }).tap { |p| p.scanner = scanner_hash } }
+      let(:mfp) { described_class.new({ folder: folder, batch_user: user }).tap { |p| p.scanner = scanner_hash } }
       let(:scanner_hash) { { "/tmp/a.xml" => { "sec_1" => { id: object[:id], pid: object[:pid], md: "testing" } } } }
       it "should create the appropriate batch" do
         batch = mfp.create_batch

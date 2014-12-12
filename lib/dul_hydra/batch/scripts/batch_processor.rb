@@ -12,9 +12,9 @@ module DulHydra::Batch::Scripts
     #   :log_file - optional - filename of log file - default is given in DEFAULT_LOG_FILE
     #   :skip_validation - optional - whether to skip batch object validation step when processing - default is false
     #   :ignore_validation_errors - optional - whether to continue processing even if batch object validation errors occur - default is false
-    def initialize(batch, user=nil, opts={})
+    def initialize(batch, operator=nil, opts={})
       @batch = batch
-      @bp_user = user
+      @operator = operator
       @bp_log_dir = opts.fetch(:log_dir, DEFAULT_LOG_DIR)
       @bp_log_file = opts.fetch(:log_file, DEFAULT_LOG_FILE)
       @skip_validation = opts.fetch(:skip_validation, false)
@@ -114,7 +114,7 @@ module DulHydra::Batch::Scripts
     
     def process_object(object)
       @bp_log.debug "Processing object: #{object.identifier}"
-      repository_object = object.process(@bp_user)
+      repository_object = object.process(@operator)
       update_results_tracker(object.type, repository_object.present? ? repository_object.class.name : object.model, object.verified)
       if object.verified
         @successes += 1

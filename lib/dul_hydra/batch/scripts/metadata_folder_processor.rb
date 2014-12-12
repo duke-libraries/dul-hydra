@@ -5,7 +5,7 @@ module DulHydra::Batch::Scripts
     
     include ActionView::Helpers::TextHelper
     
-    attr_accessor :collection, :logger, :scanner, :user
+    attr_accessor :collection, :logger, :scanner, :batch_user
  
     INCLUDED_EXTENSIONS = [ '.xml' ]
     COLLECTION_ID_SEPARATOR = '_'
@@ -16,7 +16,7 @@ module DulHydra::Batch::Scripts
       @logger = config_logger
       @folder = opts.fetch(:folder)
       @collection = find_collection(opts[:collection]) if opts[:collection].present?
-      @user = find_user(opts[:user]) if opts[:user].present?
+      @batch_user = find_user(opts[:batch_user]) if opts[:batch_user].present?
       @scanner = {}
       @warnings = 0
       @errors = 0
@@ -43,7 +43,7 @@ module DulHydra::Batch::Scripts
     end
     
     def create_batch
-      batch = DulHydra::Batch::Models::Batch.create(user: @user, name: 'Metadata Folder', description: @folder)
+      batch = DulHydra::Batch::Models::Batch.create(user: @batch_user, name: 'Metadata Folder', description: @folder)
       @scanner.keys.each do |file_loc|
         @scanner[file_loc].keys.each do |dmdsec_id|
           create_batch_object(batch, @scanner[file_loc][dmdsec_id])
