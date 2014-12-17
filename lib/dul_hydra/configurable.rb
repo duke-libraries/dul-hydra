@@ -25,6 +25,9 @@ module DulHydra
 
       # Group authorized to upload metadata files
       mattr_accessor :metadata_file_creators_group
+
+      # Context used in alert message selection
+      mattr_accessor :alert_message_context
     end
 
     module ClassMethods

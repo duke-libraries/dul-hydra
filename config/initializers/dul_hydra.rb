@@ -13,6 +13,7 @@ DulHydra.configure do |config|
   }
   config.metadata_file_creators_group = ENV['METADATA_FILE_CREATORS_GROUP']
   config.create_menu_models = ["Collection", "IngestFolder", "MetadataFile"]
+  config.alert_message_context = Ddr::Alerts::MessageContext::CONTEXT_DDR
 end
 
 Blacklight::Configuration.default_values[:http_method] = :post
