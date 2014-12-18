@@ -22,6 +22,9 @@ module DulHydra
       # List of models that may appear on a "create" menu (if user has ability)
       mattr_accessor :create_menu_models
       self.create_menu_models = []
+
+      # Group authorized to upload metadata files
+      mattr_accessor :metadata_file_creators_group
     end
 
     module ClassMethods
