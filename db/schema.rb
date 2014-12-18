@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141114191601) do
+ActiveRecord::Schema.define(version: 20141217141907) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -80,6 +80,22 @@ ActiveRecord::Schema.define(version: 20141114191601) do
   end
 
   add_index "bookmarks", ["user_id"], name: "index_bookmarks_on_user_id"
+
+  create_table "ddr_alerts_message_contexts", force: true do |t|
+    t.integer  "message_id"
+    t.string   "context"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "ddr_alerts_message_contexts", ["message_id"], name: "index_ddr_alerts_message_contexts_on_message_id"
+
+  create_table "ddr_alerts_messages", force: true do |t|
+    t.text     "message"
+    t.boolean  "active",     default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "events", force: true do |t|
     t.datetime "event_date_time"

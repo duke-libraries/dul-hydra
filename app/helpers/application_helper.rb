@@ -1,5 +1,9 @@
 module ApplicationHelper
 
+  def alert_messages
+    session[:alert_messages] ||= Ddr::Alerts::Message.active.send(DulHydra.alert_message_context)
+  end
+
   def internal_uri_to_pid(args)
     ActiveFedora::Base.pid_from_uri(args[:document][args[:field]])
   end

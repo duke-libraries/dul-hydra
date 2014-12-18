@@ -2,6 +2,7 @@ source 'http://rubygems.org'
 
 gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
+gem 'ddr-alerts', '~> 0.2.0'
 gem 'ddr-models', '~> 1.4.0'
 gem 'devise', '~> 3.1.1'
 gem 'deprecation'
