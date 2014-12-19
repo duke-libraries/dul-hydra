@@ -1,7 +1,7 @@
 module ApplicationHelper
 
   def alert_messages
-    session[:alert_messages] ||= Ddr::Alerts::Message.active.send(DulHydra.alert_message_context)
+    session[:alert_messages] ||= Ddr::Alerts::Message.active.send(DulHydra.alert_message_context).pluck(:message)
   end
 
   def internal_uri_to_pid(args)
