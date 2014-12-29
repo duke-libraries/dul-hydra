@@ -119,4 +119,5 @@ en:
             action_names:
                 procezz: "Process"
                 restart: "Restart"
+                retry: "Retry"
                 validate: "Validate"
