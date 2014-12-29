@@ -56,15 +56,11 @@ RSpec.configure do |config|
     Ddr::Models.configure do |config|
       config.external_file_store = Dir.mktmpdir
       config.external_file_subpath_pattern = "--"
-      config.minter_statefile = Tempfile.new("minter_statefile").path
     end
   end
   config.after(:suite) do
     if Ddr::Models.external_file_store && Dir.exist?(Ddr::Models.external_file_store)
       FileUtils.remove_entry_secure(Ddr::Models.external_file_store) 
-    end
-    if Ddr::Models.minter_statefile && File.exist?(Ddr::Models.minter_statefile)
-      FileUtils.remove_entry_secure(Ddr::Models.minter_statefile)
     end
   end
   config.after(:each) { ActiveFedora::Base.destroy_all }
