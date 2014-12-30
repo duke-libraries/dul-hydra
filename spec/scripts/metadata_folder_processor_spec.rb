@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'helpers/metadata_helper'
 require 'rdf/isomorphic'
 
 include RDF::Isomorphic
