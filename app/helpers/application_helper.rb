@@ -124,6 +124,11 @@ module ApplicationHelper
     render_download_link args.merge(label: label)
   end
 
+  def thumbnail_image_tag document, image_options = {}
+    src = document.has_thumbnail? ? thumbnail_path(document) : default_thumbnail(document)
+    thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
+  end
+
   def render_thumbnail(doc_or_obj, linked = false)
     src = doc_or_obj.has_thumbnail? ? thumbnail_path(doc_or_obj) : default_thumbnail(doc_or_obj)
     thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
