@@ -93,13 +93,6 @@ DulHydra::Application.routes.draw do
   repository_content_resource :components
   repository_content_resource :attachments
   repository_content_resource :targets
-  resources :admin_policies, repository_options(:admin_policies) do
-    member do
-      rights_routes
-      policy_routes
-      event_routes
-    end
-  end
   resources :thumbnail, only: :show, constraints: {id: pid_constraint}
 
   # Downloads
