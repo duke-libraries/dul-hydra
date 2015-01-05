@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'helpers/ingest_folder_helper'
 
 shared_examples "an invalid ingest folder" do
   it "should not be valid" do
