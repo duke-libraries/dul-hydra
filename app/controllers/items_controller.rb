@@ -10,6 +10,10 @@ class ItemsController < ApplicationController
 
   protected
 
+  def create_params
+    params.permit(:descMetadata).permit(title: [])
+  end
+
   def after_create_success
     return unless params[:content].present?
     child_params = params[:content]
