@@ -162,7 +162,7 @@ shared_examples "a content-bearing object show view" do
   let(:user) { FactoryGirl.create(:user) }
   before do
     setup
-    object.roleAssignments.downloader << user.principal_name # require for Components
+    object.roles.downloader << user.principal_name # require for Components
     object.save
     allow(user).to receive(:groups) { ["public", "registered"] }
   end

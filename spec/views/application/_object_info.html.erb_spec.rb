@@ -5,8 +5,7 @@ RSpec.describe 'application/_object_info.html.erb', type: :view do
   before(:all) do
     class ObjectInfoable < ActiveFedora::Base
       include Ddr::Models::EventLoggable
-      include Ddr::Models::HasPreservationMetadata
-      include Ddr::Models::HasWorkflow
+      include Ddr::Models::HasAdminMetadata
     end
   end
 
