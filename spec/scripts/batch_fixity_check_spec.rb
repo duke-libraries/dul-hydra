@@ -30,7 +30,7 @@ module DulHydra
       end
       describe "the report" do
         let(:csv) { CSV.read(report.path, headers: true) }
-        let(:datastreams_with_content) { ["DC", "RELS-EXT", "descMetadata", "content", "thumbnail", "properties"] }
+        let(:datastreams_with_content) { ["DC", "RELS-EXT", "descMetadata", "content", "thumbnail", "adminMetadata"] }
         before do
           @objects = FactoryGirl.create_list(:component, 5)
           bfc.execute 
