@@ -3,11 +3,10 @@ source 'http://rubygems.org'
 gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
 gem 'ddr-alerts', '~> 0.3.0'
-gem 'ddr-models', '~> 1.8.1'
-gem 'devise', '~> 3.1.1'
+gem 'ddr-models', '~> 1.9.0'
+gem 'devise'
 gem 'deprecation'
 
-gem 'sqlite3'
 gem 'log4r'
 
 # Background processing
@@ -26,9 +25,10 @@ gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 4.2.0'
 
 group :development, :test do
+  gem 'sqlite3'
   gem 'rspec-rails', '~> 3.0.0'
   gem 'capybara', '~> 2.0'
-  gem 'jettywrapper', '~> 1.5'
+  gem 'jettywrapper', '~> 1.8'
   gem 'factory_girl_rails', '~> 4.4'
   gem 'orderly'
   gem 'launchy'
