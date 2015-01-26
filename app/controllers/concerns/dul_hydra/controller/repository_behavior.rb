@@ -41,7 +41,7 @@ module DulHydra
       end
 
       def current_document
-        @document ||= get_solr_response_for_doc_id[1]
+        @document ||= get_solr_response_for_doc_id(params[:id])[1]
       end
 
       # override Blacklight::CatalogHelperBehavior

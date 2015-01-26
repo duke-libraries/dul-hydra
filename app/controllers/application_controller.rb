@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior
   include Hydra::PolicyAwareAccessControlsEnforcement
-  include DeviseRemoteUser::ControllerBehavior
 
   protect_from_forgery
 
