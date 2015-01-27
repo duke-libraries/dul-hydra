@@ -266,6 +266,15 @@ shared_examples "a repository object rights editing view" do
     object.reload
     expect(object.discover_groups).to be_empty
   end
+  it "shoulld be able to clear the permissions" do
+    visit url_for(controller: object.controller_name, action: "permissions", id: object)
+    page.unselect "Public", from: "permissions_discover"
+    page.unselect "Duke Community", from: "permissions_read"
+    page.unselect user.user_key, from: "permissions_edit"
+    click_button "Save"
+    object.reload
+    expect(object.permissions).to be_empty
+  end
   it "should be able to add a permission" do
     visit url_for(controller: object.controller_name, action: "permissions", id: object)
     page.select "Duke Community", from: "permissions_edit"
