@@ -57,6 +57,10 @@ class ApplicationController < ActionController::Base
   end
 
   def all_permissions
+    # IMPORTANT - rights controller behavior depends on the permissions being 
+    # ordered from lowest to highest so that assignment of multiple permissions 
+    # to a user or group results in the highest permission being granted.
+    # No doubt this is really terrible, but there it is.
     ["discover", "read", "edit"]
   end
 
