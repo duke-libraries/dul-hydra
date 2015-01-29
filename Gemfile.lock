@@ -84,7 +84,7 @@ GEM
     database_cleaner (1.4.0)
     ddr-alerts (0.3.0)
       rails (~> 4.1.6)
-    ddr-antivirus (1.3.1)
+    ddr-antivirus (1.3.2)
       activesupport (~> 4.0)
     ddr-models (1.9.0)
       active-fedora (~> 7.0)
