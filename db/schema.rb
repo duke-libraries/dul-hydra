@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150130212901) do
+ActiveRecord::Schema.define(version: 20150206193628) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -101,6 +101,7 @@ ActiveRecord::Schema.define(version: 20150130212901) do
     t.string   "outcome"
     t.text     "detail"
     t.string   "exception"
+    t.string   "user_key"
   end
 
   add_index "events", ["event_date_time"], name: "index_events_on_event_date_time"
