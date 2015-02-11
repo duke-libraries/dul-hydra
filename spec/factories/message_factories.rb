@@ -10,14 +10,6 @@ FactoryGirl.define do
       active false
     end
 
-    trait :ddr do
-      contexts { [ FactoryGirl.create(:message_context, :ddr) ] }
-    end
-
-    trait :repository do
-      contexts { [ FactoryGirl.create(:message_context, :repository) ] }
-    end
-
   end
 
 end

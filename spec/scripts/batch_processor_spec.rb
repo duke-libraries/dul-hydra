@@ -29,7 +29,7 @@ module DulHydra::Batch::Scripts
             expect(event.detail).to_not include(Ddr::Events::FixityCheckEvent::INVALID)
           when "Ddr::Events::IngestionEvent"
             expect(event.summary).to include("Batch object identifier: #{batch_obj.identifier}")
-            expect(event.user).to eq(bp_user)
+            expect(event.user_key).to eq(bp_user.user_key)
           when "Ddr::Events::ValidationEvent"
             expect(event.detail).to include(DulHydra::Batch::Scripts::BatchProcessor::PASS)
             expect(event.detail).to_not include(DulHydra::Batch::Scripts::BatchProcessor::FAIL)
@@ -62,7 +62,7 @@ module DulHydra::Batch::Scripts
         expect(obj).to be_an_instance_of(batch_obj.model.constantize)
         expect(obj.label).to eq(batch_obj.label) if batch_obj.label
         expect(obj.title.first).to eq('Sample title')
-        expect(obj.update_events.last.user).to eq(bp_user)
+        expect(obj.update_events.last.user_key).to eq(bp_user.user_key)
         batch_obj_ds = batch_obj.batch_object_datastreams
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
         batch_obj_rs = batch_obj.batch_object_relationships

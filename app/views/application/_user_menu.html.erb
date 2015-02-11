@@ -8,7 +8,7 @@
   <ul class="dropdown-menu" role="menu">
 	<% if current_user.authorized_to_act_as_superuser? %>
 	  <li>
-		<%= link_to superuser_path do %>
+		<%= link_to superuser_path, id: "toggle-superuser" do %>
 		  <% if acting_as_superuser? %> 
  	        <span class="glyphicon glyphicon-eye-close"></span> Stop acting as Superuser
 		  <% else %>
