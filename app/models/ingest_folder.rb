@@ -185,7 +185,7 @@ class IngestFolder < ActiveRecord::Base
   end
   
   def create_batch_object_for_parent(parent_identifier)
-    parent_model = DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(model, "parent")).name
+    parent_model = Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(model, "parent")).name
     parent_pid = ActiveFedora::Base.connection_for_pid('0').mint
     policy_pid = collection_admin_policy ? collection_admin_policy.pid : collection_pid
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
@@ -196,7 +196,7 @@ class IngestFolder < ActiveRecord::Base
             )
     add_datastream(
             obj,
-            DulHydra::Datastreams::DESC_METADATA,
+            Ddr::Datastreams::DESC_METADATA,
             desc_metadata(parent_identifier),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
@@ -244,13 +244,13 @@ class IngestFolder < ActiveRecord::Base
             )
     add_datastream(
             obj,
-            DulHydra::Datastreams::DESC_METADATA,
+            Ddr::Datastreams::DESC_METADATA,
             desc_metadata(file_identifier),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
             )
     add_datastream(
             obj,
-            DulHydra::Datastreams::CONTENT,
+            Ddr::Datastreams::CONTENT,
             File.join(dirpath, file_entry),
             DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
             checksum_file.present? ? file_checksum(File.join(dirpath, file_entry)) : nil,
@@ -296,8 +296,8 @@ class IngestFolder < ActiveRecord::Base
     )    
   end
   
-  def desc_metadata(identifier)
-    base = DulHydra::Base.new
+  def desc_metadata(identifier, creator=nil)
+    base = Ddr::Models::Base.new
     base.identifier = [ identifier ] if identifier.present?
     base.descMetadata.content
   end

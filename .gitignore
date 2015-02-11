@@ -25,6 +25,9 @@
 # Environment configs
 /config/environments/*.rb
 
+# SimpleCov / Coveralls
+/coverage
+
 # Pre-compiled assets
 /public/assets
 

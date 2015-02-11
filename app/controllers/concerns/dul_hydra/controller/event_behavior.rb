@@ -8,7 +8,7 @@ module DulHydra
       end
 
       def event
-        @event = Event.find(params[:event_id])
+        @event = Ddr::Events::Event.find(params[:event_id])
       end
 
       protected
@@ -17,7 +17,7 @@ module DulHydra
         args[:pid] ||= current_object.pid
         args[:user_id] ||= current_user.id
         args.merge! event_params
-        DulHydra::Notifications.notify_event(type, args)
+        Ddr::Notifications.notify_event(type, args)
       end
 
       def notify_update args={}

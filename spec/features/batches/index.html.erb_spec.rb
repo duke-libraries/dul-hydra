@@ -41,10 +41,10 @@ describe "batches/index.html.erb", :type => :feature do
     end
     context "user is permitted to upload metadata files" do
       before do
-        user.roles << Role.create(name: "Metadata File Uploader", ability: "create", model: "MetadataFile")
-        user.save!
+        allow_any_instance_of(Ability).to receive(:can?).with(:create, MetadataFile)
       end
       it "should include a link to upload a metadata file" do
+        pending "Another solution for authorizing creation of MetadataFile objects"
         visit batches_path
         expect(page).to have_link(menu_label, new_metadata_file_path)
       end
@@ -123,7 +123,7 @@ describe "batches/index.html.erb", :type => :feature do
             end
           end
         end
-        context "validated" do
+        context "validated and valid" do
           before do
             batch.status = DulHydra::Batch::Models::Batch::STATUS_VALIDATED
             batch.save
@@ -132,6 +132,18 @@ describe "batches/index.html.erb", :type => :feature do
           it "should have a link to process the batch" do
             within tab_id do
               expect(page).to have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
+            end
+          end
+        end
+        context "validated and invalid" do
+          before do
+            batch.status = DulHydra::Batch::Models::Batch::STATUS_INVALID
+            batch.save
+            visit batches_path
+          end
+          it "should have a link to retry the batch" do
+            within tab_id do
+              expect(page).to have_link(I18n.t('batch.web.action_names.retry'), :href => procezz_batch_path(batch))
             end
           end
         end

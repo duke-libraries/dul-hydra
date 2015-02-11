@@ -1,5 +1,9 @@
 module ApplicationHelper
 
+  def alert_messages
+    session[:alert_messages] ||= Ddr::Alerts::Message.active.pluck(:message)
+  end
+
   def internal_uri_to_pid(args)
     ActiveFedora::Base.pid_from_uri(args[:document][args[:field]])
   end
@@ -9,8 +13,8 @@ module ApplicationHelper
     # Depends on Blacklight::SolrHelper#get_solr_response_for_doc_id 
     # having been added as a helper method to CatalogController
     response, doc = get_solr_response_for_doc_id(pid)
-    # XXX This is not consistent with DulHydra::Base#title_display
-    title = doc.nil? ? pid : doc.fetch(DulHydra::IndexFields::TITLE, pid)
+    # XXX This is not consistent with Ddr::Models::Base#title_display
+    title = doc.nil? ? pid : doc.fetch(Ddr::IndexFields::TITLE, pid)
     link_to(title, catalog_path(pid), :class => "parent-link").html_safe
   end
 
@@ -101,7 +105,7 @@ module ApplicationHelper
   end
 
   def render_event_outcome(outcome)
-    label = outcome == Event::SUCCESS ? "success" : "danger"
+    label = outcome == Ddr::Events::Event::SUCCESS ? "success" : "danger"
     render_label outcome.capitalize, label
   end
 
@@ -118,6 +122,11 @@ module ApplicationHelper
   def render_download_icon(args = {})
     label = content_tag(:span, "", class: "glyphicon glyphicon-download-alt")
     render_download_link args.merge(label: label)
+  end
+
+  def thumbnail_image_tag document, image_options = {}
+    src = document.has_thumbnail? ? thumbnail_path(document) : default_thumbnail(document)
+    thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
   end
 
   def render_thumbnail(doc_or_obj, linked = false)
@@ -217,7 +226,9 @@ module ApplicationHelper
   end
 
   def manage_menu
-    session[:manage_menu] ||= [Queue, Role].select { |entity| can? :manage, entity }
+    # By default, the session :manage_menu is empty
+    # Signing into the :superuser cope will add Queue to the :manage_menu and signing out of that scope will remove it
+    session[:manage_menu] ||= []
   end
 
   def cancel_button args={}

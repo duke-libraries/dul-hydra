@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'helpers/ingest_folder_helper'
 
 shared_examples "an invalid ingest folder" do
   it "should not be valid" do
@@ -33,11 +32,11 @@ shared_examples "a proper set of batch objects" do
     expect(rels.fetch('T002').fetch('collection').object).to eql(ingest_folder.collection_pid)
   end
   it "should not set the source descriptive metadata attribute" do
-    expect(dss.fetch('file01001').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
-    expect(dss.fetch('file01002').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
-    expect(dss.fetch('file01').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
-    expect(dss.fetch('T001').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
-    expect(dss.fetch('T002').fetch(DulHydra::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")        
+    expect(dss.fetch('file01001').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('file01002').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('file01').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('T001').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
+    expect(dss.fetch('T002').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")        
   end
 end
 
@@ -178,7 +177,7 @@ describe IngestFolder, type: :model, ingest: true do
       let(:objects) { {} }
       let(:dss) { {} }
       let(:rels) { {} }
-      let(:parent_model) { DulHydra::Utils.reflection_object_class(DulHydra::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
+      let(:parent_model) { Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
       before { allow_any_instance_of(IngestFolder).to receive(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) }
       
       context "collection has admin policy" do

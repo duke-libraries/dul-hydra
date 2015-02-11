@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140918165438) do
+ActiveRecord::Schema.define(version: 20150206193628) do
 
   create_table "batch_object_datastreams", force: true do |t|
     t.integer  "batch_object_id"
@@ -19,8 +19,8 @@ ActiveRecord::Schema.define(version: 20140918165438) do
     t.string   "name"
     t.text     "payload"
     t.string   "payload_type"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "checksum"
     t.string   "checksum_type"
   end
@@ -31,8 +31,8 @@ ActiveRecord::Schema.define(version: 20140918165438) do
     t.string   "operation"
     t.string   "object"
     t.string   "object_type"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "batch_objects", force: true do |t|
@@ -41,8 +41,8 @@ ActiveRecord::Schema.define(version: 20140918165438) do
     t.string   "model"
     t.string   "label"
     t.string   "pid"
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "type"
     t.boolean  "verified",   default: false
   end
@@ -52,8 +52,8 @@ ActiveRecord::Schema.define(version: 20140918165438) do
   create_table "batches", force: true do |t|
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "user_id"
     t.string   "status"
     t.datetime "start"
@@ -73,13 +73,20 @@ ActiveRecord::Schema.define(version: 20140918165438) do
     t.integer  "user_id",       null: false
     t.string   "document_id"
     t.string   "title"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "user_type"
     t.string   "document_type"
   end
 
   add_index "bookmarks", ["user_id"], name: "index_bookmarks_on_user_id"
+
+  create_table "ddr_alerts_messages", force: true do |t|
+    t.text     "message"
+    t.boolean  "active",     default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "events", force: true do |t|
     t.datetime "event_date_time"
@@ -93,6 +100,8 @@ ActiveRecord::Schema.define(version: 20140918165438) do
     t.string   "summary"
     t.string   "outcome"
     t.text     "detail"
+    t.string   "exception"
+    t.string   "user_key"
   end
 
   add_index "events", ["event_date_time"], name: "index_events_on_event_date_time"
@@ -102,8 +111,8 @@ ActiveRecord::Schema.define(version: 20140918165438) do
 
   create_table "export_sets", force: true do |t|
     t.integer  "user_id"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "archive_file_name"
     t.string   "archive_content_type"
     t.integer  "archive_file_size"
@@ -126,73 +135,31 @@ ActiveRecord::Schema.define(version: 20140918165438) do
     t.string   "checksum_type"
     t.boolean  "add_parents"
     t.integer  "parent_id_length"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "metadata_files", force: true do |t|
     t.integer  "user_id"
     t.string   "profile"
     t.string   "collection_pid"
-    t.datetime "created_at",            null: false
-    t.datetime "updated_at",            null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "metadata_file_name"
     t.string   "metadata_content_type"
     t.integer  "metadata_file_size"
     t.datetime "metadata_updated_at"
   end
 
-  create_table "minted_ids", force: true do |t|
-    t.string   "minted_id"
-    t.string   "referent"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "minted_ids", ["minted_id"], name: "index_minted_ids_on_minted_id", unique: true
-  add_index "minted_ids", ["referent"], name: "index_minted_ids_on_referent"
-
-  create_table "preservation_events", force: true do |t|
-    t.datetime "event_date_time"
-    t.text     "event_detail"
-    t.string   "event_type"
-    t.string   "event_id_type"
-    t.string   "event_id_value"
-    t.string   "event_outcome"
-    t.text     "event_outcome_detail_note"
-    t.string   "linking_object_id_type"
-    t.string   "linking_object_id_value"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-  end
-
-  create_table "roles", force: true do |t|
-    t.string   "name"
-    t.string   "model"
-    t.string   "ability"
-    t.text     "groups"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "roles_users", id: false, force: true do |t|
-    t.integer "role_id"
-    t.integer "user_id"
-  end
-
   create_table "searches", force: true do |t|
     t.text     "query_params"
     t.integer  "user_id"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "user_type"
   end
 
   add_index "searches", ["user_id"], name: "index_searches_on_user_id"
-
-  create_table "superusers", force: true do |t|
-    t.integer "user_id", null: false
-  end
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -205,8 +172,8 @@ ActiveRecord::Schema.define(version: 20140918165438) do
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "username",               default: "", null: false
     t.string   "first_name"
     t.string   "middle_name"

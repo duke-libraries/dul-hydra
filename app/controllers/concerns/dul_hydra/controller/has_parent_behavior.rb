@@ -5,6 +5,8 @@ module DulHydra
 
       included do
         helper_method :parent
+
+        skip_authorize_resource only: [:new, :create]
         before_action :find_parent, only: [:new, :create]
         before_action :authorize_add_children!, only: [:new, :create]
         before_action :set_parent, only: :create

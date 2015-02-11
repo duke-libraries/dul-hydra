@@ -5,17 +5,8 @@ module DulHydra
 
       def permissions
         if request.patch?
-          new_permissions = {"group" => {}, "person" => {}}
-          all_permissions.each do |access|
-            params[:permissions].fetch(access, []).each do |grantee|
-              type, name = grantee.split(":", 2)
-              type = "person" if type == "user"
-              new_permissions[type][name] = access
-            end
-          end
-          current_object.rightsMetadata.clear_permissions!
-          current_object.rightsMetadata.permissions = new_permissions
-          current_object.license = params[:license]
+          set_permissions
+          set_license
           if current_object.save
             notify_update(summary: "Rights updated")
             flash[:success] = I18n.t('dul_hydra.rights.alerts.changed')
@@ -25,6 +16,32 @@ module DulHydra
       end
 
       protected
+
+      def permissions_params
+        params.permit(permissions: all_permissions.map { |p| {p => []} },
+                      license: ["title", "description", "url"])
+      end
+
+      def set_permissions
+        current_object.rightsMetadata.clear_permissions!
+        current_object.rightsMetadata.permissions = new_permissions
+      end
+
+      def set_license
+        current_object.license = permissions_params[:license]
+      end
+
+      def new_permissions
+        form_perms = permissions_params[:permissions] || {}
+        all_permissions.each_with_object({}) do |access, perms|
+          form_perms.fetch(access, []).each do |grantee|
+            type, name = grantee.split(":", 2)
+            type = "person" if type == "user"
+            perms[type] ||= {}
+            perms[type][name] = access
+          end
+        end
+      end
 
       def tab_permissions
         Tab.new("permissions",

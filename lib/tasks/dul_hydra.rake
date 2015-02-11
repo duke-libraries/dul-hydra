@@ -30,35 +30,45 @@ namespace :dul_hydra do
       desc "Creates descriptive metadata update batch from folder of METS files"
       task :mets_folder => :environment do
         raise "Must specify folder path. Ex.: FOLDER=/path/to/METS/folder" unless ENV['FOLDER']
-        operator = User.find_by_user_key("#{ENV['USER']}@duke.edu")
-        batch_user = ENV['USER_KEY'] || operator.user_key
+        operator_key = "#{ENV['USER']}@duke.edu"
+        operator = User.find_by_user_key(operator_key)
+        batch_user = ENV['BATCH_USER'].present? ? User.find_by_user_key(ENV['BATCH_USER']) : operator
+        unless batch_user.present?
+          raise "Unable to find batch user: #{ENV['BATCH_USER'].present? ? ENV['BATCH_USER'] : operator_key}"
+        end
         args = {
           folder: ENV['FOLDER'],
-          user: batch_user,
+          batch_user: batch_user,
           collection: ENV['COLLECTION']
         }
         script = DulHydra::Batch::Scripts::MetadataFolderProcessor.new(args)
         script.scan
-        STDOUT.puts "p - Create pending batch"
-        STDOUT.puts "s - Create batch and submit for processing"
-        STDOUT.puts "x - Cancel operation"
+        options = {}
+        options['p'] = "Create pending batch"
+        options['s'] = "Create batch and submit for processing" if operator.present?
+        options['x'] = "Cancel operation"
+        options.each { |k, v| STDOUT.puts "#{k} - #{v}" }
         input = ""
-        while ![ "P", "p", "S", "s", "X", "x" ].include?(input) do
-          STDOUT.print "Enter p, s, or x : "
+        while true do
+          STDOUT.print "Enter #{options.keys.join(', ')} : "
           input = STDIN.gets.strip
-          case input
-          when "P", "p"
+          unless options.include?(input.downcase)
+            next
+          end
+          case input.downcase
+          when "p"
             batch = script.create_batch
             STDOUT.puts "Created pending batch #{batch.id} for user #{args[:user]}"
-          when "S", "s"
+          when "s"
             STDOUT.puts "Creating batch and submitting for processing"
             batch = script.create_batch
             STDOUT.puts "Created batch #{batch.id} for user #{args[:user]}"
             Resque.enqueue(DulHydra::Batch::Jobs::BatchProcessorJob, batch.id, operator.id)
             STDOUT.puts "Submitted batch #{batch.id} for processing"
-          when "X", "x"
+          when "x"
             STDOUT.puts "Cancelling operation"
           end
+          break
         end
       end
       desc "Converts CSV file to one or more XML files"
@@ -151,7 +161,7 @@ namespace :dul_hydra do
         task :all => :environment do
             ActiveFedora::Base.find_each do |obj|
                 print "Validating #{obj.pid} ... "
-                puts obj.valid? ? Event::VALID : Event::INVALID
+                puts obj.valid? ? Ddr::Events::Event::VALID : Ddr::Events::Event::INVALID
             end
         end
     end

@@ -83,7 +83,7 @@ module DulHydra
       def check_objects
         objects_to_check.each do |obj| 
           result = obj.fixity_check
-          outcome = result.success ? Event::SUCCESS : Event::FAILURE
+          outcome = result.success ? Ddr::Events::Event::SUCCESS : Ddr::Events::Event::FAILURE
           log_outcome(result, outcome)
           report_result(result) # pass obj so we have dsChecksumValid
           update_summary(result, outcome)
@@ -131,12 +131,12 @@ module DulHydra
       end
 
       def objects_last_checked_before_period(rows)
-        q = "#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO NOW-#{period}]"
-        ActiveFedora::SolrService.query(q, rows: rows, sort: "#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON} asc")
+        q = "#{Ddr::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO NOW-#{period}]"
+        ActiveFedora::SolrService.query(q, rows: rows, sort: "#{Ddr::IndexFields::LAST_FIXITY_CHECK_ON} asc")
       end
 
       def objects_never_checked(rows)
-        q = "-#{DulHydra::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO *]"
+        q = "-#{Ddr::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO *]"
         ActiveFedora::SolrService.query(q, rows: rows)
       end
 

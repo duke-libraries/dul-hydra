@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'helpers/metadata_helper'
 require 'rdf/isomorphic'
 
 include RDF::Isomorphic
@@ -21,39 +20,27 @@ module DulHydra::Batch::Scripts
       context "collection" do
         let(:collection) { FactoryGirl.create(:collection) }
         context "pid" do
-          describe '#collection attribute should contain the appropriate collection' do
-            subject { super().collection attribute is_expected.to contain the appropriate collection }
-            it do
+          it "should have a collection attribute containing the appropriate collection" do
             expect(described_class.new({ folder: folder, collection: collection.pid }).collection).to eq(collection)
           end
-          end          
         end
         context "object" do
-          describe '#collection attribute should contain the appropriate collection' do
-            subject { super().collection attribute is_expected.to contain the appropriate collection }
-            it do
+          it 'should have a collection attribute containing the appropriate collection' do
             expect(described_class.new({ folder: folder, collection: collection }).collection).to eq(collection)
-          end
           end          
         end
       end
       context "user" do
         let(:user) { FactoryGirl.create(:user) }
         context "user key" do
-          describe '#user attribute should contain the appropriate user' do
-            subject { super().user attribute is_expected.to contain the appropriate user }
-            it do
-            expect(described_class.new({ folder: folder, user: user.user_key }).user).to eq(user)
-          end
+          it 'should have a user attribute set to the appropriate user' do
+            expect(described_class.new({ folder: folder, batch_user: user.user_key }).batch_user).to eq(user)
           end          
         end
         context "object" do
-          describe '#user attribute should contain the appropriate user' do
-            subject { super().user attribute is_expected.to contain the appropriate user }
-            it do
-            expect(described_class.new({ folder: folder, user: user }).user).to eq(user)
+          it 'should have a user attribute set to the appropriate user' do
+            expect(described_class.new({ folder: folder, batch_user: user }).batch_user).to eq(user)
           end
-          end          
         end
       end
       context "logger" do
@@ -179,7 +166,7 @@ module DulHydra::Batch::Scripts
     describe "#create_batch" do
       let(:user) { FactoryGirl.create(:user) }
       let(:object) { { id: "id_1", pid: "test:1" } }
-      let(:mfp) { described_class.new({ folder: folder, user: user }).tap { |p| p.scanner = scanner_hash } }
+      let(:mfp) { described_class.new({ folder: folder, batch_user: user }).tap { |p| p.scanner = scanner_hash } }
       let(:scanner_hash) { { "/tmp/a.xml" => { "sec_1" => { id: object[:id], pid: object[:pid], md: "testing" } } } }
       it "should create the appropriate batch" do
         batch = mfp.create_batch
@@ -194,7 +181,7 @@ module DulHydra::Batch::Scripts
         expect(batch_object.pid).to eq(object[:pid])
         expect(batch_object.batch_object_datastreams.size).to eq(1)
         metadata_datastream = batch_object.batch_object_datastreams.first
-        expect(metadata_datastream.name).to eq(DulHydra::Datastreams::DESC_METADATA)
+        expect(metadata_datastream.name).to eq(Ddr::Datastreams::DESC_METADATA)
         expect(metadata_datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
         expect(metadata_datastream.payload).to eq("testing")
         expect(metadata_datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)

@@ -162,7 +162,8 @@ shared_examples "a content-bearing object show view" do
   let(:user) { FactoryGirl.create(:user) }
   before do
     setup
-    allow(user).to receive(:has_role?).with("Component Downloader") { true } # required for Components
+    object.roles.downloader << user.principal_name # require for Components
+    object.save
     allow(user).to receive(:groups) { ["public", "registered"] }
   end
   it "should have a download link" do
@@ -264,6 +265,15 @@ shared_examples "a repository object rights editing view" do
     click_button "Save"
     object.reload
     expect(object.discover_groups).to be_empty
+  end
+  it "shoulld be able to clear the permissions" do
+    visit url_for(controller: object.controller_name, action: "permissions", id: object)
+    page.unselect "Public", from: "permissions_discover"
+    page.unselect "Duke Community", from: "permissions_read"
+    page.unselect user.user_key, from: "permissions_edit"
+    click_button "Save"
+    object.reload
+    expect(object.permissions).to be_empty
   end
   it "should be able to add a permission" do
     visit url_for(controller: object.controller_name, action: "permissions", id: object)

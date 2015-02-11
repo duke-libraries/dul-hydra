@@ -90,7 +90,7 @@ Model: %{model}
           errs << "#{@error_prefix} Must specify checksum type if providing checksum for #{d.name} datastream"
         end
         if d.checksum_type
-          unless DulHydra::Datastreams::CHECKSUM_TYPES.include?(d.checksum_type)      
+          unless Ddr::Datastreams::CHECKSUM_TYPES.include?(d.checksum_type)      
             errs << "#{@error_prefix} Invalid checksum type for #{d.name} datastream: #{d.checksum_type}"
           end
         end      
@@ -128,9 +128,9 @@ Model: %{model}
             end
           end
           if obj_model
-            relationship_reflection = DulHydra::Utils.relationship_object_reflection(model, r[:name])
+            relationship_reflection = Ddr::Utils.relationship_object_reflection(model, r[:name])
             if relationship_reflection
-              klass = DulHydra::Utils.reflection_object_class(relationship_reflection)
+              klass = Ddr::Utils.reflection_object_class(relationship_reflection)
               if klass
                 errs << "#{@error_prefix} #{r[:name]} relationship object #{r[:object]} exists but is not a(n) #{klass}" unless batch.found_pids[r[:object]].eql?(klass.name)
               end
@@ -164,7 +164,7 @@ Model: %{model}
             verifications["#{r.name} relationship is correct"] = verify_relationship(repo_object, r)
           end
         end
-        result = FixityCheck.execute repo_object
+        result = Ddr::Actions::FixityCheck.execute repo_object
         verifications["Fixity check"] = result.success ? VERIFICATION_PASS : VERIFICATION_FAIL
       end
       verifications
@@ -199,14 +199,14 @@ Model: %{model}
       begin
         repo_object.datastreams[datastream.name].validate_checksum! datastream.checksum, datastream.checksum_type
         return VERIFICATION_PASS
-      rescue DulHydra::ChecksumInvalid
+      rescue Ddr::Models::ChecksumInvalid
         return VERIFICATION_FAIL
       end
     end
     
     def verify_relationship(repo_object, relationship)
-      relationship_reflection = DulHydra::Utils.relationship_object_reflection(model, relationship.name)
-      relationship_object_class = DulHydra::Utils.reflection_object_class(relationship_reflection)
+      relationship_reflection = Ddr::Utils.relationship_object_reflection(model, relationship.name)
+      relationship_object_class = Ddr::Utils.reflection_object_class(relationship_reflection)
       relationship_object = repo_object.send(relationship.name)
       if !relationship_object.nil? &&
           relationship_object.pid.eql?(relationship.object) &&

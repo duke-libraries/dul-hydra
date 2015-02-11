@@ -11,6 +11,8 @@ module BatchesHelper
       link_to(I18n.t('batch.web.action_names.procezz'), procezz_batch_path(batch))
     when DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
       link_to(I18n.t('batch.web.action_names.restart'), procezz_batch_path(batch))
+    when DulHydra::Batch::Models::Batch::STATUS_INVALID
+      link_to(I18n.t('batch.web.action_names.retry'), procezz_batch_path(batch))
     else
       "--"
     end

@@ -282,8 +282,8 @@ module DulHydra::Batch::Models
           object.process(user)
           expect(object.verified).to be_falsey
           ActiveFedora::Base.find(object.pid).events.each do |e|
-            if e.is_a?(ValidationEvent)
-              expect(e.outcome).to eq(Event::FAILURE)
+            if e.is_a?(Ddr::Events::ValidationEvent)
+              expect(e.outcome).to eq(Ddr::Events::Event::FAILURE)
               expect(e.detail).to include("content external checksum match...FAIL")
             end
           end

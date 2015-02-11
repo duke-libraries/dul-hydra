@@ -6,7 +6,7 @@
   <div class="col-md-3">
 	<div class="form-group">
 	<%= label_tag "content_checksum_type", "Checksum Type" %>
-	<%= select_tag "content[checksum_type]", options_for_select(DulHydra::Datastreams::CHECKSUM_TYPES, "SHA-256"), class: "form-control" %>
+	<%= select_tag "content[checksum_type]", options_for_select(Ddr::Datastreams::CHECKSUM_TYPES, "SHA-256"), class: "form-control" %>
 	</div>
   </div>
   <div class="col-md-9">

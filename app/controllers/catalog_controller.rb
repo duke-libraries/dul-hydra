@@ -26,12 +26,14 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
-    config.index.title_field = DulHydra::IndexFields::TITLE
-    config.index.display_type_field = DulHydra::IndexFields::ACTIVE_FEDORA_MODEL
+    config.index.title_field = Ddr::IndexFields::TITLE
+    config.index.display_type_field = Ddr::IndexFields::ACTIVE_FEDORA_MODEL
+
+    config.index.thumbnail_method = :thumbnail_image_tag
 
     # solr field configuration for document/show views
-    config.show.title_field = DulHydra::IndexFields::TITLE
-    config.show.display_type_field = DulHydra::IndexFields::HAS_MODEL
+    config.show.title_field = Ddr::IndexFields::TITLE
+    config.show.display_type_field = Ddr::IndexFields::HAS_MODEL
 
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
@@ -52,7 +54,7 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
+    config.add_facet_field Ddr::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -63,15 +65,15 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    config.add_index_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type:'
-    config.add_index_field 'id', :label => 'PID:'
-    config.add_index_field DulHydra::IndexFields::IDENTIFIER, :label => 'Identifier:'
+    config.add_index_field Ddr::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
+    config.add_index_field 'id', :label => 'PID'
+    config.add_index_field Ddr::IndexFields::IDENTIFIER, :label => 'Identifier'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
-    config.add_show_field DulHydra::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type:'
-    config.add_show_field 'id', :label => 'PID:'
-    config.add_show_field DulHydra::IndexFields::IDENTIFIER, :label => 'Identifier:'
+    config.add_show_field Ddr::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
+    config.add_show_field 'id', :label => 'PID'
+    config.add_show_field Ddr::IndexFields::IDENTIFIER, :label => 'Identifier'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -92,7 +94,7 @@ class CatalogController < ApplicationController
     # since we aren't specifying it otherwise.
     config.add_search_field('all_fields', :label => 'All Fields') do |field|
       field.solr_local_parameters = {
-        :qf => "id #{DulHydra::IndexFields::ACTIVE_FEDORA_MODEL} title_tesim creator_tesim subject_tesim description_tesim identifier_tesim #{DulHydra::IndexFields::PERMANENT_ID}"
+        :qf => "id #{Ddr::IndexFields::ACTIVE_FEDORA_MODEL} title_tesim creator_tesim subject_tesim description_tesim identifier_tesim #{Ddr::IndexFields::PERMANENT_ID}"
       }
     end
     
@@ -116,13 +118,13 @@ class CatalogController < ApplicationController
 
     config.add_search_field('identifier') do |field|
       field.solr_local_parameters = {
-        :qf => DulHydra::IndexFields::IDENTIFIER
+        :qf => Ddr::IndexFields::IDENTIFIER
       }
     end
     
     config.add_search_field('permanent_id', label: 'Permanent ID') do |field|
       field.solr_local_parameters = {
-        :qf => DulHydra::IndexFields::PERMANENT_ID
+        :qf => Ddr::IndexFields::PERMANENT_ID
       }
     end
 
@@ -137,8 +139,8 @@ class CatalogController < ApplicationController
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
     config.add_sort_field 'score desc', :label => 'Relevance', :default_for_user_query => true
-    config.add_sort_field "#{DulHydra::IndexFields::TITLE} asc", :label => 'Title', :default => true
-    config.add_sort_field "#{DulHydra::IndexFields::IDENTIFIER} asc", :label => 'Identifier'
+    config.add_sort_field "#{Ddr::IndexFields::TITLE} asc", :label => 'Title', :default => true
+    config.add_sort_field "#{Ddr::IndexFields::IDENTIFIER} asc", :label => 'Identifier'
 
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.

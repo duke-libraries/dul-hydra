@@ -1,13 +1,23 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
+
+require "coveralls"
+Coveralls.wear!("rails")
+
 require File.expand_path("../../config/environment", __FILE__)
+
 require 'rspec/rails'
+require 'rspec/matchers' # req by equivalent-xml custom matcher `be_equivalent_to`
+require 'equivalent-xml/rspec_matchers'
 require 'capybara/rails'
 require 'capybara/rspec'
 require 'dul_hydra'
 require 'database_cleaner'
 
 DatabaseCleaner.strategy = :truncation
+
+Ddr::Antivirus.scanner_adapter = :null
+Ddr::Antivirus.logger = Logger.new(File::NULL)
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -43,10 +53,15 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.clean
     ActiveFedora::Base.destroy_all
-    DulHydra.external_file_store = Dir.mktmpdir
+    Ddr::Models.configure do |config|
+      config.external_file_store = Dir.mktmpdir
+      config.external_file_subpath_pattern = "--"
+    end
   end
   config.after(:suite) do
-    FileUtils.remove_entry_secure DulHydra.external_file_store
+    if Ddr::Models.external_file_store && Dir.exist?(Ddr::Models.external_file_store)
+      FileUtils.remove_entry_secure(Ddr::Models.external_file_store) 
+    end
   end
   config.after(:each) { ActiveFedora::Base.destroy_all }
   config.after(:each, type: :feature) { Warden.test_reset! }

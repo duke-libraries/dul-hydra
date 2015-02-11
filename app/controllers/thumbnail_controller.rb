@@ -8,7 +8,7 @@ class ThumbnailController < ApplicationController
   end
 
   def datastream_to_show
-    asset.datastreams[DulHydra::Datastreams::THUMBNAIL]
+    asset.datastreams[Ddr::Datastreams::THUMBNAIL]
   end  
 
 end

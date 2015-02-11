@@ -1,4 +1,7 @@
 en:
+  ddr:
+    errors:
+      multiple_object_matches: "%{criteria} retrieved multiple repository objects"
   dul_hydra:
     ingest_folder:
       new_menu: "Folder Ingest"
@@ -100,7 +103,7 @@ en:
         edit: "Modify Permissions"
       alerts:
         inherited: 'This object is governed by the Collection %s. Permissions granted on this page are <strong>added to</strong> the inherited permissions (if any) shown below the select boxes.'
-        default_permissions: "These settings are <strong>inherited</strong> by objects governed by this collection. They do <strong>not</strong> apply to this Collection object itself."
+        default_permissions: "These settings are <strong>inherited</strong> by objects governed by this collection."
         permissions_will_change: "The permissions will be overwritten with your selections."
         default_permissions_will_change: "The default permissions will be overwritten with your selections and be applied to all objects governed by this collection."
       descriptions:
@@ -126,7 +129,6 @@ en:
           edit: Modify
           download: "Download XML"
         alerts:
-          is_admin_policy: "These settings apply to this Collection object itself. They are <strong>not inherited</strong> by objects governed by this collection."
           has_admin_policy: "This object is governed by the Collection %s. Permissions inherited from the collection are shown below."
       default_permissions:
         label: "Default Permissions"
@@ -141,7 +143,5 @@ en:
           label: Pending
       finished_batches:
           label: Already Run
-    errors:
-        multiple_object_matches: "%{criteria} retrieved multiple repository objects"
   blacklight:
     application_name: 'Duke Digital Repository'

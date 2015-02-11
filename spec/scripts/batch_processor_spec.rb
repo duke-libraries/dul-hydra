@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'helpers/metadata_helper'
 
 module DulHydra::Batch::Scripts
   
@@ -25,13 +24,13 @@ module DulHydra::Batch::Scripts
           expect(event.pid).to eq(obj.pid)
           expect(event.event_date_time).to be_within(3.minutes).of(DateTime.now)
           case event.type
-          when "FixityCheckEvent"
-            expect(event.detail).to include(FixityCheckEvent::VALID)
-            expect(event.detail).to_not include(FixityCheckEvent::INVALID)
-          when "IngestionEvent"
+          when "Ddr::Events::FixityCheckEvent"
+            expect(event.detail).to include(Ddr::Events::FixityCheckEvent::VALID)
+            expect(event.detail).to_not include(Ddr::Events::FixityCheckEvent::INVALID)
+          when "Ddr::Events::IngestionEvent"
             expect(event.summary).to include("Batch object identifier: #{batch_obj.identifier}")
-            expect(event.user).to eq(bp_user)
-          when "ValidationEvent"
+            expect(event.user_key).to eq(bp_user.user_key)
+          when "Ddr::Events::ValidationEvent"
             expect(event.detail).to include(DulHydra::Batch::Scripts::BatchProcessor::PASS)
             expect(event.detail).to_not include(DulHydra::Batch::Scripts::BatchProcessor::FAIL)
           end
@@ -63,7 +62,7 @@ module DulHydra::Batch::Scripts
         expect(obj).to be_an_instance_of(batch_obj.model.constantize)
         expect(obj.label).to eq(batch_obj.label) if batch_obj.label
         expect(obj.title.first).to eq('Sample title')
-        expect(obj.update_events.last.user).to eq(bp_user)
+        expect(obj.update_events.last.user_key).to eq(bp_user.user_key)
         batch_obj_ds = batch_obj.batch_object_datastreams
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
         batch_obj_rs = batch_obj.batch_object_relationships
@@ -119,7 +118,7 @@ module DulHydra::Batch::Scripts
       before { allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples) }
       context "successful initial run" do
         before { bp.execute }
-          it_behaves_like "a successful ingest batch"
+        it_behaves_like "a successful ingest batch"
       end
       context "successful restart run" do
         before do
@@ -141,7 +140,7 @@ module DulHydra::Batch::Scripts
       let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
       let(:repo_object) do
         r_obj = TestModelOmnibus.new(:pid => batch.batch_objects.first.pid, :label => 'Object Label')
-        r_obj.add_file("#{Rails.root}/spec/fixtures/library-devil.tiff", DulHydra::Datastreams::CONTENT)
+        r_obj.add_file("#{Rails.root}/spec/fixtures/library-devil.tiff", Ddr::Datastreams::CONTENT)
         r_obj.save
         r_obj
       end

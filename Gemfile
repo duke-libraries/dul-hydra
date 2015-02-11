@@ -1,18 +1,12 @@
 source 'http://rubygems.org'
 
-gem 'rails', '~> 4.1.4'
-
+gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
-gem 'hydra-validations', '~> 0.2'
-gem 'hydra-derivatives'
-
-gem 'devise', '~> 3.1.1'
-gem 'devise-remote-user', '0.3.0'
-gem 'grouper-rest-client'
+gem 'ddr-alerts', '~> 1.0.0'
+gem 'ddr-models', '~> 1.11.1'
+gem 'devise'
 gem 'deprecation'
-gem 'clamav'
 
-gem 'sqlite3'
 gem 'log4r'
 
 # Background processing
@@ -30,17 +24,20 @@ gem 'mime-types', '~> 1.19'
 gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 4.2.0'
 
-# Noids
-gem 'noid', '~> 0.7'
-
 group :development, :test do
+  gem 'sqlite3'
   gem 'rspec-rails', '~> 3.0.0'
   gem 'capybara', '~> 2.0'
-  gem 'jettywrapper', '~> 1.5'
+  gem 'jettywrapper', '~> 1.8'
   gem 'factory_girl_rails', '~> 4.4'
   gem 'orderly'
   gem 'launchy'
   gem 'database_cleaner'
+end
+
+group :test do
+  gem 'equivalent-xml'
+  gem "coveralls", require: false
 end
 
 group :production do

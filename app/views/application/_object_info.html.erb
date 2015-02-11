@@ -15,6 +15,16 @@
 	</li>
   <% end %>
 
+  <% if current_object.published? %>
+	<li class="list-group-item list-group-item-info">
+	  Published
+	</li>
+  <% else %>
+	<li class="list-group-item list-group-item-warning">
+	  Not Published
+	</li>
+  <% end %>
+
   <li class="list-group-item">
 	<span class="pull-right"><%= format_date current_object.create_date %></span>
 	Created
