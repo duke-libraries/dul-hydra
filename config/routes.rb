@@ -7,7 +7,7 @@ DulHydra::Application.routes.draw do
 
   get 'superuser' => 'superuser#toggle'
 
-  get 'id/:permanent_id' => 'permanent_ids#show'
+  get 'id/*permanent_id' => 'permanent_ids#show'
 
   def pid_constraint
     /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
