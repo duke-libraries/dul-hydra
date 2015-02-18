@@ -96,9 +96,9 @@ describe CollectionsController, type: :controller, collections: true do
     let(:items) { FactoryGirl.create_list(:item, 3) }
     before do
       items.each do |item|
-        item.children = FactoryGirl.create_list(:component, 2)
         item.parent = collection
         item.save
+        item.children = FactoryGirl.create_list(:component, 2)
       end
     end
     context "when the user can read the collection" do
