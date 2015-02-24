@@ -4,9 +4,10 @@ module DulHydra::Batch::Models
   # This superclass and its subclasses are designed following the ActiveRecord single-table inheritance pattern.
   class BatchObject < ActiveRecord::Base
     
-    belongs_to :batch, :inverse_of => :batch_objects
-    has_many :batch_object_datastreams, :inverse_of => :batch_object, :dependent => :destroy
-    has_many :batch_object_relationships, :inverse_of => :batch_object, :dependent => :destroy
+    belongs_to :batch, inverse_of: :batch_objects
+    has_many :batch_object_attributes, inverse_of: :batch_object, dependent: :destroy
+    has_many :batch_object_datastreams, inverse_of: :batch_object, dependent: :destroy
+    has_many :batch_object_relationships, inverse_of: :batch_object, dependent: :destroy
     
     VERIFICATION_PASS = "PASS"
     VERIFICATION_FAIL = "FAIL"
