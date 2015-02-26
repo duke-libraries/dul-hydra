@@ -224,6 +224,10 @@ module DulHydra::Batch::Models
             before { allow(File).to receive(:read).with('/tmp/qdc-rdf.nt').and_return('_:test <http://purl.org/dc/terms/title> "Test Object Title" .') }
             it_behaves_like "a successful ingest"
           end
+          context "attributes" do
+            let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_attributes) }
+            it_behaves_like "a successful ingest"
+          end
         end
         context "object with a pre-assigned PID" do
           let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_bytes) }
