@@ -19,6 +19,12 @@ shared_examples "a proper set of batch objects" do
     expect(objects.fetch('file01').model).to eql(IngestFolder.default_file_model)
     expect(objects.fetch('T001').model).to eql(IngestFolder.default_target_model)
     expect(objects.fetch('T002').model).to eql(IngestFolder.default_target_model)
+    expect(atts.fetch('f').fetch('identifier').value).to eql('f')
+    expect(atts.fetch('file01001').fetch('identifier').value).to eql('file01001')
+    expect(atts.fetch('file01002').fetch('identifier').value).to eql('file01002')
+    expect(atts.fetch('file01').fetch('identifier').value).to eql('file01')
+    expect(atts.fetch('T001').fetch('identifier').value).to eql('T001')
+    expect(atts.fetch('T002').fetch('identifier').value).to eql('T002')
     expect(dss.fetch('file01001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01001.tif"))
     expect(dss.fetch('file01002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01002.tif"))
     expect(dss.fetch('file01').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "pdf/file01.pdf"))
@@ -32,11 +38,11 @@ shared_examples "a proper set of batch objects" do
     expect(rels.fetch('T002').fetch('collection').object).to eql(ingest_folder.collection_pid)
   end
   it "should not set the source descriptive metadata attribute" do
-    expect(dss.fetch('file01001').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
-    expect(dss.fetch('file01002').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
-    expect(dss.fetch('file01').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
-    expect(dss.fetch('T001').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")
-    expect(dss.fetch('T002').fetch(Ddr::Datastreams::DESC_METADATA).payload).to_not include("<dcterms:source>")        
+    expect(atts.fetch('file01001')['source']).to be_nil
+    expect(atts.fetch('file01002')['source']).to be_nil
+    expect(atts.fetch('file01')['source']).to be_nil
+    expect(atts.fetch('T001')['source']).to be_nil
+    expect(atts.fetch('T002')['source']).to be_nil
   end
 end
 
@@ -175,6 +181,7 @@ describe IngestFolder, type: :model, ingest: true do
     end
     context "procezz" do
       let(:objects) { {} }
+      let(:atts) { {} }
       let(:dss) { {} }
       let(:rels) { {} }
       let(:parent_model) { Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
@@ -185,7 +192,7 @@ describe IngestFolder, type: :model, ingest: true do
           collection.admin_policy = collection
           collection.save
           ingest_folder.procezz
-          objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
+          objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
         end
         it_behaves_like "a proper set of batch objects"
         it_behaves_like "batch objects without individual permissions"
@@ -202,7 +209,7 @@ describe IngestFolder, type: :model, ingest: true do
             collection.permissions_attributes = [ { type: 'user', name: 'person1', access: 'read' } ]
             collection.save(validate: false)
             ingest_folder.procezz
-            objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
+            objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
           it_behaves_like "a proper set of batch objects"
           it_behaves_like "batch objects without individual permissions"
@@ -216,7 +223,7 @@ describe IngestFolder, type: :model, ingest: true do
         context "collection has no individual permissions" do
           before do
             ingest_folder.procezz
-            objects, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
+            objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
           it_behaves_like "a proper set of batch objects"
           it_behaves_like "batch objects without individual permissions"        
