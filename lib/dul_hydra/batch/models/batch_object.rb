@@ -218,6 +218,11 @@ Model: %{model}
       end
     end
     
+    def add_attribute(repo_object, attribute)
+      repo_object.datastreams[attribute.datastream].add_value(attribute.name, attribute.value)
+      return repo_object
+    end
+
     def populate_datastream(repo_object, datastream)
       case datastream[:payload_type]
       when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES

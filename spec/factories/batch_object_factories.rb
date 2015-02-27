@@ -59,6 +59,12 @@ FactoryGirl.define do
     end      
   end
 
+  trait :with_add_desc_metadata_attributes do
+    after(:create) do |batch_object|
+      FactoryGirl.create(:batch_object_add_desc_metadata_attribute, batch_object: batch_object)
+    end
+  end
+
   trait :with_addupdate_desc_metadata_datastream do
     after(:create) do |batch_object|
       FactoryGirl.create(:batch_object_addupdate_desc_metadata_datastream_file, :batch_object => batch_object)
@@ -88,6 +94,9 @@ FactoryGirl.define do
         with_add_desc_metadata_datastream_file
       end
 
+      factory :generic_ingest_batch_object_with_attributes do
+        with_add_desc_metadata_attributes
+      end
     end
     
     factory :target_ingest_batch_object do
