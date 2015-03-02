@@ -2,7 +2,7 @@ class IngestFolder < ActiveRecord::Base
   
   include ActiveModel::Validations
   
-  belongs_to :user, :inverse_of => :ingest_folders
+  belongs_to :user, inverse_of: :ingest_folders
   
   validates_presence_of :collection_pid, :sub_path
   validate :path_must_be_permitted
@@ -108,9 +108,9 @@ class IngestFolder < ActiveRecord::Base
   
   def procezz
     @batch = DulHydra::Batch::Models::Batch.create(
-                :user => user,
-                :name => I18n.t('batch.ingest_folder.batch_name'),
-                :description => abbreviated_path
+                user: user,
+                name: I18n.t('batch.ingest_folder.batch_name'),
+                description: abbreviated_path
                 )
     @total_count = 0
     @file_count = 0
@@ -170,7 +170,7 @@ class IngestFolder < ActiveRecord::Base
               end
             end
             if checksum_file.present? && file_checksum(File.join(dirpath, entry)).blank?
-              errors.add(:base, I18n.t('batch.ingest_folder.checksum_missing', :entry => File.join(dirpath, entry)))
+              errors.add(:base, I18n.t('batch.ingest_folder.checksum_missing', entry: File.join(dirpath, entry)))
             end
             create_batch_object_for_file(dirpath, entry) if create_batch_objects
           else
@@ -189,26 +189,32 @@ class IngestFolder < ActiveRecord::Base
     parent_pid = ActiveFedora::Base.connection_for_pid('0').mint
     policy_pid = collection_admin_policy ? collection_admin_policy.pid : collection_pid
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
-            :batch => @batch,
-            :identifier => parent_identifier,
-            :model => parent_model,
-            :pid => parent_pid
+            batch: @batch,
+            identifier: parent_identifier,
+            model: parent_model,
+            pid: parent_pid
             )
-    add_datastream(
-            obj,
-            Ddr::Datastreams::DESC_METADATA,
-            desc_metadata(parent_identifier),
-            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
+    DulHydra::Batch::Models::BatchObjectAttribute.create(
+            batch_object: obj,
+            datastream: Ddr::Datastreams::DESC_METADATA,
+            name: Ddr::Metadata::Vocabulary.term_name(RDF::DC, RDF::DC.identifier),
+            operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD,
+            value: parent_identifier,
+            value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING
             )
-    add_relationship(
-            obj,
-            DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
-            policy_pid
+    DulHydra::Batch::Models::BatchObjectRelationship.create(
+            batch_object: obj,
+            name: DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
+            object: policy_pid,
+            object_type: DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID,
+            operation: DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD
             )
-    add_relationship(
-            obj,
-            DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
-            collection_pid
+    DulHydra::Batch::Models::BatchObjectRelationship.create(
+            batch_object: obj,
+            name: DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
+            object: collection_pid,
+            object_type: DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID,
+            operation: DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD
             ) if collection_pid
     parent_pid
   end
@@ -238,82 +244,63 @@ class IngestFolder < ActiveRecord::Base
     end
     policy_pid = collection_admin_policy ? collection_admin_policy.pid : collection_pid
     obj = DulHydra::Batch::Models::IngestBatchObject.create(
-            :batch => @batch,
-            :identifier => file_identifier,
-            :model => file_model
+            batch: @batch,
+            identifier: file_identifier,
+            model: file_model
             )
-    add_datastream(
-            obj,
-            Ddr::Datastreams::DESC_METADATA,
-            desc_metadata(file_identifier),
-            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
+    DulHydra::Batch::Models::BatchObjectAttribute.create(
+            batch_object: obj,
+            datastream: Ddr::Datastreams::DESC_METADATA,
+            name: Ddr::Metadata::Vocabulary.term_name(RDF::DC, RDF::DC.identifier),
+            operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD,
+            value: file_identifier,
+            value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING
             )
-    add_datastream(
-            obj,
-            Ddr::Datastreams::CONTENT,
-            File.join(dirpath, file_entry),
-            DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
-            checksum_file.present? ? file_checksum(File.join(dirpath, file_entry)) : nil,
-            checksum_file.present? ? checksum_type : nil
+    DulHydra::Batch::Models::BatchObjectDatastream.create(
+            batch_object: obj,
+            name: Ddr::Datastreams::CONTENT,
+            operation: DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADD,
+            payload: File.join(dirpath, file_entry),
+            payload_type: DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
+            checksum: checksum_file.present? ? file_checksum(File.join(dirpath, file_entry)) : nil,
+            checksum_type: checksum_file.present? ? checksum_type : nil
             )
-    add_relationship(
-            obj,
-            DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
-            policy_pid
+    DulHydra::Batch::Models::BatchObjectRelationship.create(
+            batch_object: obj,
+            name: DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
+            object: policy_pid,
+            object_type: DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID,
+            operation: DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD
             )
-    add_relationship(
-            obj,
-            DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
-            parent_pid
+    DulHydra::Batch::Models::BatchObjectRelationship.create(
+            batch_object: obj,
+            name: DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
+            object: parent_pid,
+            object_type: DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID,
+            operation: DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD
             ) if add_parents && parent_pid
-    add_relationship(
-            obj,
-            DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_COLLECTION,
-            collection_pid
+    DulHydra::Batch::Models::BatchObjectRelationship.create(
+            batch_object: obj,
+            name: DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_COLLECTION,
+            object: collection_pid,
+            object_type: DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID,
+            operation: DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD
             ) if target?(dirpath) && collection_pid
     obj.save
   end
-  
-  def add_datastream(batch_object, datastream, payload, payload_type, checksum=nil, checksum_type=nil)
-    DulHydra::Batch::Models::BatchObjectDatastream.create(
-      :batch_object => batch_object,
-      :name => datastream,
-      :operation => DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADD,
-      :payload => payload,
-      :payload_type => payload_type,
-      :checksum => checksum,
-      :checksum_type => checksum_type
-      )    
-  end
-  
-  def add_relationship(batch_object, relationship, pid)
-    DulHydra::Batch::Models::BatchObjectRelationship.create(
-      :batch_object => batch_object,
-      :name => relationship,
-      :object => pid,
-      :object_type => DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID,
-      :operation => DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD
-    )    
-  end
-  
-  def desc_metadata(identifier, creator=nil)
-    base = Ddr::Models::Base.new
-    base.identifier = [ identifier ] if identifier.present?
-    base.descMetadata.content
-  end
-  
+
   def extract_identifier_from_filename(file_entry)
     File.basename(file_entry, File.extname(file_entry))
   end  
 
   def path_must_be_permitted
-    errors.add(:base_path, I18n.t('batch.ingest_folder.base_path.forbidden', :path => base_path)) unless IngestFolder.permitted_folders(user).include?(base_path)
+    errors.add(:base_path, I18n.t('batch.ingest_folder.base_path.forbidden', path: base_path)) unless IngestFolder.permitted_folders(user).include?(base_path)
   end
 
   def path_must_be_readable
-    errors.add(:sub_path, I18n.t('batch.ingest_folder.not_readable', :path => sub_path)) unless File.readable?(full_path)
+    errors.add(:sub_path, I18n.t('batch.ingest_folder.not_readable', path: sub_path)) unless File.readable?(full_path)
     if checksum_file.present?
-      errors.add(:checksum_file, I18n.t('batch.ingest_folder.not_readable', :path => checksum_file_location)) unless File.readable?(checksum_file_location)
+      errors.add(:checksum_file, I18n.t('batch.ingest_folder.not_readable', path: checksum_file_location)) unless File.readable?(checksum_file_location)
     end
   end
   
