@@ -85,9 +85,9 @@ module DulHydra::Batch::Models
         repo_object = model.constantize.new(:pid => repo_pid)
         repo_object.label = label if label
         repo_object.save(validate: false)
-        batch_object_attributes.each {|a| repo_object = add_attribute(repo_object, a)} if batch_object_attributes
-        batch_object_datastreams.each {|d| repo_object = populate_datastream(repo_object, d)} if batch_object_datastreams
-        batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
+        batch_object_attributes.each { |a| repo_object = add_attribute(repo_object, a) }
+        batch_object_datastreams.each { |d| repo_object = populate_datastream(repo_object, d) }
+        batch_object_relationships.each { |r| repo_object = add_relationship(repo_object, r) }
         repo_object.save
       rescue Exception => e1
         logger.fatal("Error in creating repository object #{repo_object.pid} for #{identifier} : #{e1}")
