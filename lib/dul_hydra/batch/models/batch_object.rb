@@ -154,13 +154,18 @@ Model: %{model}
         verifications["Object exists in repository"] = VERIFICATION_PASS
         verifications["Object is correct model"] = verify_model(repo_object) if model
         verifications["Object has correct label"] = verify_label(repo_object) if label
-        if batch_object_datastreams
+        unless batch_object_attributes.empty?
+          batch_object_attributes.each do |a|
+            verifications["#{a.name} attribute set correctly"] = verify_attribute(repo_object, a)
+          end
+        end
+        unless batch_object_datastreams.empty?
           batch_object_datastreams.each do |d|
             verifications["#{d.name} datastream present and not empty"] = verify_datastream(repo_object, d)
             verifications["#{d.name} external checksum match"] = verify_datastream_external_checksum(repo_object, d) if d.checksum
           end
         end
-        if batch_object_relationships
+        unless batch_object_relationships.empty?
           batch_object_relationships.each do |r|
             verifications["#{r.name} relationship is correct"] = verify_relationship(repo_object, r)
           end
@@ -182,11 +187,16 @@ Model: %{model}
         return VERIFICATION_FAIL
       end
     end
-  
+
     def verify_label(repo_object)
       repo_object.label.eql?(label) ? VERIFICATION_PASS : VERIFICATION_FAIL
     end
-    
+
+    def verify_attribute(repo_object, attribute)
+      repo_object.datastreams[attribute.datastream].values(attribute.name).include?(attribute.value) ?
+              VERIFICATION_PASS : VERIFICATION_FAIL
+    end
+
     def verify_datastream(repo_object, datastream)
       if repo_object.datastreams.include?(datastream.name) && 
           repo_object.datastreams[datastream.name].has_content?
@@ -197,12 +207,10 @@ Model: %{model}
     end
     
     def verify_datastream_external_checksum(repo_object, datastream)
-      begin
-        repo_object.datastreams[datastream.name].validate_checksum! datastream.checksum, datastream.checksum_type
-        return VERIFICATION_PASS
-      rescue Ddr::Models::ChecksumInvalid
-        return VERIFICATION_FAIL
-      end
+      repo_object.datastreams[datastream.name].validate_checksum! datastream.checksum, datastream.checksum_type
+      return VERIFICATION_PASS
+    rescue Ddr::Models::ChecksumInvalid
+      return VERIFICATION_FAIL
     end
     
     def verify_relationship(repo_object, relationship)

@@ -15,11 +15,16 @@ module DulHydra::Batch::Models
   end
   
   shared_examples "a successful ingest" do
-    before { object.process(user) }      
+    let(:repo_object) { ActiveFedora::Base.find(object.pid) }
+    let(:verification_event) { repo_object.events.select { |e| e.is_a? Ddr::Events::ValidationEvent }.first }
+    before { object.process(user) }
     it "should result in a verified repository object" do
       expect(object.verified).to be_truthy
       expect(object.pid).to eq(assigned_pid) if assigned_pid.present?
-      expect(ActiveFedora::Base.find(object.pid).title).to eq(["Test Object Title"])
+      expect(repo_object.title).to eq(["Test Object Title"])
+      unless object.batch_object_attributes.empty?
+        expect(verification_event.detail).to include("title attribute set correctly...#{DulHydra::Batch::Models::BatchObject::VERIFICATION_PASS}")
+      end
     end
   end
   
