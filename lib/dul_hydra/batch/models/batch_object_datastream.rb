@@ -5,7 +5,6 @@ module DulHydra::Batch::Models
     belongs_to :batch_object, :inverse_of => :batch_object_datastreams
     
     DATASTREAMS = [ Ddr::Datastreams::CONTENT,
-                    Ddr::Datastreams::CONTENT_METADATA,
                     Ddr::Datastreams::DESC_METADATA,
                     Ddr::Datastreams::RIGHTS_METADATA ]
     

@@ -197,7 +197,7 @@ class IngestFolder < ActiveRecord::Base
     DulHydra::Batch::Models::BatchObjectAttribute.create(
             batch_object: obj,
             datastream: Ddr::Datastreams::DESC_METADATA,
-            name: Ddr::Metadata::Vocabulary.term_name(RDF::DC, RDF::DC.identifier),
+            name: Ddr::Vocab::Vocabulary.term_name(RDF::DC, RDF::DC.identifier),
             operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD,
             value: parent_identifier,
             value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING
@@ -251,7 +251,7 @@ class IngestFolder < ActiveRecord::Base
     DulHydra::Batch::Models::BatchObjectAttribute.create(
             batch_object: obj,
             datastream: Ddr::Datastreams::DESC_METADATA,
-            name: Ddr::Metadata::Vocabulary.term_name(RDF::DC, RDF::DC.identifier),
+            name: Ddr::Vocab::Vocabulary.term_name(RDF::DC, RDF::DC.identifier),
             operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD,
             value: file_identifier,
             value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING

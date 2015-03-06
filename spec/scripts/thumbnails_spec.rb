@@ -37,56 +37,17 @@ module DulHydra::Scripts
         end
         let(:item) { items.first }
         let(:children) { item.children }
-        context "contentMetadata" do
-          before do
-            contentMetadata = <<-EOD
-<?xml version="1.0"?>
-<mets xmlns="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <fileSec>
-    <fileGrp ID="GRP01" USE="Master Image">
-      <file ID="FILE001">
-        <FLocat LOCTYPE="URL" xlink:href="#{children[1].pid}/content"/>
-      </file>
-      <file ID="FILE002">
-        <FLocat LOCTYPE="URL" xlink:href="#{children[0].pid}/content"/>
-      </file>
-    </fileGrp>
-  </fileSec>
-  <structMap>
-    <div ID="DIV01" TYPE="image" LABEL="Images">
-      <div ORDER="1">
-        <fptr FILEID="FILE001"/>
-      </div>
-      <div ORDER="2">
-        <fptr FILEID="FILE002"/>
-      </div>
-    </div>
-  </structMap>
-</mets>            
-            EOD
-            item.datastreams["contentMetadata"].content = contentMetadata
-            item.save
-            thumbnails_script.execute
-            item.reload
-          end
-          it "should populate the thumbnail datastream from the first PID in contentMetadata" do
-            expect(item.datastreams["thumbnail"].content).to_not be_nil
-            expect(item.datastreams["thumbnail"].checksum).to eq(children[1].datastreams["thumbnail"].checksum)
-          end
+        before do
+          iden = children[0].identifier.first
+          children[0].identifier = [ children[1].identifier.first ]
+          children[0].save
+          children[1].identifier = [ iden ]
+          children[1].save
+          thumbnails_script.execute
+          item.reload
         end
-        context "no contentMetadata" do
-          before do
-            iden = children[0].identifier.first
-            children[0].identifier = [ children[1].identifier.first ]
-            children[0].save
-            children[1].identifier = [ iden ]
-            children[1].save
-            thumbnails_script.execute
-            item.reload
-          end
-          it "should populate the thumbnail datastream from the first child (sorted by identifier)" do
-            expect(item.datastreams["thumbnail"].content).to eq(children[1].datastreams["thumbnail"].content)
-          end
+        it "should populate the thumbnail datastream from the first child (sorted by identifier)" do
+          expect(item.datastreams["thumbnail"].content).to eq(children[1].datastreams["thumbnail"].content)
         end
       end
       
