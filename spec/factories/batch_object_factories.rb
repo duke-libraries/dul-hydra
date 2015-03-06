@@ -65,12 +65,6 @@ FactoryGirl.define do
     end
   end
 
-  trait :with_addupdate_desc_metadata_datastream do
-    after(:create) do |batch_object|
-      FactoryGirl.create(:batch_object_addupdate_desc_metadata_datastream_file, :batch_object => batch_object)
-    end
-  end
-  
   factory :ingest_batch_object, :class => DulHydra::Batch::Models::IngestBatchObject do
     has_identifier
     has_label
@@ -113,7 +107,7 @@ FactoryGirl.define do
     
     factory :basic_update_batch_object do
       has_model
-      with_addupdate_desc_metadata_datastream
+      with_add_desc_metadata_attributes
     end
     
   end

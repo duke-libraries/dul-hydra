@@ -61,7 +61,7 @@ module DulHydra::Batch::Scripts
         batch_obj = batch.batch_objects[index]
         expect(obj).to be_an_instance_of(batch_obj.model.constantize)
         expect(obj.label).to eq(batch_obj.label) if batch_obj.label
-        expect(obj.title.first).to eq('Sample title')
+        expect(obj.title).to eq([ 'Test Object Title' ])
         expect(obj.update_events.last.user_key).to eq(bp_user.user_key)
         batch_obj_ds = batch_obj.batch_object_datastreams
         batch_obj_ds.each { |d| expect(obj.datastreams[d.name].content).to_not be_nil }
@@ -146,7 +146,6 @@ module DulHydra::Batch::Scripts
       end
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
       before do
-        allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples("<#{ActiveFedora::Rdf::ObjectResource.base_uri}#{repo_object.pid}>"))
         repo_object.edit_users = [ batch.user.user_key ]
         repo_object.save
       end
@@ -163,7 +162,7 @@ module DulHydra::Batch::Scripts
       end
       context "exception during run" do
         before do
-          allow_any_instance_of(DulHydra::Batch::Models::BatchObject).to receive(:populate_datastream).and_raise(RuntimeError)
+          allow_any_instance_of(DulHydra::Batch::Models::BatchObject).to receive(:add_attribute).and_raise(RuntimeError)
           bp.execute
         end
         it_behaves_like "an interrupted batch run"

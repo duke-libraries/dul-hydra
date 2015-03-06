@@ -60,12 +60,16 @@ module DulHydra::Batch::Models
       repo_object = nil
       begin
         repo_object = ActiveFedora::Base.find(pid)
-        if batch_object_datastreams
-          batch_object_datastreams.each do |d|
-            repo_object = case
-            when d.operation.eql?(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
-              populate_datastream(repo_object, d)
-            end        
+        batch_object_attributes.each do |a|
+          repo_object = case
+          when a.operation.eql?(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
+            add_attribute(repo_object, a)
+          end
+        end
+        batch_object_datastreams.each do |d|
+          repo_object = case
+          when d.operation.eql?(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
+            populate_datastream(repo_object, d)
           end
         end
         if repo_object.save          

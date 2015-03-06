@@ -13,15 +13,21 @@ module DulHydra::Batch::Models
       expect(object.validate).to include(error_message)
     end
   end
-  
+
+  shared_examples "a loggable event has occurred" do
+    it "should log the event" do
+      expect(repo_object.update_events.last.comment).to eq("Updated by batch process (Batch #{object.batch.id}, BatchObject #{object.id})")
+    end
+  end
+
   describe UpdateBatchObject, type: :model, batch: true do
 
-    let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
     let(:object) { batch.batch_objects.first }
 
     before { allow(File).to receive(:readable?).with("/tmp/qdc-rdf.nt").and_return(true) }
 
     context "validate", validation: true do
+      let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
       context "valid object" do
         let(:repo_object) { TestModel.create(:pid => object.pid) }
         before do
@@ -59,26 +65,22 @@ module DulHydra::Batch::Models
     end
 
     context "update" do
-      context "successful update" do
-        let(:repo_object) { TestModel.create(pid: object.pid, title: [ "Test Model Title" ]) }
-        before do
-          allow(File).to receive(:read).with("/tmp/qdc-rdf.nt").and_return(sample_metadata_triples("<#{repo_object.descMetadata.rdf_subject.to_s}>"))
-          repo_object.edit_users = [batch.user.user_key]
-          repo_object.save!
-          object.process(batch.user)
-          repo_object.reload
-        end
-        it "should update the repository object" do
-          expect(repo_object.title.first).to eq('Sample title')
-        end
-        it "should create an event log for the update" do
-          expect(repo_object.update_events.last.comment).to eq("Updated by batch process (Batch #{object.batch.id}, BatchObject #{object.id})")
-        end
-        
+      let(:repo_object) { TestModel.create(pid: object.pid, title: [ "Test Model Title" ]) }
+      before do
+        repo_object.edit_users = [batch.user.user_key]
+        repo_object.save!
+        object.process(batch.user)
+        repo_object.reload
       end
-      
+      context "attributes" do
+        context "add" do
+          let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
+          it_behaves_like "a loggable event has occurred"
+          it "should add the attribute value to the repository object" do
+            expect(repo_object.title).to eq( [ 'Test Model Title', 'Test Object Title' ] )
+          end
+        end
+      end
     end
-    
   end
-  
 end
