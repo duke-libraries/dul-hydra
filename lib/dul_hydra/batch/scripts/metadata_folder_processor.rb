@@ -140,10 +140,10 @@ module DulHydra::Batch::Scripts
         when "dcterms"
           RDF::DC
         when "duke"
-          Ddr::Metadata::DukeTerms
+          Ddr::Vocab::DukeTerms
         end
         if vocabulary.present?
-          unless Ddr::Metadata::Vocabulary.term_names(vocabulary).include?(node.name.to_sym)
+          unless Ddr::Vocab::Vocabulary.term_names(vocabulary).include?(node.name.to_sym)
             error("Unknown element name #{node.name} in #{abbrev_file_loc}")              
           end
         else
