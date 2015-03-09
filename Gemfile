@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
 gem 'ddr-alerts', '~> 1.0.0'
-gem 'ddr-models', '~> 1.12.1'
+gem 'ddr-models', '~> 1.12.2.post'
 gem 'devise'
 gem 'deprecation'
 
