@@ -126,7 +126,7 @@ module ApplicationHelper
 
   def thumbnail_image_tag document, image_options = {}
     src = document.has_thumbnail? ? thumbnail_path(document) : default_thumbnail(document)
-    thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
+    thumbnail = image_tag(src, alt: "Thumbnail", class: "img-thumbnail", size: "100x100")
   end
 
   def render_thumbnail(doc_or_obj, linked = false)
