@@ -22,6 +22,7 @@ class ItemsController < ApplicationController
       child = Component.new(parent_id: current_object.pid)
       # set permissions on the component
       child.set_initial_permissions current_user
+      child.copy_admin_policy_or_permissions_from current_object
       # upload the file
       child.upload child_params[:file]
       if child.save
