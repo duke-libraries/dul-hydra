@@ -48,42 +48,52 @@ describe ItemsController, type: :controller, items: true do
     # see shared examples
     let(:collection) { FactoryGirl.create(:collection) }
     before { controller.current_ability.can(:create, Item) }
-    context "when the user cannot add children to the collection" do
+    context "when the current user cannot add children to the collection" do
       before { controller.current_ability.cannot(:add_children, collection) }
       it "should be unauthorized" do
         create_item
         expect(response.response_code).to eq(403)
       end
     end
-    context "adding a component file at creation time" do
+    context "when the current user can add children to the collection" do
       before { controller.current_ability.can(:add_children, collection) }
-      it "should create the component" do
-        expect { create_item_and_component }.to change { Component.count }.by(1)
+      it "should set the admin policy id to the collection's admin policy id" do
+        create_item
+        expect(assigns(:current_object).admin_policy_id).to eq(collection.admin_policy_id)
       end
-      it "the component should have content" do
-        create_item_and_component
-        expect(assigns(:current_object).children.first).to have_content
+      context "adding a component file at creation time" do
+        it "should create the component" do
+          expect { create_item_and_component }.to change { Component.count }.by(1)
+        end
+        it "the component should have content" do
+          create_item_and_component
+          expect(assigns(:current_object).children.first).to have_content
+        end
+        it "should correctly set the MIME type" do
+          create_item_and_component
+          expect(assigns(:current_object).children.first.content_type).to eq("image/tiff")
+        end
+        it "should store the original file name" do
+          create_item_and_component
+          expect(assigns(:current_object).children.first.original_filename).to eq("image1.tiff")
+        end
+        it "should grant edit permission to the user" do
+          create_item_and_component
+          expect(assigns(:current_object).children.first.edit_users).to include(user.user_key)
+        end
+        it "should copy the admin policy id of the item to the component" do
+          create_item_and_component
+          expect(assigns(:current_object).children.first.admin_policy_id).to eq(assigns(:current_object).admin_policy_id)
+        end
+        it "should have a thumbnail (if it's an image)" do
+          create_item_and_component
+          expect(assigns(:current_object).children.first).to have_thumbnail
+        end
+        it "should create events" do
+          expect{ create_item_and_component }.to change{ Ddr::Events::CreationEvent.count }.by(2)
+        end
+        it "should validate the checksum if provided"
       end
-      it "should correctly set the MIME type" do
-        create_item_and_component
-        expect(assigns(:current_object).children.first.content_type).to eq("image/tiff")
-      end
-      it "should store the original file name" do
-        create_item_and_component
-        expect(assigns(:current_object).children.first.original_filename).to eq("image1.tiff")
-      end
-      it "should grant edit permission to the user" do
-        create_item_and_component
-        expect(assigns(:current_object).children.first.edit_users).to include(user.user_key)
-      end
-      it "should have a thumbnail (if it's an image)" do
-        create_item_and_component
-        expect(assigns(:current_object).children.first).to have_thumbnail
-      end
-      it "should create events" do
-        expect{ create_item_and_component }.to change{ Ddr::Events::CreationEvent.count }.by(2)
-      end
-      it "should validate the checksum if provided"
     end
   end
 
