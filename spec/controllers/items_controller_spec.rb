@@ -2,12 +2,12 @@ require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_item
-  post :create, parent_id: collection.pid
+  post :create, parent_id: collection.pid, descMetadata: {title: ["New Item"]}
 end
 
 def create_item_and_component opts={}
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, parent_id: collection.pid, content: {file: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
+  post :create, parent_id: collection.pid, descMetadata: {title: ["New Item"]}, content: {file: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
 end
 
 describe ItemsController, type: :controller, items: true do
