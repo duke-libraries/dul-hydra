@@ -11,7 +11,7 @@ class ItemsController < ApplicationController
   protected
 
   def create_params
-    params.permit(:descMetadata).permit(title: [])
+    params.require(:descMetadata).permit(title: [])
   end
 
   def after_create_success
