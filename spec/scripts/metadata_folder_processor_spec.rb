@@ -62,10 +62,7 @@ module DulHydra::Batch::Scripts
         allow(File).to receive(:read).and_call_original
       end
       context "no warnings or errors" do
-        let(:subject_string) { "<#{ActiveFedora::Rdf::ObjectResource.base_uri}#{object.pid}>" }
-        let(:expected_triples) do
-          "#{subject_string} <http://purl.org/dc/terms/identifier> \"efghi01003\" .\n".concat(sample_metadata_triples(subject_string))
-        end
+        let(:expected_md_array) { sample_metadata_array << { "identifier" => "efghi01003" } }
         before do
           allow(File).to receive(:read).with(File.join(folder, "md.xml")).and_return(sample_mets_xml)
         end
@@ -77,7 +74,7 @@ module DulHydra::Batch::Scripts
           dmdsec = dmdsecs["abcd_efghi01003"]
           expect(dmdsec[:id]).to eq("efghi01003")
           expect(dmdsec[:pid]).to eq(object.pid)
-          expect(RDF::Reader.for(:ntriples).new(dmdsec[:md])).to be_isomorphic_with(RDF::Reader.for(:ntriples).new(expected_triples))
+          expect(dmdsec[:md]).to match_array(expected_md_array)
         end
         it "should not report any warnings or errors" do
           expect(mfp.logger).to receive(:info).exactly(2).times
@@ -167,7 +164,7 @@ module DulHydra::Batch::Scripts
       let(:user) { FactoryGirl.create(:user) }
       let(:object) { { id: "id_1", pid: "test:1" } }
       let(:mfp) { described_class.new({ folder: folder, batch_user: user }).tap { |p| p.scanner = scanner_hash } }
-      let(:scanner_hash) { { "/tmp/a.xml" => { "sec_1" => { id: object[:id], pid: object[:pid], md: "testing" } } } }
+      let(:scanner_hash) { { "/tmp/a.xml" => { "sec_1" => { id: object[:id], pid: object[:pid], md: [ { "title" => "testing" } ] } } } }
       it "should create the appropriate batch" do
         batch = mfp.create_batch
         expect(batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_READY)
@@ -179,12 +176,17 @@ module DulHydra::Batch::Scripts
         expect(batch_object).to be_a(DulHydra::Batch::Models::UpdateBatchObject)
         expect(batch_object.identifier).to eq(object[:id])
         expect(batch_object.pid).to eq(object[:pid])
-        expect(batch_object.batch_object_datastreams.size).to eq(1)
-        metadata_datastream = batch_object.batch_object_datastreams.first
-        expect(metadata_datastream.name).to eq(Ddr::Datastreams::DESC_METADATA)
-        expect(metadata_datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
-        expect(metadata_datastream.payload).to eq("testing")
-        expect(metadata_datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
+        expect(batch_object.batch_object_attributes.size).to eq(2)
+        batch_object.batch_object_attributes.each { |boa| puts "#{boa.id} #{boa.created_at.inspect}" }
+        attribute = batch_object.batch_object_attributes.first
+        expect(attribute.datastream).to eq(Ddr::Datastreams::DESC_METADATA)
+        expect(attribute.operation).to eq(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL)
+        attribute = batch_object.batch_object_attributes.last
+        expect(attribute.datastream).to eq(Ddr::Datastreams::DESC_METADATA)
+        expect(attribute.operation).to eq(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
+        expect(attribute.name).to eq("title")
+        expect(attribute.value).to eq("testing")
+        expect(attribute.value_type).to eq(DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING)
       end
     end
 
