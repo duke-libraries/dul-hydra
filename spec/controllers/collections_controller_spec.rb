@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'support/collections_controller_spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_collection
@@ -94,13 +95,10 @@ describe CollectionsController, type: :controller, collections: true do
   describe "#collection_info" do
     let(:collection) { FactoryGirl.create(:collection) }
     context "when the user can read the collection" do
-      let(:items) { FactoryGirl.create_list(:item, 3) }
+      let(:items) { FactoryGirl.build_list(:item, 3) }
       before do
-        items.each do |item|
-          item.parent = collection
-          item.save
-          item.children = FactoryGirl.create_list(:component, 2)
-        end
+        allow_any_instance_of(Collection).to receive(:children).and_return(items)
+        allow_any_instance_of(Collection).to receive(:components_from_solr).and_return(component_solr_doc_array.lazy)
         controller.current_ability.can(:read, collection)
       end
       it "should report the statistics" do
