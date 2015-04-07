@@ -64,6 +64,8 @@ module DulHydra::Batch::Models
           repo_object = case
           when a.operation.eql?(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
             add_attribute(repo_object, a)
+          when a.operation.eql?(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL)
+            clear_attributes(repo_object, a)
           end
         end
         batch_object_datastreams.each do |d|

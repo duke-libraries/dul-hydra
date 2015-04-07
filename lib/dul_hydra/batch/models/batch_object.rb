@@ -156,7 +156,9 @@ Model: %{model}
         verifications["Object has correct label"] = verify_label(repo_object) if label
         unless batch_object_attributes.empty?
           batch_object_attributes.each do |a|
-            verifications["#{a.name} attribute set correctly"] = verify_attribute(repo_object, a)
+            if a.operation == DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD
+              verifications["#{a.name} attribute set correctly"] = verify_attribute(repo_object, a)
+            end
           end
         end
         unless batch_object_datastreams.empty?
@@ -228,6 +230,13 @@ Model: %{model}
     
     def add_attribute(repo_object, attribute)
       repo_object.datastreams[attribute.datastream].add_value(attribute.name, attribute.value)
+      return repo_object
+    end
+
+    def clear_attributes(repo_object, attribute)
+      repo_object.datastreams[attribute.datastream].class.term_names.each do |term|
+        repo_object.datastreams[attribute.datastream].set_values(term, nil) if repo_object.datastreams[attribute.datastream].values(term)
+      end
       return repo_object
     end
 

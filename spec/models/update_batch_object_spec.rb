@@ -65,7 +65,7 @@ module DulHydra::Batch::Models
     end
 
     context "update" do
-      let(:repo_object) { TestModel.create(pid: object.pid, title: [ "Test Model Title" ]) }
+      let(:repo_object) { TestModel.create(pid: object.pid, title: [ "Test Model Title" ], identifier: [ "id1", "id2" ]) }
       before do
         repo_object.edit_users = [batch.user.user_key]
         repo_object.save!
@@ -78,6 +78,15 @@ module DulHydra::Batch::Models
           it_behaves_like "a loggable event has occurred"
           it "should add the attribute value to the repository object" do
             expect(repo_object.title).to eq( [ 'Test Model Title', 'Test Object Title' ] )
+          end
+        end
+        # Can't really test just clearing all attributes because can't save datastream with no content
+        context "clear all and add" do
+          let(:batch) { FactoryGirl.create(:batch_with_basic_clear_all_and_add_batch_object) }
+          it_behaves_like "a loggable event has occurred"
+          it "should clear the existing attributes from the repository object and add an attribute value" do
+            expect(repo_object.title).to eq( [ 'Test Object Title' ] )
+            expect(repo_object.identifier).to be_empty
           end
         end
       end

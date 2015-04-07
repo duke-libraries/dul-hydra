@@ -28,5 +28,11 @@ FactoryGirl.define do
       end
     end
 
+    factory :batch_with_basic_clear_all_and_add_batch_object do
+      after(:create) do |batch|
+        FactoryGirl.create(:basic_clear_all_and_add_batch_object, :batch => batch)
+      end
+    end
+
   end
 end
