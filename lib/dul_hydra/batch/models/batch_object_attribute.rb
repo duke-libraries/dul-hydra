@@ -3,11 +3,12 @@ module DulHydra::Batch::Models
   class BatchObjectAttribute < ActiveRecord::Base
     belongs_to :batch_object, :inverse_of => :batch_object_attributes
 
-    OPERATION_ADD = "ADD"          # Add the provided value to the attribute
-    OPERATION_DELETE = "DELETE"    # Delete the provided value from the attribute
-    OPERATION_CLEAR = "CLEAR"      # Clear all values from the attribute
+    OPERATION_ADD = "ADD"              # Add the provided value to the attribute
+    OPERATION_DELETE = "DELETE"        # Delete the provided value from the attribute
+    OPERATION_CLEAR = "CLEAR"          # Clear all values from the attribute
+    OPERATION_CLEAR_ALL = "CLEAR_ALL"  # Clear all attributes in the datastream
 
-    OPERATIONS = [ OPERATION_ADD, OPERATION_DELETE, OPERATION_CLEAR ]
+    OPERATIONS = [ OPERATION_ADD, OPERATION_DELETE, OPERATION_CLEAR, OPERATION_CLEAR_ALL ]
 
     VALUE_TYPE_STRING = "STRING"
 
@@ -15,11 +16,17 @@ module DulHydra::Batch::Models
 
     validates :operation, inclusion: { in: OPERATIONS }
     validates :datastream, presence: true
-    validates :name, presence: true
+    with_options if: :operation_requires_name? do |obj|
+      obj.validates :name, presence: true
+    end
     validate :valid_datastream_and_attribute_name, if: [ 'batch_object.model', 'datastream', 'name' ]
     with_options if: :operation_requires_value? do |obj|
       obj.validates :value, presence: true
       obj.validates :value_type, inclusion: { in: VALUE_TYPES }
+    end
+
+    def operation_requires_name?
+      [ OPERATION_ADD, OPERATION_DELETE, OPERATION_CLEAR ].include? operation
     end
 
     def operation_requires_value?
