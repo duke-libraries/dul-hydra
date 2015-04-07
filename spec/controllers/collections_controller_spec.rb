@@ -93,16 +93,16 @@ describe CollectionsController, type: :controller, collections: true do
 
   describe "#collection_info" do
     let(:collection) { FactoryGirl.create(:collection) }
-    let(:items) { FactoryGirl.create_list(:item, 3) }
-    before do
-      items.each do |item|
-        item.parent = collection
-        item.save
-        item.children = FactoryGirl.create_list(:component, 2)
-      end
-    end
     context "when the user can read the collection" do
-      before { controller.current_ability.can(:read, collection) }
+      let(:items) { FactoryGirl.create_list(:item, 3) }
+      before do
+        items.each do |item|
+          item.parent = collection
+          item.save
+          item.children = FactoryGirl.create_list(:component, 2)
+        end
+        controller.current_ability.can(:read, collection)
+      end
       it "should report the statistics" do
         get :collection_info, id: collection
         expect(response).to render_template(:collection_info)
