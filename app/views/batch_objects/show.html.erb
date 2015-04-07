@@ -1,86 +1,112 @@
-<%= content_tag :h3, t('batch.web.page_titles.batch_object', :id => @batch_object.id) %>
+<h3><%= t('batch.web.page_titles.batch_object', :id => @batch_object.id) %></h3>
 
-<%= content_tag :table, :class => 'table-condensed' do %>
-	<%= content_tag :tr do%>
-		<%= content_tag :td, t('batch.web.column_names.part_of_batch') %>
-		<%= content_tag :td, render_link_to_batch_with_name(@batch_object.batch) %>
-	<% end %>
-	<%= content_tag :tr do%>
-		<%= content_tag :td, t('batch.web.column_names.identifier') %>
-		<%= content_tag :td, @batch_object.identifier %>
-	<% end %>
-	<%= content_tag :tr do%>
-		<%= content_tag :td, t('batch.web.column_names.model') %>
-		<%= content_tag :td, @batch_object.model %>
-	<% end %>
-	<%= content_tag :tr do%>
-		<%= content_tag :td, t('batch.web.column_names.pid') %>
-		<%= content_tag :td, @batch_object.pid %>
-	<% end %>
-	<%= content_tag :tr do%>
-		<%= content_tag :td, t('batch.web.column_names.verified_in_repository') %>
-		<%= content_tag :td, @batch_object.verified %>
-	<% end %>
-<% end%>
+<table class='table-condensed'>
+	<tr>
+		<td><%= t('batch.web.column_names.part_of_batch') %></td>
+		<td><%= render_link_to_batch_with_name(@batch_object.batch) %></td>
+	</tr>
+	<tr>
+		<td><%= t('batch.web.column_names.identifier') %></td>
+		<td><%= @batch_object.identifier %></td>
+	</tr>
+	<tr>
+		<td><%= t('batch.web.column_names.model') %></td>
+		<td><%= @batch_object.model %></td>
+	</tr>
+	<tr>
+		<td><%= t('batch.web.column_names.pid') %></td>
+		<td><%= @batch_object.pid %></td>
+	</tr>
+	<tr>
+		<td><%= t('batch.web.column_names.verified_in_repository') %></td>
+		<td><%= @batch_object.verified %></td>
+	</tr>
+</table>
 
-<%= content_tag :h4, "Relationships" %>
+<h4>Relationships</h4>
 <% if @batch_object.batch_object_relationships.present? %>
-	<%= content_tag :table, :class => 'table-bordered' do %>
-		<%= content_tag :thead do %>
-			<%= content_tag :th, t('batch.web.column_names.id') %>
-			<%= content_tag :th, t('batch.web.column_names.name') %>
-			<%= content_tag :th, t('batch.web.column_names.operation') %>
-			<%= content_tag :th, t('batch.web.column_names.related_object') %>
-			<%= content_tag :th, t('batch.web.column_names.related_object_type') %>
-		<% end %>
+	<table class='table-bordered'>
+		<thead>
+			<th><%= t('batch.web.column_names.id') %></th>
+			<th><%= t('batch.web.column_names.name') %></th>
+			<th><%= t('batch.web.column_names.operation') %></th>
+			<th><%= t('batch.web.column_names.related_object') %></th>
+			<th><%= t('batch.web.column_names.related_object_type') %></th>
+		</thead>
 		<% @batch_object.batch_object_relationships.each do |rel| %>
-			<%= content_tag :tr do %>
-				<%= content_tag :td, rel.id %>
-				<%= content_tag :td, rel.name %>
-				<%= content_tag :td, rel.operation %>
-				<%= content_tag :td, rel.object %>
-				<%= content_tag :td, rel.object_type %>
-			<% end %>
+			<tr>
+				<td><%= rel.id %></td>
+				<td><%= rel.name %></td>
+				<td><%= rel.operation %></td>
+				<td><%= rel.object %></td>
+				<td><%= rel.object_type %></td>
+			</tr>
 		<% end %>
-	<% end %>
+	</table>
 <% else %>
-	<%= content_tag :div, "No relationships in this batch object" %>
+	<div>No relationships in this batch object</div>
 <% end %>
 
-<%= content_tag :h4, "Datastreams" %>
+<h4>Attributes</h4>
+<% if @batch_object.batch_object_attributes.present? %>
+	<table class='table-bordered'>
+		<thead>
+			<th><%= t('batch.web.column_names.id') %></th>
+			<th><%= t('batch.web.column_names.datastream') %></th>
+			<th><%= t('batch.web.column_names.name') %></th>
+			<th><%= t('batch.web.column_names.operation') %></th>
+			<th><%= t('batch.web.column_names.value') %></th>
+			<th><%= t('batch.web.column_names.value_type') %></th>
+		</thead>
+		<% @batch_object.batch_object_attributes.each do |att| %>
+			<tr>
+				<td><%= att.id %></td>
+				<td><%= att.datastream %></td>
+				<td><%= att.name %></td>
+				<td><%= att.operation %></td>
+				<td><%= att.value %></td>
+				<td><%= att.value_type %></td>
+			</tr>
+		<% end %>
+	</table>
+<% else %>
+	<div>No attributes in this batch object</div>
+<% end %>
+
+<h4>Datastreams</h4>
 <% if @batch_object.batch_object_datastreams.present? %>
 	<% @batch_object.batch_object_datastreams.each do |ds| %>
-		<%= content_tag :table, :class => 'table-bordered' do %>
-			<%= content_tag :tr do %>
-				<%= content_tag :td, t('batch.web.column_names.id') %>
-				<%= content_tag :td, ds.id %>
-			<% end %>
-			<%= content_tag :tr do %>
-				<%= content_tag :td, t('batch.web.column_names.name') %>
-				<%= content_tag :td, ds.name %>
-			<% end %>
-			<%= content_tag :tr do %>
-				<%= content_tag :td, t('batch.web.column_names.operation') %>
-				<%= content_tag :td, ds.operation %>
-			<% end %>
-			<%= content_tag :tr do %>
-				<%= content_tag :td, t('batch.web.column_names.payload') %>
-				<%= content_tag :td, ds.payload %>
-			<% end %>
-			<%= content_tag :tr do %>
-				<%= content_tag :td, t('batch.web.column_names.payload_type') %>
-				<%= content_tag :td, ds.payload_type %>
-			<% end %>
-			<%= content_tag :tr do %>
-				<%= content_tag :td, t('batch.web.column_names.checksum') %>
-				<%= content_tag :td, ds.checksum.present? ? ds.checksum : '--' %>
-			<% end %>
-			<%= content_tag :tr do %>
-				<%= content_tag :td, t('batch.web.column_names.checksum_type') %>
-				<%= content_tag :td, ds.checksum_type.present? ? ds.checksum_type : '--' %>
-			<% end %>
-		<% end %>
+		<table class='table-bordered'>
+			<tr>
+				<td><%= t('batch.web.column_names.id') %></td>
+				<td><%= ds.id %></td>
+			</tr>
+			<tr>
+				<td><%= t('batch.web.column_names.name') %></td>
+				<td><%= ds.name %></td>
+			</tr>
+			<tr>
+				<td><%= t('batch.web.column_names.operation') %></td>
+				<td><%= ds.operation %></td>
+			</tr>
+			<tr>
+				<td><%= t('batch.web.column_names.payload') %></td>
+				<td><%= ds.payload %></td>
+			</tr>
+			<tr>
+				<td><%= t('batch.web.column_names.payload_type') %></td>
+				<td><%= ds.payload_type %></td>
+			</tr>
+			<tr>
+				<td><%= t('batch.web.column_names.checksum') %></td>
+				<td><%= ds.checksum.present? ? ds.checksum : '--' %></td>
+			</tr>
+			<tr>
+				<td><%= t('batch.web.column_names.checksum_type') %></td>
+				<td><%= ds.checksum_type.present? ? ds.checksum_type : '--' %></td>
+			</tr>
+		</table>
 	<% end %>
 <% else %>
-	<%= content_tag :div, "No datastreams in this batch object" %>
+	<div>No datastreams in this batch object</div>
 <% end %>
