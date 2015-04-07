@@ -5,7 +5,7 @@ module DulHydra::Batch::Models
   class BatchObject < ActiveRecord::Base
     
     belongs_to :batch, inverse_of: :batch_objects
-    has_many :batch_object_attributes, inverse_of: :batch_object, dependent: :destroy
+    has_many :batch_object_attributes, -> { order "id ASC" }, inverse_of: :batch_object, dependent: :destroy
     has_many :batch_object_datastreams, inverse_of: :batch_object, dependent: :destroy
     has_many :batch_object_relationships, inverse_of: :batch_object, dependent: :destroy
     
