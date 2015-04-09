@@ -87,27 +87,35 @@ class MetadataFile < ActiveRecord::Base
       obj = DulHydra::Batch::Models::UpdateBatchObject.new(:batch => @batch)
       obj.model = row.field("model") if row.headers.include?("model")
       obj.pid = row.field("pid") if row.headers.include?("pid")
+      att = DulHydra::Batch::Models::BatchObjectAttribute.new(
+                batch_object: obj,
+                datastream: Ddr::Datastreams::DESC_METADATA,
+                operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL)
+      obj.batch_object_attributes << att
       obj.save
-      ds = Ddr::Datastreams::DescriptiveMetadataDatastream.new(nil, 'descMetadata')
       row.headers.each_with_index do |header, idx|
         if effective_options[:parse][:include_empty_fields] || !row.field(header, idx).blank?
           if header.eql?(effective_options[:parse][:local_identifier])
             obj.update_attributes(:identifier => row.field(header, idx)) unless obj.identifier.present?
           end
           if canonical_attribute_name(header).present?
-            value = ds.send(canonical_attribute_name(header))
-            value += parse_field(row.field(header, idx), header)
-            ds.send("#{canonical_attribute_name(header)}=", value)
+            parse_field(row.field(header, idx), header).each do |value|
+              att = DulHydra::Batch::Models::BatchObjectAttribute.new(
+                        batch_object: obj,
+                        datastream: Ddr::Datastreams::DESC_METADATA,
+                        name: canonical_attribute_name(header),
+                        operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD,
+                        value: value,
+                        value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING
+                        )
+              # puts canonical_attribute_name(header)
+              # puts parse_field(row.field(header, idx), header)
+              # puts att.inspect
+              obj.batch_object_attributes << att
+            end
           end
         end
       end
-      obj_ds = DulHydra::Batch::Models::BatchObjectDatastream.create(
-                :batch_object => obj,
-                :name => Ddr::Datastreams::DESC_METADATA,
-                :operation => DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE,
-                :payload => ds.resource.dump(:ntriples),
-                :payload_type => DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
-                )
       unless obj.pid.present?
         if obj.identifier.present?
           if collection_pid.present?
