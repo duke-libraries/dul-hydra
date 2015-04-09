@@ -260,6 +260,9 @@ en:
               related_object: "Related Object"
               related_object_type: "Related Object Type"
               part_of_batch: "Part of Batch"
+              datastream: "Datastream"
+              value: "Value"
+              value_type: "Value Type"
           action_names:
               procezz: "Process"
               restart: "Restart"
