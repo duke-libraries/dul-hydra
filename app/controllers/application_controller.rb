@@ -3,6 +3,7 @@ require 'dul_hydra'
 class ApplicationController < ActionController::Base
 
   include Blacklight::Controller
+  include Blacklight::Base
   include Hydra::Controller::ControllerBehavior
   include Hydra::PolicyAwareAccessControlsEnforcement
 
@@ -43,12 +44,14 @@ class ApplicationController < ActionController::Base
   
   def find_models_with_gated_discovery(model, opts={})
     solr_opts = {
+      q: "#{Ddr::IndexFields::ACTIVE_FEDORA_MODEL}:\"#{model.name}\"",
       fq: gated_discovery_filters.join(" OR "), 
       sort: "#{Ddr::IndexFields::TITLE} ASC",
       rows: 9999
     }
     solr_opts.merge! opts
-    solr_results = model.find_with_conditions({}, solr_opts)
+    solr_response = query_solr(solr_opts)
+    solr_results = solr_response.docs
     ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
   end
 
