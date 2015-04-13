@@ -37,7 +37,7 @@ module DulHydra
       def validate_checksum
         return if content_params[:checksum].blank?
         flash[:info] = current_object.validate_checksum!(*checksum_params)
-      rescue DulHydra::ChecksumInvalid => e
+      rescue Ddr::Models::ChecksumInvalid => e
         flash[:error] = e.message
       end
 
