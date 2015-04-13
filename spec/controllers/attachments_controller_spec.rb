@@ -90,14 +90,16 @@ describe AttachmentsController, type: :controller, attachments: true do
           expect(controller).to receive(:validate_checksum)
           create_attachment(checksum: "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18", checksum_type: "SHA-256")
         end
-        # context "and the checksum doesn't match" do
-        #   it "should not create a new object" do
-        #     expect{ create_attachment checksum = "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }.not_to change{ Attachment.count }
-        #   end
-        #   it "should not create an event" do
-        #     expect{ create_attachment checksum = "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }.not_to change{ Ddr::Events::CreationEvent.count }
-        #   end
-        # end
+        context "and the checksum doesn't match" do
+          it "should not create a new object" do
+            pending("Resolution of https://github.com/duke-libraries/ddr-models/issues/204")
+            expect{ create_attachment(checksum: "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1") }.not_to change{ Attachment.count }
+          end
+          it "should not create an event" do
+            pending("Resolution of https://github.com/duke-libraries/ddr-models/issues/204")
+            expect{ create_attachment(checksum: "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1") }.not_to change{ Ddr::Events::CreationEvent.count }
+          end
+        end
       end
     end
     describe "user cannot add attachments to object" do
