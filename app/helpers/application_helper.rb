@@ -358,7 +358,22 @@ module ApplicationHelper
     end
   end
 
-  private
+  def original_filename_info
+    info = {}
+    if current_object.has_content?
+      if current_object.original_filename
+        info[:value] = current_object.original_filename
+        info[:context] = 'info'
+      else
+        info[:value] = 'Missing'
+        info[:context] = 'danger'
+      end
+    else
+      info[:value] = 'No content file'
+      info[:context] = 'warning'
+    end
+    return info
+  end
 
   def render_label(text, label)
     content_tag :span, text, :class => "label label-#{label}"

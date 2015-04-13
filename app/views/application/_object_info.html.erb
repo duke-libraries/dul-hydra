@@ -25,6 +25,13 @@
 	</li>
   <% end %>
 
+<% if current_object.can_have_content? %>
+  <li class="list-group-item list-group-item-#{original_filename_info[:context]}">
+	<span class="pull-right"><%= original_filename_info[:value] %></span>
+	Original Filename
+  </li>
+<% end %>
+
   <li class="list-group-item">
 	<span class="pull-right"><%= format_date current_object.create_date %></span>
 	Created
