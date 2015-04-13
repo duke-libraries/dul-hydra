@@ -32,7 +32,7 @@ class ItemsController < ApplicationController
           begin
             checksum, checksum_type = child_params.values_at :checksum, :checksum_type
             child.validate_checksum! checksum, checksum_type
-          rescue DulHydra::ChecksumInvalid => e
+          rescue Ddr::Models::ChecksumInvalid => e
             flash[:error] = e.message
           else
             flash[:info] = "The checksum provided [#{checksum_type}: #{checksum}] was validated against the repository content."
