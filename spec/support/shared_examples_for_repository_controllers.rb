@@ -1,5 +1,5 @@
 def update_rights
-  patch :permissions, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
+  patch :permissions, id: object, permissions: {"discover" => ["group:public", "user:Sally@example.com", "user:Mitch@example.com"], "read" => ["group:registered", "user:Gil@example.com", "user:Ben@example.com"], "edit" => ["group:editors", "group:managers", "user:Rocky@example.com", "user:Gwen@example.com", "user:Teresa@example.com"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
 end
 
 def object_symbol
@@ -60,9 +60,9 @@ shared_examples "a repository object controller" do
           expect(object.discover_groups).to eq(["public"])
           expect(object.read_groups).to eq(["registered"])
           expect(object.edit_groups).to eq(["editors", "managers"])
-          expect(object.discover_users).to eq(["Sally", "Mitch"])
-          expect(object.read_users).to eq(["Gil", "Ben"])
-          expect(object.edit_users).to eq(["Rocky", "Gwen", "Teresa"])
+          expect(object.discover_users).to eq(["Sally@example.com", "Mitch@example.com"])
+          expect(object.read_users).to eq(["Gil@example.com", "Ben@example.com"])
+          expect(object.edit_users).to eq(["Rocky@example.com", "Gwen@example.com", "Teresa@example.com"])
           expect(object.license_title).to eq("No Access")
           expect(object.license_description).to eq("No one can get to it")
           expect(object.license_url).to eq("http://www.example.com")

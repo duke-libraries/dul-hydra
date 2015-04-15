@@ -11,7 +11,7 @@ def new_collection
 end
 
 def update_policy
-  patch :default_permissions, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
+  patch :default_permissions, id: object, permissions: {"discover" => ["group:public", "user:Sally@example.com", "user:Mitch@example.com"], "read" => ["group:registered", "user:Gil@example.com", "user:Ben@example.com"], "edit" => ["group:editors", "group:managers", "user:Rocky@example.com", "user:Gwen@example.com", "user:Teresa@example.com"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
 end
 
 describe CollectionsController, type: :controller, collections: true do
@@ -149,9 +149,9 @@ describe CollectionsController, type: :controller, collections: true do
           expect(object.default_discover_groups).to eq(["public"])
           expect(object.default_read_groups).to eq(["registered"])
           expect(object.default_edit_groups).to eq(["editors", "managers"])
-          expect(object.default_discover_users).to eq(["Sally", "Mitch"])
-          expect(object.default_read_users).to eq(["Gil", "Ben"])
-          expect(object.default_edit_users).to eq(["Rocky", "Gwen", "Teresa"])
+          expect(object.default_discover_users).to eq(["Sally@example.com", "Mitch@example.com"])
+          expect(object.default_read_users).to eq(["Gil@example.com", "Ben@example.com"])
+          expect(object.default_edit_users).to eq(["Rocky@example.com", "Gwen@example.com", "Teresa@example.com"])
           expect(object.default_license_title).to eq("No Access")
           expect(object.default_license_description).to eq("No one can get to it")
           expect(object.default_license_url).to eq("http://www.example.com")

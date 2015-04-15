@@ -264,7 +264,7 @@ module ApplicationHelper
 
   def all_group_options
     # TODO: List public first, then registered, then rest in alpha order (?)
-    @all_group_options ||= group_options(group_service.groups)
+    @all_group_options ||= group_options(Ddr::Auth::Groups.all)
   end
 
   def selected_group_options(permission)

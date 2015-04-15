@@ -4,6 +4,7 @@ describe "policy view", :type => :feature do
   let(:user) { FactoryGirl.create(:user) }
   let(:object) { FactoryGirl.create(:collection) }
   before do
+    allow(Ddr::Auth::Groups).to receive(:all) { ["public", "registered", "repositoryEditor", "repositoryAdmin" ] }
     object.edit_users = [user.user_key]
     object.default_permissions = [{type: "group", access: "read", name: "registered"},
                                   {type: "group", access: "edit", name: "repositoryEditor"}]
