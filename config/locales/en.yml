@@ -173,6 +173,8 @@ en:
           submitted: Scanning ...
           help:
               parent_id_length: Leave blank or set to 0 to create a separate Item for each file.
+      standard_ingest:
+          batch_name: Standard Ingest
       metadata_file:
           batch_name: Metadata Update File
           create_batch: Create Update Batch

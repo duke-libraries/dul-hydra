@@ -11,14 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150224142553) do
+ActiveRecord::Schema.define(version: 20150608172238) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
     t.string   "datastream"
     t.string   "name"
     t.string   "operation"
-    t.string   "value"
+    t.text     "value",           limit: 65535
     t.string   "value_type"
     t.datetime "created_at"
     t.datetime "updated_at"

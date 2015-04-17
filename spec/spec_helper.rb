@@ -12,6 +12,7 @@ require 'equivalent-xml/rspec_matchers'
 require 'capybara/rails'
 require 'capybara/rspec'
 require 'dul_hydra'
+require 'dul_hydra/error'
 require 'database_cleaner'
 require "ddr/auth/test_helpers"
 
