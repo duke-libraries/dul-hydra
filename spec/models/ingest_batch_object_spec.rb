@@ -7,13 +7,13 @@ module DulHydra::Batch::Models
       expect(object.validate).to be_empty
     end
   end
-  
+
   shared_examples "an invalid ingest object" do
     it "should not be valid" do
       expect(object.validate).to include(error_message)
     end
   end
-  
+
   shared_examples "a successful ingest" do
     let(:repo_object) { ActiveFedora::Base.find(object.pid) }
     let(:verification_event) { repo_object.events.select { |e| e.is_a? Ddr::Events::ValidationEvent }.first }
@@ -27,7 +27,7 @@ module DulHydra::Batch::Models
       end
     end
   end
-  
+
   describe IngestBatchObject, type: :model, batch: true, ingest: true do
 
     before do
@@ -36,7 +36,7 @@ module DulHydra::Batch::Models
     end
 
     context "validate" do
-    
+
       context "valid object" do
         context "generic object" do
           let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_bytes, :has_batch) }
@@ -70,7 +70,7 @@ module DulHydra::Batch::Models
           it_behaves_like "a valid ingest object"
         end
       end
-  
+
       context "invalid object" do
         let(:error_prefix) { "#{object.identifier} [Database ID: #{object.id}]:"}
         context "missing model" do
@@ -213,9 +213,9 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "ingest" do
-      
+
       let(:user) { FactoryGirl.create(:user) }
       context "successful ingest" do
         context "object without a pre-assigned PID" do
@@ -253,10 +253,10 @@ module DulHydra::Batch::Models
             repo_object = object.model.constantize.new(:pid => assigned_pid, title: ["Test Object Title"])
             repo_object.save(validate: false)
           end
-          it_behaves_like "a successful ingest"          
+          it_behaves_like "a successful ingest"
         end
       end
-      
+
       context "exception during ingest" do
         let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_bytes) }
         before { allow_any_instance_of(DulHydra::Batch::Models::IngestBatchObject).to receive(:populate_datastream).and_raise(RuntimeError) }
@@ -276,7 +276,7 @@ module DulHydra::Batch::Models
           end
         end
       end
-      
+
       context "external checksum verification failure" do
         let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_bytes) }
         before do
@@ -300,7 +300,7 @@ module DulHydra::Batch::Models
       end
 
     end
-      
+
   end
 
 end

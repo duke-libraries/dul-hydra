@@ -20,11 +20,11 @@ describe "batches routing", type: :routing, batch: true do
   end
   describe "non-RESTful routes" do
     it "should have a route for validating a batch" do
-      @route = {controller: 'batches', action: 'validate', id: '1'} 
+      @route = {controller: 'batches', action: 'validate', id: '1'}
       expect(:get => 'batches/1/validate').to route_to(@route)
     end
     it "should have a route for processing a batch" do
-      @route = {controller: 'batches', action: 'procezz', id: '1'} 
+      @route = {controller: 'batches', action: 'procezz', id: '1'}
       expect(:get => 'batches/1/procezz').to route_to(@route)
     end
   end

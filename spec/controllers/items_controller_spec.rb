@@ -14,7 +14,7 @@ describe ItemsController, type: :controller, items: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
-  
+
   it_behaves_like "a repository object controller" do
     let(:collection) { FactoryGirl.create(:collection) }
     let(:create_object) do
@@ -33,7 +33,7 @@ describe ItemsController, type: :controller, items: true do
 
   describe "#new" do
     # see shared examples
-    let(:collection) { FactoryGirl.create(:collection) }    
+    let(:collection) { FactoryGirl.create(:collection) }
     before { controller.current_ability.can(:create, Item) }
     context "when the user cannot add children to the collection" do
       before { controller.current_ability.cannot(:add_children, collection) }
@@ -126,5 +126,5 @@ describe ItemsController, type: :controller, items: true do
       end
     end
   end
-  
+
 end

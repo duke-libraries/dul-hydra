@@ -35,13 +35,13 @@ module DulHydra::Batch::Models
         expect(DulHydra::Batch::Models::BatchObjectRelationship.all).to be_empty
       end
     end
-    
+
     context "validate" do
       let(:parent) { FactoryGirl.create(:test_parent) }
       let(:pid_cache) { { parent.pid => parent.class.name} }
       before do
         batch.batch_objects.each do |obj|
-          obj.batch_object_relationships << 
+          obj.batch_object_relationships <<
               DulHydra::Batch::Models::BatchObjectRelationship.new(
                   :name => DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT,
                   :object => parent.pid,

@@ -36,6 +36,6 @@
             <xsl:if test=".!=''">
                 <dcterms:identifier><xsl:value-of select="."/></dcterms:identifier>
             </xsl:if>
-        </xsl:for-each>        
+        </xsl:for-each>
     </xsl:template>
 </xsl:stylesheet>

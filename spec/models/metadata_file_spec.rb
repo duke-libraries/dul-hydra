@@ -7,7 +7,7 @@ shared_examples "an invalid metadata file" do
   it "should not be valid" do
     expect(metadata_file).to_not be_valid
     expect(metadata_file.errors).to have_key(error_field)
-  end  
+  end
 end
 
 shared_examples "a successful metadata file processing" do
@@ -33,7 +33,7 @@ shared_examples "a successful metadata file processing" do
 end
 
 describe MetadataFile, :type => :model, :metadata_file => true do
-  
+
   context "validation" do
 
     let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
@@ -70,7 +70,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
       context "invalid schema map target" do
         before do
           options =
-            { 
+            {
               :csv => metadata_file.effective_options[:csv],
               :parse => metadata_file.effective_options[:parse],
               :schema_map => {
@@ -80,7 +80,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
                 "subject" => "subject",
                 "dateSubmitted" => "dateSubmitted"
               }
-            }          
+            }
           allow_any_instance_of(MetadataFile).to receive(:effective_options).and_return(options)
         end
         it "should have an attribute name error" do
@@ -136,10 +136,10 @@ describe MetadataFile, :type => :model, :metadata_file => true do
             "Arranger" => "arranger"
           }
         }
-      end      
+      end
       it_behaves_like "a successful metadata file processing"
     end
-    
+
     context "desc metadata csv file" do
       let(:delimited_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_update', 'descmd_csv.csv') }
       let(:options) do
@@ -158,7 +158,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
       end
       it_behaves_like "a successful metadata file processing"
     end
-        
+
   end
 
 end

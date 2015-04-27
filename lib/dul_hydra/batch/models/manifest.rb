@@ -1,5 +1,5 @@
 module DulHydra::Batch::Models
-  
+
   class Manifest
 
     AUTOIDLENGTH = 'autoidlength'
@@ -24,13 +24,13 @@ module DulHydra::Batch::Models
     TYPE_XPATH = 'type_xpath'
     USER_EMAIL = 'user_email'
     VALUE_XPATH = 'value_xpath'
-  
+
     MANIFEST_KEYS = [ BASEPATH, BATCH, CHECKSUM, DATASTREAMS, DESCRIPTION, LABEL, MODEL, NAME, OBJECTS, DulHydra::Batch::Models::BatchObjectDatastream::DATASTREAMS, DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIPS ].flatten
     BATCH_KEYS = [ DESCRIPTION, ID, NAME, USER_EMAIL ]
     MANIFEST_CHECKSUM_KEYS = [ LOCATION, SOURCE, TYPE, NODE_XPATH, IDENTIFIER_ELEMENT, TYPE_XPATH, VALUE_XPATH ]
     MANIFEST_DATASTREAM_KEYS = [ EXTENSION, LOCATION ]
     MANIFEST_RELATIONSHIP_KEYS = [ AUTOIDLENGTH, BATCHID, ID, PID ]
-  
+
     def initialize(manifest_filepath=nil)
       if manifest_filepath
         begin
@@ -42,7 +42,7 @@ module DulHydra::Batch::Models
         @manifest_hash = {}
       end
     end
-  
+
     def validate
       errors = []
       errors += validate_model if model
@@ -63,7 +63,7 @@ module DulHydra::Batch::Models
       end
       return errors
     end
-  
+
     def validate_basepath
       errs = []
       if basepath
@@ -73,7 +73,7 @@ module DulHydra::Batch::Models
       end
       return errs
     end
-  
+
     def validate_keys
       errs = []
       manifest_hash.keys.each do |key|
@@ -101,7 +101,7 @@ module DulHydra::Batch::Models
       end
       return errs
     end
-  
+
     def validate_relationship(relationship)
       errs = []
       pid = relationship_pid(relationship)
@@ -122,14 +122,14 @@ module DulHydra::Batch::Models
       end
       return errs
     end
-  
+
     def validate_datastream_filepath(datastream)
       errs = []
       filepath = datastream_location(datastream)
       errs << I18n.t('batch.manifest.errors.datastream_filepath_error', :datastream => datastream, :filepath => filepath) unless File.readable?(filepath)
       return errs
     end
-  
+
     def validate_datastream_list
       errs = []
       datastreams.each do |ds|
@@ -137,7 +137,7 @@ module DulHydra::Batch::Models
       end
       return errs.flatten
     end
-  
+
     def validate_checksum_type
       errs = []
       unless Ddr::Datastreams::CHECKSUM_TYPES.include?(checksum_type)
@@ -145,7 +145,7 @@ module DulHydra::Batch::Models
       end
       return errs
     end
-  
+
     def validate_checksum_file
       errs = []
       errs << I18n.t('batch.manifest.errors.checksum_file_error', :file => checksum_location) unless File.readable?(checksum_location)
@@ -171,45 +171,45 @@ module DulHydra::Batch::Models
       end
       return errs
     end
-  
+
     def validate_model
       errs = []
       model.constantize.new rescue errs << I18n.t('batch.manifest.errors.model_invalid', :model => model)
       return errs
     end
-  
+
     def basepath
       manifest_hash[BASEPATH]
     end
-    
+
     def basepath=(basepath)
       manifest_hash[BASEPATH] = basepath
     end
-  
+
     def batch
       @batch
     end
-  
+
     def batch=(batch)
       @batch = batch
     end
-  
+
     def batch_description
       manifest_hash[BATCH][DESCRIPTION] if manifest_hash[BATCH]
     end
-  
+
     def batch_id
       manifest_hash[BATCH][ID] if manifest_hash[BATCH]
     end
-  
+
     def batch_name
       manifest_hash[BATCH][NAME] if manifest_hash[BATCH]
     end
-  
+
     def batch_user_email
       manifest_hash[BATCH][USER_EMAIL] if manifest_hash[BATCH]
     end
-  
+
     def checksum_identifier_element
       if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][IDENTIFIER_ELEMENT]
         manifest_hash[CHECKSUM][IDENTIFIER_ELEMENT]
@@ -217,11 +217,11 @@ module DulHydra::Batch::Models
         'id'
       end
     end
-  
+
     def checksum_location
       manifest_hash[CHECKSUM][LOCATION] if manifest_hash[CHECKSUM]
     end
-  
+
     def checksum_node_xpath
       if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][NODE_XPATH]
         manifest_hash[CHECKSUM][NODE_XPATH]
@@ -229,15 +229,15 @@ module DulHydra::Batch::Models
         '/checksums/checksum'
       end
     end
-  
+
     def checksum_type
       manifest_hash[CHECKSUM][TYPE] if manifest_hash[CHECKSUM]
     end
-  
+
     def checksum_type?
       manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][TYPE]
     end
-  
+
     def checksum_type_xpath
       if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][TYPE_XPATH]
         manifest_hash[CHECKSUM][TYPE_XPATH]
@@ -245,7 +245,7 @@ module DulHydra::Batch::Models
         'type'
       end
     end
-  
+
     def checksum_value_xpath
       if manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][VALUE_XPATH]
         manifest_hash[CHECKSUM][VALUE_XPATH]
@@ -253,7 +253,7 @@ module DulHydra::Batch::Models
         'value'
       end
     end
-  
+
     def checksums
       return @checksums if @checksums
       if checksums?
@@ -261,66 +261,66 @@ module DulHydra::Batch::Models
       end
       return @checksums
     end
-  
+
     def checksums?
       manifest_hash[CHECKSUM] && manifest_hash[CHECKSUM][LOCATION]
     end
-  
+
     def datastream_extension(datastream_name)
       manifest_hash[datastream_name][EXTENSION] if manifest_hash[datastream_name]
     end
-  
+
     def datastream_location(datastream_name)
       manifest_hash[datastream_name][LOCATION] if manifest_hash[datastream_name]
     end
-  
+
     def datastreams
       manifest_hash[DATASTREAMS]
     end
-  
+
     def label
       manifest_hash[LABEL]
     end
-  
+
     def model
       manifest_hash[MODEL]
     end
-  
+
     def manifest_hash
       @manifest_hash
     end
-  
+
     def manifest_hash=(manifest_hash)
       @manifest_hash = manifest_hash
     end
-    
+
     def name
       manifest_hash[NAME]
     end
-  
+
     def objects
       objects = []
       manifest_objects = manifest_hash[OBJECTS]
       manifest_objects.each { |object_hash| objects << ManifestObject.new(object_hash, self) }
       return objects
     end
-  
+
     def has_relationship?(relationship_name)
       manifest_hash[relationship_name] ? true : false
     end
-  
+
     def relationship_autoidlength(relationship_name)
       manifest_hash[relationship_name][AUTOIDLENGTH] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
     end
-  
+
     def relationship_id(relationship_name)
       manifest_hash[relationship_name][ID] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
     end
-  
+
     def relationship_batchid(relationship_name)
       manifest_hash[relationship_name][BATCHID] if manifest_hash[relationship_name] && manifest_hash[relationship_name].is_a?(Hash)
     end
-  
+
     def relationship_pid(relationship_name)
       if manifest_hash[relationship_name]
         case
@@ -334,7 +334,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
   end
 
 end

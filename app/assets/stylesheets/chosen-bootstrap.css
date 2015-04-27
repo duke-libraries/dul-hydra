@@ -1,7 +1,7 @@
-/* 
- *  Chosen CSS tweaks for Bootstrap 3 
+/*
+ *  Chosen CSS tweaks for Bootstrap 3
  *
- *  https://gist.github.com/koenpunt/6424137 
+ *  https://gist.github.com/koenpunt/6424137
  */
 select.form-control + .chosen-container.chosen-container-single .chosen-single {
     display: block;
@@ -67,7 +67,7 @@ select.form-control + .chosen-container .chosen-results {
     margin-bottom: 5px;
 }
 
-select.form-control + .chosen-container .chosen-results li , 
+select.form-control + .chosen-container .chosen-results li ,
 select.form-control + .chosen-container .chosen-results li.active-result {
     display: block;
     padding: 3px 20px;
@@ -78,7 +78,7 @@ select.form-control + .chosen-container .chosen-results li.active-result {
     white-space: nowrap;
     background-image:none;
 }
-select.form-control + .chosen-container .chosen-results li:hover, 
+select.form-control + .chosen-container .chosen-results li:hover,
 select.form-control + .chosen-container .chosen-results li.active-result:hover,
 select.form-control + .chosen-container .chosen-results li.highlighted
 {

@@ -1,39 +1,39 @@
 module DulHydra::Batch::Models
-  
+
   class IngestBatchObject < DulHydra::Batch::Models::BatchObject
-  
+
     def local_validations
       errors = []
       errors << "#{@error_prefix} Model required for INGEST operation" unless model
       errors += validate_pre_assigned_pid if pid
       errors
     end
-  
+
     def model_datastream_keys
       model.constantize.new.datastreams.keys
     end
-        
+
     def process(user, opts = {})
       ingest(user, opts) unless verified
     end
-    
+
     def results_message
       if pid
         verification_result = (verified ? "Verified" : "VERIFICATION FAILURE")
         message = "Ingested #{model} #{identifier} into #{pid}...#{verification_result}"
       else
         message = "Attempt to ingest #{model} #{identifier} FAILED"
-      end      
+      end
     end
-        
+
     private
-    
+
     def validate_pre_assigned_pid
       errs = []
       errs << "#{@error_prefix} #{pid} already exists in repository" if ActiveFedora::Base.exists?(pid)
-      return errs      
+      return errs
     end
-    
+
     def ingest(user, opts = {})
       repo_object = create_repository_object
       if !repo_object.nil? && !repo_object.new_record?
@@ -77,7 +77,7 @@ module DulHydra::Batch::Models
       end
       repo_object
     end
-    
+
     def create_repository_object
       repo_pid = pid if pid.present?
       repo_object = nil
@@ -112,7 +112,7 @@ module DulHydra::Batch::Models
       end
       repo_object
     end
-    
+
   end
 
 end

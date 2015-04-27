@@ -16,5 +16,5 @@ describe "Grouper integration", :type => :feature do
     visit url_for(object)
     expect(page).to have_content("Grouper Works!")
   end
-  
+
 end

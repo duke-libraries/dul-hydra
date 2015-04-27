@@ -41,7 +41,7 @@ describe "export_sets/new.html.erb", type: :feature, export_sets: true do
       visit "#{new_export_set_path}?export_type=#{ExportSet::Types::DESCRIPTIVE_METADATA}"
       expect(page).not_to have_content(object_discover.pid)
       expect(page).to have_content(object_read.pid)
-    end    
+    end
   end
 
 end

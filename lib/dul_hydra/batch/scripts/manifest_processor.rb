@@ -1,10 +1,10 @@
 module DulHydra::Batch::Scripts
   class ManifestProcessor
-    
+
     LOG_CONFIG_FILEPATH = File.join(Rails.root, 'config', 'log4r_batch_processor.yml')
     DEFAULT_LOG_DIR = File.join(Rails.root, 'log')
     DEFAULT_LOG_FILE = "manifest_processor.log"
-    
+
     # Options
     #   :manifest - required - manifest file path and filename
     #   :log_dir - optional - directory for log file - default is given in DEFAULT_LOG_DIR
@@ -26,7 +26,7 @@ module DulHydra::Batch::Scripts
       @skip_validation = opts.fetch(:skip_validation, false)
       @ignore_validation_errors = opts.fetch(:ignore_validation_errors, false)
     end
-    
+
     def execute
       config_logger
       @obj_count = 0
@@ -43,7 +43,7 @@ module DulHydra::Batch::Scripts
             @log.debug("Batch id: #{manifest.batch.id}")
             process_objects(manifest.objects)
             @log.info "Processed #{@success} of #{@obj_count} manifest objects into batch id #{manifest.batch.id}"
-          end          
+          end
         else
           validation_errors.each { |err| @log.info(err) }
           if @ignore_validation_errors
@@ -57,9 +57,9 @@ module DulHydra::Batch::Scripts
         @log.debug(e.backtrace)
       end
     end
-    
+
     private
-    
+
     def set_batch(manifest)
       begin
         if manifest.batch_id
@@ -85,7 +85,7 @@ module DulHydra::Batch::Scripts
       end
       return user
     end
-    
+
     def process_objects(manifest_objects)
       manifest_objects.each do |object|
         @obj_count += 1
@@ -98,7 +98,7 @@ module DulHydra::Batch::Scripts
         end
       end
     end
-    
+
     def process_object(manifest_object)
       @log.debug("Processing manifest object #{manifest_object.key_identifier}")
       batch_object = DulHydra::Batch::Models::IngestBatchObject.create(:batch => manifest_object.batch)
@@ -110,7 +110,7 @@ module DulHydra::Batch::Scripts
       batch_object.save
       @log.info("Processed manifest object #{manifest_object.key_identifier} into batch object #{batch_object.id}")
     end
-    
+
     def create_batch_object_datastreams(manifest_object, batch_object)
       manifest_object.datastreams.each do |datastream|
         @log.debug("... datastream #{datastream}")
@@ -132,7 +132,7 @@ module DulHydra::Batch::Scripts
         ds.save
       end
     end
-    
+
     def create_batch_object_relationships(manifest_object, batch_object)
       DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIPS.each do |relationship|
         if manifest_object.has_relationship?(relationship)
@@ -158,6 +158,6 @@ module DulHydra::Batch::Scripts
       logconfig.load_yaml_file File.join(LOG_CONFIG_FILEPATH)
       @log = Log4r::Logger['batch_processor']
     end
-    
+
   end
 end

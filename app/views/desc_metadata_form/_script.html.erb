@@ -4,14 +4,14 @@
 
   function addFieldValueHandler(e) {
       var field = $(e.target).text(); // e.g., 'title'
-      var fieldsetClass = 'descMetadata__' + field; 
+      var fieldsetClass = 'descMetadata__' + field;
 
       // find existing fieldset for field
-      var fieldset = $('.' + fieldsetClass);         
+      var fieldset = $('.' + fieldsetClass);
 
       var counter; // the field value number (1-based)
       // if not found, clone and append to fieldsets wrapper element
-      if ( fieldset.length == 0) {        
+      if ( fieldset.length == 0) {
         fieldset = $('#clone-fieldset fieldset')
                        .clone()
                        .appendTo( $('#desc-metadata-fieldsets') )
@@ -36,7 +36,7 @@
                    .attr('id', newInputId)
                    .change(trackChangesHandler)
                    .focus();
-  
+
       // close bootstrap dropdown
       $(e.target).closest('.dropdown-menu').prev().dropdown('toggle');
 

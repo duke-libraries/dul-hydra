@@ -1,5 +1,5 @@
 <div class="btn-group">
-  <a class="btn <%= acting_as_superuser? ? 'btn-danger' : 'btn-primary' %> btn-sm dropdown-toggle" 
+  <a class="btn <%= acting_as_superuser? ? 'btn-danger' : 'btn-primary' %> btn-sm dropdown-toggle"
 	 data-toggle="dropdown" href="#">
     <% if acting_as_superuser? %><span class="glyphicon glyphicon-eye-open"></span><% end %>
 	<%= current_user.to_s %>
@@ -9,7 +9,7 @@
 	<% if current_user.authorized_to_act_as_superuser? %>
 	  <li>
 		<%= link_to superuser_path, id: "toggle-superuser" do %>
-		  <% if acting_as_superuser? %> 
+		  <% if acting_as_superuser? %>
  	        <span class="glyphicon glyphicon-eye-close"></span> Stop acting as Superuser
 		  <% else %>
 		    <span class="glyphicon glyphicon-eye-open"></span> Act as Superuser
@@ -35,7 +35,7 @@
 	</li>
 	<li>
 	  <%= link_to saved_searches_path do %>
-	    <span class="glyphicon glyphicon-search"></span> 
+	    <span class="glyphicon glyphicon-search"></span>
 		<%= t('blacklight.header_links.saved_searches') %>
 	  <% end %>
 	</li>

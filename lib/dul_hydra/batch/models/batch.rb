@@ -1,5 +1,5 @@
 module DulHydra::Batch::Models
-  
+
   class Batch < ActiveRecord::Base
     belongs_to :user, :inverse_of => :batches
     has_many :batch_objects, -> { order("id ASC") }, :inverse_of => :batch, :dependent => :destroy
@@ -8,7 +8,7 @@ module DulHydra::Batch::Models
 
     OUTCOME_SUCCESS = "SUCCESS"
     OUTCOME_FAILURE = "FAILURE"
-    
+
     STATUS_READY = "READY"
     STATUS_VALIDATING = "VALIDATING"
     STATUS_INVALID = "INVALID"
@@ -48,23 +48,23 @@ module DulHydra::Batch::Models
     def found_pids
       @found_pids ||= {}
     end
-    
+
     def add_found_pid(pid, model)
       @found_pids[pid] = model
     end
-    
+
     def pre_assigned_pids
       @pre_assigned_pids ||= collect_pre_assigned_pids
     end
-    
+
     def collect_pre_assigned_pids
-      batch_objects.map{ |x| x.pid if x.pid.present? }.compact      
+      batch_objects.map{ |x| x.pid if x.pid.present? }.compact
     end
-    
+
     def finished?
       status == STATUS_FINISHED
     end
-    
+
   end
-  
+
 end

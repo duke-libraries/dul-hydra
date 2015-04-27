@@ -7,7 +7,7 @@ module DulHydra::Batch::Models
       expect(object.validate).to be_empty
     end
   end
-  
+
   shared_examples "an invalid update object" do
     it "should not be valid" do
       expect(object.validate).to include(error_message)
@@ -59,7 +59,7 @@ module DulHydra::Batch::Models
         context "batch user not permitted to edit repository object" do
           let!(:repo_object) { TestModel.create(:pid => object.pid) }
           let(:error_message) { "#{error_prefix} #{batch.user.user_key} not permitted to edit #{object.pid}" }
-          it_behaves_like "an invalid update object"          
+          it_behaves_like "an invalid update object"
         end
       end
     end

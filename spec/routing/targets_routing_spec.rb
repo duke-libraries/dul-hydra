@@ -7,7 +7,7 @@ describe "targets router", type: :routing, targets: true do
   end
   it "should not have a create route" do
     expect(post: "/targets").not_to be_routable
-  end  
+  end
   it_behaves_like "a repository object router" do
     let(:controller) { "targets" }
   end
