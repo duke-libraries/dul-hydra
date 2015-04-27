@@ -206,7 +206,7 @@ describe IngestFolder, type: :model, ingest: true do
       context "collection has no admin policy" do
         context "collection has individual permissions" do
           before do
-            collection.permissions_attributes = [ { type: 'user', name: 'person1', access: 'read' } ]
+            collection.permissions_attributes = [ { type: 'user', name: 'person1@example.com', access: 'read' } ]
             collection.save(validate: false)
             ingest_folder.procezz
             objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)

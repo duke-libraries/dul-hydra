@@ -70,9 +70,9 @@ describe ComponentsController, type: :controller, components: true do
         create_component
         expect(assigns(:current_object).parent).to eq(item)
       end
-      it "should have a thumbnail (if it's an image)" do
+      it "should update derivatives" do
+        expect_any_instance_of(Ddr::Managers::DerivativesManager).to receive(:update_derivatives)
         create_component
-        expect(assigns(:current_object)).to have_thumbnail
       end
       it "should create an event" do
         expect{ create_component }.to change{ Ddr::Events::CreationEvent.count }.by(1)

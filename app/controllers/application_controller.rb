@@ -56,7 +56,7 @@ class ApplicationController < ActionController::Base
   end
 
   def group_service
-    @group_service ||= Ddr::Auth::RemoteGroupService.new(request.env)
+    @group_service ||= Ddr::Auth::Groups.build(current_user, request.env)
   end
 
   def all_permissions

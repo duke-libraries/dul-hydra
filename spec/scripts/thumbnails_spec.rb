@@ -17,18 +17,22 @@ module DulHydra::Scripts
           item.reload
         end
         it "should populate the thumbnail datastream from the child thumbnail" do
-          expect(item.datastreams['thumbnail'].content).to eq(component.datastreams['thumbnail'].content)
+          expect(item.datastreams['thumbnail'].checksum).to eq(component.datastreams['thumbnail'].checksum)
         end
       end
       
       context "child does not have thumbnail" do
         before do
-          component.thumbnail.delete
+          component.datastreams['content'].delete
+          component.save!
+          component.reload
+          component.datastreams['thumbnail'].delete
+          component.save!
           thumbnails_script.execute
           item.reload
         end
         it "should not populate the thumbnail datastream" do
-          expect(item.datastreams["thumbnail"].content).to be_nil
+          expect(item.datastreams["thumbnail"]).to_not have_content
         end
       end
       

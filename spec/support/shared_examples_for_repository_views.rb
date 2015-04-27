@@ -164,7 +164,7 @@ shared_examples "a content-bearing object show view" do
     setup
     object.roles.downloader << user.principal_name # require for Components
     object.save
-    allow(user).to receive(:groups) { ["public", "registered"] }
+    allow(user).to receive(:groups) { Ddr::Auth::Groups.new(["public", "registered"]) }
   end
   it "should have a download link" do
     visit url_for(object)
@@ -302,8 +302,8 @@ shared_examples "a governable repository object rights editing view" do
     let(:user) { FactoryGirl.create(:user) }
     before do
       setup
-      coll.default_permissions = [{type: "user", name: "Bob", access: "read"},
-                                  {type: "group", name: "Special People", access: "edit"}]
+      coll.default_permissions = [{type: "user", name: "Bob@example.com", access: "read"},
+                                  {type: "group", name: "SpecialPeople", access: "edit"}]
       coll.save
       object.edit_users = [user.user_key]
       object.admin_policy = coll
@@ -311,8 +311,8 @@ shared_examples "a governable repository object rights editing view" do
     end
     it "should display the inherited permissions" do
       visit url_for(controller: object.controller_name, action: "permissions", id: object)
-      expect(find('#access-level-read')).to have_content("Bob")
-      expect(find('#access-level-edit')).to have_content("Special People")
+      expect(find('#access-level-read')).to have_content("Bob@example.com")
+      expect(find('#access-level-edit')).to have_content("SpecialPeople")
     end
   end
 end
