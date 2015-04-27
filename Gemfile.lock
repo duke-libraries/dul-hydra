@@ -437,6 +437,7 @@ DEPENDENCIES
   resque (= 1.25.2)
   resque-pool (= 0.3.0)
   rspec-rails (~> 3.0.0)
+  rubydora (>= 1.8.1)
   rubyzip (< 1.0.0)
   sass-rails (~> 4.0.1)
   sqlite3

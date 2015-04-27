@@ -4,6 +4,7 @@ gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
 gem 'ddr-alerts', '~> 1.0.0'
 gem 'ddr-models', '~> 1.13.2'
+gem 'rubydora', '>= 1.8.1'
 gem 'devise'
 gem 'deprecation'
 
