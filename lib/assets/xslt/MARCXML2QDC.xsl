@@ -86,7 +86,7 @@
 				<xsl:value-of select="."/>
 			</dcterms:format>
 		</xsl:for-each>
-		<!-- 
+		<!--
 		<xsl:for-each select="marc:datafield[@tag=520]">
 			<dcterms:description>
 				<xsl:value-of select="marc:subfield[@code='a']"/>

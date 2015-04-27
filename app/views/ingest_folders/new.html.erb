@@ -4,7 +4,7 @@
   <div class="col-md-5">
     <% if @ingest_folder.errors.any? %>
       <div class="alert alert-danger">
-		<strong><%= pluralize(@ingest_folder.errors.count, "error") %> 
+		<strong><%= pluralize(@ingest_folder.errors.count, "error") %>
 		  prohibited this ingest folder from being scanned:</strong>
 		<ul>
 		  <% @ingest_folder.errors.full_messages.each do |msg| %>

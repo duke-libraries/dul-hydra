@@ -94,7 +94,7 @@ en:
         license: 'Copyright / license statement inherited by objects governed by this Admin Policy'
       messages:
         updated: 'Admin Policy updated'
-        changed: "Policy successfully changed." 
+        changed: "Policy successfully changed."
       page_titles:
         edit: 'Editing Admin Policy'
     permissions:
@@ -114,7 +114,7 @@ en:
         alerts:
             changed: "Rights successfully changed."
     tabs:
-      content_info: 
+      content_info:
         label: "Content Info"
       descriptive_metadata:
         label: "Descriptive Metadata"

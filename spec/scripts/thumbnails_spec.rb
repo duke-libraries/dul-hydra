@@ -1,16 +1,16 @@
 require 'spec_helper'
 
 module DulHydra::Scripts
-  
+
   describe Thumbnails do
-    
+
     let(:item) { FactoryGirl.create(:item, :member_of_collection, :has_part) }
     let(:collection) { item.collection }
     let(:component) { item.children.first }
     let(:thumbnails_script) { DulHydra::Scripts::Thumbnails.new(collection.pid) }
-    
+
     context "thumbnail does not exist" do
-      
+
       context "child has thumbnail" do
         before do
           thumbnails_script.execute
@@ -20,7 +20,7 @@ module DulHydra::Scripts
           expect(item.datastreams['thumbnail'].checksum).to eq(component.datastreams['thumbnail'].checksum)
         end
       end
-      
+
       context "child does not have thumbnail" do
         before do
           component.datastreams['content'].delete
@@ -35,9 +35,9 @@ module DulHydra::Scripts
           expect(item.datastreams["thumbnail"]).to_not have_content
         end
       end
-      
+
     end
-    
+
     context "thumbnail already exists" do
       let(:content) { StringIO.new("awesome image") }
       before do
@@ -50,7 +50,7 @@ module DulHydra::Scripts
         expect(item.datastreams["thumbnail"].content).to eq("awesome image")
       end
     end
-    
+
   end
-  
+
 end

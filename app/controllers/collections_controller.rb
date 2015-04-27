@@ -14,7 +14,7 @@ class CollectionsController < ApplicationController
   def items
     get_children
   end
-  
+
   # HTML format intended for tab content loaded via ajax
   def collection_info
     respond_to do |format|

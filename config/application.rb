@@ -36,7 +36,7 @@ module DulHydra
 
     # Eliminate deprecation warning -- cf. http://stackoverflow.com/questions/20361428/rails-i18n-validation-deprecation-warning
     config.i18n.enforce_available_locales = true
-    
+
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
@@ -56,7 +56,7 @@ module DulHydra
     # config.active_record.schema_format = :sql
 
     # Enable the asset pipeline
-    config.assets.enabled = true    
+    config.assets.enabled = true
     # Default SASS Configuration, check out https://github.com/rails/sass-rails for details
     config.assets.compress = !Rails.env.development?
 
@@ -64,7 +64,7 @@ module DulHydra
     config.assets.version = '1.0'
 
     config.colorize_logging = false
-    
+
     # assign log4r's logger as Rails' logger
     log4r_config = YAML.load_file(File.join(File.dirname(__FILE__),"log4r.yml"))
     YamlConfigurator.decode_yaml(log4r_config['log4r_config'])
@@ -76,7 +76,7 @@ module DulHydra
       env_file = File.join(Rails.root, 'config', 'local_env.yml')
       if File.exists?(env_file)
         YAML.load_file(env_file).each { |key, value| ENV[key.to_s] = value }
-      end 
+      end
     end
 
   end

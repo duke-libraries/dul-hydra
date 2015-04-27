@@ -82,11 +82,11 @@ describe ExportSetsController, type: :controller, export_sets: true do
       expect(subject).to redirect_to(export_sets_path)
     end
   end
-  context "#archive" do 
+  context "#archive" do
     let(:object) { FactoryGirl.create(:test_content) }
     let(:export_set) { FactoryGirl.create(:content_export_set, :pids => [object.pid]) }
     let(:user) { export_set.user }
-    before do 
+    before do
       object.read_users = [user.user_key]
       object.save
     end

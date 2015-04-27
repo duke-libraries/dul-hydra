@@ -1,7 +1,7 @@
 namespace :dul_hydra do
 
   namespace :config do
-    desc "Copy sample config files" 
+    desc "Copy sample config files"
     task :samples do
       Dir.glob("config/**/*.sample") do |sample|
         actual = sample.gsub(/\.sample/, "")
@@ -14,7 +14,7 @@ namespace :dul_hydra do
     desc "Prepare for CI build"
     task :prepare => ['dul_hydra:config:samples', 'db:test:prepare', 'jetty:clean', 'jetty:config'] do
     end
-    
+
     desc "CI build"
     task :build => :prepare do
       ENV['environment'] = "test"
@@ -25,7 +25,7 @@ namespace :dul_hydra do
       end
     end
   end
-  
+
   namespace :batch do
     desc "Creates descriptive metadata update batch from folder of METS files"
     task :mets_folder => :environment do
@@ -153,7 +153,7 @@ namespace :dul_hydra do
           ActiveFedora::Base.find(object.pid, cast: true).update_index
         end
       end
-    end        
+    end
   end
 
   namespace :validate do

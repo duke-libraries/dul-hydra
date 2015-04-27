@@ -1,5 +1,5 @@
 class AddBatchRunColumnsToBatch < ActiveRecord::Migration
-  
+
   def self.up
     add_column :batches, :status, :string
     add_column :batches, :start, :datetime
@@ -24,6 +24,6 @@ class AddBatchRunColumnsToBatch < ActiveRecord::Migration
     remove_column :batches, :stop
     remove_column :batches, :start
     remove_column :batches, :status
-  end  
-  
+  end
+
 end

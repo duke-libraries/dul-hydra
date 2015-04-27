@@ -8,7 +8,7 @@ module DulHydra::Batch::Scripts
   describe MetadataFolderProcessor do
 
     let(:folder) { "/tmp" }
-    
+
     describe "#initialize" do
       context "folder" do
         context "no folder" do
@@ -27,7 +27,7 @@ module DulHydra::Batch::Scripts
         context "object" do
           it 'should have a collection attribute containing the appropriate collection' do
             expect(described_class.new({ folder: folder, collection: collection }).collection).to eq(collection)
-          end          
+          end
         end
       end
       context "user" do
@@ -35,7 +35,7 @@ module DulHydra::Batch::Scripts
         context "user key" do
           it 'should have a user attribute set to the appropriate user' do
             expect(described_class.new({ folder: folder, batch_user: user.user_key }).batch_user).to eq(user)
-          end          
+          end
         end
         context "object" do
           it 'should have a user attribute set to the appropriate user' do
@@ -134,9 +134,9 @@ module DulHydra::Batch::Scripts
           mfp.scan
           expect(mfp.report).to include("0 WARNINGS and 1 ERROR")
         end
-      end      
+      end
     end
-    
+
     describe "#report" do
       context "scan not run" do
         let(:mfp) { described_class.new({ folder: folder }) }

@@ -3,7 +3,7 @@
 <% if @metadata_file.errors.any? %>
   <div class="alert alert-danger">
     <h2><%= pluralize(@metadata_file.errors.count, "error") %> prohibited this metadata file from being processed:</h2>
- 
+
     <ul>
     <% @metadata_file.errors.full_messages.each do |msg| %>
       <li><%= msg %></li>

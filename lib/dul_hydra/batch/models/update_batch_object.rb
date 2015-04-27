@@ -1,7 +1,7 @@
 module DulHydra::Batch::Models
-  
+
   class UpdateBatchObject < DulHydra::Batch::Models::BatchObject
-  
+
     def local_validations
       errs = []
       errs << "#{@error_prefix} PID required for UPDATE operation" unless pid
@@ -14,7 +14,7 @@ module DulHydra::Batch::Models
       end
       errs
     end
-  
+
     def model_datastream_keys
       if pid
         begin
@@ -25,7 +25,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-        
+
     def process(user, opts = {})
       unless verified
         repo_object = update_repository_object(user, opts)
@@ -40,22 +40,22 @@ module DulHydra::Batch::Models
         repo_object
       end
     end
-    
+
     def results_message
       if pid
         verification_result = (verified ? "Verified" : "VERIFICATION FAILURE")
         message = "Updated #{pid}...#{verification_result}"
       else
         message = "Attempt to update #{model} #{identifier} FAILED"
-      end      
+      end
     end
 
     def event_log_comment
       "Updated by batch process (Batch #{batch.id}, BatchObject #{id})"
     end
-        
+
     private
-    
+
     def update_repository_object(user, opts = {})
       repo_object = nil
       begin
@@ -74,7 +74,7 @@ module DulHydra::Batch::Models
             populate_datastream(repo_object, d)
           end
         end
-        if repo_object.save          
+        if repo_object.save
           repo_object.notify_event(:update, user: user, comment: event_log_comment)
         end
       rescue Exception => e

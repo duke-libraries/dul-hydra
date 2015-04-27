@@ -19,7 +19,7 @@ describe "export_sets/index.html.erb", type: :feature, export_sets: true do
     it "should have a New Export Set->Content link" do
       visit export_sets_path
       expect(page).to have_link("Content", href: "#{new_export_set_path}?export_type=content")
-    end    
+    end
   end
   context "user has an existing export set" do
     let(:object) { FactoryGirl.create(:test_content) }
@@ -32,6 +32,6 @@ describe "export_sets/index.html.erb", type: :feature, export_sets: true do
     it "should list the export set" do
       visit export_sets_path
       expect(page).to have_link(export_set.id, :href => export_set_path(export_set))
-    end        
+    end
   end
 end

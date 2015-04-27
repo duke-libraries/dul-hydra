@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 require 'blacklight/catalog'
 
-class CatalogController < ApplicationController  
+class CatalogController < ApplicationController
 
   include Blacklight::Catalog
 
@@ -20,9 +20,9 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
 
-    config.default_solr_params = { 
+    config.default_solr_params = {
       :qt => 'search',
-      :rows => 10 
+      :rows => 10
     }
 
     # solr field configuration for search results/index views
@@ -42,17 +42,17 @@ class CatalogController < ApplicationController
     # * If left unset, then all facet values returned by solr will be displayed.
     # * If set to an integer, then "f.somefield.facet.limit" will be added to
     # solr request, with actual solr request being +1 your configured limit --
-    # you configure the number of items you actually want _displayed_ in a page.    
+    # you configure the number of items you actually want _displayed_ in a page.
     # * If set to 'true', then no additional parameters will be sent to solr,
     # but any 'sniffed' request limit parameters will be used for paging, with
-    # paging at requested limit -1. Can sniff from facet.limit or 
+    # paging at requested limit -1. Can sniff from facet.limit or
     # f.specific_field.facet.limit solr request params. This 'true' config
     # can be used if you set limits in :default_solr_params, or as defaults
     # on the solr side in the request handler itself. Request handler defaults
     # sniffing requires solr requests to be made with "echoParams=all", for
-    # app code to actually have it echo'd back to see it.  
+    # app code to actually have it echo'd back to see it.
     #
-    # :show may be set to false if you don't want the facet to be drawn in the 
+    # :show may be set to false if you don't want the facet to be drawn in the
     # facet bar
     config.add_facet_field Ddr::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
 
@@ -64,7 +64,7 @@ class CatalogController < ApplicationController
     #config.default_solr_params[:'facet.field'] = config.facet_fields.select{ |k, v| v[:show] != false}.keys
 
     # solr fields to be displayed in the index (search results) view
-    #   The ordering of the field names is the order of the display 
+    #   The ordering of the field names is the order of the display
     config.add_index_field Ddr::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
     config.add_index_field 'id', :label => 'PID'
     config.add_index_field Ddr::IndexFields::IDENTIFIER, :label => 'Identifier'
@@ -87,7 +87,7 @@ class CatalogController < ApplicationController
     # The :key is what will be used to identify this BL search field internally,
     # as well as in URLs -- so changing it after deployment may break bookmarked
     # urls.  A display label will be automatically calculated from the :key,
-    # or can be specified manually to be different. 
+    # or can be specified manually to be different.
 
     # This one uses all the defaults set by the solr request handler. Which
     # solr request handler? The one set in config[:default_solr_parameters][:qt],
@@ -97,20 +97,20 @@ class CatalogController < ApplicationController
         :qf => "id #{Ddr::IndexFields::ACTIVE_FEDORA_MODEL} title_tesim creator_tesim subject_tesim description_tesim identifier_tesim #{Ddr::IndexFields::PERMANENT_ID}"
       }
     end
-    
+
     # Now we see how to over-ride Solr request handler defaults, in this
     # case for a BL "search field", which is really a dismax aggregate
-    # of Solr search fields. 
-    
+    # of Solr search fields.
+
     config.add_search_field('title') do |field|
-      # solr_parameters hash are sent to Solr as ordinary url query params. 
+      # solr_parameters hash are sent to Solr as ordinary url query params.
       field.solr_parameters = { :'spellcheck.dictionary' => 'title' }
 
       # :solr_local_parameters will be sent using Solr LocalParams
       # syntax, as eg {! qf=$title_qf }. This is neccesary to use
       # Solr parameter de-referencing like $title_qf.
       # See: http://wiki.apache.org/solr/LocalParams
-      field.solr_local_parameters = { 
+      field.solr_local_parameters = {
         :qf => '$title_qf',
         :pf => '$title_pf'
       }
@@ -121,7 +121,7 @@ class CatalogController < ApplicationController
         :qf => Ddr::IndexFields::IDENTIFIER
       }
     end
-    
+
     config.add_search_field('permanent_id', label: 'Permanent ID') do |field|
       field.solr_local_parameters = {
         :qf => Ddr::IndexFields::PERMANENT_ID
@@ -142,9 +142,9 @@ class CatalogController < ApplicationController
     config.add_sort_field "#{Ddr::IndexFields::TITLE} asc", :label => 'Title', :default => true
     config.add_sort_field "#{Ddr::IndexFields::IDENTIFIER} asc", :label => 'Identifier'
 
-    # If there are more than this many search results, no spelling ("did you 
+    # If there are more than this many search results, no spelling ("did you
     # mean") suggestion is offered.
     config.spell_max = 5
   end
 
-end 
+end

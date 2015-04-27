@@ -1,6 +1,6 @@
 module DulHydra::Batch::Scripts
   class ManifestMaker
-    
+
     LOG_CONFIG_FILEPATH = File.join(Rails.root, 'config', 'log4r_batch_processor.yml')
     DEFAULT_LOG_DIR = File.join(Rails.root, 'log')
     DEFAULT_LOG_FILE = "manifest_maker.log"
@@ -8,7 +8,7 @@ module DulHydra::Batch::Scripts
     DEFAULT_DATASTREAMS = [ "content" ]
     DEFAULT_CONTENT_EXTENSION = ".tif"
     PLACEHOLDER = "PLACEHOLDER VALUE - replace with actual value or remove this entry"
-    
+
     # Options
     #   :dirpath - required - path to directory containing files on which manifest is to be based
     #   :manifest - required - path and filename of manifest to make
@@ -30,7 +30,7 @@ module DulHydra::Batch::Scripts
       @log_dir = opts.fetch(:log_dir, DEFAULT_LOG_DIR)
       @log_file = opts.fetch(:log_file, DEFAULT_LOG_FILE)
     end
-    
+
     def execute
       config_logger
       begin
@@ -49,7 +49,7 @@ module DulHydra::Batch::Scripts
     end
 
     private
-    
+
     def build_manifest_level
       @manifest_hash["model"] = DEFAULT_MODEL
       @manifest_hash["basepath"] = PLACEHOLDER
@@ -58,7 +58,7 @@ module DulHydra::Batch::Scripts
       content_hash["extension"] = @extension
       @manifest_hash["content"] = content_hash
     end
-    
+
     def enumerate_objects(dirpath)
       objects_list = []
       Dir.foreach(dirpath) do |entry|
@@ -78,18 +78,18 @@ module DulHydra::Batch::Scripts
       end
       objects_list
     end
-    
+
     def write_manifest
       File.open(@manifest, 'w') { |f| f.write(@manifest_hash.to_yaml) }
     end
-    
+
     def config_logger
       logconfig = Log4r::YamlConfigurator
       logconfig['LOG_FILE'] = File.join(@log_dir, @log_file)
       logconfig.load_yaml_file File.join(LOG_CONFIG_FILEPATH)
       @log = Log4r::Logger['batch_processor']
     end
-    
+
   end
-  
+
 end

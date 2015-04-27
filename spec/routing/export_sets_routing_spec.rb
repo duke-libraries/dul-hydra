@@ -40,7 +40,7 @@ describe "export sets routing", type: :routing, export_sets: true do
   end
   describe "non-RESTful routes" do
     before do
-      @route = {controller: 'export_sets', action: 'archive', id: '1'} 
+      @route = {controller: 'export_sets', action: 'archive', id: '1'}
       @path = '/export_sets/1/archive'
     end
     it "should have a route for creating an archive" do

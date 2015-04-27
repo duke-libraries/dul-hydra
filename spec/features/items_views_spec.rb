@@ -29,7 +29,7 @@ describe "Items views", type: :feature, items: true do
       end
     end
   end
-  
+
   describe "edit/update" do
     let(:object) { FactoryGirl.create(:item) }
     it_behaves_like "a repository object descriptive metadata editing view"
