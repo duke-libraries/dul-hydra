@@ -7,6 +7,9 @@ class ApplicationController < ActionController::Base
   include Hydra::Controller::ControllerBehavior
   include Hydra::PolicyAwareAccessControlsEnforcement
 
+  # This applies appropriate access controls to all Blacklight solr queries
+  self.solr_search_params_logic += [:add_access_controls_to_solr_params]
+
   protect_from_forgery
 
   before_action :authenticate_user!
