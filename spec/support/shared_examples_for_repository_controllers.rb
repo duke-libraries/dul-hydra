@@ -20,6 +20,10 @@ end
 
 shared_examples "a repository object controller" do
 
+  it "should add accesscontrols to solr params" do
+    expect(described_class.solr_search_params_logic).to include(:add_access_controls_to_solr_params)
+  end
+
   describe "#events" do
     let(:object) { FactoryGirl.create(object_symbol) }
     before { controller.current_ability.can(:read, object) }
