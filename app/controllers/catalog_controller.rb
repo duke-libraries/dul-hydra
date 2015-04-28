@@ -65,7 +65,8 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
     config.add_index_field Ddr::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
-    config.add_index_field 'id', :label => 'PID'
+    config.add_index_field Ddr::IndexFields::PERMANENT_ID, :label => 'Permanent ID'
+    config.add_index_field 'id', :label => 'Fedora PID'
     config.add_index_field Ddr::IndexFields::IDENTIFIER, :label => 'Identifier'
 
     # solr fields to be displayed in the show (single result) view
