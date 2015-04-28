@@ -160,7 +160,7 @@ describe "batches/index.html.erb", :type => :feature do
           within tab_id do
             expect(page).to have_text(I18n.t('batch.web.no_batches', :type => I18n.t('dul_hydra.tabs.finished_batches.label')))
           end
-        end        
+        end
       end
       context "user has some finished batches" do
         before do

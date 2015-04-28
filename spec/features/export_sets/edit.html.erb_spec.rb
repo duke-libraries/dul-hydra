@@ -28,7 +28,7 @@ describe 'export_sets/edit.html.erb', type: :feature, export_sets: true do
         es.csv_col_sep = "comma"
         es.save!
       end
-    end 
+    end
     it "should contain a warning about editing csv_col_sep" do
       visit edit_export_set_path(export_set)
       expect(page).to have_text(I18n.t('dul_hydra.export_sets.alerts.warn_change_csv_col_sep'))

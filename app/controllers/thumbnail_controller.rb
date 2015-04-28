@@ -8,6 +8,6 @@ class ThumbnailController < ApplicationController
 
   def datastream_to_show
     asset.datastreams[Ddr::Datastreams::THUMBNAIL]
-  end  
+  end
 
 end

@@ -19,7 +19,7 @@ describe "policy view", :type => :feature do
     click_button "Save"
     object.reload
     expect(object.default_permissions).to eq(original_default_permissions)
-    
+
     expect(object.default_edit_groups).to eq(["repositoryEditor"])
     expect(object.default_read_groups).to eq(["registered"])
     expect(object.default_license_title).to eq("Wide Open")

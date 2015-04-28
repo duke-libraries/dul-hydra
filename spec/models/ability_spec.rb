@@ -17,7 +17,7 @@ describe Ability, type: :model, abilities: true do
       it { is_expected.not_to be_able_to(:read, resource) }
     end
   end
-  
+
   describe "#ingest_folders_permissions", ingest_folders: true do
     let(:resource) { IngestFolder }
     context "user has no permitted ingest folders" do

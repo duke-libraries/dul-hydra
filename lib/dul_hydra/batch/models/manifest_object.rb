@@ -1,5 +1,5 @@
 module DulHydra::Batch::Models
-  
+
   class ManifestObject
 
     AUTOIDLENGTH = 'autoidlength'
@@ -13,16 +13,16 @@ module DulHydra::Batch::Models
     PID = 'pid'
     TYPE = 'type'
     VALUE = 'value'
-  
+
     OBJECT_KEYS = [ CHECKSUM, DATASTREAMS, IDENTIFIER, LABEL, MODEL, BatchObjectDatastream::DATASTREAMS, BatchObjectRelationship::RELATIONSHIPS].flatten
     OBJECT_CHECKSUM_KEYS = [ TYPE, VALUE ]
     OBJECT_RELATIONSHIP_KEYS = [ AUTOIDLENGTH, BATCHID, ID, PID ]
-  
+
     def initialize(object_hash, manifest)
       @object_hash = object_hash
       @manifest = manifest
     end
-  
+
     def validate
       errors = []
       errors += validate_identifier
@@ -37,7 +37,7 @@ module DulHydra::Batch::Models
       end
       return errors
     end
-  
+
     def validate_relationship(relationship)
       errs = []
       pid = relationship_pid(relationship)
@@ -56,14 +56,14 @@ module DulHydra::Batch::Models
       end
       return errs
     end
-  
+
     def validate_datastream_filepath(datastream)
       errs = []
       filepath = datastream_filepath(datastream)
       errs << I18n.t('batch.manifest_object.errors.datastream_filepath_error', :identifier => key_identifier, :datastream => datastream, :filepath => filepath) unless File.readable?(filepath)
       return errs
     end
-  
+
     def validate_datastreams
       errs = []
       datastreams.each do |ds|
@@ -72,7 +72,7 @@ module DulHydra::Batch::Models
       end
       return errs.flatten
     end
-  
+
     def validate_checksum_type
       errs = []
       unless Ddr::Datastreams::CHECKSUM_TYPES.include?(checksum_type)
@@ -80,7 +80,7 @@ module DulHydra::Batch::Models
       end
       return errs
     end
-  
+
     def validate_model
       errs = []
       if model
@@ -90,13 +90,13 @@ module DulHydra::Batch::Models
       end
       return errs
     end
-  
+
     def validate_identifier
       errs = []
       errs << I18n.t('batch.manifest_object.errors.identifier_missing') unless key_identifier
       return errs
     end
-  
+
     def validate_keys
       errs = []
       object_hash.keys.each do |key|
@@ -118,11 +118,11 @@ module DulHydra::Batch::Models
       end
       return errs
     end
-  
+
     def batch
       manifest.batch
     end
-  
+
     def checksum
       if object_hash[CHECKSUM]
         if object_hash[CHECKSUM][VALUE]
@@ -138,11 +138,11 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     def checksum?
       object_hash[CHECKSUM] || manifest.checksums? ? true : false
     end
-  
+
     def checksum_type
       case
       when object_hash[CHECKSUM] && object_hash[CHECKSUM][TYPE]
@@ -155,11 +155,11 @@ module DulHydra::Batch::Models
         manifest.checksum_type
       end
     end
-  
+
     def checksum_type?
       (object_hash[CHECKSUM] && object_hash[CHECKSUM][TYPE]) || manifest.checksums? || manifest.checksum_type?
     end
-  
+
     def datastream_filepath(datastream_name)
       datastream = object_hash[datastream_name]
       filepath = case
@@ -180,11 +180,11 @@ module DulHydra::Batch::Models
         File.join(location, datastream)
       end
     end
-  
+
     def datastreams
       object_hash[DATASTREAMS] || manifest.datastreams
     end
-  
+
     def key_identifier
       case object_hash[IDENTIFIER]
       when String
@@ -193,35 +193,35 @@ module DulHydra::Batch::Models
         object_hash[IDENTIFIER].first
       end
     end
-  
+
     def label
       object_hash[LABEL] || manifest.label
     end
-  
+
     def model
       object_hash[MODEL] || manifest.model
     end
-  
+
     def manifest
       @manifest
     end
-  
+
     def manifest=(manifest)
       @manifest = manifest
     end
-  
+
     def object_hash
       @object_hash
     end
-  
+
     def object_hash=(object_hash)
       @object_hash = object_hash
     end
-  
+
     def has_relationship?(relationship_name)
       object_hash[relationship_name] || manifest.has_relationship?(relationship_name) ? true : false
     end
-  
+
     def relationship_pid(relationship_name)
       pid = explicit_relationship_pid(relationship_name)
       unless pid
@@ -242,7 +242,7 @@ module DulHydra::Batch::Models
       pid = manifest.relationship_pid(relationship_name) unless pid
       return pid
     end
-  
+
     # should be private?
     def explicit_relationship_pid(relationship_name)
       pid = nil
@@ -255,7 +255,7 @@ module DulHydra::Batch::Models
       end
       return pid
     end
-  
+
     # should be private?
     def relationship_autoidlength(relationship_name)
       autoidlength = nil
@@ -267,7 +267,7 @@ module DulHydra::Batch::Models
       autoidlength = manifest.relationship_autoidlength(relationship_name) unless autoidlength
       return autoidlength
     end
-  
+
     # should be private?
     def relationship_id(relationship_name)
       id = nil
@@ -279,7 +279,7 @@ module DulHydra::Batch::Models
       id = manifest.relationship_id(relationship_name) unless id
       return id
     end
-  
+
     # should be private?
     def relationship_batchid(relationship_name)
       batchid = nil
@@ -292,5 +292,5 @@ module DulHydra::Batch::Models
       return batchid
     end
   end
-  
+
 end

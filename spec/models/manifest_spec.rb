@@ -3,19 +3,19 @@ require 'spec_helper'
 module DulHydra::Batch::Models
 
   describe Manifest, type: :model, batch: true do
-  
+
     shared_examples "a valid manifest" do
       it "should be valid" do
         expect(manifest.validate).to be_empty
       end
     end
-  
+
     shared_examples "an invalid manifest" do
       it "should not be valid" do
         expect(manifest.validate).to include(error_message)
       end
     end
-  
+
     context "validate" do
       let(:collection_pid) { "test:1" }
       context "valid" do
@@ -211,7 +211,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "load yaml manifest file" do
       let(:manifest) { Manifest.new(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'yaml.yml')) }
       let(:yaml_hash) { eval File.open(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'yaml_hash.txt')) { |f| f.read } }
@@ -220,7 +220,7 @@ module DulHydra::Batch::Models
         expect(manifest.manifest_hash).to eq(yaml_hash)
       end
     end
-  
+
     context "methods" do
       let(:manifest) { Manifest.new }
       context "basepath, label, model" do
@@ -370,7 +370,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
   end
 
 end

@@ -47,11 +47,11 @@ module BatchesHelper
       @show_tabs << { :label => I18n.t('batch.web.tab_names.batch_objects'), :partial => 'show_batch_objects', :id => 'tab-batch-objects' }
       @show_tabs
   end
-  
+
     def render_show_batch_tab(tab)
       opts = tab[:active] ? {class: "active"} : {}
       content_tag :li, opts do
-        link_to tab[:label], "#" + tab[:id], "data-toggle" => "tab" 
+        link_to tab[:label], "#" + tab[:id], "data-toggle" => "tab"
       end
     end
 
@@ -61,13 +61,13 @@ module BatchesHelper
         render(tab[:partial])
       end
     end
-    
+
     def render_validate_batch_link(batch)
       if batch.status.nil?
         link_to(I18n.t('batch.web.action_names.validate'), validate_batch_path(batch))
       end
     end
-    
+
     def render_link_to_batch_with_name(batch)
       text = batch.id.to_s
       if batch.name.present? || batch.description.present?
@@ -79,7 +79,7 @@ module BatchesHelper
       end
       link_to(text, batch_path(batch))
     end
-  
+
     def render_batch_delete_link(batch)
       case batch.status
       when nil, DulHydra::Batch::Models::Batch::STATUS_READY, DulHydra::Batch::Models::Batch::STATUS_VALIDATED, DulHydra::Batch::Models::Batch::STATUS_INVALID

@@ -3,19 +3,19 @@ require 'spec_helper'
 module DulHydra::Batch::Models
 
   describe ManifestObject, type: :model, batch: true do
-  
+
     shared_examples "a valid manifest object" do
       it "should be valid" do
         expect(manifest_object.validate).to be_empty
       end
     end
-  
+
     shared_examples "an invalid manifest object" do
       it "should not be valid" do
         expect(manifest_object.validate).to include(error_message)
       end
     end
-  
+
     context "validate" do
       let(:manifest) { Manifest.new() }
       let(:manifest_object) { ManifestObject.new({}, manifest) }
@@ -145,7 +145,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "batch" do
       let(:manifest) { Manifest.new }
       let(:manifest_object) { ManifestObject.new({}, manifest) }
@@ -153,7 +153,7 @@ module DulHydra::Batch::Models
         expect(manifest_object.batch).to eq(manifest.batch)
       end
     end
-  
+
     context "checksum" do
       context "in object" do
         let(:manifest) { Manifest.new }
@@ -190,7 +190,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "checksum type" do
       context "in object" do
         let(:manifest) { Manifest.new }
@@ -220,7 +220,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "datastream filepath" do
       let(:manifest) { Manifest.new() }
       let(:manifest_object) { ManifestObject.new({}, manifest) }
@@ -271,7 +271,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "datastreams" do
       let(:manifest) { Manifest.new() }
       let(:manifest_object) { ManifestObject.new({}, manifest) }
@@ -298,7 +298,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "key identifier" do
       let(:manifest) { Manifest.new() }
       let(:manifest_object) { ManifestObject.new({}, manifest) }
@@ -320,7 +320,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "label / model" do
       let(:manifest) { Manifest.new }
       let(:manifest_object) { ManifestObject.new({}, manifest) }
@@ -352,7 +352,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "relationship" do
       let(:relationship) { "test_relationship" }
       let(:manifest) { Manifest.new }
@@ -502,7 +502,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
   end
 
 end

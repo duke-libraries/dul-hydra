@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe "batch_objects/show.html.erb", type: :feature, batch: true do
-  
+
   let(:batch) { FactoryGirl.create(:batch_with_generic_ingest_batch_objects) }
-    
+
   context "batch object" do
-    
+
     let(:batch_object) { batch.batch_objects.first }
-    
+
     before do
       @admin_policy_pid = @parent_pid = nil
       batch_object.batch_object_relationships.each do |r|
@@ -17,7 +17,7 @@ describe "batch_objects/show.html.erb", type: :feature, batch: true do
         when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT
           @parent_pid = r.object
         end
-      end      
+      end
       login_as batch.user
       visit(batch_object_path(batch_object))
     end
@@ -33,5 +33,5 @@ describe "batch_objects/show.html.erb", type: :feature, batch: true do
       expect(page).to have_text(Ddr::Datastreams::CONTENT)
     end
   end
-  
+
 end

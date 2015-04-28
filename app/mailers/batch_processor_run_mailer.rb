@@ -1,7 +1,7 @@
 class BatchProcessorRunMailer < ActionMailer::Base
 
   default :from => "noreply@duke.edu"
-  
+
   def send_notification(batch)
     @batch = batch
     @title = "Batch Processor Run #{@batch.status}"

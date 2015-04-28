@@ -10,7 +10,7 @@ module ApplicationHelper
 
   def internal_uri_to_link(args)
     pid = internal_uri_to_pid(args).first
-    # Depends on Blacklight::SolrHelper#get_solr_response_for_doc_id 
+    # Depends on Blacklight::SolrHelper#get_solr_response_for_doc_id
     # having been added as a helper method to CatalogController
     response, doc = get_solr_response_for_doc_id(pid)
     # XXX This is not consistent with Ddr::Models::Base#title_display
@@ -34,7 +34,7 @@ module ApplicationHelper
       end
     end
   end
-    
+
   def user_icon
     image_tag("silk/user.png", size: "16x16", alt: "user")
   end
@@ -118,7 +118,7 @@ module ApplicationHelper
     label = args.fetch(:label, "Download")
     link_to label, download_path(args[:document]), class: args[:css_class], id: args[:css_id]
   end
-  
+
   def render_download_icon(args = {})
     label = content_tag(:span, "", class: "glyphicon glyphicon-download-alt")
     render_download_link args.merge(label: label)
@@ -147,7 +147,7 @@ module ApplicationHelper
     if date
       date = Time.parse(date) if !date.respond_to?(:localtime)
       date.localtime.to_s
-    end 
+    end
   end
 
   def render_permission_grantees(access)
@@ -334,7 +334,7 @@ module ApplicationHelper
 
   def desc_metadata_form_field_tag field, value=nil, counter=nil
     name = "descMetadata[#{field}][]"
-    opts = { 
+    opts = {
       :class => "form-control field-value-input",
       :id => counter ? desc_metadata_form_field_id(field, counter) : nil
     }
@@ -386,7 +386,7 @@ module ApplicationHelper
       default_model_thumbnail(doc_or_obj.active_fedora_model)
     end
   end
-  
+
   def default_mime_type_thumbnail(mime_type)
     case mime_type
     when /^image/

@@ -14,7 +14,7 @@ module DulHydra
         terms.each do |term|
           occurs = term_values(obj, term).size
           next if occurs == 0
-          col_index[term] = [occurs, col_index.fetch(term, 0)].max 
+          col_index[term] = [occurs, col_index.fetch(term, 0)].max
         end
       end
 
@@ -34,7 +34,7 @@ module DulHydra
       end
 
       @table = CSV::Table.new(rows)
-    end    
+    end
 
     def method_missing(method, *args)
       if table.respond_to?(method)
@@ -55,7 +55,7 @@ module DulHydra
     def each(&block)
       table.each(&block)
     end
-    
+
     # terms to read from objects
     def terms
       raise NotImplementedError
@@ -78,6 +78,6 @@ module DulHydra
       table.to_csv(DulHydra.csv_options.merge(opts))
     end
 
-  end 
+  end
 
 end

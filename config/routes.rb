@@ -12,7 +12,7 @@ DulHydra::Application.routes.draw do
   def pid_constraint
     /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
   end
-  
+
   def tab_constraint
     /attachments|items|components|descriptive_metadata|permissions|default_permissions/
   end
@@ -60,7 +60,7 @@ DulHydra::Application.routes.draw do
   end
 
   def repository_options name
-    { except: no_repository_routes_for(name), 
+    { except: no_repository_routes_for(name),
       constraints: repository_contraints }
   end
 
@@ -104,7 +104,7 @@ DulHydra::Application.routes.draw do
       delete 'archive'
     end
   end
-  
+
   resources :batches, :only => [:index, :show, :destroy] do
     member do
       get 'procezz'
@@ -112,12 +112,12 @@ DulHydra::Application.routes.draw do
     end
     resources :batch_objects, :only => :index
   end
-  
+
   resources :batch_objects, :only => :show do
     resources :batch_object_datastreams, :only => :index
     resources :batch_object_relationships, :only => :index
   end
-  
+
   resources :ingest_folders, :only => [:new, :create, :show] do
     member do
       get 'procezz'

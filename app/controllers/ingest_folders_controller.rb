@@ -1,5 +1,5 @@
 class IngestFoldersController < ApplicationController
-  
+
   before_filter :new_ingest_folder, :only => [:create]
 
   load_and_authorize_resource
@@ -7,10 +7,10 @@ class IngestFoldersController < ApplicationController
   def new_ingest_folder
     @ingest_folder = IngestFolder.new(ingest_folder_params)
   end
-  
+
   def new
   end
-  
+
   def create
     @ingest_folder.user = current_user
     @ingest_folder.model = IngestFolder.default_file_model
@@ -23,20 +23,20 @@ class IngestFoldersController < ApplicationController
       render :new
     end
   end
-  
+
   def show
     @scan_results = @ingest_folder.scan
   end
-  
+
   def procezz
     @ingest_folder.procezz
     redirect_to :controller => :batches, :action => :index
   end
-  
+
   private
-  
+
   def ingest_folder_params
     params.require(:ingest_folder).permit(:collection_pid, :model, :base_path, :sub_path, :checksum_file, :checksum_type, :add_parents, :parent_id_length)
   end
-    
+
 end

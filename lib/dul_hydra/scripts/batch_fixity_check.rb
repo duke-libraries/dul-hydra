@@ -5,7 +5,7 @@ require 'log4r/outputter/datefileoutputter'
 module DulHydra
   module Scripts
     class BatchFixityCheck
-    
+
       # TODO migrate defaults to config
       DEFAULT_LIMIT = 1000
       DEFAULT_PERIOD = "60DAYS"
@@ -81,7 +81,7 @@ module DulHydra
       end
 
       def check_objects
-        objects_to_check.each do |obj| 
+        objects_to_check.each do |obj|
           result = obj.fixity_check
           outcome = result.success ? Ddr::Events::Event::SUCCESS : Ddr::Events::Event::FAILURE
           log_outcome(result, outcome)

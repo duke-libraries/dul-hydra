@@ -24,7 +24,7 @@ class ExportSet < ActiveRecord::Base
   end
 
   CSV_COL_SEP_OPTIONS = {
-    "tab" => "\t", 
+    "tab" => "\t",
     "comma" => ",",
     "double pipe" => "||"
     }
@@ -110,7 +110,7 @@ class ExportSet < ActiveRecord::Base
       logger.debug "Export set descriptive metadata written to file."
     end
     unless File.size?(file_name)
-      raise Ddr::Models::Error, "Unable to archive empty or non-existent file." 
+      raise Ddr::Models::Error, "Unable to archive empty or non-existent file."
     end
     update_archive(file_name)
   ensure
@@ -125,7 +125,7 @@ class ExportSet < ActiveRecord::Base
       Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |zip_file|
         logger.debug "Created zip file #{zip_path} for export set content archive."
         objects.each do |object|
-          # use guaranteed unique file name based on PID and dsID 
+          # use guaranteed unique file name based on PID and dsID
           temp_file_path = File.join(tmpdir, object.content.default_file_name)
           # write content to file
           File.open(temp_file_path, 'wb', :encoding => 'ascii-8bit') do |f|
@@ -142,19 +142,19 @@ class ExportSet < ActiveRecord::Base
           # add file to archive
           zip_file.add(file_name, temp_file_path)
           logger.debug "Added file to zip archive."
-        end # objects.each      
+        end # objects.each
       end # Zip::ZipFile.open
       unless File.size?(zip_path)
-        raise Ddr::Models::Error, "Unable to archive empty or non-existent file." 
+        raise Ddr::Models::Error, "Unable to archive empty or non-existent file."
       end
-      # update seems to be the way to get paperclip to work 
+      # update seems to be the way to get paperclip to work
       # when not using file upload form submission to create the attachment
       update_archive(zip_path)
     end
   end
 
   #
-  # :current_user and :current_ability are defined here for integration with 
+  # :current_user and :current_ability are defined here for integration with
   # Hydra access controls enforcment.
   #
   def current_user
@@ -166,7 +166,7 @@ class ExportSet < ActiveRecord::Base
     current_user ? current_user.ability : Ability.new(nil)
   end
 
-  private 
+  private
 
   def generate_archive_file_name(ext)
     "export_set_#{Time.now.strftime('%Y%m%d%H%M%S')}.#{ext}"

@@ -3,7 +3,7 @@ FactoryGirl.define do
     name "Batch"
     description "This is a batch of stuff to do."
     user { FactoryGirl.create(:user) }
-    
+
     factory :batch_with_basic_ingest_batch_objects do
       ignore do
         object_count 3
