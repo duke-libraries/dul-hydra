@@ -9,7 +9,7 @@ describe BatchesController, type: :controller, batch: true do
       expect(subject).to redirect_to(batches_path)
     end
   end
-  
+
   shared_examples "a non-delete-able batch" do
     it "should not delete the batch and redirect to the index page" do
       delete :destroy, :id => batch
@@ -36,21 +36,21 @@ describe BatchesController, type: :controller, batch: true do
         batch.status = DulHydra::Batch::Models::Batch::STATUS_QUEUED
         batch.save!
       end
-      it_behaves_like "a non-delete-able batch"      
+      it_behaves_like "a non-delete-able batch"
     end
     context "batch is running" do
       before do
         batch.status = DulHydra::Batch::Models::Batch::STATUS_RUNNING
         batch.save!
       end
-      it_behaves_like "a non-delete-able batch"      
+      it_behaves_like "a non-delete-able batch"
     end
     context "batch is finished" do
       before do
         batch.status = DulHydra::Batch::Models::Batch::STATUS_FINISHED
         batch.save!
       end
-      it_behaves_like "a non-delete-able batch"      
+      it_behaves_like "a non-delete-able batch"
     end
     context "batch is interrupted" do
       context "batch is not restartable" do
@@ -58,14 +58,14 @@ describe BatchesController, type: :controller, batch: true do
           batch.status = DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED
           batch.save!
         end
-        it_behaves_like "a non-delete-able batch"      
+        it_behaves_like "a non-delete-able batch"
       end
       context "batch is restartable" do
         before do
           batch.status = DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
           batch.save!
         end
-        it_behaves_like "a non-delete-able batch"      
+        it_behaves_like "a non-delete-able batch"
       end
     end
   end

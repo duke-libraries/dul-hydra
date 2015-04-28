@@ -7,7 +7,7 @@ FactoryGirl.define do
     trait :member_of_collection do
       collection
     end
-    
+
     trait :has_part do
       children { [ FactoryGirl.create(:component) ] }
     end

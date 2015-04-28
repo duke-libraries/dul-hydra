@@ -23,13 +23,13 @@ module DulHydra::Batch::Scripts
       @warnings = 0
       @errors = 0
     end
-    
+
     def scan
       logger.info("Scanning #{folder}")
       scan_files(folder)
       logger.info(report)
     end
-    
+
     def report
       raise "Nothing to report.  Maybe you need to run 'scan' first?" if scanner.empty?
       rep = []
@@ -43,7 +43,7 @@ module DulHydra::Batch::Scripts
       rep << "Scan generated #{pluralize(warnings, 'WARNING', 'WARNINGS')} and #{pluralize(errors, 'ERROR', 'ERRORS')}"
       rep.join("\n")
     end
-    
+
     def create_batch
       batch = DulHydra::Batch::Models::Batch.create(user: batch_user, name: 'Metadata Folder', description: folder)
       scanner.keys.each do |file_loc|
@@ -54,12 +54,12 @@ module DulHydra::Batch::Scripts
       batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_READY)
       batch
     end
-    
+
     private
-    
+
     def create_batch_object(batch, scanner_object)
       batch_object = DulHydra::Batch::Models::UpdateBatchObject.create(
-                        batch: batch, 
+                        batch: batch,
                         identifier: scanner_object[:id],
                         pid: scanner_object[:pid]
                         )
@@ -111,7 +111,7 @@ module DulHydra::Batch::Scripts
         doc = file_xml
         doc.xpath("//dmdSec").each do |dmdsec|
           dmdsec_id = dmdsec.attr("ID")
-          obj_id = dmdsec_id.include?(COLLECTION_ID_SEPARATOR) ? 
+          obj_id = dmdsec_id.include?(COLLECTION_ID_SEPARATOR) ?
                     dmdsec_id.partition(COLLECTION_ID_SEPARATOR).last :
                     dmdsec_id
           begin
@@ -150,7 +150,7 @@ module DulHydra::Batch::Scripts
         validate_elements(node)
       end
     end
-    
+
     def validate_elements(node)
       if node.namespace.present?
         vocabulary = case node.namespace.prefix
@@ -161,7 +161,7 @@ module DulHydra::Batch::Scripts
         end
         if vocabulary.present?
           unless Ddr::Vocab::Vocabulary.term_names(vocabulary).include?(node.name.to_sym)
-            error("Unknown element name #{node.name} in #{abbrev_file_loc}")              
+            error("Unknown element name #{node.name} in #{abbrev_file_loc}")
           end
         else
           warning("Cannot validate element name #{node.name} in namespace #{node.namespace.prefix} in #{abbrev_file_loc}")
@@ -170,7 +170,7 @@ module DulHydra::Batch::Scripts
         warning("Cannot validate element name #{node.name} in #{abbrev_file_loc}")
       end
     end
-    
+
     def validate_attributes(node)
       unless node.attributes.empty?
         node.attributes.keys.each do |attr_name|
@@ -178,7 +178,7 @@ module DulHydra::Batch::Scripts
         end
       end
     end
-    
+
     def validate_namespace(node)
       namespace = node.namespace
       unless namespace.present?
@@ -193,23 +193,23 @@ module DulHydra::Batch::Scripts
         end
       end
     end
-    
+
     def file_xml
       raw = File.read(@file_loc)
       doc = Nokogiri::XML(clean_namespace(raw)) { |config| config.noblanks }
       doc
     end
-    
+
     def clean_namespace(source)
       source.gsub(%q[xmlns:dcterms="http://purl.org/dc/terms"], %q[xmlns:dcterms="http://purl.org/dc/terms/"])
     end
-    
+
     def count_dmdsecs
       count = 0
       scanner.each_key { |key| count += scanner[key].keys.count }
       count
     end
-    
+
     def find_collection(collection_option)
       case
       when collection_option.is_a?(Collection)
@@ -218,7 +218,7 @@ module DulHydra::Batch::Scripts
         Collection.find(collection_option)
       end
     end
-    
+
     def find_user(user_option)
       case
       when user_option.is_a?(User)
@@ -227,11 +227,11 @@ module DulHydra::Batch::Scripts
         User.find_by_user_key(user_option)
       end
     end
-    
+
     def abbrev_file_loc
       @file_loc.sub(/#{Regexp.quote(folder)}\/?/, '')
     end
-    
+
     def warning(message)
       logger.warn(message)
       @warnings += 1

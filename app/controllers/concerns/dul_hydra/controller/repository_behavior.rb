@@ -46,7 +46,7 @@ module DulHydra
 
       # override Blacklight::CatalogHelperBehavior
       def current_bookmarks
-        @current_bookmarks ||= 
+        @current_bookmarks ||=
           current_user.bookmarks_for_documents(@response ? @response.documents << current_document : [current_document])
       end
 

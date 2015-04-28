@@ -12,7 +12,7 @@ module DulHydra
             flash[:success] = I18n.t('dul_hydra.rights.alerts.changed')
             redirect_to(action: "show", tab: "permissions") and return
           end
-        end        
+        end
       end
 
       protected
@@ -46,7 +46,7 @@ module DulHydra
       def tab_permissions
         Tab.new("permissions",
                 actions: [
-                          TabAction.new("edit", 
+                          TabAction.new("edit",
                                         url_for(action: "permissions"),
                                         can?(:permissions, current_object)),
                           TabAction.new("download",

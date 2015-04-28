@@ -43,7 +43,7 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = "random"
-  
+
   # Devise helpers
   config.include Devise::TestHelpers, type: :controller
 
@@ -62,7 +62,7 @@ RSpec.configure do |config|
   end
   config.after(:suite) do
     if Ddr::Models.external_file_store && Dir.exist?(Ddr::Models.external_file_store)
-      FileUtils.remove_entry_secure(Ddr::Models.external_file_store) 
+      FileUtils.remove_entry_secure(Ddr::Models.external_file_store)
     end
     if Ddr::Models.multires_image_external_file_store && Dir.exist?(Ddr::Models.multires_image_external_file_store)
       FileUtils.remove_entry_secure(Ddr::Models.multires_image_external_file_store)

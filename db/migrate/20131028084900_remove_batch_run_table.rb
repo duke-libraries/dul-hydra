@@ -1,9 +1,9 @@
 class RemoveBatchRunTable < ActiveRecord::Migration
-  
+
   def self.up
     drop_table :batch_runs
   end
-  
+
   def self.down
     create_table "batch_runs" do |t|
       t.integer  "batch_id"

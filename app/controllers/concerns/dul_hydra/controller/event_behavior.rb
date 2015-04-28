@@ -25,7 +25,7 @@ module DulHydra
       end
 
       def tab_events
-        Tab.new("events", 
+        Tab.new("events",
                 href: url_for(controller: "events", action: "index", pid: current_object.pid),
                 guard: current_object.has_events?)
       end

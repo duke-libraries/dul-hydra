@@ -117,7 +117,7 @@ describe CollectionsController, type: :controller, collections: true do
       end
     end
   end
-  
+
   describe "#default_permissions" do
     let(:object) { FactoryGirl.create(:collection) }
     context "GET" do
@@ -127,7 +127,7 @@ describe CollectionsController, type: :controller, collections: true do
           object.save
         end
         it "should render the default_permissions template" do
-          expect(get :default_permissions, id: object).to render_template("default_permissions")      
+          expect(get :default_permissions, id: object).to render_template("default_permissions")
         end
       end
       context "when the user cannot edit the object" do

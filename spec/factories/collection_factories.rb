@@ -7,7 +7,7 @@ FactoryGirl.define do
     trait :has_item do
       children { [ FactoryGirl.create(:item) ] }
     end
-    
+
     trait :has_target do
       targets { [ FactoryGirl.create(:target) ] }
     end

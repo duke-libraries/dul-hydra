@@ -9,7 +9,7 @@ class SuperuserController < ApplicationController
       sign_out(:superuser)
       session[:manage_menu].delete(Queue) if session.key?(:manage_menu)
       flash[:success] = "You are no longer acting as Superuser."
-    else 
+    else
       authorize_to_act_as_superuser!
       sign_in(:superuser, current_user)
       session[:manage_menu] ||= []
@@ -19,7 +19,7 @@ class SuperuserController < ApplicationController
     redirect_to :back
   end
 
-  protected 
+  protected
 
   def authorize_to_act_as_superuser!
     unless current_user.authorized_to_act_as_superuser?

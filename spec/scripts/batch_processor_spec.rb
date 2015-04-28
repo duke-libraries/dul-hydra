@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module DulHydra::Batch::Scripts
-  
+
   shared_examples "a successful ingest batch" do
     let(:log_contents) { File.read(batch.logfile.path) }
     before do
@@ -47,7 +47,7 @@ module DulHydra::Batch::Scripts
       expect(log_contents).to include("Ingested #{batch.success} TestModelOmnibus")
     end
   end
-  
+
   shared_examples "a successful update batch" do
     let(:log_contents) { File.read(batch.logfile.path) }
     before do
@@ -90,7 +90,7 @@ module DulHydra::Batch::Scripts
       expect(batch.logfile).to_not be_nil
     end
   end
-  
+
   shared_examples "an invalid batch" do
     before { batch.reload }
     it "should have an invalid status and a failed outcome" do
@@ -101,7 +101,7 @@ module DulHydra::Batch::Scripts
       expect(batch.logfile).to_not be_nil
     end
   end
-  
+
   describe BatchProcessor do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:log_dir) { test_dir }
@@ -125,7 +125,7 @@ module DulHydra::Batch::Scripts
           batch.update_attributes(:status => DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE)
           bp.execute
         end
-        it_behaves_like "a successful ingest batch"        
+        it_behaves_like "a successful ingest batch"
       end
       context "exception during run" do
         before do
@@ -167,7 +167,7 @@ module DulHydra::Batch::Scripts
         it_behaves_like "an interrupted batch run"
       end
     end
-  end  
-  
+  end
+
 end
 

@@ -4,7 +4,7 @@ shared_examples "an invalid ingest folder" do
   it "should not be valid" do
     expect(ingest_folder).to_not be_valid
     expect(ingest_folder.errors).to have_key(error_field)
-  end  
+  end
 end
 
 shared_examples "a proper set of batch objects" do
@@ -29,7 +29,7 @@ shared_examples "a proper set of batch objects" do
     expect(dss.fetch('file01002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01002.tif"))
     expect(dss.fetch('file01').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "pdf/file01.pdf"))
     expect(dss.fetch('T001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T001.tiff"))
-    expect(dss.fetch('T002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T002.tiff"))    
+    expect(dss.fetch('T002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T002.tiff"))
     expect(rels.fetch('f').fetch('parent').object).to eql(ingest_folder.collection_pid)
     expect(rels.fetch('file01001').fetch('parent').object).to eql(objects.fetch('f').pid)
     expect(rels.fetch('file01002').fetch('parent').object).to eql(objects.fetch('f').pid)
@@ -78,7 +78,7 @@ describe IngestFolder, type: :model, ingest: true do
   context "validation" do
     before do
       allow(File).to receive(:readable?).with("/mount/base/path/unreadable/").and_return(false)
-      allow(File).to receive(:readable?).with(File.join(checksum_directory, "unreadable.txt")).and_return(false)      
+      allow(File).to receive(:readable?).with(File.join(checksum_directory, "unreadable.txt")).and_return(false)
     end
     it "should have a valid factory" do
       expect(ingest_folder).to be_valid
@@ -89,7 +89,7 @@ describe IngestFolder, type: :model, ingest: true do
       it_behaves_like "an invalid ingest folder"
     end
     context "subpath missing" do
-      let(:error_field) { :sub_path }      
+      let(:error_field) { :sub_path }
       before { ingest_folder.sub_path = "" }
       it_behaves_like "an invalid ingest folder"
     end
@@ -105,7 +105,7 @@ describe IngestFolder, type: :model, ingest: true do
     end
     context "checksum file unreadable" do
       let(:error_field) { :checksum_file }
-      before do 
+      before do
         ingest_folder.checksum_file = "unreadable.txt"
       end
       it_behaves_like "an invalid ingest folder"
@@ -186,7 +186,7 @@ describe IngestFolder, type: :model, ingest: true do
       let(:rels) { {} }
       let(:parent_model) { Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
       before { allow_any_instance_of(IngestFolder).to receive(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) }
-      
+
       context "collection has admin policy" do
         before do
           collection.admin_policy = collection
@@ -200,9 +200,9 @@ describe IngestFolder, type: :model, ingest: true do
           user.batches.first.batch_objects.each do |obj|
             expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.admin_policy.pid)
           end
-        end  
+        end
       end
-      
+
       context "collection has no admin policy" do
         context "collection has individual permissions" do
           before do
@@ -217,7 +217,7 @@ describe IngestFolder, type: :model, ingest: true do
             user.batches.first.batch_objects.each do |obj|
               expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
             end
-          end  
+          end
         end
 
         context "collection has no individual permissions" do
@@ -226,16 +226,16 @@ describe IngestFolder, type: :model, ingest: true do
             objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
           it_behaves_like "a proper set of batch objects"
-          it_behaves_like "batch objects without individual permissions"        
+          it_behaves_like "batch objects without individual permissions"
           it "should have an admin_policy relationship with the collection" do
             user.batches.first.batch_objects.each do |obj|
               expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
             end
-          end  
+          end
         end
 
       end
-     
+
     end
 
   end

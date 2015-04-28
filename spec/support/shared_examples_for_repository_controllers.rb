@@ -106,7 +106,7 @@ shared_examples "a repository object controller" do
         new_object.call
         expect(response.response_code).to eq(403)
       end
-    end    
+    end
   end
 
   describe "#create" do
@@ -154,7 +154,7 @@ shared_examples "a repository object controller" do
       it "should be unauthorized" do
         get :edit, id: object
         expect(response.response_code).to eq(403)
-      end      
+      end
     end
   end
 

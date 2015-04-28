@@ -1,5 +1,5 @@
 class BatchesController < ApplicationController
-  
+
   load_and_authorize_resource :class => DulHydra::Batch::Models::Batch
 
   include DulHydra::Controller::TabbedViewBehavior
@@ -16,11 +16,11 @@ class BatchesController < ApplicationController
       end
     end
   end
-  
+
   def show
     @batch_objects = @batch.batch_objects.page params[:page]
   end
-  
+
   def destroy
     case @batch.status
     when nil, DulHydra::Batch::Models::Batch::STATUS_READY, DulHydra::Batch::Models::Batch::STATUS_VALIDATED, DulHydra::Batch::Models::Batch::STATUS_INVALID
@@ -31,13 +31,13 @@ class BatchesController < ApplicationController
     end
     redirect_to action: :index
   end
-  
+
   def procezz
     Resque.enqueue(DulHydra::Batch::Jobs::BatchProcessorJob, @batch.id, current_user.id)
     flash[:notice] = I18n.t('batch.web.batch_queued', :id => @batch.id)
     redirect_to batches_url
   end
-  
+
   def validate
     referrer = request.env['HTTP_REFERER']
     @errors = @batch.validate
@@ -56,13 +56,13 @@ class BatchesController < ApplicationController
   end
 
   protected
-  
+
   def tab_pending_batches
     Tab.new("pending_batches")
   end
-  
+
   def tab_finished_batches
     Tab.new("finished_batches")
   end
-  
+
 end

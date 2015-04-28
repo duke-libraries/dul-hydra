@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module DulHydra::Batch::Scripts
-  
+
   shared_examples "a successful manifest making run" do
     let(:manifest) { DulHydra::Batch::Models::Manifest.new(manifest_file) }
     let(:objects) { manifest.objects }
@@ -23,7 +23,7 @@ module DulHydra::Batch::Scripts
       expect(content_locations).to eql(file_locations)
     end
   end
-  
+
   describe ManifestMaker do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:source_path) { File.join(test_dir, 'source') }
@@ -69,5 +69,5 @@ module DulHydra::Batch::Scripts
       end
     end
   end
-  
+
 end
