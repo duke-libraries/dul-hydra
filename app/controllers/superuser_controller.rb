@@ -16,6 +16,7 @@ class SuperuserController < ApplicationController
       session[:manage_menu] << Queue
       flash[:alert] = "<strong>Caution!</strong> You are now acting as Superuser.".html_safe
     end
+    session.delete(:create_menu_models)
     redirect_to :back
   end
 
