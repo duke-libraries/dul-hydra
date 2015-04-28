@@ -3,7 +3,7 @@ module DulHydra::Batch::Jobs
     @queue = :batch
     
     def self.perform(batch_id, operator_id)
-      ts = Time.now.to_i
+      ts = Time.now.strftime("%Y%m%d%H%M%S%L")
       logfile = "batch_processor_#{ts}_log.txt"
       batch = DulHydra::Batch::Models::Batch.find(batch_id)
       operator = User.find(operator_id)
