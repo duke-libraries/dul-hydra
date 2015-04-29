@@ -1,4 +1,7 @@
 <div class="well well-sm form-group">
-  <%= cancel_button class: "pull-right" %>
-  <%= f.submit class: "btn btn-primary" %>
+  <%= cancel_button class: "pull-right form-action-cancel" %>
+  <%= f.submit class: "btn btn-primary form-action-submit", "data-loading-text" => "Submitted ..." %>
 </div>
+<script type="text/javascript">
+  $('.form-action-submit').click(function () { $(this).button('loading'); });
+</script>
