@@ -275,19 +275,12 @@ module ApplicationHelper
     groups.collect { |g| group_option_value(g) }
   end
 
-  def group_option_text(group_name)
-    case group_name
-    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
-      "Public"
-    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
-      "Duke Community"
-    else
-      group_name
-    end
+  def group_option_text(group)
+    group.label
   end
 
-  def group_option_value(group_name)
-    "group:#{group_name}"
+  def group_option_value(group)
+    "group:#{group}"
   end
 
   def user_options(users)
