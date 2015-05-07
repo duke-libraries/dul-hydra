@@ -139,7 +139,7 @@ module DulHydra::Batch::Scripts
       let(:batch) { FactoryGirl.create(:batch_with_basic_update_batch_object) }
       let(:repo_object) do
         r_obj = TestModelOmnibus.new(:pid => batch.batch_objects.first.pid, :label => 'Object Label')
-        r_obj.add_file("#{Rails.root}/spec/fixtures/library-devil.tiff", Ddr::Datastreams::CONTENT)
+        r_obj.add_file("#{Rails.root}/spec/fixtures/imageA.tif", Ddr::Datastreams::CONTENT)
         r_obj.save
         r_obj
       end
