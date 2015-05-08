@@ -17,8 +17,8 @@ module DulHydra::Batch::Scripts
     end
     it "should create an appropriate manifest file" do
       expect(manifest.datastream_extension('content')).to eql(ext)
-      expect(object_identifiers).to include('image1')
-      expect(object_identifiers).to include('image2')
+      expect(object_identifiers).to include('imageA')
+      expect(object_identifiers).to include('imageB')
       expect(object_identifiers).to_not include('sample')
       expect(content_locations).to eql(file_locations)
     end
@@ -27,23 +27,23 @@ module DulHydra::Batch::Scripts
   describe ManifestMaker do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:source_path) { File.join(test_dir, 'source') }
-    let(:ext) { '.tiff' }
+    let(:ext) { '.tif' }
     let(:file_locations) { Hash.new }
     let(:manifest_file) { File.join(test_dir, 'manifest.yml') }
     let(:log_dir) { test_dir }
     before do
       FileUtils.mkdir(source_path)
-      FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'image1.tiff'), source_path
+      FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'imageA.tif'), source_path
       FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'sample.pdf'), source_path
-      file_locations['image1'] = File.join(source_path, 'image1.tiff')
+      file_locations['imageA'] = File.join(source_path, 'imageA.tif')
     end
     after do
       FileUtils.remove_dir test_dir
     end
     context "non-recursive" do
       before do
-        FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'image2.tiff'), source_path
-        file_locations['image2'] = File.join(source_path, 'image2.tiff')
+        FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'imageB.tif'), source_path
+        file_locations['imageB'] = File.join(source_path, 'imageB.tif')
       end
       context "execute" do
         let(:mm) { DulHydra::Batch::Scripts::ManifestMaker.new(:dirpath => source_path, :manifest => manifest_file, :log_dir => log_dir, :extension => ext) }
@@ -57,8 +57,8 @@ module DulHydra::Batch::Scripts
       let(:source_path_subdir) { File.join(source_path, 'subdir') }
       before do
         FileUtils.mkdir(source_path_subdir)
-        FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'image2.tiff'), source_path_subdir
-        file_locations['image2'] = File.join(source_path_subdir, 'image2.tiff')
+        FileUtils.cp File.join(Rails.root, 'spec', 'fixtures', 'imageB.tif'), source_path_subdir
+        file_locations['imageB'] = File.join(source_path_subdir, 'imageB.tif')
       end
       context "execute" do
         let(:mm) { DulHydra::Batch::Scripts::ManifestMaker.new(:dirpath => source_path, :manifest => manifest_file, :log_dir => log_dir, :extension => ext) }
