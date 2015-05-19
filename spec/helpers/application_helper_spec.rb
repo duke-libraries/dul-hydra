@@ -2,6 +2,20 @@ require 'spec_helper'
 
 RSpec.describe ApplicationHelper, type: :helper do
 
+  describe "#group_option_text" do
+    let(:group) { Ddr::Auth::Group.new("admins", label: "Administrators") }
+    it "should return the group label" do
+      expect(helper.group_option_text(group)).to eq("Administrators")
+    end
+  end
+
+  describe "#group_option_value" do
+    let(:group) { Ddr::Auth::Group.new("admins", label: "Administrators") }
+    it "should return the \"group:{group name}\"" do
+      expect(helper.group_option_value(group)).to eq("group:admins")
+    end
+  end
+
   describe "#model_options_for_select" do
     context "access option" do
       let(:collection1) { Collection.new(pid: 'test:1', title: [ 'Collection 1' ]) }
