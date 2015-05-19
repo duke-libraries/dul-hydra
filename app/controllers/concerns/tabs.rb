@@ -7,7 +7,7 @@ class Tabs < ActiveSupport::OrderedHash
     @active_tab = controller.params[:tab]
     controller.tabs.each {|m| self << controller.send(m)} if controller.tabs.present?
   end
-  
+
   def << (tab)
     self[tab.id] = tab if tab.guard
   end

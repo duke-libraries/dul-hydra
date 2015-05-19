@@ -1,6 +1,6 @@
 module DulHydra::Scripts
   class Thumbnails
-    
+
     def initialize(collection_pid)
       begin
         @collection = Collection.find(collection_pid, :cast => true)
@@ -8,7 +8,7 @@ module DulHydra::Scripts
         puts "Could not find #{collection_pid}"
       end
     end
-    
+
     def execute
       items = ActiveFedora::SolrService.lazy_reify_solr_results(@collection.children.load_from_solr)
       items.each do |item|
@@ -28,14 +28,14 @@ module DulHydra::Scripts
         @collection.thumbnail.content = item.thumbnail.content
         @collection.thumbnail.mimeType = item.thumbnail.mimeType
         unless @collection.save
-          puts "Thumbnails script unable to save collection #{collection.pid}"          
+          puts "Thumbnails script unable to save collection #{collection.pid}"
         end
       end
     end
-    
+
     def collection
           @collection
     end
-    
+
   end
 end

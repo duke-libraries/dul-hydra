@@ -2,6 +2,20 @@ require 'spec_helper'
 
 RSpec.describe ApplicationHelper, type: :helper do
 
+  describe "#group_option_text" do
+    let(:group) { Ddr::Auth::Group.new("admins", label: "Administrators") }
+    it "should return the group label" do
+      expect(helper.group_option_text(group)).to eq("Administrators")
+    end
+  end
+
+  describe "#group_option_value" do
+    let(:group) { Ddr::Auth::Group.new("admins", label: "Administrators") }
+    it "should return the \"group:{group name}\"" do
+      expect(helper.group_option_value(group)).to eq("group:admins")
+    end
+  end
+
   describe "#model_options_for_select" do
     context "access option" do
       let(:collection1) { Collection.new(pid: 'test:1', title: [ 'Collection 1' ]) }
@@ -17,5 +31,28 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
-  
+
+  describe "#original_filename_info_value" do
+    let(:object) { TestContent.new(pid: 'test:1') }
+    before { allow(helper).to receive(:current_object) { object } }
+    context "object has content" do
+      before { object.upload File.new(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff")) }
+      context "object has original filename" do
+        it "should return the original file name" do
+          expect(helper.original_filename_info).to include(value: 'library-devil.tiff', context: 'info')
+        end
+      end
+      context "object does not have original filename" do
+        before { object.update_attributes(original_filename: nil) }
+        it "should return an appropriate message" do
+          expect(helper.original_filename_info).to include(value: 'Missing', context: 'danger')
+        end
+      end
+    end
+    context "object does not have content" do
+      it "should return an appropriate message" do
+        expect(helper.original_filename_info).to include(value: 'No content file', context: 'warning')
+      end
+    end
+  end
 end

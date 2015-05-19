@@ -1,39 +1,39 @@
 module DulHydra::Batch::Models
-  
+
   class IngestBatchObject < DulHydra::Batch::Models::BatchObject
-  
+
     def local_validations
       errors = []
       errors << "#{@error_prefix} Model required for INGEST operation" unless model
       errors += validate_pre_assigned_pid if pid
       errors
     end
-  
+
     def model_datastream_keys
       model.constantize.new.datastreams.keys
     end
-        
+
     def process(user, opts = {})
       ingest(user, opts) unless verified
     end
-    
+
     def results_message
       if pid
         verification_result = (verified ? "Verified" : "VERIFICATION FAILURE")
         message = "Ingested #{model} #{identifier} into #{pid}...#{verification_result}"
       else
         message = "Attempt to ingest #{model} #{identifier} FAILED"
-      end      
+      end
     end
-        
+
     private
-    
+
     def validate_pre_assigned_pid
       errs = []
       errs << "#{@error_prefix} #{pid} already exists in repository" if ActiveFedora::Base.exists?(pid)
-      return errs      
+      return errs
     end
-    
+
     def ingest(user, opts = {})
       repo_object = create_repository_object
       if !repo_object.nil? && !repo_object.new_record?
@@ -77,7 +77,7 @@ module DulHydra::Batch::Models
       end
       repo_object
     end
-    
+
     def create_repository_object
       repo_pid = pid if pid.present?
       repo_object = nil
@@ -85,8 +85,9 @@ module DulHydra::Batch::Models
         repo_object = model.constantize.new(:pid => repo_pid)
         repo_object.label = label if label
         repo_object.save(validate: false)
-        batch_object_datastreams.each {|d| repo_object = populate_datastream(repo_object, d)} if batch_object_datastreams
-        batch_object_relationships.each {|r| repo_object = add_relationship(repo_object, r)} if batch_object_relationships
+        batch_object_attributes.each { |a| repo_object = add_attribute(repo_object, a) }
+        batch_object_datastreams.each { |d| repo_object = populate_datastream(repo_object, d) }
+        batch_object_relationships.each { |r| repo_object = add_relationship(repo_object, r) }
         repo_object.save
       rescue Exception => e1
         logger.fatal("Error in creating repository object #{repo_object.pid} for #{identifier} : #{e1}")
@@ -111,7 +112,7 @@ module DulHydra::Batch::Models
       end
       repo_object
     end
-    
+
   end
 
 end

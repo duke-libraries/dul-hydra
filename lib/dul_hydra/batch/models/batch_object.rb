@@ -3,21 +3,22 @@ module DulHydra::Batch::Models
   # This is a superclass containing methods common to all batch object objects.  It is not intended to be instantiated directly.
   # This superclass and its subclasses are designed following the ActiveRecord single-table inheritance pattern.
   class BatchObject < ActiveRecord::Base
-    
-    belongs_to :batch, :inverse_of => :batch_objects
-    has_many :batch_object_datastreams, :inverse_of => :batch_object, :dependent => :destroy
-    has_many :batch_object_relationships, :inverse_of => :batch_object, :dependent => :destroy
-    
+
+    belongs_to :batch, inverse_of: :batch_objects
+    has_many :batch_object_attributes, -> { order "id ASC" }, inverse_of: :batch_object, dependent: :destroy
+    has_many :batch_object_datastreams, inverse_of: :batch_object, dependent: :destroy
+    has_many :batch_object_relationships, inverse_of: :batch_object, dependent: :destroy
+
     VERIFICATION_PASS = "PASS"
     VERIFICATION_FAIL = "FAIL"
-    
+
     EVENT_SUMMARY = <<-EOS
 %{label}
 Batch object database id: %{batch_id}
 Batch object identifier: %{identifier}
 Model: %{model}
     EOS
-  
+
     def self.pid_from_identifier(identifier, batch_id)
       query = "identifier = :identifier"
       query << " and batch_id = :batch_id" if batch_id
@@ -29,7 +30,7 @@ Model: %{model}
       found_objects.each { |obj| pids << obj.pid }
       return pids
     end
-  
+
     def validate
       @error_prefix = I18n.t('batch.manifest_object.errors.prefix', :identifier => identifier, :id => id)
       errors = []
@@ -39,15 +40,15 @@ Model: %{model}
       errors += local_validations
       return errors
     end
-    
+
     def local_validations
       []
     end
-  
+
     def model_datastream_keys
       raise NotImplementedError
     end
-    
+
     def process(user, opts = {})
       raise NotImplementedError
     end
@@ -55,11 +56,11 @@ Model: %{model}
     def results_message
       raise NotImplementedError
     end
-    
+
     Results = Struct.new(:repository_object, :verified, :verifications)
 
     private
-    
+
     def validate_model
       errs = []
       begin
@@ -69,7 +70,7 @@ Model: %{model}
       end
       return errs
     end
-    
+
     def validate_datastreams
       errs = []
       batch_object_datastreams.each do |d|
@@ -90,14 +91,14 @@ Model: %{model}
           errs << "#{@error_prefix} Must specify checksum type if providing checksum for #{d.name} datastream"
         end
         if d.checksum_type
-          unless Ddr::Datastreams::CHECKSUM_TYPES.include?(d.checksum_type)      
+          unless Ddr::Datastreams::CHECKSUM_TYPES.include?(d.checksum_type)
             errs << "#{@error_prefix} Invalid checksum type for #{d.name} datastream: #{d.checksum_type}"
           end
-        end      
+        end
       end
       return errs
     end
-    
+
     def validate_relationships
       errs = []
       batch_object_relationships.each do |r|
@@ -118,7 +119,7 @@ Model: %{model}
             rescue ActiveFedora::ObjectNotFoundError
               pid_in_batch = false
               if batch.present?
-                if batch.pre_assigned_pids.include?(r[:object]) 
+                if batch.pre_assigned_pids.include?(r[:object])
                   pid_in_batch = true
                 end
               end
@@ -142,7 +143,7 @@ Model: %{model}
       end
       return errs
     end
-    
+
     def verify_repository_object
       verifications = {}
       begin
@@ -153,13 +154,20 @@ Model: %{model}
         verifications["Object exists in repository"] = VERIFICATION_PASS
         verifications["Object is correct model"] = verify_model(repo_object) if model
         verifications["Object has correct label"] = verify_label(repo_object) if label
-        if batch_object_datastreams
+        unless batch_object_attributes.empty?
+          batch_object_attributes.each do |a|
+            if a.operation == DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD
+              verifications["#{a.name} attribute set correctly"] = verify_attribute(repo_object, a)
+            end
+          end
+        end
+        unless batch_object_datastreams.empty?
           batch_object_datastreams.each do |d|
             verifications["#{d.name} datastream present and not empty"] = verify_datastream(repo_object, d)
             verifications["#{d.name} external checksum match"] = verify_datastream_external_checksum(repo_object, d) if d.checksum
           end
         end
-        if batch_object_relationships
+        unless batch_object_relationships.empty?
           batch_object_relationships.each do |r|
             verifications["#{r.name} relationship is correct"] = verify_relationship(repo_object, r)
           end
@@ -169,7 +177,7 @@ Model: %{model}
       end
       verifications
     end
-    
+
     def verify_model(repo_object)
       begin
         if repo_object.class.eql?(model.constantize)
@@ -181,29 +189,32 @@ Model: %{model}
         return VERIFICATION_FAIL
       end
     end
-  
+
     def verify_label(repo_object)
       repo_object.label.eql?(label) ? VERIFICATION_PASS : VERIFICATION_FAIL
     end
-    
+
+    def verify_attribute(repo_object, attribute)
+      repo_object.datastreams[attribute.datastream].values(attribute.name).include?(attribute.value) ?
+              VERIFICATION_PASS : VERIFICATION_FAIL
+    end
+
     def verify_datastream(repo_object, datastream)
-      if repo_object.datastreams.include?(datastream.name) && 
+      if repo_object.datastreams.include?(datastream.name) &&
           repo_object.datastreams[datastream.name].has_content?
         VERIFICATION_PASS
       else
         VERIFICATION_FAIL
       end
     end
-    
+
     def verify_datastream_external_checksum(repo_object, datastream)
-      begin
-        repo_object.datastreams[datastream.name].validate_checksum! datastream.checksum, datastream.checksum_type
-        return VERIFICATION_PASS
-      rescue Ddr::Models::ChecksumInvalid
-        return VERIFICATION_FAIL
-      end
+      repo_object.datastreams[datastream.name].validate_checksum! datastream.checksum, datastream.checksum_type
+      return VERIFICATION_PASS
+    rescue Ddr::Models::ChecksumInvalid
+      return VERIFICATION_FAIL
     end
-    
+
     def verify_relationship(repo_object, relationship)
       relationship_reflection = Ddr::Utils.relationship_object_reflection(model, relationship.name)
       relationship_object_class = Ddr::Utils.reflection_object_class(relationship_reflection)
@@ -216,7 +227,19 @@ Model: %{model}
         VERIFICATION_FAIL
       end
     end
-    
+
+    def add_attribute(repo_object, attribute)
+      repo_object.datastreams[attribute.datastream].add_value(attribute.name, attribute.value)
+      return repo_object
+    end
+
+    def clear_attributes(repo_object, attribute)
+      repo_object.datastreams[attribute.datastream].class.term_names.each do |term|
+        repo_object.datastreams[attribute.datastream].set_values(term, nil) if repo_object.datastreams[attribute.datastream].values(term)
+      end
+      return repo_object
+    end
+
     def populate_datastream(repo_object, datastream)
       case datastream[:payload_type]
       when DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
@@ -240,7 +263,7 @@ Model: %{model}
       end
       return repo_object
     end
-    
+
     def add_relationship(repo_object, relationship)
       relationship_object = case relationship[:object_type]
       when BatchObjectRelationship::OBJECT_TYPE_PID
@@ -249,7 +272,7 @@ Model: %{model}
       repo_object.send("#{relationship[:name]}=", relationship_object)
       return repo_object
     end
-    
+
     def set_rdf_subject(repo_object, ds_content)
       graph = RDF::Graph.new
       RDF::Reader.for(:ntriples).new(ds_content) do |reader|

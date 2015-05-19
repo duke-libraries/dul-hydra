@@ -24,11 +24,11 @@ shared_examples "metadata file show page" do
         end
       end
     end
-  end  
+  end
 end
 
 describe "metadata_files/show.html.erb", :type => :feature, :metadata_file => true do
-  
+
   let(:csv_table) { CSV.read(metadata_file.metadata.path, metadata_file.effective_options[:csv]) }
   let(:form_data_id) { '#form_data' }
   let(:headers_id) { '#headers' }
@@ -36,12 +36,12 @@ describe "metadata_files/show.html.erb", :type => :feature, :metadata_file => tr
   let(:rows_text) {
     [ [ 'test12345', 'Updated Title', 'This is some description; this is "some more" description.', 'Alpha; Beta; Gamma', 'Delta; Epsilon', '2010-01-22' ] ]
   }
-  
+
   before do
     login_as metadata_file.user
     visit(metadata_file_path(metadata_file))
   end
-  
+
   context "factory version" do
     let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
     let(:headers_text) {
@@ -50,7 +50,7 @@ describe "metadata_files/show.html.erb", :type => :feature, :metadata_file => tr
     }
     it_behaves_like "metadata file show page"
   end
-  
+
   context "tab-delimited mapped schema" do
     let(:metadata_file) { FactoryGirl.create(:metadata_file_mapped_tab) }
     let(:headers_text) {
@@ -58,7 +58,7 @@ describe "metadata_files/show.html.erb", :type => :feature, :metadata_file => tr
         [ '', '', '', 'multi', 'multi', '', ''],
         [ 'identifier', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ] ]
     }
-    it_behaves_like "metadata file show page"    
+    it_behaves_like "metadata file show page"
   end
-  
+
 end

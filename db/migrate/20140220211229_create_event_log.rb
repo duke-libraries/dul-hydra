@@ -10,7 +10,7 @@ class CreateEventLog < ActiveRecord::Migration
       t.string :object_identifier
       t.string :application_version
       t.text :comment
-      
+
       t.timestamps
     end
   end

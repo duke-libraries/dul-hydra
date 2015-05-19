@@ -7,6 +7,9 @@ class ApplicationController < ActionController::Base
   include Hydra::Controller::ControllerBehavior
   include Hydra::PolicyAwareAccessControlsEnforcement
 
+  # This applies appropriate access controls to all Blacklight solr queries
+  self.solr_search_params_logic += [:add_access_controls_to_solr_params]
+
   protect_from_forgery
 
   before_action :authenticate_user!
@@ -41,11 +44,11 @@ class ApplicationController < ActionController::Base
   def configure_permitted_parameters
     devise_parameter_sanitizer.for(:sign_in) { |u| u.permit(:username, :email, :password, :remember_me) }
   end
-  
+
   def find_models_with_gated_discovery(model, opts={})
     solr_opts = {
       q: "#{Ddr::IndexFields::ACTIVE_FEDORA_MODEL}:\"#{model.name}\"",
-      fq: gated_discovery_filters.join(" OR "), 
+      fq: gated_discovery_filters.join(" OR "),
       sort: "#{Ddr::IndexFields::TITLE} ASC",
       rows: 9999
     }
@@ -56,24 +59,15 @@ class ApplicationController < ActionController::Base
   end
 
   def group_service
-    @group_service ||= Ddr::Auth::RemoteGroupService.new(request.env)
+    @group_service ||= Ddr::Auth::Groups.build(current_user, request.env)
   end
 
   def all_permissions
-    # IMPORTANT - rights controller behavior depends on the permissions being 
-    # ordered from lowest to highest so that assignment of multiple permissions 
+    # IMPORTANT - rights controller behavior depends on the permissions being
+    # ordered from lowest to highest so that assignment of multiple permissions
     # to a user or group results in the highest permission being granted.
     # No doubt this is really terrible, but there it is.
     ["discover", "read", "edit"]
   end
 
-  def exclude_unwanted_models(solr_parameters, user_parameters)
-    solr_parameters[:fq] ||= []
-    unwanted = []
-    DulHydra.unwanted_models.each do |model|
-      unwanted << "-#{ActiveFedora::SolrService.solr_name(:has_model, :symbol)}:\"info:fedora/afmodel:#{model}\""
-    end
-    solr_parameters[:fq] << "(#{unwanted.join(' AND ')})"
-  end
-  
 end

@@ -6,7 +6,7 @@ def create_attachment opts={}
   post :create, attached_to_id: attach_to.pid, content: {file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum, checksum_type: checksum_type}, descMetadata: {title: ["New Attachment"]}
 end
 
-def new_attachment 
+def new_attachment
   get :new, attached_to_id: FactoryGirl.create(:collection).pid
 end
 
@@ -76,7 +76,7 @@ describe AttachmentsController, type: :controller, attachments: true do
         it "should copy the object's permissions to the attachment"
         context "and attached_to object is governed by a collection" do
           let(:collection) { FactoryGirl.create(:collection) }
-          before do 
+          before do
             attach_to.admin_policy = collection
             attach_to.save
           end

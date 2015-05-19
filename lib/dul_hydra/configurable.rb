@@ -3,7 +3,6 @@ module DulHydra
     extend ActiveSupport::Concern
 
     included do
-      mattr_accessor :unwanted_models
 
       # Columns in the CSV report generated for a collection
       # Each column represents a *method* of a SolrDocument

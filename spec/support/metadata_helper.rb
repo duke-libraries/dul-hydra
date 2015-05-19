@@ -1,19 +1,18 @@
 require 'spec_helper'
 
-def sample_metadata_triples(subject_string="_:test")
-  triples = <<-EOS
-#{subject_string} <http://purl.org/dc/terms/title> "Sample title" .
-#{subject_string} <http://purl.org/dc/terms/creator> "Sample, Example" .
-#{subject_string} <http://purl.org/dc/terms/type> "Image" .
-#{subject_string} <http://purl.org/dc/terms/type> "Still Image" .
-#{subject_string} <http://purl.org/dc/terms/spatial> "Durham County (NC)" .
-#{subject_string} <http://purl.org/dc/terms/spatial> "Durham (NC)" .
-#{subject_string} <http://purl.org/dc/terms/date> "1981-01" .
-#{subject_string} <http://purl.org/dc/terms/rights> "The copyright for these materials is unknown." .
-#{subject_string} <http://library.duke.edu/metadata/terms/print_number> "12-345-6" .
-#{subject_string} <http://library.duke.edu/metadata/terms/series> "Photographic Materials Series" .
-#{subject_string} <http://library.duke.edu/metadata/terms/subseries> "Local Court House" .
-EOS
+def sample_metadata_array
+  [ { "title" => "Sample title" },
+    { "creator" => "Sample, Example" },
+    { "type" => "Image" },
+    { "type" => "Still Image" },
+    { "spatial" => "Durham County (NC)" },
+    { "spatial" => "Durham (NC)" },
+    { "date" => "1981-01" },
+    { "rights" => "The copyright for these materials is unknown." },
+    { "print_number" => "12-345-6" },
+    { "series" => "Photographic Materials Series" },
+    { "subseries" => "Local Court House" }
+  ]
 end
 
 def sample_mets_xml

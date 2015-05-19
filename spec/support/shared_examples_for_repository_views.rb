@@ -164,7 +164,7 @@ shared_examples "a content-bearing object show view" do
     setup
     object.roles.downloader << user.principal_name # require for Components
     object.save
-    allow(user).to receive(:groups) { ["public", "registered"] }
+    allow(user).to receive(:groups) { Ddr::Auth::Groups.new(["public", Ddr::Auth::Groups::REGISTERED]) }
   end
   it "should have a download link" do
     visit url_for(object)
@@ -240,8 +240,8 @@ shared_examples "a repository object rights editing view" do
   let(:user) { FactoryGirl.create(:user) }
   before do
     object.edit_users = [user.user_key]
-    object.read_groups = ["registered"]
-    object.discover_groups = ["public"]
+    object.read_groups = [Ddr::Auth::Groups::REGISTERED]
+    object.discover_groups = [Ddr::Auth::Groups::PUBLIC]
     object.license_title = "Wide Open"
     object.license_description = "Anyone can do anything"
     object.save
@@ -254,22 +254,22 @@ shared_examples "a repository object rights editing view" do
     object.reload
     expect(object.permissions).to eq(original_permissions)
     expect(object.edit_users).to eq([user.user_key])
-    expect(object.read_groups).to eq(["registered"])
-    expect(object.discover_groups).to eq(["public"])
+    #expect(object.read_groups).to eq([Ddr::Auth::Groups::REGISTERED])
+    expect(object.discover_groups).to eq([Ddr::Auth::Groups::PUBLIC])
     expect(object.license_title).to eq("Wide Open")
     expect(object.license_description).to eq("Anyone can do anything")
   end
   it "should be able to remove a permission" do
     visit url_for(controller: object.controller_name, action: "permissions", id: object)
-    page.unselect "Public", from: "permissions_discover"
+    page.unselect Ddr::Auth::Groups::PUBLIC.label, from: "permissions_discover"
     click_button "Save"
     object.reload
     expect(object.discover_groups).to be_empty
   end
-  it "shoulld be able to clear the permissions" do
+  it "should be able to clear the permissions" do
     visit url_for(controller: object.controller_name, action: "permissions", id: object)
-    page.unselect "Public", from: "permissions_discover"
-    page.unselect "Duke Community", from: "permissions_read"
+    page.unselect Ddr::Auth::Groups::PUBLIC.label, from: "permissions_discover"
+    page.unselect Ddr::Auth::Groups::REGISTERED.label, from: "permissions_read"
     page.unselect user.user_key, from: "permissions_edit"
     click_button "Save"
     object.reload
@@ -277,10 +277,10 @@ shared_examples "a repository object rights editing view" do
   end
   it "should be able to add a permission" do
     visit url_for(controller: object.controller_name, action: "permissions", id: object)
-    page.select "Duke Community", from: "permissions_edit"
+    page.select Ddr::Auth::Groups::REGISTERED.label, from: "permissions_edit"
     click_button "Save"
     object.reload
-    expect(object.edit_groups).to eq(["registered"])
+    expect(object.edit_groups).to eq([Ddr::Auth::Groups::REGISTERED])
   end
   it "should be able to modify the license" do
     visit url_for(controller: object.controller_name, action: "permissions", id: object)
@@ -302,8 +302,8 @@ shared_examples "a governable repository object rights editing view" do
     let(:user) { FactoryGirl.create(:user) }
     before do
       setup
-      coll.default_permissions = [{type: "user", name: "Bob", access: "read"},
-                                  {type: "group", name: "Special People", access: "edit"}]
+      coll.default_permissions = [{type: "user", name: "Bob@example.com", access: "read"},
+                                  {type: "group", name: "SpecialPeople", access: "edit"}]
       coll.save
       object.edit_users = [user.user_key]
       object.admin_policy = coll
@@ -311,8 +311,8 @@ shared_examples "a governable repository object rights editing view" do
     end
     it "should display the inherited permissions" do
       visit url_for(controller: object.controller_name, action: "permissions", id: object)
-      expect(find('#access-level-read')).to have_content("Bob")
-      expect(find('#access-level-edit')).to have_content("Special People")
+      expect(find('#access-level-read')).to have_content("Bob@example.com")
+      expect(find('#access-level-edit')).to have_content("SpecialPeople")
     end
   end
 end

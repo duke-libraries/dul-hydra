@@ -2,7 +2,7 @@ module DulHydra
   module Controller
     module PolicyBehavior
       extend ActiveSupport::Concern
-     
+
       def default_permissions
         if request.patch?
           new_permissions = {"group" => {}, "person" => {}}
@@ -21,7 +21,7 @@ module DulHydra
             flash[:success] = I18n.t('dul_hydra.admin_policies.messages.changed')
             redirect_to(action: "show", tab: "default_permissions") and return
           end
-        end        
+        end
       end
 
       protected
@@ -34,7 +34,7 @@ module DulHydra
       def tab_default_permissions
         Tab.new("default_permissions",
                 actions: [
-                          TabAction.new("edit", 
+                          TabAction.new("edit",
                                         url_for(action: "default_permissions"),
                                         can?(:default_permissions, current_object)),
                           TabAction.new("download",
@@ -43,7 +43,7 @@ module DulHydra
                          ]
                 )
       end
- 
+
     end
   end
 end

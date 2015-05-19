@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module DulHydra::Batch::Scripts
-  
+
   shared_examples "a successful manifest processing run" do
     let(:batch) { DulHydra::Batch::Models::Batch.all.last }
     let(:batch_objects) { batch.batch_objects }
@@ -41,7 +41,7 @@ module DulHydra::Batch::Scripts
       end
     end
   end
-  
+
   shared_examples "an invalid manifest to process" do
     let(:log) { File.read(File.join(log_dir, "manifest_processor.log"))}
     it "should not create a new batch" do
@@ -53,7 +53,7 @@ module DulHydra::Batch::Scripts
       expect(log).to include(I18n.t('batch.manifest.validation_failed'))
     end
   end
-  
+
   describe ManifestProcessor, batch: true do
     let(:test_dir) { Dir.mktmpdir("dul_hydra_test") }
     let(:manifest_file) { File.join(test_dir, 'manifest.yml') }
@@ -97,8 +97,8 @@ module DulHydra::Batch::Scripts
         mp = DulHydra::Batch::Scripts::ManifestProcessor.new(:manifest => manifest_file, :log_dir => log_dir)
         mp.execute
       end
-      it_behaves_like "a successful manifest processing run"      
+      it_behaves_like "a successful manifest processing run"
     end
   end
-  
+
 end

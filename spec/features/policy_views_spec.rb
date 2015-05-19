@@ -4,8 +4,9 @@ describe "policy view", :type => :feature do
   let(:user) { FactoryGirl.create(:user) }
   let(:object) { FactoryGirl.create(:collection) }
   before do
+    allow(Ddr::Auth::Groups).to receive(:all) { [Ddr::Auth::Groups::PUBLIC, Ddr::Auth::Groups::REGISTERED, Ddr::Auth::Group.new("repositoryEditor"), Ddr::Auth::Group.new("repositoryAdmin") ] }
     object.edit_users = [user.user_key]
-    object.default_permissions = [{type: "group", access: "read", name: "registered"},
+    object.default_permissions = [{type: "group", access: "read", name: Ddr::Auth::Groups::REGISTERED},
                                   {type: "group", access: "edit", name: "repositoryEditor"}]
     object.default_license_title = "Wide Open"
     object.default_license_description = "Anyone can do anything"
@@ -18,15 +19,15 @@ describe "policy view", :type => :feature do
     click_button "Save"
     object.reload
     expect(object.default_permissions).to eq(original_default_permissions)
-    
+
     expect(object.default_edit_groups).to eq(["repositoryEditor"])
-    expect(object.default_read_groups).to eq(["registered"])
+    expect(object.default_read_groups).to eq([Ddr::Auth::Groups::REGISTERED])
     expect(object.default_license_title).to eq("Wide Open")
     expect(object.default_license_description).to eq("Anyone can do anything")
   end
   it "should be able to remove a permission" do
     visit url_for(controller: object.controller_name, action: "default_permissions", id: object)
-    page.unselect "Duke Community", from: "permissions_read"
+    page.unselect Ddr::Auth::Groups::REGISTERED.label, from: "permissions_read"
     click_button "Save"
     object.reload
     expect(object.default_read_groups).to be_empty

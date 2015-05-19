@@ -16,9 +16,6 @@ describe DownloadsController, :type => :controller do
     it "should attach the file using the original filename" do
       expect(response.headers["Content-Disposition"]).to match(/filename="#{obj.original_filename}"/)
     end
-    it "shouls have a Content-Length matching the size of the content" do
-      expect(response.header["Content-Length"]).to eq obj.content_size.to_s
-    end
   end
   context "descMetadata download" do
     let(:obj) { FactoryGirl.create(:collection) }

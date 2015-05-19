@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'support/collections_controller_spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_collection
@@ -10,7 +11,7 @@ def new_collection
 end
 
 def update_policy
-  patch :default_permissions, id: object, permissions: {"discover" => ["group:public", "user:Sally", "user:Mitch"], "read" => ["group:registered", "user:Gil", "user:Ben"], "edit" => ["group:editors", "group:managers", "user:Rocky", "user:Gwen", "user:Teresa"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
+  patch :default_permissions, id: object, permissions: {"discover" => ["group:public", "user:Sally@example.com", "user:Mitch@example.com"], "read" => ["group:registered", "user:Gil@example.com", "user:Ben@example.com"], "edit" => ["group:editors", "group:managers", "user:Rocky@example.com", "user:Gwen@example.com", "user:Teresa@example.com"]}, license: {"title" => "No Access", "description" => "No one can get to it", "url" => "http://www.example.com"}
 end
 
 describe CollectionsController, type: :controller, collections: true do
@@ -93,16 +94,13 @@ describe CollectionsController, type: :controller, collections: true do
 
   describe "#collection_info" do
     let(:collection) { FactoryGirl.create(:collection) }
-    let(:items) { FactoryGirl.create_list(:item, 3) }
-    before do
-      items.each do |item|
-        item.parent = collection
-        item.save
-        item.children = FactoryGirl.create_list(:component, 2)
-      end
-    end
     context "when the user can read the collection" do
-      before { controller.current_ability.can(:read, collection) }
+      let(:items) { FactoryGirl.build_list(:item, 3) }
+      before do
+        allow_any_instance_of(Collection).to receive(:children).and_return(items)
+        allow_any_instance_of(Collection).to receive(:components_from_solr).and_return(component_solr_doc_array.lazy)
+        controller.current_ability.can(:read, collection)
+      end
       it "should report the statistics" do
         get :collection_info, id: collection
         expect(response).to render_template(:collection_info)
@@ -119,7 +117,7 @@ describe CollectionsController, type: :controller, collections: true do
       end
     end
   end
-  
+
   describe "#default_permissions" do
     let(:object) { FactoryGirl.create(:collection) }
     context "GET" do
@@ -129,7 +127,7 @@ describe CollectionsController, type: :controller, collections: true do
           object.save
         end
         it "should render the default_permissions template" do
-          expect(get :default_permissions, id: object).to render_template("default_permissions")      
+          expect(get :default_permissions, id: object).to render_template("default_permissions")
         end
       end
       context "when the user cannot edit the object" do
@@ -151,9 +149,9 @@ describe CollectionsController, type: :controller, collections: true do
           expect(object.default_discover_groups).to eq(["public"])
           expect(object.default_read_groups).to eq(["registered"])
           expect(object.default_edit_groups).to eq(["editors", "managers"])
-          expect(object.default_discover_users).to eq(["Sally", "Mitch"])
-          expect(object.default_read_users).to eq(["Gil", "Ben"])
-          expect(object.default_edit_users).to eq(["Rocky", "Gwen", "Teresa"])
+          expect(object.default_discover_users).to eq(["Sally@example.com", "Mitch@example.com"])
+          expect(object.default_read_users).to eq(["Gil@example.com", "Ben@example.com"])
+          expect(object.default_edit_users).to eq(["Rocky@example.com", "Gwen@example.com", "Teresa@example.com"])
           expect(object.default_license_title).to eq("No Access")
           expect(object.default_license_description).to eq("No one can get to it")
           expect(object.default_license_url).to eq("http://www.example.com")

@@ -30,9 +30,9 @@ describe IngestFoldersController, :type => :controller do
     allow(IngestFolder).to receive(:load_configuration).and_return(YAML.load(config).with_indifferent_access)
     allow(File).to receive(:readable?).and_return(true)
   end
-  
+
   describe "#create" do
-    
+
     let(:additional_attributes) { { :sub_path => '/subpath/subsubpath/' } }
     before do
       post :create, ingest_folder: FactoryGirl.attributes_for(:ingest_folder).merge(additional_attributes)
@@ -46,7 +46,7 @@ describe IngestFoldersController, :type => :controller do
       expect(assigns[:ingest_folder].checksum_file).to eql(File.join(IngestFolder.default_checksum_file_location, "subpath-base-sha256.txt"))
       expect(assigns[:ingest_folder].checksum_type).to eql(Ddr::Datastreams::CHECKSUM_TYPE_SHA256)
     end
-    
+
   end
-  
+
 end

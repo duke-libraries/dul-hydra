@@ -3,7 +3,7 @@ class CreateMintedIds < ActiveRecord::Migration
     create_table :minted_ids do |t|
       t.string :minted_id
       t.string :referent
-      
+
       t.timestamps
     end
     add_index :minted_ids, :minted_id, unique: true

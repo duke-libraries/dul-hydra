@@ -18,10 +18,10 @@ class Ability < Ddr::Auth::Ability
     can :create, IngestFolder if IngestFolder.permitted_folders(current_user).present?
     can [:show, :procezz], IngestFolder, user: current_user
   end
-  
+
   def metadata_files_permissions
     can :create, MetadataFile if current_user.groups.include?(DulHydra.metadata_file_creators_group)
     can [:show, :procezz], MetadataFile, user: current_user
   end
-  
+
 end

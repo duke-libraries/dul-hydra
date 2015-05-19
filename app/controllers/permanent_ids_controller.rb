@@ -10,7 +10,7 @@ class PermanentIdsController < ApplicationController
     permanent_id = params.require(:permanent_id)
     results = ActiveFedora::Base.find(Ddr::IndexFields::PERMANENT_ID => permanent_id)
     if results.empty?
-      raise ActiveFedora::ObjectNotFoundError, "Object having permanent_id \"#{permanent_id}\" was not found." 
+      raise ActiveFedora::ObjectNotFoundError, "Object having permanent_id \"#{permanent_id}\" was not found."
     end
     results.first
   end

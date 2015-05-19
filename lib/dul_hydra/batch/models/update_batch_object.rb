@@ -1,7 +1,7 @@
 module DulHydra::Batch::Models
-  
+
   class UpdateBatchObject < DulHydra::Batch::Models::BatchObject
-  
+
     def local_validations
       errs = []
       errs << "#{@error_prefix} PID required for UPDATE operation" unless pid
@@ -14,7 +14,7 @@ module DulHydra::Batch::Models
       end
       errs
     end
-  
+
     def model_datastream_keys
       if pid
         begin
@@ -25,7 +25,7 @@ module DulHydra::Batch::Models
         end
       end
     end
-        
+
     def process(user, opts = {})
       unless verified
         repo_object = update_repository_object(user, opts)
@@ -40,35 +40,41 @@ module DulHydra::Batch::Models
         repo_object
       end
     end
-    
+
     def results_message
       if pid
         verification_result = (verified ? "Verified" : "VERIFICATION FAILURE")
         message = "Updated #{pid}...#{verification_result}"
       else
         message = "Attempt to update #{model} #{identifier} FAILED"
-      end      
+      end
     end
 
     def event_log_comment
       "Updated by batch process (Batch #{batch.id}, BatchObject #{id})"
     end
-        
+
     private
-    
+
     def update_repository_object(user, opts = {})
       repo_object = nil
       begin
         repo_object = ActiveFedora::Base.find(pid)
-        if batch_object_datastreams
-          batch_object_datastreams.each do |d|
-            repo_object = case
-            when d.operation.eql?(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
-              populate_datastream(repo_object, d)
-            end        
+        batch_object_attributes.each do |a|
+          repo_object = case
+          when a.operation.eql?(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
+            add_attribute(repo_object, a)
+          when a.operation.eql?(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL)
+            clear_attributes(repo_object, a)
           end
         end
-        if repo_object.save          
+        batch_object_datastreams.each do |d|
+          repo_object = case
+          when d.operation.eql?(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
+            populate_datastream(repo_object, d)
+          end
+        end
+        if repo_object.save
           repo_object.notify_event(:update, user: user, comment: event_log_comment)
         end
       rescue Exception => e

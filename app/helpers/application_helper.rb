@@ -1,7 +1,7 @@
 module ApplicationHelper
 
   def alert_messages
-    session[:alert_messages] ||= Ddr::Alerts::Message.active.pluck(:message)
+    Ddr::Alerts::Message.active.pluck(:message)
   end
 
   def internal_uri_to_pid(args)
@@ -10,7 +10,7 @@ module ApplicationHelper
 
   def internal_uri_to_link(args)
     pid = internal_uri_to_pid(args).first
-    # Depends on Blacklight::SolrHelper#get_solr_response_for_doc_id 
+    # Depends on Blacklight::SolrHelper#get_solr_response_for_doc_id
     # having been added as a helper method to CatalogController
     response, doc = get_solr_response_for_doc_id(pid)
     # XXX This is not consistent with Ddr::Models::Base#title_display
@@ -34,7 +34,7 @@ module ApplicationHelper
       end
     end
   end
-    
+
   def user_icon
     image_tag("silk/user.png", size: "16x16", alt: "user")
   end
@@ -118,7 +118,7 @@ module ApplicationHelper
     label = args.fetch(:label, "Download")
     link_to label, download_path(args[:document]), class: args[:css_class], id: args[:css_id]
   end
-  
+
   def render_download_icon(args = {})
     label = content_tag(:span, "", class: "glyphicon glyphicon-download-alt")
     render_download_link args.merge(label: label)
@@ -126,7 +126,7 @@ module ApplicationHelper
 
   def thumbnail_image_tag document, image_options = {}
     src = document.has_thumbnail? ? thumbnail_path(document) : default_thumbnail(document)
-    thumbnail = image_tag(src, :alt => "Thumbnail", :class => "img-thumbnail")
+    thumbnail = image_tag(src, alt: "Thumbnail", class: "img-thumbnail", size: "100x100")
   end
 
   def render_thumbnail(doc_or_obj, linked = false)
@@ -147,7 +147,7 @@ module ApplicationHelper
     if date
       date = Time.parse(date) if !date.respond_to?(:localtime)
       date.localtime.to_s
-    end 
+    end
   end
 
   def render_permission_grantees(access)
@@ -264,7 +264,7 @@ module ApplicationHelper
 
   def all_group_options
     # TODO: List public first, then registered, then rest in alpha order (?)
-    @all_group_options ||= group_options(group_service.groups)
+    @all_group_options ||= group_options(Ddr::Auth::Groups.all)
   end
 
   def selected_group_options(permission)
@@ -275,19 +275,12 @@ module ApplicationHelper
     groups.collect { |g| group_option_value(g) }
   end
 
-  def group_option_text(group_name)
-    case group_name
-    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
-      "Public"
-    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
-      "Duke Community"
-    else
-      group_name
-    end
+  def group_option_text(group)
+    group.label
   end
 
-  def group_option_value(group_name)
-    "group:#{group_name}"
+  def group_option_value(group)
+    "group:#{group}"
   end
 
   def user_options(users)
@@ -334,7 +327,7 @@ module ApplicationHelper
 
   def desc_metadata_form_field_tag field, value=nil, counter=nil
     name = "descMetadata[#{field}][]"
-    opts = { 
+    opts = {
       :class => "form-control field-value-input",
       :id => counter ? desc_metadata_form_field_id(field, counter) : nil
     }
@@ -358,7 +351,22 @@ module ApplicationHelper
     end
   end
 
-  private
+  def original_filename_info
+    info = {}
+    if current_object.has_content?
+      if current_object.original_filename
+        info[:value] = current_object.original_filename
+        info[:context] = 'info'
+      else
+        info[:value] = 'Missing'
+        info[:context] = 'danger'
+      end
+    else
+      info[:value] = 'No content file'
+      info[:context] = 'warning'
+    end
+    return info
+  end
 
   def render_label(text, label)
     content_tag :span, text, :class => "label label-#{label}"
@@ -371,7 +379,7 @@ module ApplicationHelper
       default_model_thumbnail(doc_or_obj.active_fedora_model)
     end
   end
-  
+
   def default_mime_type_thumbnail(mime_type)
     case mime_type
     when /^image/

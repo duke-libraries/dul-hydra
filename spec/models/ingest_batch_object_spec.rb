@@ -7,22 +7,27 @@ module DulHydra::Batch::Models
       expect(object.validate).to be_empty
     end
   end
-  
+
   shared_examples "an invalid ingest object" do
     it "should not be valid" do
       expect(object.validate).to include(error_message)
     end
   end
-  
+
   shared_examples "a successful ingest" do
-    before { object.process(user) }      
+    let(:repo_object) { ActiveFedora::Base.find(object.pid) }
+    let(:verification_event) { repo_object.events.select { |e| e.is_a? Ddr::Events::ValidationEvent }.first }
+    before { object.process(user) }
     it "should result in a verified repository object" do
       expect(object.verified).to be_truthy
       expect(object.pid).to eq(assigned_pid) if assigned_pid.present?
-      expect(ActiveFedora::Base.find(object.pid).title).to eq(["Test Object Title"])
+      expect(repo_object.title).to eq(["Test Object Title"])
+      unless object.batch_object_attributes.empty?
+        expect(verification_event.detail).to include("title attribute set correctly...#{DulHydra::Batch::Models::BatchObject::VERIFICATION_PASS}")
+      end
     end
   end
-  
+
   describe IngestBatchObject, type: :model, batch: true, ingest: true do
 
     before do
@@ -31,7 +36,7 @@ module DulHydra::Batch::Models
     end
 
     context "validate" do
-    
+
       context "valid object" do
         context "generic object" do
           let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_bytes, :has_batch) }
@@ -65,7 +70,7 @@ module DulHydra::Batch::Models
           it_behaves_like "a valid ingest object"
         end
       end
-  
+
       context "invalid object" do
         let(:error_prefix) { "#{object.identifier} [Database ID: #{object.id}]:"}
         context "missing model" do
@@ -208,9 +213,9 @@ module DulHydra::Batch::Models
         end
       end
     end
-  
+
     context "ingest" do
-      
+
       let(:user) { FactoryGirl.create(:user) }
       context "successful ingest" do
         context "object without a pre-assigned PID" do
@@ -222,6 +227,10 @@ module DulHydra::Batch::Models
           context "payload type file" do
             let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_file) }
             before { allow(File).to receive(:read).with('/tmp/qdc-rdf.nt').and_return('_:test <http://purl.org/dc/terms/title> "Test Object Title" .') }
+            it_behaves_like "a successful ingest"
+          end
+          context "attributes" do
+            let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_attributes) }
             it_behaves_like "a successful ingest"
           end
         end
@@ -244,10 +253,10 @@ module DulHydra::Batch::Models
             repo_object = object.model.constantize.new(:pid => assigned_pid, title: ["Test Object Title"])
             repo_object.save(validate: false)
           end
-          it_behaves_like "a successful ingest"          
+          it_behaves_like "a successful ingest"
         end
       end
-      
+
       context "exception during ingest" do
         let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_bytes) }
         before { allow_any_instance_of(DulHydra::Batch::Models::IngestBatchObject).to receive(:populate_datastream).and_raise(RuntimeError) }
@@ -267,7 +276,7 @@ module DulHydra::Batch::Models
           end
         end
       end
-      
+
       context "external checksum verification failure" do
         let(:object) { FactoryGirl.create(:generic_ingest_batch_object_with_bytes) }
         before do
@@ -291,7 +300,7 @@ module DulHydra::Batch::Models
       end
 
     end
-      
+
   end
 
 end

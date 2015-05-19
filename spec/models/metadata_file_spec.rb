@@ -7,22 +7,33 @@ shared_examples "an invalid metadata file" do
   it "should not be valid" do
     expect(metadata_file).to_not be_valid
     expect(metadata_file.errors).to have_key(error_field)
-  end  
+  end
 end
 
 shared_examples "a successful metadata file processing" do
   it "should create a batch with an appropriate UpdateBatchObject" do
     expect(@batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_READY)
     expect(@batch_object).to be_a(DulHydra::Batch::Models::UpdateBatchObject)
-    expect(@datastream.name).to eq(Ddr::Datastreams::DESC_METADATA)
-    expect(@datastream.operation).to eq(DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE)
-    expect(@datastream.payload_type).to eq(DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
-    expect(RDF::Reader.for(:ntriples).new(@datastream.payload)).to be_isomorphic_with(RDF::Reader.for(:ntriples).new(expected_md))
+    expect(@attributes.size).to eq(11)
+    expect(@attributes[0].datastream).to eq(Ddr::Datastreams::DESC_METADATA)
+    expect(@attributes[0].operation).to eq(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL)
+    actual_md = {}
+    @attributes[1..-1].each do |att|
+      expect(att.datastream).to eq(Ddr::Datastreams::DESC_METADATA)
+      expect(att.operation).to eq(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
+      expect(att.value_type).to eq(DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING)
+      actual_md[att.name] ||= []
+      actual_md[att.name] << att.value
+    end
+    expect(actual_md.keys).to match_array(expected_md.keys)
+    actual_md.each do |key, value|
+      expect(expected_md[key]).to match_array(value)
+    end
   end
 end
 
 describe MetadataFile, :type => :model, :metadata_file => true do
-  
+
   context "validation" do
 
     let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
@@ -59,7 +70,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
       context "invalid schema map target" do
         before do
           options =
-            { 
+            {
               :csv => metadata_file.effective_options[:csv],
               :parse => metadata_file.effective_options[:parse],
               :schema_map => {
@@ -69,7 +80,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
                 "subject" => "subject",
                 "dateSubmitted" => "dateSubmitted"
               }
-            }          
+            }
           allow_any_instance_of(MetadataFile).to receive(:effective_options).and_return(options)
         end
         it "should have an attribute name error" do
@@ -84,14 +95,12 @@ describe MetadataFile, :type => :model, :metadata_file => true do
     let(:metadata_file) { FactoryGirl.build(:metadata_file) }
 
     let(:expected_md) do
-      ds = Ddr::Datastreams::DescriptiveMetadataDatastream.new(nil, 'descMetadata')
-      ds.title = "Updated Title"
-      ds.identifier = "test12345"
-      ds.description = 'This is some description; this is "some more" description.'
-      ds.subject = [ "Alpha", "Beta", "Gamma" , "Delta", "Epsilon" ]
-      ds.dateSubmitted = "2010-01-22"
-      ds.arranger = "John Doe"
-      ds.resource.dump :ntriples
+      { "title" => [ "Updated Title" ],
+        "identifier" => [ "test12345" ],
+        "description" => [ 'This is some description; this is "some more" description.' ],
+        "subject" => [ "Alpha", "Beta", "Gamma" , "Delta", "Epsilon" ],
+        "dateSubmitted" => [ "2010-01-22" ],
+        "arranger" => [ "John Doe"  ] }
     end
 
     before do
@@ -100,7 +109,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
       metadata_file.procezz
       @batch = DulHydra::Batch::Models::Batch.all.last
       @batch_object = @batch.batch_objects.first
-      @datastream = @batch_object.batch_object_datastreams.first
+      @attributes = @batch_object.batch_object_attributes
     end
 
     context "cdm export metadata file" do
@@ -127,10 +136,10 @@ describe MetadataFile, :type => :model, :metadata_file => true do
             "Arranger" => "arranger"
           }
         }
-      end      
+      end
       it_behaves_like "a successful metadata file processing"
     end
-    
+
     context "desc metadata csv file" do
       let(:delimited_file) { File.join(Rails.root, 'spec', 'fixtures', 'batch_update', 'descmd_csv.csv') }
       let(:options) do
@@ -149,7 +158,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
       end
       it_behaves_like "a successful metadata file processing"
     end
-        
+
   end
 
 end

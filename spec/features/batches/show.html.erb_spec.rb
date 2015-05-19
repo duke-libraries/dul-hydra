@@ -55,7 +55,7 @@ describe "batches/show.html.erb", :type => :feature do
             expect(page).to have_link(I18n.t('batch.web.action_names.retry'), :href => procezz_batch_path(batch))
           end
         end
-      end          
+      end
       context "delete action" do
         context "delete-able" do
           [ nil, DulHydra::Batch::Models::Batch::STATUS_READY, DulHydra::Batch::Models::Batch::STATUS_VALIDATED,

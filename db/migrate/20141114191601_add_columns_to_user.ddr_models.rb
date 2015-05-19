@@ -20,7 +20,7 @@ class AddColumnsToUser < ActiveRecord::Migration
       unless column_exists?("users", "display_name")
         add_column "users", "display_name", :string
       end
-    
+
       # If the email index exists and is set such that email must be unique (which is the initial
       # setting typically set by Devise(?)), remove and we'll re-add it as non-unique below.
       if index_exists?("users", ["email"])
@@ -28,13 +28,13 @@ class AddColumnsToUser < ActiveRecord::Migration
           remove_index "users", ["email"]
         end
       end
-      
+
       # Either the email index didn't exist when we started or, more likely, we removed above
       # because it existed but required email to be unique.
       unless index_exists?("users", ["email"])
         add_index "users", ["email"], name: "index_users_on_email"
       end
-      
+
       unless index_exists?("users", ["username"])
         add_index "users", ["username"], name: "index_users_on_username", unique: true
       end

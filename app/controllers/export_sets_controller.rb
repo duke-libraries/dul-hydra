@@ -1,19 +1,19 @@
 class ExportSetsController < ApplicationController
-  
+
   before_filter :new_export_set, :only => [:create]
   load_and_authorize_resource
 
   def index
   end
-  
+
   def show
   end
-  
+
   def new
     @export_set.export_type = params[:export_type]
     @export_set.user = current_user # set so we can filter objects based on user's ability
     unless @export_set.valid_type?
-      flash[:alert] = if @export_set.export_type 
+      flash[:alert] = if @export_set.export_type
                         I18n.t('dul_hydra.export_sets.alerts.export_type.invalid') % @export_set.export_type
                       else
                         I18n.t('dul_hydra.export_sets.alerts.export_type.missing')
@@ -21,7 +21,7 @@ class ExportSetsController < ApplicationController
       redirect_to :back
     end
   end
-  
+
   def create
     @export_set.update!(user: current_user)
     flash[:notice] = I18n.t('dul_hydra.export_sets.alerts.created')
@@ -41,7 +41,7 @@ class ExportSetsController < ApplicationController
   rescue ActiveRecord::InvalidRecord
     render :edit
   end
-  
+
   def destroy
     @export_set.destroy
     flash[:notice] = I18n.t('dul_hydra.export_sets.alerts.destroyed')
@@ -63,7 +63,7 @@ class ExportSetsController < ApplicationController
         logger.error e
         result = e
       end
-      if request.xhr?     
+      if request.xhr?
         status = case
                  when result.is_a?(ExportSet)
                    204
@@ -105,9 +105,9 @@ class ExportSetsController < ApplicationController
   def new_export_set
     @export_set = ExportSet.new(export_set_params)
   end
-  
+
   private
-  
+
   def export_set_params
     params.require(:export_set).permit(:title, :export_type, :csv_col_sep, :pids => [])
   end
