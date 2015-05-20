@@ -10,7 +10,7 @@ RSpec.describe ApplicationController, type: :controller do
     let(:collection1) { Collection.create(pid: "test:1", title: [ "Collection 1" ]) }
     let(:collection2) { Collection.create(pid: "test:2", title: [ "Collection 2" ]) }
     before do
-      collection2.permissions_attributes = [{type: "user", access: "read", name: user.user_key}]
+      collection2.roles.grant type: "Viewer", agent: user.agent, scope: "resource"
       collection2.save!
     end
     it "should use Blacklight to query solr" do

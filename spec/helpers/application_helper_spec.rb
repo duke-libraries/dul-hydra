@@ -2,17 +2,22 @@ require 'spec_helper'
 
 RSpec.describe ApplicationHelper, type: :helper do
 
-  describe "#group_option_text" do
-    let(:group) { Ddr::Auth::Group.new("admins", label: "Administrators") }
-    it "should return the group label" do
-      expect(helper.group_option_text(group)).to eq("Administrators")
+  describe "#render_content_type_and_size" do
+    before do
+      allow(doc_or_obj).to receive(:content_type) { "application/pdf" }
+      allow(doc_or_obj).to receive(:content_size_human) { "5K" }
     end
-  end
-
-  describe "#group_option_value" do
-    let(:group) { Ddr::Auth::Group.new("admins", label: "Administrators") }
-    it "should return the \"group:{group name}\"" do
-      expect(helper.group_option_value(group)).to eq("group:admins")
+    context "with a document" do
+      let(:doc_or_obj) { SolrDocument.new({}) }
+      it "should render the content type and size" do
+        expect(helper.render_content_type_and_size(doc_or_obj)).to eq("application/pdf 5K")
+      end
+    end
+    context "with an object" do
+      let(:doc_or_obj) { Component.new }
+      it "should render the content type and size" do
+        expect(helper.render_content_type_and_size(doc_or_obj)).to eq("application/pdf 5K")
+      end
     end
   end
 

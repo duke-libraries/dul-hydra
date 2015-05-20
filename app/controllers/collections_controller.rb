@@ -4,12 +4,12 @@ class CollectionsController < ApplicationController
   include DulHydra::Controller::HasChildrenBehavior
   include DulHydra::Controller::HasAttachmentsBehavior
   include DulHydra::Controller::HasTargetsBehavior
-  include DulHydra::Controller::PolicyBehavior
 
-  self.tabs << :tab_default_permissions
   self.tabs << :tab_collection_info
 
   helper_method :collection_report
+
+  before_action :set_desc_metadata, only: :create
 
   def items
     get_children
@@ -27,10 +27,6 @@ class CollectionsController < ApplicationController
   end
 
   protected
-
-  def create_params
-    params.require(:descMetadata).permit(title: [])
-  end
 
   def collection_report
     return @collection_report if @collection_report

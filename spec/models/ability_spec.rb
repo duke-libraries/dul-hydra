@@ -3,30 +3,108 @@ require 'cancan/matchers'
 
 describe Ability, type: :model, abilities: true do
 
-  subject { described_class.new(user) }
-  let(:user) { FactoryGirl.create(:user) }
+  subject { described_class.new(auth_context) }
 
-  describe "#export_sets_permissions", export_sets: true do
-    let(:resource) { ExportSet.new(user: user) }
-    context "associated user" do
-      it { is_expected.to be_able_to(:manage, resource) }
+  let(:auth_context) { FactoryGirl.build(:auth_context) }
+
+  describe "aliases" do
+    it "should alias actions to :read" do
+      expect(subject.aliased_actions[:read])
+        .to include(:attachments, :collection_info, :components, :event, :events, :items, :targets)
     end
-    context "other user" do
-      subject { described_class.new(other_user) }
-      let(:other_user) { FactoryGirl.create(:user) }
-      it { is_expected.not_to be_able_to(:read, resource) }
+    it "should alias actions to :grant" do
+      expect(subject.aliased_actions[:grant]).to include(:roles)
     end
   end
 
-  describe "#ingest_folders_permissions", ingest_folders: true do
-    let(:resource) { IngestFolder }
-    context "user has no permitted ingest folders" do
-      before { allow(resource).to receive(:permitted_folders).with(user).and_return([]) }
-      it { is_expected.not_to be_able_to(:create, resource) }
+  describe "Batch permissions" do
+    let(:resource) { FactoryGirl.create(:batch) }
+    describe "when the user is the creator of the batch" do
+      before { allow(auth_context).to receive(:user) { resource.user } }
+      it { should be_able_to(:manage, resource) }
     end
-    context "user has at least one permitted ingest folder" do
-      before { allow(resource).to receive(:permitted_folders).with(user).and_return(['dir']) }
-      it { is_expected.to be_able_to(:create, resource) }
+    describe "when the user is not the creator of the batch" do
+      it { should_not be_able_to(:manage, resource) }
+    end
+  end
+
+  describe "BatchObject permissions" do
+    let(:batch) { FactoryGirl.create(:batch) }
+    let(:resource) { DulHydra::Batch::Models::BatchObject.create(batch: batch) }
+    before { allow(subject).to receive(:user) { batch.user } }
+    describe "when the user can :manage the batch" do
+      before { subject.can :manage, batch }
+      it { should be_able_to(:manage, resource) }
+    end
+    describe "when the user cannot :manage the batch" do
+      before { subject.cannot :manage, batch }
+      it { should_not be_able_to(:manage, resource) }
+    end
+  end
+
+  describe "ExportSet abilities" do
+    describe "auth context is authenticated" do
+      let(:resource) { FactoryGirl.create(:content_export_set_with_pids) }
+
+      it { should be_able_to(:create, ExportSet) }
+      it { should_not be_able_to(:read, resource) }
+
+      describe "and is creator of export set" do
+        before { allow(auth_context).to receive(:user) { resource.user } }
+        it { should be_able_to(:manage, resource) }
+      end
+    end
+
+    describe "auth context is anonymous" do
+      let(:auth_context) { FactoryGirl.build(:auth_context, :anonymous) }
+      it { should_not be_able_to(:create, ExportSet) }
+    end
+  end
+
+  describe "IngestFolder abilities" do
+    describe "user has no permitted ingest folders" do
+      before { allow(IngestFolder).to receive(:permitted_folders).with(auth_context.user) { [] } }
+      it { should_not be_able_to(:create, IngestFolder) }
+    end
+
+    describe "user has at least one permitted ingest folder" do
+      before { allow(IngestFolder).to receive(:permitted_folders).with(auth_context.user) { ["dir"] } }
+      it { should be_able_to(:create, IngestFolder) }
+    end
+  end
+
+  describe "MetadataFile abilities" do
+    describe "create" do
+      describe "when the user is a member of the metadata file creators group" do
+        before { allow(auth_context).to receive(:member_of?) { true } }
+        it { should be_able_to(:create, MetadataFile) }
+      end
+      describe "when the user is not a member of the metadata file creators group" do
+        before { allow(auth_context).to receive(:member_of?) { false } }
+        it { should_not be_able_to(:create, MetadataFile) }
+      end
+    end
+
+    describe "show" do
+      let(:resource) { FactoryGirl.create(:metadata_file_descmd_csv) }
+      describe "when the user is the creator of the MetadataFile" do
+        before { allow(auth_context).to receive(:user) { resource.user } }
+        it { should be_able_to(:show, resource) }
+      end
+      describe "when the user is not the creator of the MetadataFile" do
+        it { should_not be_able_to(:show, resource) }
+      end
+    end
+
+    describe "procezz" do
+      let(:resource) { FactoryGirl.create(:metadata_file_descmd_csv) }
+      describe "when the user is the creator of the MetadataFile" do
+        before { allow(auth_context).to receive(:user) { resource.user } }
+        it { should be_able_to(:procezz, resource) }
+      end
+      describe "when the user is not the creator of the MetadataFile" do
+        it { should_not be_able_to(:procezz, resource) }
+      end
     end
   end
 

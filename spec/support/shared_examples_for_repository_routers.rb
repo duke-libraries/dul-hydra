@@ -14,9 +14,13 @@ shared_examples "a repository object router" do
   it "should have an update route" do
     expect(patch: "/#{controller}/duke:1").to route_to(controller: controller, action: "update", id: "duke:1")
   end
-  it "should have permissions routes" do
-    expect(get: "/#{controller}/duke:1/permissions").to route_to(controller: controller, action: "permissions", id: "duke:1")
-    expect(patch: "/#{controller}/duke:1/permissions").to route_to(controller: controller, action: "permissions", id: "duke:1")
+  it "should not have permissions routes" do
+    expect(get: "/#{controller}/duke:1/permissions").to_not be_routable
+    expect(patch: "/#{controller}/duke:1/permissions").to_not be_routable
+  end
+  it "should have roles routes" do
+    expect(get: "/#{controller}/duke:1/roles").to route_to(controller: controller, action: "roles", id: "duke:1")
+    expect(patch: "/#{controller}/duke:1/roles").to route_to(controller: controller, action: "roles", id: "duke:1")
   end
   it "should have an events route" do
     expect(get: "/#{controller}/duke:1/events").to route_to(controller: controller, action: "events", id: "duke:1")
