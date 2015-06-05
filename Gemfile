@@ -16,7 +16,7 @@ gem 'resque-pool', '0.3.0'
 gem 'nest', '1.1.2'
 
 # ExecJS runtime
-gem 'therubyracer', '~> 0.11.3', :require => 'v8'
+gem 'therubyracer', '~> 0.11.3', require: 'v8', group: :production
 
 # For mapping file extensions to MIME types
 gem 'mime-types', '~> 1.19'
