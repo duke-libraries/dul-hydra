@@ -1,0 +1,3 @@
+locator,identifier,title,bad,subject,subject,alsoBad,dateSubmitted,creator
+data/foo,test123,My Title,Description,Alpha; Beta,,,2014-02-03,Jane Smith
+data/foo/bar.doc,test12345,Updated Title,"This is some description; this is ""some more"" description.",Alpha; Beta; Gamma,Delta; Epsilon,Jane Doe,2010-01-22,John Doe

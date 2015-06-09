@@ -25,6 +25,9 @@ gem 'mime-types', '~> 1.19'
 gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 4.2.0'
 
+# Filesystem representation
+gem 'rubytree'
+
 group :development, :test do
   gem 'sqlite3'
   gem 'rspec-rails', '~> 3.0.0'
