@@ -38,6 +38,10 @@ describe SimpleIngestMetadata, type: :model, batch: true, simple_ingest: true do
     let(:sim) { described_class.new(metadata_filepath, metadata_profile) }
     let(:expected_metadata) do
       {
+        '' => { "identifier" => [ "test" ],
+                          "title" => [ "Top Title" ],
+                          "description" => [ "Top Description" ],
+                          "creator" => [ "Spade, Sam" ] },
         'foo' => { "identifier" => [ "test123" ],
                             "title" => [ "My Title" ],
                             "description" => [ "Description" ],

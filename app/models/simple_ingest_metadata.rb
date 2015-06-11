@@ -65,6 +65,7 @@ class SimpleIngestMetadata
       @metadata_grid = {}
       as_csv_table.each do |row|
         locator = row.field(0)
+        locator.sub!(/\/$/,"")  # remove trailing slash if present
         row.delete(0)
         @metadata_grid[locator] = row
       end
