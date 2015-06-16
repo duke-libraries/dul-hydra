@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
 gem 'ddr-alerts', '~> 1.0.0'
-gem 'ddr-models', '~> 1.14.1'
+gem 'ddr-models', '~> 1.16.1'
 gem 'rubydora', '>= 1.8.1'
 gem 'devise'
 gem 'deprecation'
@@ -16,7 +16,7 @@ gem 'resque-pool', '0.3.0'
 gem 'nest', '1.1.2'
 
 # ExecJS runtime
-gem 'therubyracer', '~> 0.11.3', :require => 'v8'
+gem 'therubyracer', '~> 0.11.3', require: 'v8', group: :production
 
 # For mapping file extensions to MIME types
 gem 'mime-types', '~> 1.19'
@@ -24,6 +24,9 @@ gem 'mime-types', '~> 1.19'
 # Export sets
 gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 4.2.0'
+
+# Filesystem representation
+gem 'rubytree'
 
 group :development, :test do
   gem 'sqlite3'

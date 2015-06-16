@@ -36,10 +36,10 @@ RSpec.describe ApplicationHelper, type: :helper do
     let(:object) { TestContent.new(pid: 'test:1') }
     before { allow(helper).to receive(:current_object) { object } }
     context "object has content" do
-      before { object.upload File.new(File.join(Rails.root, "spec", "fixtures", "library-devil.tiff")) }
+      before { object.upload File.new(File.join(Rails.root, "spec", "fixtures", "imageA.tif")) }
       context "object has original filename" do
         it "should return the original file name" do
-          expect(helper.original_filename_info).to include(value: 'library-devil.tiff', context: 'info')
+          expect(helper.original_filename_info).to include(value: 'imageA.tif', context: 'info')
         end
       end
       context "object does not have original filename" do

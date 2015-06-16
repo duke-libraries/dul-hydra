@@ -27,6 +27,16 @@ namespace :dul_hydra do
   end
 
   namespace :batch do
+    desc "Creates ingest batch from Simple Ingest Format directory"
+    task :simple_ingest => :environment do
+      raise "Must specify folder path. Ex.: FOLDER=/path/to/simple/ingest/folder" unless ENV['FOLDER']
+      raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
+      processor_args = { filepath: ENV['FOLDER'] }
+      processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
+      processor_args[:batch_user] = ENV['BATCH_USER']
+      processor = DulHydra::Batch::Scripts::ProcessSimpleIngest.new(processor_args)
+      processor.execute
+    end
     desc "Creates descriptive metadata update batch from folder of METS files"
     task :mets_folder => :environment do
       raise "Must specify folder path. Ex.: FOLDER=/path/to/METS/folder" unless ENV['FOLDER']

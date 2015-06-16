@@ -7,7 +7,7 @@ end
 
 def create_item_and_component opts={}
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, parent_id: collection.pid, descMetadata: {title: ["New Item"]}, content: {file: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
+  post :create, parent_id: collection.pid, descMetadata: {title: ["New Item"]}, content: {file: fixture_file_upload('imageA.tif', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
 end
 
 describe ItemsController, type: :controller, items: true do
@@ -75,7 +75,7 @@ describe ItemsController, type: :controller, items: true do
         end
         it "should store the original file name" do
           create_item_and_component
-          expect(assigns(:current_object).children.first.original_filename).to eq("image1.tiff")
+          expect(assigns(:current_object).children.first.original_filename).to eq("imageA.tif")
         end
         it "should grant edit permission to the user" do
           create_item_and_component

@@ -25,6 +25,9 @@
 # Environment configs
 /config/environments/*.rb
 
+# Ignore certain translation files
+/config/locales/admin_set.yml
+
 # SimpleCov / Coveralls
 /coverage
 

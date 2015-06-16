@@ -3,7 +3,7 @@ require 'support/shared_examples_for_repository_controllers'
 
 def create_component opts={}
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, parent_id: item.pid, content: {file: fixture_file_upload('image1.tiff', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
+  post :create, parent_id: item.pid, content: {file: fixture_file_upload('imageA.tif', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
 end
 
 describe ComponentsController, type: :controller, components: true do
@@ -60,7 +60,7 @@ describe ComponentsController, type: :controller, components: true do
       end
       it "should store the original file name" do
         create_component
-        expect(assigns(:current_object).original_filename).to eq("image1.tiff")
+        expect(assigns(:current_object).original_filename).to eq("imageA.tif")
       end
       it "should grant edit permission to the user" do
         create_component
