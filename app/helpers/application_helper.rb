@@ -36,12 +36,12 @@ module ApplicationHelper
   end
 
   def user_icon
-    image_tag("silk/user.png", size: "16x16", alt: "user")
+    content_tag :span, nil, class: "glyphicon glyphicon-user"
   end
 
   def group_icon(group = nil)
     case group
-    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
+    when Ddr::Auth::Groups::PUBLIC
       public_icon
     else
       image_tag("silk/group.png", size: "16x16", alt: "group")
@@ -50,17 +50,6 @@ module ApplicationHelper
 
   def public_icon
     content_tag :span, nil, class: "glyphicon glyphicon-globe"
-  end
-
-  def group_display_name(group)
-    case group
-    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC
-      "Public"
-    when Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED
-      "Duke Community"
-    else
-      group
-    end
   end
 
   def render_object_identifier
@@ -109,8 +98,8 @@ module ApplicationHelper
     render_label outcome.capitalize, label
   end
 
-  def render_content_type_and_size(document)
-    "#{document.content_mime_type} #{document.content_size_human}"
+  def render_content_type_and_size(doc_or_obj)
+    "#{doc_or_obj.content_type} #{doc_or_obj.content_size_human}"
   end
 
   def render_download_link(args = {})
@@ -148,45 +137,6 @@ module ApplicationHelper
       date = Time.parse(date) if !date.respond_to?(:localtime)
       date.localtime.to_s
     end
-  end
-
-  def render_permission_grantees(access)
-    grantees = {
-      users: current_object.send("#{access}_users"),
-      groups: current_object.send("#{access}_groups")
-    }
-    render partial: 'permission_grantees', locals: {grantees: grantees}
-  end
-
-  def render_inherited_permission_grantees(access)
-    grantees = {
-      users: current_object.send("inherited_#{access}_users"),
-      groups: current_object.send("inherited_#{access}_groups")
-    }
-    render partial: 'permission_grantees', locals: {grantees: grantees}
-  end
-
-  def render_default_permission_grantees(access)
-    grantees = {
-      users: current_object.send("default_#{access}_users"),
-      groups: current_object.send("default_#{access}_groups")
-    }
-    render partial: 'permission_grantees', locals: {grantees: grantees}
-  end
-
-  def render_inherited_entities(type, access)
-    if current_object.governable?
-      inherited_entities = current_object.send("inherited_#{access}_#{type}s")
-      render partial: 'inherited_permissions', locals: {inherited_entities: inherited_entities, type: type}
-    end
-  end
-
-  def render_inherited_groups(access)
-    render_inherited_entities("group", access)
-  end
-
-  def render_inherited_users(access)
-    render_inherited_entities("user", access)
   end
 
   def event_outcome_label(event)
@@ -238,28 +188,16 @@ module ApplicationHelper
     link_to "Cancel", return_to, opts
   end
 
-  def user_options_for_select(permission)
-    options_for_select all_user_options, selected_user_options(permission)
-  end
-
-  def group_options_for_select(permission)
-    options_for_select all_group_options, selected_group_options(permission)
-  end
-
   def all_user_options
     @all_user_options ||= user_options(User.order(:last_name, :first_name))
   end
 
-  def selected_user_options(permission)
-    users = case params[:action]
-            when "permissions" then current_object.send "#{permission}_users"
-            when "default_permissions" then current_object.send "default_#{permission}_users"
-            end
-    users.collect { |u| user_option_value(u) }
+  def group_options(groups)
+    groups.map { |group| group_option(group) }
   end
 
-  def group_options(groups)
-    groups.collect { |g| [group_option_text(g), group_option_value(g)] }
+  def group_option(group)
+    [group.label, group.to_s]
   end
 
   def all_group_options
@@ -267,46 +205,14 @@ module ApplicationHelper
     @all_group_options ||= group_options(Ddr::Auth::Groups.all)
   end
 
-  def selected_group_options(permission)
-    groups = case params[:action]
-             when "permissions" then current_object.send "#{permission}_groups"
-             when "default_permissions" then current_object.send "default_#{permission}_groups"
-             end
-    groups.collect { |g| group_option_value(g) }
-  end
-
-  def group_option_text(group)
-    group.label
-  end
-
-  def group_option_value(group)
-    "group:#{group}"
-  end
-
   def user_options(users)
-    users.collect { |u| [user_option_text(u), user_option_value(u)] }
+    users.map { |user| user_option(user) }
   end
 
-  def user_option_text(user)
-    user.display_name or user.user_key
-  end
-
-  def user_option_value(user_name)
-    "user:#{user_name}"
-  end
-
-  def inherited_permissions_alert
-    apo_link = link_to(current_object.admin_policy_id, collection_path(current_object.admin_policy_id))
-    alert = I18n.t('dul_hydra.permissions.alerts.inherited') % apo_link
-    alert.html_safe
-  end
-
-  def fixity_checkable?
-    current_object.respond_to? :fixity_checks
-  end
-
-  def virus_checkable?
-    current_object.respond_to? :virus_checks
+  def user_option(user)
+    option_text = user.display_name ? "#{user.display_name} (#{user})" : user.to_s
+    option_value = user.to_s
+    [option_text, option_value]
   end
 
   def desc_metadata_form_fields

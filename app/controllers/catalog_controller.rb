@@ -64,13 +64,13 @@ class CatalogController < ApplicationController
     config.add_index_field Ddr::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
     config.add_index_field Ddr::IndexFields::PERMANENT_ID, :label => 'Permanent ID'
     config.add_index_field 'id', :label => 'Fedora PID'
-    config.add_index_field Ddr::IndexFields::IDENTIFIER, :label => 'Identifier'
+    config.add_index_field Ddr::IndexFields::IDENTIFIER_ALL, :label => 'Identifier'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
     config.add_show_field Ddr::IndexFields::ACTIVE_FEDORA_MODEL, :label => 'Type'
     config.add_show_field 'id', :label => 'PID'
-    config.add_show_field Ddr::IndexFields::IDENTIFIER, :label => 'Identifier'
+    config.add_show_field Ddr::IndexFields::IDENTIFIER_ALL, :label => 'Identifier'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -115,7 +115,7 @@ class CatalogController < ApplicationController
 
     config.add_search_field('identifier') do |field|
       field.solr_local_parameters = {
-        :qf => Ddr::IndexFields::IDENTIFIER
+        :qf => Ddr::IndexFields::IDENTIFIER_ALL
       }
     end
 
@@ -137,7 +137,7 @@ class CatalogController < ApplicationController
     # except in the relevancy case).
     config.add_sort_field 'score desc', :label => 'Relevance', :default_for_user_query => true
     config.add_sort_field "#{Ddr::IndexFields::TITLE} asc", :label => 'Title', :default => true
-    config.add_sort_field "#{Ddr::IndexFields::IDENTIFIER} asc", :label => 'Identifier'
+    config.add_sort_field "#{Ddr::IndexFields::LOCAL_ID} asc", :label => 'Local ID'
 
     # If there are more than this many search results, no spelling ("did you
     # mean") suggestion is offered.

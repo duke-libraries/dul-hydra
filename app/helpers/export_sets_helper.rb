@@ -7,7 +7,7 @@ module ExportSetsHelper
   end
 
   def export_set_object_list
-    if@export_set.new_record?
+    if @export_set.new_record?
       @export_set.bookmarked_objects_for_export
     else
       @export_set.objects

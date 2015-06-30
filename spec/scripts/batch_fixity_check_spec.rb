@@ -30,7 +30,7 @@ module DulHydra
       end
       describe "the report" do
         let(:csv) { CSV.read(report.path, headers: true) }
-        let(:datastreams_with_content) { ["DC", "RELS-EXT", "descMetadata", "content", "thumbnail", "adminMetadata", "structMetadata"] }
+        let(:datastreams_with_content) { ["DC", "RELS-EXT", "descMetadata", "content", "thumbnail", "adminMetadata"] }
         before do
           @objects = FactoryGirl.create_list(:component, 5)
           bfc.execute
@@ -42,7 +42,7 @@ module DulHydra
           @objects.each do |obj|
             rows_for_object = csv.select {|row| row["PID"] == obj.pid}
             expect(rows_for_object.collect {|row| row["Datastream"]})
-              .to match_array(datastreams_with_content)
+              .to include(*datastreams_with_content)
           end
         end
         it "should have appropriate column values" do

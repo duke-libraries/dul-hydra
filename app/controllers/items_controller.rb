@@ -4,15 +4,13 @@ class ItemsController < ApplicationController
   include DulHydra::Controller::HasParentBehavior
   include DulHydra::Controller::HasChildrenBehavior
 
+  before_action :set_desc_metadata, only: :create
+
   def components
     get_children
   end
 
   protected
-
-  def create_params
-    params.require(:descMetadata).permit(title: [])
-  end
 
   def after_create_success
     return unless params[:content].present?
@@ -21,8 +19,8 @@ class ItemsController < ApplicationController
       # create the component
       child = Component.new(parent_id: current_object.pid)
       # set permissions on the component
-      child.set_initial_permissions current_user
-      child.copy_admin_policy_or_permissions_from current_object
+      child.grant_roles_to_creator(current_user)
+      child.copy_admin_policy_or_roles_from(current_object)
       # upload the file
       child.upload child_params[:file]
       if child.save

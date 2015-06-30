@@ -2,9 +2,6 @@ require 'zip/zip'
 
 class ExportSet < ActiveRecord::Base
 
-  include Hydra::AccessControlsEnforcement
-  include Hydra::PolicyAwareAccessControlsEnforcement
-
   belongs_to :user
   has_attached_file :archive
   do_not_validate_attachment_file_type :archive
@@ -62,7 +59,7 @@ class ExportSet < ActiveRecord::Base
   end
 
   def bookmarked_objects_for_export
-    @bookmarked_objects_for_export ||= get_objects_for_pids(self.user.bookmarks.pluck(:document_id))
+    @bookmarked_objects_for_export ||= get_objects_for_pids(user.bookmarks.pluck(:document_id))
   end
 
   def objects
@@ -172,10 +169,12 @@ class ExportSet < ActiveRecord::Base
     "export_set_#{Time.now.strftime('%Y%m%d%H%M%S')}.#{ext}"
   end
 
-  def get_objects_for_pids(pid_array)
-    return [] unless pid_array
-    query = ActiveFedora::SolrService.construct_query_for_pids(pid_array)
-    documents = ActiveFedora::SolrService.query(query, fq: gated_discovery_filters.join(" OR "))
+  def get_objects_for_pids(pids)
+    if pids.nil?
+      return []
+    end
+    query = ActiveFedora::SolrService.construct_query_for_pids(pids)
+    documents = ActiveFedora::SolrService.query(query, rows: pids.size)
     ActiveFedora::SolrService.reify_solr_results(documents, load_from_solr: true).select {|obj| can_export? obj}
   end
 

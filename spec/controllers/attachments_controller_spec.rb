@@ -1,13 +1,8 @@
 require 'spec_helper'
 
 def create_attachment opts={}
-  # checksum = "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18"
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
   post :create, attached_to_id: attach_to.pid, content: {file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum, checksum_type: checksum_type}, descMetadata: {title: ["New Attachment"]}
-end
-
-def new_attachment
-  get :new, attached_to_id: FactoryGirl.create(:collection).pid
 end
 
 describe AttachmentsController, type: :controller, attachments: true do
@@ -19,8 +14,7 @@ describe AttachmentsController, type: :controller, attachments: true do
     let(:attach_to) { FactoryGirl.create(:collection) }
     let(:create_object) do
       Proc.new do
-        attach_to.edit_users = [user.user_key]
-        attach_to.save
+        controller.current_ability.can(:add_attachment, attach_to)
         create_attachment
       end
     end
@@ -36,10 +30,7 @@ describe AttachmentsController, type: :controller, attachments: true do
     # see shared examples
     describe "when user cannot add attachments to object" do
       let(:attach_to) { FactoryGirl.create(:collection) }
-      before do
-        controller.current_ability.can(:create, Attachment)
-        controller.current_ability.cannot(:add_attachment, attach_to)
-      end
+      before { controller.current_ability.cannot(:add_attachment, attach_to) }
       it "should be unauthorized" do
         get :new, attached_to_id: attach_to.pid
         expect(response.response_code).to eq(403)
@@ -50,56 +41,41 @@ describe AttachmentsController, type: :controller, attachments: true do
   describe "#create" do
     # see shared examples
     let(:attach_to) { FactoryGirl.create(:collection) }
-    describe "when the user can create attachments" do
-      before { controller.current_ability.can(:create, Attachment) }
-      describe "when user can add attachments to object" do
-        before { controller.current_ability.can(:add_attachment, attach_to) }
-        it "should create a new object" do
-          expect{ create_attachment }.to change{ Attachment.count }.by(1)
+    describe "when user can add attachments to object" do
+      before { controller.current_ability.can(:add_attachment, attach_to) }
+      it "should create a new object" do
+        expect{ create_attachment }.to change{ Attachment.count }.by(1)
+      end
+      it "should have content" do
+        create_attachment
+        expect(assigns(:current_object)).to have_content
+      end
+      it "should correctly set the MIME type" do
+        create_attachment
+        expect(assigns(:current_object).content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+      end
+      it "should store the original file name" do
+        create_attachment
+        expect(assigns(:current_object).original_filename).to eq("sample.docx")
+      end
+      it "should be attached to the object" do
+        create_attachment
+        expect(assigns(:current_object).attached_to).to eq(attach_to)
+      end
+      context "and attached_to object is governed by a collection" do
+        let(:collection) { FactoryGirl.create(:collection) }
+        before do
+          attach_to.admin_policy = collection
+          attach_to.save
         end
-        it "should have content" do
+        it "should apply the admin policy to the attachment" do
           create_attachment
-          expect(assigns(:current_object)).to have_content
+          expect(assigns(:current_object).admin_policy).to eq(collection)
         end
-        it "should correctly set the MIME type" do
-          create_attachment
-          expect(assigns(:current_object).content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-        end
-        it "should store the original file name" do
-          create_attachment
-          expect(assigns(:current_object).original_filename).to eq("sample.docx")
-        end
-        it "should be attached to the object" do
-          create_attachment
-          expect(assigns(:current_object).attached_to).to eq(attach_to)
-        end
-        it "should copy the object's permissions to the attachment"
-        context "and attached_to object is governed by a collection" do
-          let(:collection) { FactoryGirl.create(:collection) }
-          before do
-            attach_to.admin_policy = collection
-            attach_to.save
-          end
-          it "should apply the admin policy to the attachment" do
-            create_attachment
-            expect(assigns(:current_object).admin_policy).to eq(collection)
-          end
-          it "should not copy the permissions of the attached_to object"
-        end
-        it "should validate the checksum when provided" do
-          expect(controller).to receive(:validate_checksum)
-          create_attachment(checksum: "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18", checksum_type: "SHA-256")
-        end
-        context "and the checksum doesn't match" do
-          it "should not create a new object" do
-            pending("Resolution of https://github.com/duke-libraries/ddr-models/issues/204")
-            expect{ create_attachment(checksum: "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1") }.not_to change{ Attachment.count }
-          end
-          it "should not create an event" do
-            pending("Resolution of https://github.com/duke-libraries/ddr-models/issues/204")
-            expect{ create_attachment(checksum: "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1") }.not_to change{ Ddr::Events::CreationEvent.count }
-          end
-        end
+      end
+      it "should validate the checksum when provided" do
+        expect(controller).to receive(:validate_checksum)
+        create_attachment(checksum: "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18", checksum_type: "SHA-256")
       end
     end
     describe "user cannot add attachments to object" do

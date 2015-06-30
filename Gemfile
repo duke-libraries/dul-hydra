@@ -3,7 +3,9 @@ source 'http://rubygems.org'
 gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
 gem 'ddr-alerts', '~> 1.0.0'
-gem 'ddr-models', '~> 1.16.1'
+
+gem 'ddr-models', '2.0.0.pre.1'
+
 gem 'rubydora', '>= 1.8.1'
 gem 'devise'
 gem 'deprecation'
@@ -30,18 +32,17 @@ gem 'rubytree'
 
 group :development, :test do
   gem 'sqlite3'
-  gem 'rspec-rails', '~> 3.0.0'
-  gem 'capybara', '~> 2.0'
   gem 'jettywrapper', '~> 1.8'
-  gem 'factory_girl_rails', '~> 4.4'
-  gem 'orderly'
-  gem 'launchy'
-  gem 'database_cleaner'
 end
 
 group :test do
+  gem 'orderly'
+  gem 'capybara', '~> 2.0'
+  gem 'rspec-rails', '~> 3.0.0'
+  gem 'rspec-its'
   gem 'equivalent-xml'
-  gem "coveralls", require: false
+  gem 'database_cleaner'
+  gem 'factory_girl_rails', '~> 4.4'
 end
 
 group :production do

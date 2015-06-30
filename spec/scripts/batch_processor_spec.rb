@@ -145,8 +145,7 @@ module DulHydra::Batch::Scripts
       end
       let(:bp) { DulHydra::Batch::Scripts::BatchProcessor.new(batch, bp_user, log_dir: log_dir) }
       before do
-        repo_object.edit_users = [ batch.user.user_key ]
-        repo_object.save
+        batch.user.can :edit, repo_object
       end
       context "successful update" do
         before { bp.execute }
