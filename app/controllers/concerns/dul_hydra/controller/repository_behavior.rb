@@ -17,7 +17,7 @@ module DulHydra
         include Blacklight::Base
         include DulHydra::Controller::TabbedViewBehavior
 
-        self.tabs = [ :tab_descriptive_metadata, :tab_roles ]
+        self.tabs = [ :tab_descriptive_metadata, :tab_admin_metadata, :tab_roles ]
 
         helper_method :current_object
         helper_method :current_document
@@ -82,7 +82,34 @@ module DulHydra
         @event = Ddr::Events::Event.find(params[:event_id])
       end
 
+      def admin_metadata
+        if request.patch?
+          current_object.attributes = admin_metadata_params
+          changes = current_object.changes
+          if changes.present?
+            if current_object.save
+              notify_update(
+                summary: "Administrative metadata updated",
+                detail: "Changed attributes:\n\n#{changes}"
+              )
+              flash[:success] = "Administrative metadata successfully updated."
+              redirect_to(action: "show", tab: "admin_metadata") and return
+            end
+          else
+            flash.now[:error] = "Administrative metadata not updated, as no values were changed.".html_safe
+          end
+        end
+      end
+
       protected
+
+      def admin_metadata_params
+        params.require(:adminMetadata).tap do |p|
+          p.select  { |k, v| v == "" }.each { |k, v| p[k] = nil }
+          p.reject! { |k, v| current_object.send(k) == v }
+          p.permit!
+        end
+      end
 
       def after_load_before_authorize
         # no-op - override
@@ -137,24 +164,34 @@ module DulHydra
       def tab_descriptive_metadata
         Tab.new("descriptive_metadata",
                 actions: [
-                          TabAction.new("edit",
-                                        url_for(action: "edit"),
-                                        can?(:edit, current_object)),
-                          TabAction.new("download",
-                                        download_path(current_object, "descMetadata"),
-                                        show_ds_download_link?(current_object.descMetadata))
-                         ]
-                )
+                  TabAction.new("edit",
+                                url_for(action: "edit"),
+                                can?(:edit, current_object)),
+                  TabAction.new("download",
+                                download_path(current_object, "descMetadata"),
+                                show_ds_download_link?(current_object.descMetadata))
+                ]
+               )
       end
 
       def tab_roles
         Tab.new("roles",
                 actions: [
-                          TabAction.new("edit",
-                                        url_for(action: "roles"),
-                                        can?(:grant, current_object)),
-                         ]
-                )
+                  TabAction.new("edit",
+                                url_for(action: "roles"),
+                                can?(:grant, current_object)),
+                ]
+               )
+      end
+
+      def tab_admin_metadata
+        Tab.new("admin_metadata",
+                actions: [
+                  TabAction.new("edit",
+                                url_for(action: "admin_metadata"),
+                                can?(:admin_metadata, current_object)),
+                ]
+               )
       end
 
       def submitted_roles
@@ -179,7 +216,6 @@ module DulHydra
       def event_params
         params.permit(:comment)
       end
-
 
     end
   end

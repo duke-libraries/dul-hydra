@@ -1,9 +1,0 @@
-<% if current_object.default_permissions.empty? %>
-  <p class="alert alert-danger">
-	This policy has no default permissions.
-  </p>
-<% else %>
-  <p class="alert">
-    <%= t('dul_hydra.permissions.alerts.default_permissions').html_safe %>
-  </p>
-<% end %>

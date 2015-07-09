@@ -22,6 +22,10 @@ shared_examples "a repository object router" do
     expect(get: "/#{controller}/duke:1/roles").to route_to(controller: controller, action: "roles", id: "duke:1")
     expect(patch: "/#{controller}/duke:1/roles").to route_to(controller: controller, action: "roles", id: "duke:1")
   end
+  it "should have an administrative metadata route" do
+    expect(get: "/#{controller}/duke:1/admin_metadata").to route_to(controller: controller, action: "admin_metadata", id: "duke:1")
+    expect(patch: "/#{controller}/duke:1/admin_metadata").to route_to(controller: controller, action: "admin_metadata", id: "duke:1")
+  end
   it "should have an events route" do
     expect(get: "/#{controller}/duke:1/events").to route_to(controller: controller, action: "events", id: "duke:1")
   end

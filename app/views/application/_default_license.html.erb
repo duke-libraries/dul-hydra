@@ -1,8 +1,0 @@
-<h4>Default License</h4>
-<% if current_object.default_license %>
-  <%= render partial: 'license_info', locals: {license: current_object.default_license} %>
-<% else %>
-  <p class="alert">
-	This policy has no default license information.
-  </p>
-<% end %>
