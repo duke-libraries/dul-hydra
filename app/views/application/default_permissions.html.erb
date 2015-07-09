@@ -1,8 +1,0 @@
-<% content_for :page_heading do %>
-  Modify Default Permissions
-<% end %>
-
-<p class="alert">
-  <%= t('dul_hydra.permissions.alerts.default_permissions').html_safe %>
-</p>
-<%= render partial: 'rights_form', locals: {license: current_object.default_license} %>

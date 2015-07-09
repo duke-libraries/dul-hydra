@@ -127,6 +127,10 @@ en:
         label: Roles
         actions:
           edit: Modify
+      admin_metadata:
+        label: Admin Metadata
+        actions:
+          edit: Edit
       permissions:
         label: Permissions
         actions:

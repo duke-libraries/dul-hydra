@@ -40,14 +40,15 @@ DulHydra::Application.routes.draw do
     patch 'roles'
   end
 
-  def policy_routes
-    get 'default_permissions'
-    patch 'default_permissions'
+  def amd_routes
+    get 'admin_metadata'
+    patch 'admin_metadata'
   end
 
   def repository_routes
     event_routes
     roles_routes
+    amd_routes
   end
 
   def repository_contraints
@@ -84,7 +85,6 @@ DulHydra::Application.routes.draw do
     get 'items'
     get 'attachments'
     get 'targets'
-    policy_routes
   end
   repository_resource :items do
     get 'components'

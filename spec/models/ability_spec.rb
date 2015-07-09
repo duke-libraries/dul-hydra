@@ -15,6 +15,9 @@ describe Ability, type: :model, abilities: true do
     it "should alias actions to :grant" do
       expect(subject.aliased_actions[:grant]).to include(:roles)
     end
+    it "should alias actions to :update" do
+      expect(subject.aliased_actions[:update]).to include(:admin_metadata)
+    end
   end
 
   describe "Batch permissions" do

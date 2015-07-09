@@ -14,6 +14,10 @@ def update_metadata
   put :update, id: object, descMetadata: {title: ["Updated"]}, comment: "Just for fun!"
 end
 
+def update_admin_metadata
+  patch :admin_metadata, id: object, adminMetadata: {local_id: "foobar"}, comment: "This is serious!"
+end
+
 shared_examples "a repository object controller" do
 
   it "should add access controls to solr params" do
@@ -131,6 +135,72 @@ shared_examples "a repository object controller" do
       it "should be unauthorized" do
         get :show, id: object
         expect(response.response_code).to eq(403)
+      end
+    end
+  end
+
+  describe "#roles" do
+    let(:object) { FactoryGirl.create(object_symbol) }
+    context "when the user can grant roles" do
+      before { controller.current_ability.can(:grant, object) }
+      it "should render the roles template" do
+        expect(get :roles, id: object).to render_template(:roles)
+      end
+    end
+    context "when the user cannot grant roles" do
+      before { controller.current_ability.cannot(:grant, object) }
+      it "should be unauthorized" do
+        get :roles, id: object
+        expect(response.response_code).to eq(403)
+      end
+    end
+  end
+
+  describe "#admin_metadata" do
+    let(:object) { FactoryGirl.create(object_symbol) }
+    describe "GET" do
+      context "when the user can update admin metadata" do
+        before { controller.current_ability.can(:admin_metadata, object) }
+        it "should render the admin_metadata template" do
+          expect(get :admin_metadata, id: object).to render_template(:admin_metadata)
+        end
+      end
+      context "when the user cannot update admin metadata" do
+        before { controller.current_ability.cannot(:admin_metadata, object) }
+        it "should be unauthorized" do
+          get :admin_metadata, id: object
+          expect(response.response_code).to eq(403)
+        end
+      end
+    end
+    describe "PATCH" do
+      context "when the user can update admin metadata" do
+        before { controller.current_ability.can(:admin_metadata, object) }
+        it "should redirect to the admin metadata tab of the show page" do
+          update_admin_metadata
+          expect(response).to redirect_to(action: "show", id: object, tab: "admin_metadata")
+        end
+        it "should update the object" do
+          expect{ update_admin_metadata; object.reload }.to change { object.adminMetadata }
+        end
+        it "should create an update event" do
+          expect{ update_admin_metadata }.to change { object.update_events.count }.by(1)
+        end
+        it "should record the comment in the update event" do
+          update_admin_metadata
+          expect(object.update_events.last.comment).to eq "This is serious!"
+        end
+        it "should add an action-specific summary to the event" do
+          update_admin_metadata
+          expect(object.update_events.last.summary).to eq "Administrative metadata updated"
+        end
+      end
+      context "when the user cannot update admin metadata" do
+        before { controller.current_ability.cannot(:admin_metadata, object) }
+        it "should be unauthorized" do
+          update_admin_metadata
+          expect(response.response_code).to eq(403)
+        end
       end
     end
   end
