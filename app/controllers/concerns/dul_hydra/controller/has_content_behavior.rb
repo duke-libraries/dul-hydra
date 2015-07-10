@@ -10,12 +10,17 @@ module DulHydra
 
       def upload
         if request.patch?
-          upload_content
-          if current_object.save
-            notify_upload
-            validate_checksum
-            flash[:success] = I18n.t('dul_hydra.upload.alerts.success')
-            redirect_to(action: "show") and return
+          begin
+            upload_content
+          rescue ActionController::ParameterMissing => e
+            flash.now[:error] = ( e.param == :file ? "File is required." : e.to_s )
+          else
+            if current_object.save
+              notify_upload
+              validate_checksum
+              flash[:success] = I18n.t('dul_hydra.upload.alerts.success')
+              redirect_to(action: "show") and return
+            end
           end
         end
       end
@@ -42,11 +47,10 @@ module DulHydra
       end
 
       def content_params
-        return @content_params if @content_params
-        @content_params = params.require(:content)
-        @content_params.require(:file)
-        @content_params.permit(:checksum, :checksum_type)
-        @content_params
+        @content_params ||= params.require(:content).tap do |p|
+          p.require(:file)
+          p.permit(:checksum, :checksum_type)
+        end
       end
 
       def checksum_params
