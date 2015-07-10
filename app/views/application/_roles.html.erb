@@ -1,6 +1,6 @@
 <%= render partial: 'tab_actions', locals: {tab: tab} %>
 
-<table class="table table-condensed roles">
+<table class="table roles">
   <thead>
     <tr>
       <th scope="col" class="type">Role Type</th>
@@ -29,3 +29,5 @@
   </tbody>
   <% end %>
 </table>
+
+<%= render "docs/roles_modal" %>
