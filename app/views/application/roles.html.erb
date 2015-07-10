@@ -1,7 +1,5 @@
 <% content_for :head do %>
   <%= javascript_include_tag "jquery.validate.min.js" %>
-  <%= javascript_include_tag "bootstrap/tooltip.js" %>
-  <%= javascript_include_tag "bootstrap/popover.js" %>
   <%= javascript_include_tag "select2.min.js" %>
   <%= stylesheet_link_tag "select2.min.css" %>
   <style type="text/css">
@@ -45,16 +43,15 @@
 	    </select>
 	  </div>
 	  <div class="form-group">
-	    <label for="role_type">Role Type</label>
+	    <label for="role_type" style="display: block">Role Type</label>
+	    <small class="help-block">Each role type conveys the permissions listed next to it</small>
 	    <% Ddr::Auth::Roles.role_types.each_with_index do |role_type, i| %>
 	    <div class="radio">
 	      <label>
 		<%= radio_button_tag "role_type", role_type, false, required: true %> 
 		<%= role_type %>
 	      </label>
-	      <%= content_tag :a, "tabindex"=>"#{100+i}", "role"=>"button", "data-toggle"=>"popover", "data-placement"=>"right", "data-content"=>role_type.description, "data-trigger"=>"focus", "title"=>role_type do %>
-	        <span class="glyphicon glyphicon-question-sign"></span>
-	      <% end %>
+	      <span class="text-muted">&mdash; <%= role_type.permissions.join(", ") %></span>
 	    </div>
 	    <% end %>
 	  </div>
@@ -65,19 +62,20 @@
 		<%= radio_button_tag "scope", "resource", true, required: true %> 
 		resource
 	      </label>
-	      <%= content_tag :a, "tabindex"=>"200", "role"=>"button", "data-toggle"=>"popover", "data-placement"=>"right", "data-content"=>"The role is scoped to the resource on which it is granted.", "data-trigger"=>"focus", "title"=>"Resource Scope" do %>
-	        <span class="glyphicon glyphicon-question-sign"></span>
-	      <% end %>
+	      <span class="text-muted">&mdash; applies to this resource only</span>
 	    </div>
 	    <div class="radio">
 	      <label>
 		<%= radio_button_tag "scope", "policy", false, disabled: !current_object.is_a?(Collection), required: true %> 
-		policy 
-		<% unless current_object.is_a?(Collection) %>(not applicable)<% end %>
+		policy
 	      </label>
-	      <%= content_tag :a, "tabindex"=>"201", "role"=>"button", "class"=>"role-type", "data-toggle"=>"popover", "data-placement"=>"right", "data-content"=>"The role is scoped to the resources governed by the resource on which it is granted.", "data-trigger"=>"focus", "title"=>"Policy Scope" do %>
-	        <span class="glyphicon glyphicon-question-sign"></span>
-	      <% end %>
+	      <span class="text-muted">
+		<% if current_object.is_a?(Collection) %>
+		&mdash; inherited by resources governed by this collection
+		<% else %>
+		(not applicable)		
+		<% end %>
+	      </span>	      
 	    </div>
 	  </div>
 	</div>
@@ -282,17 +280,12 @@
   function initNavAwayHook() {
     $(window).on("beforeunload", changesAlertHandler);
   } 
-
-  function initPopovers() {
-    $("[data-toggle='popover']").popover();
-  }
  
   $(function() {
     initRoles();
     initRevokeButtons();
     initRolesForm();
     initGrantRoleForm();
-    initPopovers();
     initNavAwayHook();
   });
 </script>
