@@ -21,7 +21,7 @@ gem 'nest', '1.1.2'
 gem 'therubyracer', '~> 0.11.3', require: 'v8', group: :production
 
 # For mapping file extensions to MIME types
-gem 'mime-types', '~> 1.19'
+gem 'mime-types', '~> 2.6'
 
 # Export sets
 gem 'rubyzip', '< 1.0.0'
