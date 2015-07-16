@@ -48,31 +48,8 @@ RSpec.describe Filesystem, type: :model, batch: true, simple_ingest: true do
     end
     context 'method not missing' do
       it 'should not send the method to the inner tree' do
-        expect(filesystem.tree).to_not receive(:simple_ingest_filesystem?)
-        filesystem.simple_ingest_filesystem?
-      end
-    end
-  end
-
-  describe '#simple_ingest_filesystem?' do
-    context 'is simple ingest filesystem' do
-      before { filesystem.tree = filesystem_simple_ingest }
-      it "should be true" do
-        expect(filesystem.simple_ingest_filesystem?).to be true
-      end
-    end
-    context 'is not simple ingest filesystem' do
-      context 'too shallow' do
-        before { filesystem.tree = sample_filesystem }
-        it "should be false" do
-          expect(filesystem.simple_ingest_filesystem?).to be false        
-        end
-      end
-      context 'too deep' do
-        before { filesystem.tree = filesystem_three_deep }
-        it "should be false" do
-          expect(filesystem.simple_ingest_filesystem?).to be false        
-        end
+        expect(filesystem.tree).to_not receive(:file_count)
+        filesystem.file_count
       end
     end
   end

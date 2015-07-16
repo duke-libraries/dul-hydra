@@ -65,6 +65,12 @@ FactoryGirl.define do
     end
   end
 
+  trait :with_clear_desc_metadata_attribute do
+    after(:create) do |batch_object|
+      FactoryGirl.create(:batch_object_clear_desc_metadata_attribute, batch_object: batch_object)
+    end
+  end
+
   trait :with_clear_all_desc_metadata do
     after(:create) do |batch_object|
       FactoryGirl.create(:batch_object_clear_all_desc_metadata, batch_object: batch_object)
@@ -114,6 +120,11 @@ FactoryGirl.define do
     factory :basic_update_batch_object do
       has_model
       with_add_desc_metadata_attributes
+    end
+
+    factory :basic_update_clear_attribute_batch_object do
+      has_model
+      with_clear_desc_metadata_attribute
     end
 
     factory :basic_clear_all_and_add_batch_object do

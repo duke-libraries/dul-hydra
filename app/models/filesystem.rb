@@ -24,8 +24,10 @@ class Filesystem
     path_to_node(node, 'relative')
   end
 
-  def simple_ingest_filesystem?
-    !tree.each_leaf.any? { |leaf| leaf.node_depth != 2 }
+  def file_count
+    count = 0
+    each_leaf { |leaf| count += 1 }
+    count
   end
 
 end

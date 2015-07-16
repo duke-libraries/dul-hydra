@@ -64,6 +64,8 @@ module DulHydra::Batch::Models
           repo_object = case
           when a.operation.eql?(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
             add_attribute(repo_object, a)
+          when a.operation.eql?(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR)
+            clear_attribute(repo_object, a)
           when a.operation.eql?(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL)
             clear_attributes(repo_object, a)
           end
@@ -78,7 +80,7 @@ module DulHydra::Batch::Models
           repo_object.notify_event(:update, user: user, comment: event_log_comment)
         end
       rescue Exception => e
-        logger.error("Error in updating repository object #{repo_object.pid} for #{identifier} : : #{e}")
+        logger.error("Error in updating repository object #{pid} for #{identifier} : : #{e}")
         if batch.present?
           batch.status = DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE
           batch.save

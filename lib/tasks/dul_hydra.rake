@@ -59,49 +59,17 @@ namespace :dul_hydra do
       processor = DulHydra::Batch::Scripts::ProcessSimpleIngest.new(processor_args)
       processor.execute
     end
-    desc "Creates descriptive metadata update batch from folder of METS files"
+    desc "Creates update batch from folder of METS files"
     task :mets_folder => :environment do
       raise "Must specify folder path. Ex.: FOLDER=/path/to/METS/folder" unless ENV['FOLDER']
-      operator_key = "#{ENV['USER']}@duke.edu"
-      operator = User.find_by_user_key(operator_key)
-      batch_user = ENV['BATCH_USER'].present? ? User.find_by_user_key(ENV['BATCH_USER']) : operator
-      unless batch_user.present?
-        raise "Unable to find batch user: #{ENV['BATCH_USER'].present? ? ENV['BATCH_USER'] : operator_key}"
-      end
-      args = {
-        folder: ENV['FOLDER'],
-        batch_user: batch_user,
-        collection: ENV['COLLECTION']
-      }
-      script = DulHydra::Batch::Scripts::MetadataFolderProcessor.new(args)
-      script.scan
-      options = {}
-      options['p'] = "Create pending batch"
-      options['s'] = "Create batch and submit for processing" if operator.present?
-      options['x'] = "Cancel operation"
-      options.each { |k, v| STDOUT.puts "#{k} - #{v}" }
-      input = ""
-      while true do
-        STDOUT.print "Enter #{options.keys.join(', ')} : "
-        input = STDIN.gets.strip
-        unless options.include?(input.downcase)
-          next
-        end
-        case input.downcase
-        when "p"
-          batch = script.create_batch
-          STDOUT.puts "Created pending batch #{batch.id} for user #{args[:user]}"
-        when "s"
-          STDOUT.puts "Creating batch and submitting for processing"
-          batch = script.create_batch
-          STDOUT.puts "Created batch #{batch.id} for user #{args[:user]}"
-          Resque.enqueue(DulHydra::Batch::Jobs::BatchProcessorJob, batch.id, operator.id)
-          STDOUT.puts "Submitted batch #{batch.id} for processing"
-        when "x"
-          STDOUT.puts "Cancelling operation"
-        end
-        break
-      end
+      raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
+      raise "Must specify collection PID.  Ex: COLLECTION_PID=duke:72" unless ENV['COLLECTION_PID']
+      processor_args = { folder: ENV['FOLDER'] }
+      processor_args[:batch_user] = ENV['BATCH_USER']
+      processor_args[:collection_pid] = ENV['COLLECTION_PID']
+      processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
+      processor = DulHydra::Batch::Scripts::ProcessMETSFolder.new(processor_args)
+      processor.execute
     end
     desc "Converts CSV file to one or more XML files"
     task :csv_to_xml => :environment do

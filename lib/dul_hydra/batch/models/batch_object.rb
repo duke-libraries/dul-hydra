@@ -233,6 +233,11 @@ Model: %{model}
       return repo_object
     end
 
+    def clear_attribute(repo_object, attribute)
+      repo_object.datastreams[attribute.datastream].set_values(attribute.name, nil)
+      return repo_object
+    end
+
     def clear_attributes(repo_object, attribute)
       repo_object.datastreams[attribute.datastream].class.term_names.each do |term|
         repo_object.datastreams[attribute.datastream].set_values(term, nil) if repo_object.datastreams[attribute.datastream].values(term)
