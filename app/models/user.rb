@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
 
-  # include Blacklight::User
+  include Blacklight::User
   include Ddr::Auth::User
 
   has_many :batches, :inverse_of => :user, :class_name => DulHydra::Batch::Models::Batch
