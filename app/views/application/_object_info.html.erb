@@ -1,55 +1,55 @@
 <ul class="list-group" id="object-info">
 
   <li class="list-group-item active">
-    Object Info
+    <%= t("dul_hydra.object_info.header") %>
   </li>
 
   <% if current_object.permanent_id %>
     <li class="list-group-item">
       <strong class="pull-right"><%= current_object.permanent_id %></strong>
-      Permanent ID
+      <%= t("dul_hydra.object_info.permanent_id.assigned") %>
     </li>
   <% else %>
     <li class="list-group-item list-group-item-warning">
-      Permanent ID Not Assigned
+      <%= t("dul_hydra.object_info.permanent_id.not_assigned") %>
     </li>
   <% end %>
 
   <% if current_object.published? %>
     <li class="list-group-item list-group-item-info">
-      Published
+      <%= t("dul_hydra.object_info.published") %>
     </li>
   <% else %>
     <li class="list-group-item list-group-item-warning">
-      Not Published
+      <%= t("dul_hydra.object_info.not_published") %>
     </li>
   <% end %>
 
 <% if current_object.can_have_content? %>
   <li class="list-group-item list-group-item-#{original_filename_info[:context]}">
     <span class="pull-right"><%= original_filename_info[:value] %></span>
-    Original Filename
+    <%= t("dul_hydra.object_info.original_filename") %>
   </li>
 <% end %>
 
   <li class="list-group-item">
     <span class="pull-right"><%= format_date current_object.create_date %></span>
-    Created
+    <%= t("dul_hydra.object_info.create_date") %>
   </li>
 
   <li class="list-group-item">
     <span class="pull-right"><%= format_date current_object.modified_date %></span>
-    Modified
+    <%= t("dul_hydra.object_info.modified_date") %>
   </li>
 
   <% if last_fixity_check = current_object.last_fixity_check %>
     <li class="list-group-item list-group-item-<%= last_fixity_check.success? ? 'success' : 'danger' %>">
       <span class="pull-right"><%= format_date last_fixity_check.event_date_time %></span>
-      Fixity Checked
+      <%= t("dul_hydra.object_info.fixity.checked") %>
     </li>
   <% else %>
     <li class="list-group-item list-group-item-warning">
-      Not Fixity Checked
+      <%= t("dul_hydra.object_info.fixity.not_checked") %>
     </li>
   <% end %>
 
@@ -57,11 +57,11 @@
   <% if last_virus_check = current_object.last_virus_check %>
     <li class="list-group-item list-group-item-<%= last_virus_check.success? ? 'success' : 'danger' %>">
       <span class="pull-right"><%= format_date last_virus_check.event_date_time %></span>
-      Virus Scanned
+      <%= t("dul_hydra.object_info.virus.scanned") %>
     </li>
   <% else %>
     <li class="list-group-item list-group-item-warning">
-      Not Virus Scanned
+      <%= t("dul_hydra.object_info.virus.not_scanned") %>
     </li>
   <% end %>
 <% end %>

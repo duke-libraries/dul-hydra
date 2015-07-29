@@ -3,6 +3,22 @@ en:
     errors:
       multiple_object_matches: "%{criteria} retrieved multiple repository objects"
   dul_hydra:
+    object_info:
+      header: "Object Info"
+      create_date: Ingested
+      modified_date: Modified
+      fixity:
+        checked: "Fixity Checked"
+        not_checked: "Not Fixity Checked"
+      published: Published
+      not_published: "Not Published"
+      original_filename: "Original Filename"
+      virus:
+        scanned: "Virus Scanned"
+        not_scanned: "Not Virus Scanned"
+      permanent_id:
+        assigned: "Permanent ID"
+        not_assigned: "Permanent ID Not Assigned"
     ingest_folder:
       new_menu: "Folder Ingest"
     metadata_file:
