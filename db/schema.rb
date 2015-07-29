@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150608172238) do
+ActiveRecord::Schema.define(version: 20150729205548) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
@@ -111,7 +111,7 @@ ActiveRecord::Schema.define(version: 20150608172238) do
     t.string   "summary"
     t.string   "outcome"
     t.text     "detail"
-    t.string   "exception"
+    t.text     "exception",       limit: 65535
     t.string   "user_key"
   end
 
