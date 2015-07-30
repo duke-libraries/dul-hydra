@@ -3,6 +3,9 @@ en:
     errors:
       multiple_object_matches: "%{criteria} retrieved multiple repository objects"
   dul_hydra:
+    techmd:
+      file_human_size: "File Size"
+      pronom_identifier: "PRONOM Identifier"
     object_info:
       header: "Object Info"
       create_date: Ingested
@@ -19,6 +22,7 @@ en:
       permanent_id:
         assigned: "Permanent ID"
         not_assigned: "Permanent ID Not Assigned"
+      versions: Versions
     ingest_folder:
       new_menu: "Folder Ingest"
     metadata_file:
@@ -113,25 +117,13 @@ en:
         changed: "Policy successfully changed." 
       page_titles:
         edit: 'Editing Admin Policy'
-    permissions:
-      page_titles:
-        edit_default_permissions: "Modify Default Permissions"
-        edit: "Modify Permissions"
-      alerts:
-        inherited: 'This object is governed by the Collection %s. Permissions granted on this page are <strong>added to</strong> the inherited permissions (if any) shown below the select boxes.'
-        default_permissions: "These settings are <strong>inherited</strong> by objects governed by this collection."
-        permissions_will_change: "The permissions will be overwritten with your selections."
-        default_permissions_will_change: "The default permissions will be overwritten with your selections and be applied to all objects governed by this collection."
-      descriptions:
-        discover: 'Find object via search and view summary data'
-        read: 'View object and download content (includes Discover)'
-        edit: 'Modify object (includes Discover + Read)'
-    rights:
-        alerts:
-            changed: "Rights successfully changed."
     tabs:
-      content_info: 
-        label: "Content Info"
+      tech_metadata: 
+        label: "Tech Metadata"
+        actions:
+          download: "Download File"
+          upload: "Upload New Version"
+          fits_xml: "FITS XML"
       descriptive_metadata:
         label: "Descriptive Metadata"
         actions:
@@ -147,18 +139,6 @@ en:
         label: Admin Metadata
         actions:
           edit: Edit
-      permissions:
-        label: Permissions
-        actions:
-          edit: Modify
-          download: "Download XML"
-        alerts:
-          has_admin_policy: "This object is governed by the Collection %s. Permissions inherited from the collection are shown below."
-      default_permissions:
-        label: "Default Permissions"
-        actions:
-          edit: Modify
-          download: "Download XML"
       collection_info:
         label: "Collection Info"
         actions:
