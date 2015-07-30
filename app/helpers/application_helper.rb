@@ -60,6 +60,10 @@ module ApplicationHelper
     end
   end
 
+  def object_info_item(value: nil, label:, status: nil)
+    render partial: "object_info_item", locals: {value: value, label: label, status: status}
+  end
+
   def render_tab(tab)
     content_tag :li do
       link_to(tab.label, "##{tab.css_id}", "data-toggle" => "tab")
@@ -134,7 +138,7 @@ module ApplicationHelper
 
   def format_date(date)
     if date
-      date = Time.parse(date) if !date.respond_to?(:localtime)
+      date = Time.parse(date.to_s) if !date.respond_to?(:localtime)
       date.localtime.to_s
     end
   end

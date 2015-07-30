@@ -3,6 +3,27 @@ module DulHydra
     extend ActiveSupport::Concern
 
     included do
+      # Technical metadata fields to display on the show page
+      # of a content object.
+      # See Ddr::Managers::TechnicalMetadataManager.
+      mattr_accessor :tech_metadata_fields do
+        [ :format_label,
+          :format_version,
+          :media_type,
+          :pronom_identifier,
+          :creating_application,
+          :valid,
+          :well_formed,
+          :file_human_size,
+          :image_width,
+          :image_height,
+          :color_space,
+          :created,
+          :last_modified,
+          :checksum_digest,
+          :checksum_value,
+        ]
+      end
 
       # Columns in the CSV report generated for a collection
       # Each column represents a *method* of a SolrDocument

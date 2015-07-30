@@ -18,6 +18,12 @@ DatabaseCleaner.strategy = :truncation
 Ddr::Antivirus.scanner_adapter = :null
 Ddr::Antivirus.logger = Logger.new(File::NULL)
 
+# XXX Hack to bypass file characterization
+# See https://github.com/duke-libraries/ddr-models/issues/315
+Ddr::Jobs::FitsFileCharacterization.class_eval do
+  def self.perform(pid); end
+end
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
