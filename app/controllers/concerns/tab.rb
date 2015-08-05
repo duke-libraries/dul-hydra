@@ -22,7 +22,7 @@ class Tab
   end
 
   def label
-    I18n.t("dul_hydra.tabs.#{id}.label")
+    I18n.t("dul_hydra.tabs.#{id}.label", default: id.titleize)
   end
 
 end

@@ -29,7 +29,7 @@ module DulHydra
       protected
 
       def tech_metadata_fields
-        DulHydra.tech_metadata_fields.map do |field|
+        DulHydra.techmd_show_fields.map do |field|
           [field, Array(current_object.techmd.send(field))]
         end.to_h
       end

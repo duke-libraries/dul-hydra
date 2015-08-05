@@ -2,10 +2,19 @@ en:
   ddr:
     errors:
       multiple_object_matches: "%{criteria} retrieved multiple repository objects"
-  dul_hydra:
+  dul_hydra:        
     techmd:
       file_human_size: "File Size"
       pronom_identifier: "PRONOM Identifier"
+      format_label: "Format Label"
+      format_version: "Format Version"
+      media_type: "Media Type"
+      creating_application: "Creating Application"
+      valid: "Valid"
+      well_formed: "Well-formed"
+      file_size: "File Size (Bytes)"
+      creation_time: "File Creation Time"
+      modification_time: "File Modification Time"
     object_info:
       header: "Object Info"
       create_date: Ingested
