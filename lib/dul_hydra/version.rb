@@ -1,3 +1,3 @@
 module DulHydra
-  VERSION = "4.0.0"
+  VERSION = "4.0.0.post"
 end
