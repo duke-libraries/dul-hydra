@@ -42,7 +42,7 @@ module DulHydra
           @objects.each do |obj|
             rows_for_object = csv.select {|row| row["PID"] == obj.pid}
             expect(rows_for_object.collect {|row| row["Datastream"]})
-              .to match_array(datastreams_with_content)
+              .to include(*datastreams_with_content)
           end
         end
         it "should have appropriate column values" do

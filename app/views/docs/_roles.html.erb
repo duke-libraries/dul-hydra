@@ -1,0 +1,29 @@
+<% permissions = Ddr::Auth::Permissions::ALL %>
+<% role_types = Ddr::Auth::Roles.role_types %>
+<table class="table table-bordered table-striped table-condensed">
+  <thead>
+    <tr>
+      <th scope="col" rowspan="2">ROLE TYPE</th>
+      <th scope="col" colspan="<%= permissions.size %>" class="text-center">PERMISSION</th>
+    </tr>
+    <tr>
+      <% permissions.each do |perm| %>
+      <th scope="col" class="text-center"><%= perm %></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% role_types.each do |role_type| %>
+    <tr>
+      <th scope="row"><%= role_type %></th>
+      <% permissions.each do |perm| %>
+      <td class="text-center">
+	<% if role_type.permissions.include?(perm) %>x
+	<% else %>&nbsp;
+	<% end %>
+      </td>
+      <% end %>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

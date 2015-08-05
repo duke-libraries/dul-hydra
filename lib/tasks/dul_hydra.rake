@@ -1,4 +1,26 @@
+require 'dul_hydra/version'
+
 namespace :dul_hydra do
+
+  desc "Print the version string of the app"
+  task :version do
+    puts DulHydra::VERSION
+  end
+
+  desc "Tag version v#{DulHydra::VERSION}"
+  task :tag do
+    require 'open3'
+    v = DulHydra::VERSION
+    puts "Tagging version v#{v} ..."
+    stdout, stderr, status = Open3.capture3("git tag -a v#{v} -m \"DulHydra v#{v}\"")
+    if status.success?
+      puts stdout unless stdout.blank?
+      puts "Pushing tag v#{v} to origin ..."
+      `git push origin v#{v}`
+    else
+      puts "ERROR: #{stderr}"
+    end
+  end
 
   namespace :config do
     desc "Copy sample config files"

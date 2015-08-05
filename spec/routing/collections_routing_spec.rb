@@ -17,8 +17,4 @@ describe "collections router", type: :routing, collections: true do
   it "should have a targets route" do
     expect(get: "/collections/duke:1/targets").to route_to(controller: "collections", action: "targets", id: "duke:1")
   end
-  it "should have default_permissions routes" do
-    expect(get: "/collections/duke:1/default_permissions").to route_to(controller: "collections", action: "default_permissions", id: "duke:1")
-    expect(patch: "/collections/duke:1/default_permissions").to route_to(controller: "collections", action: "default_permissions", id: "duke:1")
-  end
 end

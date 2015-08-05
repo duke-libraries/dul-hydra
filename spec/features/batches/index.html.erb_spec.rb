@@ -39,16 +39,6 @@ describe "batches/index.html.erb", :type => :feature do
         expect(page).to_not have_link(menu_label, new_metadata_file_path)
       end
     end
-    context "user is permitted to upload metadata files" do
-      before do
-        allow_any_instance_of(Ability).to receive(:can?).with(:create, MetadataFile)
-      end
-      it "should include a link to upload a metadata file" do
-        pending "Another solution for authorizing creation of MetadataFile objects"
-        visit batches_path
-        expect(page).to have_link(menu_label, new_metadata_file_path)
-      end
-    end
   end
   context "batches" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
@@ -107,22 +97,6 @@ describe "batches/index.html.erb", :type => :feature do
       end
       context "validate action" do
         before { login_as batch.user }
-        context "not yet validated" do
-          before { visit batches_path }
-          it "should have a link to validate the batch" do
-            skip "reworking of separate validate action"
-            within tab_id do
-              expect(page).to have_link(I18n.t('batch.web.action_names.validate'), :href => validate_batch_path(batch))
-            end
-          end
-          it "should return to the index page" do
-            skip "reworking of separate validate action"
-            within tab_id do
-              click_link I18n.t('batch.web.action_names.validate')
-              expect(current_path).to eq(batches_path)
-            end
-          end
-        end
         context "validated and valid" do
           before do
             batch.status = DulHydra::Batch::Models::Batch::STATUS_VALIDATED
@@ -178,25 +152,6 @@ describe "batches/index.html.erb", :type => :feature do
     end
     context "deleting batches" do
       before { login_as batch.user }
-      context "delete-able batches" do
-        [ nil, DulHydra::Batch::Models::Batch::STATUS_READY, DulHydra::Batch::Models::Batch::STATUS_VALIDATED,
-          DulHydra::Batch::Models::Batch::STATUS_INVALID ].each do |status|
-          context "status #{status}" do
-            before do
-              batch.status = status
-              batch.save
-              visit batches_path
-            end
-            it "should have a link to delete the batch" do
-              expect(page).to have_link("batch_delete_#{batch.id}")
-              click_link "batch_delete_#{batch.id}"
-              expect(current_path).to eql(batches_path)
-              expect(page).to have_content(I18n.t("batch.web.batch_deleted", :id => batch.id))
-              expect(page).to_not have_link(batch.id, :href => batch_path(batch))
-            end
-          end
-        end
-      end
       context "no delete-able batches" do
         [ DulHydra::Batch::Models::Batch::STATUS_QUEUED, DulHydra::Batch::Models::Batch::STATUS_RUNNING,
           DulHydra::Batch::Models::Batch::STATUS_FINISHED, DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED,

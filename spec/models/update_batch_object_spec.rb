@@ -31,8 +31,7 @@ module DulHydra::Batch::Models
       context "valid object" do
         let(:repo_object) { TestModel.create(:pid => object.pid) }
         before do
-          repo_object.edit_users = [ batch.user.user_key ]
-          repo_object.save
+          batch.user.can :edit, repo_object
         end
         context "generic object" do
           it_behaves_like "a valid update object"

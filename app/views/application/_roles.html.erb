@@ -1,0 +1,33 @@
+<%= render partial: 'tab_actions', locals: {tab: tab} %>
+
+<table class="table roles">
+  <thead>
+    <tr>
+      <th scope="col" class="type">Role Type</th>
+      <th scope="col" class="agent">Agent</th>
+      <th scope="col" class="scope">Scope</th>
+    </tr>
+  </thead>
+  <tbody class="granted">
+    <% current_object.roles.each do |role| %>
+    <tr class="role">
+      <td class="type"><%= role.role_type.first %></td>
+      <td class="agent"><%= role.agent.first %></td>
+      <td class="scope"><%= role.scope.first %></td>
+    </tr>
+    <% end %>
+  </tbody>
+  <% unless current_object.is_a? Collection %>
+  <tbody class="inherited">
+    <% current_object.inherited_roles.each do |role| %>
+    <tr class="role info" title="Inherited role">
+      <td class="role_type"><%= role.role_type.first %></td>
+      <td class="agent"><%= role.agent.first %></td>
+      <td class="scope"><%= role.scope.first %> (inherited)</td>
+    </tr>
+    <% end %>
+  </tbody>
+  <% end %>
+</table>
+
+<%= render "docs/roles_modal" %>

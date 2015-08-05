@@ -1,0 +1,10 @@
+<% content_for :page_heading do %>
+  Edit Administrative Metadata
+<% end %>
+
+<%= form_for current_object, as: :adminMetadata, url: {action: "admin_metadata"}, method: :patch, html: {role: "form"} do |f| %>
+  <%= render partial: "admin_metadata_form_fields", locals: {f: f} %>
+  <%= render partial: "license_form_fields", locals: {f: f} %>
+  <%= render partial: "form_comment" %>
+  <%= render partial: "form_actions", locals: {f: f} %>
+<% end %>

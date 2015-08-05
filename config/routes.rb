@@ -25,11 +25,6 @@ DulHydra::Application.routes.draw do
     end
   end
 
-  def rights_routes
-    get 'permissions'
-    patch 'permissions'
-  end
-
   def content_routes
     get 'upload'
     patch 'upload'
@@ -40,14 +35,20 @@ DulHydra::Application.routes.draw do
     get 'events/:event_id' => :event
   end
 
-  def policy_routes
-    get 'default_permissions'
-    patch 'default_permissions'
+  def roles_routes
+    get 'roles'
+    patch 'roles'
+  end
+
+  def amd_routes
+    get 'admin_metadata'
+    patch 'admin_metadata'
   end
 
   def repository_routes
-    rights_routes
     event_routes
+    roles_routes
+    amd_routes
   end
 
   def repository_contraints
@@ -84,7 +85,6 @@ DulHydra::Application.routes.draw do
     get 'items'
     get 'attachments'
     get 'targets'
-    policy_routes
   end
   repository_resource :items do
     get 'components'

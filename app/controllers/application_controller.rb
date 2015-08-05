@@ -5,7 +5,8 @@ class ApplicationController < ActionController::Base
   include Blacklight::Controller
   include Blacklight::Base
   include Hydra::Controller::ControllerBehavior
-  include Hydra::PolicyAwareAccessControlsEnforcement
+  include Hydra::AccessControlsEnforcement
+  include Ddr::Auth::RoleBasedAccessControlsEnforcement
 
   # This applies appropriate access controls to all Blacklight solr queries
   self.solr_search_params_logic += [:add_access_controls_to_solr_params]
@@ -21,12 +22,7 @@ class ApplicationController < ActionController::Base
   helper_method :acting_as_superuser?
 
   rescue_from CanCan::AccessDenied do |exception|
-    render :file => "#{Rails.root}/public/403", :formats => [:html], :status => 403, :layout => false
-  end
-
-  def current_ability
-    return Ddr::Auth::Superuser.new if acting_as_superuser?
-    current_user ? current_user.ability : Ability.new(nil)
+    render file: "#{Rails.root}/public/403", formats: [:html], status: 403, layout: false
   end
 
   protected
@@ -35,7 +31,6 @@ class ApplicationController < ActionController::Base
     signed_in?(:superuser)
   end
 
-  # Override Hydra::PolicyAwareAccessControlsEnforcement
   def gated_discovery_filters
     return [] if acting_as_superuser?
     super
@@ -58,11 +53,8 @@ class ApplicationController < ActionController::Base
     ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
   end
 
-  def group_service
-    @group_service ||= Ddr::Auth::Groups.build(current_user, request.env)
-  end
-
   def all_permissions
+    warn "[DEPRECATION] `all_permissions` is deprecated and should not be used with role-based access control."
     # IMPORTANT - rights controller behavior depends on the permissions being
     # ordered from lowest to highest so that assignment of multiple permissions
     # to a user or group results in the highest permission being granted.

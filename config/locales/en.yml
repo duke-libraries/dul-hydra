@@ -123,6 +123,14 @@ en:
           download: "Download N-Triples"
         errors:
           empty_form_submission: "You can't submit a form containing no descriptive metadata.  Use 'Cancel' to exit Edit mode."
+      roles:
+        label: Roles
+        actions:
+          edit: Modify
+      admin_metadata:
+        label: Admin Metadata
+        actions:
+          edit: Edit
       permissions:
         label: Permissions
         actions:

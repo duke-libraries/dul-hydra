@@ -15,8 +15,7 @@ describe ComponentsController, type: :controller, components: true do
     let(:item) { FactoryGirl.create(:item) }
     let(:create_object) do
       Proc.new do
-        item.edit_users = [user.user_key]
-        item.save
+        controller.current_ability.can(:add_children, item)
         create_component
       end
     end
@@ -31,14 +30,18 @@ describe ComponentsController, type: :controller, components: true do
   describe "#new" do
     # see shared examples
     let(:item) { FactoryGirl.create(:item) }
-    context "when user can create components" do
-      before { controller.current_ability.can(:create, Component) }
-      context "and user cannot add children to item" do
-        before { controller.current_ability.cannot(:add_children, item) }
-        it "should be unauthorized" do
-          get :new, parent_id: item.pid
-          expect(response.response_code).to eq(403)
-        end
+    context "and user cannot add children to item" do
+      # before { item.save! }
+      it "should be unauthorized" do
+        get :new, parent_id: item.pid
+        expect(response.response_code).to eq(403)
+      end
+    end
+    context "and user can add children to item" do
+      before { controller.current_ability.can(:add_children, item) }
+      it "should be authorized" do
+        get :new, parent_id: item.pid
+        expect(response.response_code).to eq(200)
       end
     end
   end
@@ -62,9 +65,10 @@ describe ComponentsController, type: :controller, components: true do
         create_component
         expect(assigns(:current_object).original_filename).to eq("imageA.tif")
       end
-      it "should grant edit permission to the user" do
+      it "should grant the Editor role in resource scope to the user" do
         create_component
-        expect(assigns(:current_object).edit_users).to include(user.user_key)
+        expect(assigns(:current_object).roles.granted?(type: "Editor", agent: user.agent, scope: "resource"))
+          .to be true
       end
       it "should have a parent" do
         create_component
@@ -81,26 +85,9 @@ describe ComponentsController, type: :controller, components: true do
         create_component
         expect(response).to redirect_to(action: "edit", id: assigns(:current_object))
       end
-      context "when the parent is governed by an admin policy" do
-        it "should copy the admin policy to the object"
-      end
-      context "when the parent is not governed by an admin policy" do
-        it "should copy the parent's permissions"
-      end
       it "should validate the checksum when provided" do
         expect(controller).to receive(:validate_checksum)
         create_component(checksum: "bda5fda452d0047c27e9e0048ed59428cb9e6d5d46fe9c27dff5c8e39b75a59e", checksum_type: "SHA-256")
-      end
-      context "checksum doesn't match" do
-        let(:bad_checksum) { "5a2b997867b99ef10ed02aab1e406a798a71f5f630aeeca5ebdf443d4d62bcd1" }
-        it "should not create a new object" do
-          pending("Resolution of https://github.com/duke-libraries/ddr-models/issues/204")
-          expect{ create_component(checksum: bad_checksum) }.not_to change{ Component.count }
-        end
-        it "should not create an event" do
-          pending("Resolution of https://github.com/duke-libraries/ddr-models/issues/204")
-          expect{ create_component(checksum: bad_checksum) }.not_to change{ Ddr::Events::CreationEvent.count }
-        end
       end
     end
     context "when the user cannot add children to the item" do
@@ -110,5 +97,5 @@ describe ComponentsController, type: :controller, components: true do
         expect(response.response_code).to eq(403)
       end
     end
-  end #create
+  end
 end

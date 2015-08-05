@@ -1,0 +1,313 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "jquery.validate.min.js" %>
+  <%= javascript_include_tag "select2.min.js" %>
+  <%= stylesheet_link_tag "select2.min.css" %>
+  <style type="text/css">
+    label.error { display: block; color: red; }
+  </style>
+<% end %>
+
+<% content_for :page_heading do %>
+  Modify Roles
+<% end %>
+
+<div id="role-alerts">
+  <!-- alerts -->
+</div>
+
+<div style="margin: 1em 0">
+  <div class="pull-right">
+    <%= render "docs/roles_modal" %>
+  </div>
+  <button type="button" class="btn btn-success" data-toggle="modal" data-target="#grant-role-modal">
+    <span class="glyphicon glyphicon-plus"></span>
+    Grant Role
+  </button>
+</div>
+
+<div class="modal" id="grant-role-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="grant-role-form">
+	<div class="modal-header">
+	  <h4>New Role</h4>
+	</div>
+	<div class="modal-body">
+	  <div class="form-group">
+	    <label for="agent" style="display: block">User/Group Agent</label>
+	    <select name="agent" style="width: 100%" required>
+	      <option value="" disabled>Select a User or Group ...</option>
+	      <optgroup label="GROUPS">
+		<%= options_for_select all_group_options %>
+	      </optgroup>
+	      <optgroup label="USERS">
+		<%= options_for_select all_user_options %>
+	      </optgroup>
+	    </select>
+	  </div>
+	  <div class="form-group">
+	    <label for="role_type" style="display: block">Role Type</label>
+	    <small class="help-block">Each role type conveys the permissions listed next to it</small>
+	    <% Ddr::Auth::Roles.role_types.each_with_index do |role_type, i| %>
+	    <div class="radio">
+	      <label>
+		<%= radio_button_tag "role_type", role_type, false, required: true %> 
+		<%= role_type %>
+	      </label>
+	      <span class="text-muted">&mdash; <%= role_type.permissions.join(", ") %></span>
+	    </div>
+	    <% end %>
+	  </div>
+	  <div class="form-group">
+	    <label for="scope">Scope</label>
+	    <div class="radio">
+	      <label>
+		<%= radio_button_tag "scope", "resource", true, required: true %> 
+		resource
+	      </label>
+	      <span class="text-muted">&mdash; applies to this resource only</span>
+	    </div>
+	    <div class="radio">
+	      <label>
+		<%= radio_button_tag "scope", "policy", false, disabled: !current_object.is_a?(Collection), required: true %> 
+		policy
+	      </label>
+	      <span class="text-muted">
+		<% if current_object.is_a?(Collection) %>
+		&mdash; inherited by resources governed by this collection
+		<% else %>
+		(not applicable)		
+		<% end %>
+	      </span>	      
+	    </div>
+	  </div>
+	</div>
+	<div class="modal-footer">
+	  <button type="button" data-dismiss="modal" class="btn btn-default cancel">Cancel</button>
+	  <input type="submit" value="Grant Role" class="btn btn-primary grant-role-button" />
+	</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<table class="table" id="roles-granted">
+  <thead>
+    <tr>
+      <th scope="col" class="revoke-role">&nbsp;</th>
+      <th scope="col" class="role_type">Role Type</th>
+      <th scope="col" class="agent">Agent</th>
+      <th scope="col" class="scope">Scope</th>
+    </tr>
+  </thead>
+  <tbody class="granted">
+    <!-- granted roles -->
+  </tbody>
+  <% unless current_object.is_a? Collection %>
+  <tbody class="inherited">
+    <% current_object.inherited_roles.each do |role| %>
+    <tr class="role info" title="Inherited role - cannot be removed">
+      <td>
+	<span class="glyphicon glyphicon-lock"></span>
+      </td>
+      <td class="role_type"><%= role.role_type.first %></td>
+      <td class="agent"><%= role.agent.first %></td>
+      <td class="scope"><%= role.scope.first %> (inherited)</td>
+    </tr>
+    <% end %>
+  </tbody>
+  <% end %>
+</table>
+
+<%= form_tag url_for(action: params[:action]), method: "patch", id: "roles-form", role: "form" do %>
+  <input type="hidden" name="roles" id="roles-form-field" />
+  <%= link_to "Cancel", :back, id: "roles-form-cancel", class: "btn btn-danger" %>
+  <input type="reset" value="Reset" id="roles-form-reset" class="btn btn-warning" disabled/>  
+  <input type="submit" value="Update Roles" id="roles-form-submit" class="btn btn-primary" disabled/>
+<% end %>
+
+<script type="text/javascript">
+  var initial_roles = <%= current_object.roles.to_json.html_safe %>;
+  var role_container = $("#roles-granted tbody.granted");
+  var role_alerts = $("#role-alerts");
+  var agent_field = $("#grant-role-form select[name='agent']");
+
+  function grantedRoles() {
+    return role_container.children(); 
+  }
+
+  function cloneRoleTemplate() {
+    return $("#role-template .role").clone(true);
+  }
+
+  function insertRole(role) {
+    var el = cloneRoleTemplate();
+    el.data("role", role);
+    el.children(".role_type").text(role.role_type);
+    el.children(".agent").text(role.agent);
+    el.children(".scope").text(role.scope);
+    el.appendTo(role_container);
+    return el;
+  }
+
+  function clearRoleAlerts() {
+    role_alerts.empty();
+  }
+
+  function setRoleAlert(alert_type, msg) {
+    clearRoleAlerts();
+    var alert_class = "alert-" + alert_type;
+    $("#role-alert-template .alert").clone().addClass(alert_class).append(msg).appendTo(role_alerts);
+  }
+
+  function getRoleHandler(index, dom_element) {
+    return $(dom_element).data("role");
+  }
+
+  function insertRoleHandler(index, role) {
+    insertRole(role);
+  }
+
+  function setUnchanged() {
+    role_container.data("changed", false);
+    $("#roles-form .btn").prop("disabled", true);
+  }
+
+  function setChanged() {
+    role_container.data("changed", true);
+    $("#roles-form .btn").prop("disabled", false);
+  }
+
+  function rolesHaveChanged() {
+    return role_container.data("changed");
+  }
+
+  function initRoles() {
+    clearRoles();
+    $(initial_roles).each(insertRoleHandler);
+    setUnchanged();
+  }
+
+  function clearRoles() {
+    role_container.empty();
+  }
+
+  function resetRoles() {
+    initRoles();
+    setRoleAlert("warning", "Granted roles reset.");    
+    return true;
+  }
+
+  function rolesToSubmit() {
+    var roles = grantedRoles().map(getRoleHandler).get();
+    return JSON.stringify(roles);
+  }
+
+  function rolesFormSubmitHandler(e) {
+    setUnchanged();
+    $("#roles-form-field").val(rolesToSubmit());
+    return true;
+  }
+
+  function rolesFormResetHandler(e) {
+    if (confirm("This action will reset the granted roles.")) {
+      return resetRoles();
+    } else {
+      return false;
+    }
+  }
+
+  function revokeRoleHandler(e) {
+    $(e.target).closest(".role").remove();
+    setRoleAlert("warning", "Role revoked. You must click the <strong>Update Roles</strong> button to persist the changes.");
+    setChanged();
+  }
+
+  function getRoleToGrant(form) {
+    var role = {};
+    var serialized = $(form).serializeArray();
+    $(serialized).each(function(i) { role[this.name] = this.value; });
+    return role;
+  }
+
+  function grantRoleHandler(form) {
+    $("#grant-role-modal").modal("hide");
+    insertRole(getRoleToGrant(form)).addClass("success");
+    setRoleAlert("success", "Role granted. You must click the <strong>Update Roles</strong> button to persist the changes.");
+    setChanged();
+    $(form).trigger("reset");
+  }
+
+  function changesAlertHandler(e) {
+    if ( rolesHaveChanged() ) {
+      return "You are about leave this page without saving your changes! Continue?";
+    }
+  }
+
+  function initRevokeButtons() {
+    $(".revoke-role-button").click(revokeRoleHandler);
+  }
+
+  // roles-form is the "hidden" one that is submitted on "Update Roles"
+  function initRolesForm() {
+    $("#roles-form").submit(rolesFormSubmitHandler);
+    $("#roles-form").on("reset", rolesFormResetHandler);
+  }
+
+  // Validation rules for grant-role-form
+  function grantRoleValidationRules() {
+    return {
+      agent: { required: true },
+      role_type: { required: true },
+      scope: { required: true }
+    };
+  }
+
+  function grantRoleErrorPlacementHandler (error, element) {
+    element.closest(".form-group").children("label").first().after(error);
+  }
+
+  function initGrantRoleForm() {
+    // jquery.validate plugin config
+    $("#grant-role-form").validate({
+      submitHandler: grantRoleHandler,
+      rules: grantRoleValidationRules(),
+      errorPlacement: grantRoleErrorPlacementHandler
+    });
+    // init agent select box
+    agent_field.select2({
+      placeholder: "Select a User or Group"
+    });
+  }
+
+  function initNavAwayHook() {
+    $(window).on("beforeunload", changesAlertHandler);
+  } 
+ 
+  $(function() {
+    initRoles();
+    initRevokeButtons();
+    initRolesForm();
+    initGrantRoleForm();
+    initNavAwayHook();
+  });
+</script>
+
+<table id="role-template" class="hidden">
+  <tr class="role">
+    <td class="revoke-role" title="Revoke">
+      <button class="btn btn-xs btn-danger revoke-role-button" type="button" title="Revoke this role">
+	<span class="glyphicon glyphicon-remove"></span>
+      </button>
+    </td>
+    <td class="role_type"></td>
+    <td class="agent"></td>
+    <td class="scope"></td>
+  </tr>
+</table>
+
+<div id="role-alert-template" class="hidden">
+  <div role="alert" class="alert alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  </div>
+</div>

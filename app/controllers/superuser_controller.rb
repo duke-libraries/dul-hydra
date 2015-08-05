@@ -23,7 +23,7 @@ class SuperuserController < ApplicationController
   protected
 
   def authorize_to_act_as_superuser!
-    unless current_user.authorized_to_act_as_superuser?
+    unless authorized_to_act_as_superuser?
       raise CanCan::AccessDenied
     end
   end
