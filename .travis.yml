@@ -4,7 +4,7 @@ before_install:
   - sudo apt-get install -qq libclamav6 libclamav-dev clamav clamav-data
   - sudo apt-get install -qq libvips-dev
 rvm:
-  - 2.1
+  - 2.1.3
 before_script:
   - "cp config/log4r.yml.sample config/log4r.yml"
 cache: bundler
