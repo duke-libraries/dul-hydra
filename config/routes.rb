@@ -81,10 +81,11 @@ DulHydra::Application.routes.draw do
   end
 
   repository_resource :collections do
-    get 'collection_info'
     get 'items'
     get 'attachments'
     get 'targets'
+    get 'report'
+    get 'reports'
   end
   repository_resource :items do
     get 'components'

@@ -6,7 +6,7 @@ module DulHydra
       # Technical metadata fields to display on the show page
       # of a content object.
       # See Ddr::Managers::TechnicalMetadataManager.
-      mattr_accessor :tech_metadata_fields do
+      mattr_accessor :techmd_show_fields do
         [ :format_label,
           :format_version,
           :media_type,
@@ -18,10 +18,24 @@ module DulHydra
           :image_width,
           :image_height,
           :color_space,
-          :created,
-          :last_modified,
+          :creation_time,
+          :modification_time,
           :checksum_digest,
           :checksum_value,
+        ]
+      end
+
+      mattr_accessor :techmd_report_fields do
+        [ Ddr::IndexFields::TECHMD_FORMAT_LABEL,
+          Ddr::IndexFields::TECHMD_FORMAT_VERSION,
+          Ddr::IndexFields::TECHMD_MEDIA_TYPE,
+          Ddr::IndexFields::TECHMD_PRONOM_IDENTIFIER,
+          Ddr::IndexFields::TECHMD_CREATING_APPLICATION,
+          Ddr::IndexFields::TECHMD_VALID,
+          Ddr::IndexFields::TECHMD_WELL_FORMED,
+          Ddr::IndexFields::TECHMD_FILE_SIZE,
+          Ddr::IndexFields::TECHMD_CREATION_TIME,
+          Ddr::IndexFields::TECHMD_MODIFICATION_TIME,
         ]
       end
 

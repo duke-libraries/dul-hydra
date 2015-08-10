@@ -5,9 +5,6 @@ describe "collections router", type: :routing, collections: true do
   it_behaves_like "a repository object router" do
     let(:controller) { "collections" }
   end
-  it "should have a collection_info route" do
-    expect(get: "/collections/duke:1/collection_info").to route_to(controller: "collections", action: "collection_info", id: "duke:1")
-  end
   it "should have an items route" do
     expect(get: "/collections/duke:1/items").to route_to(controller: "collections", action: "items", id: "duke:1")
   end
@@ -16,5 +13,11 @@ describe "collections router", type: :routing, collections: true do
   end
   it "should have a targets route" do
     expect(get: "/collections/duke:1/targets").to route_to(controller: "collections", action: "targets", id: "duke:1")
+  end
+  it "should have a reports route" do
+    expect(get: "/collections/duke:1/reports").to route_to(controller: "collections", action: "reports", id: "duke:1")
+  end
+  it "should have a report route" do
+    expect(get: "/collections/duke:1/report.csv").to route_to(controller: "collections", action: "report", id: "duke:1", format: "csv")
   end
 end

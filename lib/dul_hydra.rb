@@ -4,6 +4,7 @@ module DulHydra
   extend ActiveSupport::Autoload
 
   autoload :Configurable
+  autoload :Reports
   autoload :BatchError, 'dul_hydra/error'
 
   autoload_under 'ability_definitions' do
