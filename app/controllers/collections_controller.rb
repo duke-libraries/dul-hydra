@@ -33,7 +33,7 @@ class CollectionsController < ApplicationController
 
   def tab_reports
     Tab.new("reports",
-            guard: can?(:manage, current_object)
+            guard: can?(:report, current_object)
            )
   end
 
