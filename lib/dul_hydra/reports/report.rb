@@ -35,10 +35,10 @@ module DulHydra::Reports
     end
 
     def csv_opts
-      { "csv.header":       "false",
-        "csv.separator":    csv_sep,
-        "csv.mv.separator": csv_mv_sep,
-        "csv.encapsulator": csv_quote,
+      { :"csv.header"       => "false",
+        :"csv.separator"    => csv_sep,
+        :"csv.mv.separator" => csv_mv_sep,
+        :"csv.encapsulator" => csv_quote,
       }
     end
 
