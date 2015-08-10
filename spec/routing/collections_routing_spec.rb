@@ -14,9 +14,6 @@ describe "collections router", type: :routing, collections: true do
   it "should have a targets route" do
     expect(get: "/collections/duke:1/targets").to route_to(controller: "collections", action: "targets", id: "duke:1")
   end
-  it "should have a reports route" do
-    expect(get: "/collections/duke:1/reports").to route_to(controller: "collections", action: "reports", id: "duke:1")
-  end
   it "should have a report route" do
     expect(get: "/collections/duke:1/report.csv").to route_to(controller: "collections", action: "report", id: "duke:1", format: "csv")
   end

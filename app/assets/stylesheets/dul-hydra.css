@@ -1,55 +1,55 @@
 /* BEGIN Blacklight */
 #header-navbar {
-	padding-top: 8px;
+    padding-top: 8px;
 }
 #header-navbar .navbar-brand { 
-	min-height: 42px;
-	min-width: 200px;
-	padding-bottom: 0;
+    min-height: 42px;
+    min-width: 200px;
+    padding-bottom: 0;
 }
 form.bookmark_toggle {
-	display: inline;
+    display: inline;
 }
 /* END Blacklight */
 
 .rights-form legend {
-	font-size: medium;
-	font-weight: bold;
+    font-size: medium;
+    font-weight: bold;
 }
 .rights-form fieldset {
-	margin-bottom: 1em;
+    margin-bottom: 1em;
 }
 .rights-form .access-level {
-	margin-bottom: 1.5em;
+    margin-bottom: 1.5em;
 }
 .rights-form .access-level label {
-	font-weight: bold;
-	text-transform: uppercase;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 .rights-form .help-block {
-	font-size: smaller;
+    font-size: smaller;
 }
 
 table.access-controls {
-	width: auto;
+    width: auto;
 }
 table.access-controls .access-level-label {
-	text-transform: uppercase;
-	font-weight: bold;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 table.access-controls td ul {
-	margin: 0;
+    margin: 0;
 }
 
 .field_with_errors {
-	padding: 2px;
-	background-color: red;
-	display: table;
+    padding: 2px;
+    background-color: red;
+    display: table;
 }
 
 .table .sub-header {
-	font-style: italic;
-	color: #999;
+    font-style: italic;
+    color: #999;
 }
 
 .table .mappings:empty {
@@ -61,17 +61,17 @@ table.access-controls td ul {
 }
 
 .table .mappings:empty:before {
-	content: 'will not map';
+    content: 'will not map';
 }
 
 .desc-metadata-form fieldset {
-	margin: 1em 0;
+    margin: 1em 0;
 }
 .desc-metadata-form .field-value {
-	margin-bottom: 0.5em;
-	margin-left: 1em;
+    margin-bottom: 0.5em;
+    margin-left: 1em;
 }
 
 span.label.event-outcome { /* event outcome label */
-	font-size: medium;
+    font-size: medium;
 }

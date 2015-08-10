@@ -6,12 +6,10 @@ class CollectionsController < ApplicationController
   include DulHydra::Controller::HasTargetsBehavior
 
   before_action :set_desc_metadata, only: :create
+  self.tabs << :tab_reports
 
   def items
     get_children
-  end
-
-  def reports
   end
 
   def report
@@ -29,6 +27,14 @@ class CollectionsController < ApplicationController
         send_data csv.read, type: "text/csv", filename: filename
       end
     end
+  end
+
+  protected
+
+  def tab_reports
+    Tab.new("reports",
+            guard: can?(:manage, current_object)
+           )
   end
 
 end
