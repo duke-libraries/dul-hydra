@@ -159,7 +159,7 @@ module ApplicationHelper
   end
 
   def link_to_create_model(model)
-    link_to I18n.t("dul_hydra.#{model.underscore}.new_menu", default: model), controller: model.tableize, action: "new"
+    link_to I18n.t("dul_hydra.#{model.underscore}.new_menu", default: model), send("new_#{model.tableize.singularize}_path")
   end
 
   def document_or_object_url(doc_or_obj)

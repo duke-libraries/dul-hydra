@@ -17,8 +17,11 @@ DulHydra::Application.routes.draw do
     /attachments|items|components|descriptive_metadata|permissions|default_permissions/
   end
 
-  if defined?(DulHydra::ResqueAdmin)
-    namespace :admin do
+  namespace :admin do
+    get 'dashboard', to: 'dashboard#show'
+    get 'reports/:type', to: 'reports#show', as: 'report', constraints: {format: 'csv'}
+
+    if defined?(DulHydra::ResqueAdmin)
       constraints DulHydra::ResqueAdmin do
         mount Resque::Server, at: '/queues'
       end
