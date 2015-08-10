@@ -1,5 +1,7 @@
 source 'http://rubygems.org'
 
+ruby '2.2.1'
+
 gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
 gem 'ddr-alerts', '~> 1.0.0'
