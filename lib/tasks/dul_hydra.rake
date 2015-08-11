@@ -165,26 +165,25 @@ namespace :dul_hydra do
     end
   end
 
-  namespace :solr do
-    desc "Deletes everything from the solr index"
+  namespace :index do
+    desc "Deletes everything from the Solr index"
     task :clean => :environment do
       Blacklight.solr.delete_by_query("*:*")
       Blacklight.solr.commit
     end
-    desc "Index a single object in solr specified by PID="
-    task :index => :environment do
-      raise "Must specify a pid. Ex: PID='changeme:12'" unless ENV['PID']
-      ActiveFedora::Base.connection_for_pid('foo:1') # Loads Rubydora connection with fake object
-      ActiveFedora::Base.find(ENV['PID'], cast: true).update_index
+    desc "Index a single object in Solr specified by PID="
+    task :update => :environment do
+      raise "Must specify a pid. Ex: PID=changeme:12" unless ENV["PID"]
+      ActiveFedora::Base.find(ENV["PID"]).update_index
     end
-    desc 'Index all objects in the repository (except fedora-system: objects).'
-    task :index_all => :environment do
-      ActiveFedora::Base.connection_for_pid('foo:1') # Loads Rubydora connection with fake object
-      ActiveFedora::Base.fedora_connection[0].connection.search(nil) do |object|
-        if !object.pid.starts_with?('fedora-system:')
-          ActiveFedora::Base.find(object.pid, cast: true).update_index
-        end
+    desc "Index all objects in the repository (except fedora-system: objects)."
+    task :update_all => :environment do
+      conn = ActiveFedora::RubydoraConnection.new(ActiveFedora.config.credentials).connection
+      conn.search(nil) do |object|
+        next if object.pid.start_with?('fedora-system:')
+        Resque.enqueue(DulHydra::Jobs::UpdateIndex, object.pid)
       end
+      puts "All repository objects queued for indexing."
     end
   end
 
