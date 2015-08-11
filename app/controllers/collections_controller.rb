@@ -19,6 +19,7 @@ class CollectionsController < ApplicationController
         basename = current_object.title_display.gsub /[^\w\.\-]/, "_"
         case params.require(:type)
         when "techmd"
+          rep.filters << DulHydra::Reports::HasContentFilter
           rep.columns += DulHydra::Reports::Columns::TechnicalMetadata
           basename += "__TECHMD"
         end

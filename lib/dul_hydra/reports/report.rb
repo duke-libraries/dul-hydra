@@ -26,6 +26,10 @@ module DulHydra::Reports
              )
     end
 
+    def to_csv
+      run.read
+    end
+
     def headers
       @headers || columns.map(&:header)
     end
