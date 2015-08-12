@@ -5,9 +5,12 @@ DulHydra::Application.routes.draw do
   root :to => "catalog#index"
   Blacklight.add_routes(self)
 
-  get 'superuser' => 'superuser#toggle'
+  scope 'superuser', as: 'superuser' do
+    get 'sign_in', to: 'superuser#create'
+    get 'sign_out', to: 'superuser#destroy'
+  end
 
-  get 'id/*permanent_id' => 'permanent_ids#show'
+  get 'id/*permanent_id', to: 'permanent_ids#show'
 
   def pid_constraint
     /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
@@ -35,7 +38,7 @@ DulHydra::Application.routes.draw do
 
   def event_routes
     get 'events'
-    get 'events/:event_id' => :event
+    get 'events/:event_id', to: :event
   end
 
   def roles_routes
