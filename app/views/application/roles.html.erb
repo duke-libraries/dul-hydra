@@ -218,7 +218,7 @@
 
   function revokeRoleHandler(e) {
     $(e.target).closest(".role").remove();
-    setRoleAlert("warning", "Role revoked. You must click the <strong>Update Roles</strong> button to persist the changes.");
+    setRoleAlert("warning", "Role revoked. You must click the <strong>Save Changes</strong> button to persist the changes.");
     setChanged();
   }
 
@@ -232,7 +232,7 @@
   function grantRoleHandler(form) {
     $("#grant-role-modal").modal("hide");
     insertRole(getRoleToGrant(form)).addClass("success");
-    setRoleAlert("success", "Role granted. You must click the <strong>Update Roles</strong> button to persist the changes.");
+    setRoleAlert("success", "Role granted. You must click the <strong>Save Changes</strong> button to persist the changes.");
     setChanged();
     $(form).trigger("reset");
   }
@@ -247,7 +247,7 @@
     $(".revoke-role-button").click(revokeRoleHandler);
   }
 
-  // roles-form is the "hidden" one that is submitted on "Update Roles"
+  // roles-form is the "hidden" one that is submitted on "Save Changes"
   function initRolesForm() {
     $("#roles-form").submit(rolesFormSubmitHandler);
     $("#roles-form").on("reset", rolesFormResetHandler);
