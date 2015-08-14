@@ -121,9 +121,8 @@
 
 <%= form_tag url_for(action: params[:action]), method: "patch", id: "roles-form", role: "form" do %>
   <input type="hidden" name="roles" id="roles-form-field" />
-  <%= link_to "Cancel", :back, id: "roles-form-cancel", class: "btn btn-danger" %>
   <input type="reset" value="Reset" id="roles-form-reset" class="btn btn-warning" disabled/>  
-  <input type="submit" value="Update Roles" id="roles-form-submit" class="btn btn-primary" disabled/>
+  <input type="submit" value="Save Changes" id="roles-form-submit" class="btn btn-primary" disabled/>
 <% end %>
 
 <script type="text/javascript">
