@@ -171,11 +171,21 @@ namespace :dul_hydra do
       Blacklight.solr.delete_by_query("*:*")
       Blacklight.solr.commit
     end
+
     desc "Index a single object in Solr specified by PID="
     task :update => :environment do
       raise "Must specify a pid. Ex: PID=changeme:12" unless ENV["PID"]
       ActiveFedora::Base.find(ENV["PID"]).update_index
     end
+
+    desc "Re-index all currently indexed objects"
+    task :reindex_all => :environment do
+      Ddr::Index.pids do |pid|
+        Resque.enqueue(DulHydra::Jobs::UpdateIndex, pid)
+      end
+      puts "All indexed object queued for re-indexing."
+    end
+
     desc "Index all objects in the repository (except fedora-system: objects)."
     task :update_all => :environment do
       conn = ActiveFedora::RubydoraConnection.new(ActiveFedora.config.credentials).connection
