@@ -38,6 +38,7 @@ class ScanFilesystem
 
   def handle_entry(dirpath, node, entry)
     child_node = Tree::TreeNode.new(entry)
+    child_node.content = {}
     node << child_node
     entry_path = File.join(dirpath, entry)
     handle_directory(entry_path, child_node) if File.directory?(entry_path)

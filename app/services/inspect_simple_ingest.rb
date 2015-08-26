@@ -26,8 +26,8 @@ class InspectSimpleIngest
   def inspect_filesystem
     validate_datapath
     scan_results = ScanFilesystem.new(datapath, scanner_config).call
-    raise DulHydra::BatchError, "#{datapath} is not a valid simple ingest directory" unless scan_results.filesystem.simple_ingest_filesystem?
-    results.file_count = file_count(scan_results.filesystem)
+    raise DulHydra::BatchError, "#{datapath} is not a valid simple ingest directory" unless simple_ingest_filesystem?(scan_results.filesystem)
+    results.file_count = scan_results.filesystem.file_count
     results.exclusions = scan_results.exclusions
     results.content_model_stats = content_model_stats(scan_results.filesystem)
     results.filesystem = scan_results.filesystem
@@ -40,12 +40,6 @@ class InspectSimpleIngest
   def validate_datapath
     raise DulHydra::BatchError, "#{datapath} not found or is not a directory" unless Dir.exist?(datapath)
     raise DulHydra::BatchError, "#{datapath} is not readable" unless File.readable?(datapath)
-  end
-
-  def file_count(filesystem)
-    count = 0
-    filesystem.each_leaf { |leaf| count += 1 }
-    count
   end
 
   def content_model_stats(filesystem)
@@ -62,5 +56,10 @@ class InspectSimpleIngest
     end
     { collections: collections, items: items, components: components }
   end
+
+  def simple_ingest_filesystem?(filesystem)
+    !filesystem.tree.each_leaf.any? { |leaf| leaf.node_depth != 2 }
+  end
+
 
 end

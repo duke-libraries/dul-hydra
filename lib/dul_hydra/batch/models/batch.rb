@@ -29,7 +29,7 @@ module DulHydra::Batch::Models
           end
         end
       rescue Exception => e
-        errors << "Exception raised during batch validation: #{e}"
+        errors << "Exception raised during batch validation: #{e.backtrace}"
       end
       errors.flatten
     end

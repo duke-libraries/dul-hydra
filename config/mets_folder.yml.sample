@@ -1,0 +1,6 @@
+:scanner:
+    :exclude:
+        - .DS_Store
+        - Thumbs.db
+:display_format:
+    slideshow: multi_image

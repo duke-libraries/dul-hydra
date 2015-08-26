@@ -13,6 +13,15 @@ FactoryGirl.define do
 
     end
 
+    factory :batch_object_clear_attribute do
+      operation DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR
+
+      factory :batch_object_clear_desc_metadata_attribute do
+        datastream Ddr::Datastreams::DESC_METADATA
+        name 'title'
+      end
+    end
+
     factory :batch_object_clear_all_attribute do
       operation DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL
 

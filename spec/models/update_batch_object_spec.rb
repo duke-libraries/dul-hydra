@@ -79,6 +79,13 @@ module DulHydra::Batch::Models
             expect(repo_object.title).to eq( [ 'Test Model Title', 'Test Object Title' ] )
           end
         end
+        context "clear" do
+          let(:batch) { FactoryGirl.create(:batch_with_basic_clear_attribute_batch_object) }
+          it_behaves_like "a loggable event has occurred"
+          it "should clear the attribute in the repository object" do
+            expect(repo_object.title).to be_empty
+          end
+        end
         # Can't really test just clearing all attributes because can't save datastream with no content
         context "clear all and add" do
           let(:batch) { FactoryGirl.create(:batch_with_basic_clear_all_and_add_batch_object) }

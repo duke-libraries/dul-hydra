@@ -62,15 +62,15 @@ end
 
 def sample_filesystem
   root_node = Tree::TreeNode.new('/test/directory')
-  root_node << Tree::TreeNode.new('movie.mp4')
-  root_node << Tree::TreeNode.new('file01001.tif')
-  itemA_node = Tree::TreeNode.new('itemA')
-  itemA_node << Tree::TreeNode.new('file01.pdf')
-  itemA_node << Tree::TreeNode.new('track01.wav')
+  root_node << Tree::TreeNode.new('movie.mp4', {})
+  root_node << Tree::TreeNode.new('file01001.tif', {})
+  itemA_node = Tree::TreeNode.new('itemA', {})
+  itemA_node << Tree::TreeNode.new('file01.pdf', {})
+  itemA_node << Tree::TreeNode.new('track01.wav', {})
   root_node << itemA_node
-  itemB_node = Tree::TreeNode.new('itemB')
-  itemB_node << Tree::TreeNode.new('file02.pdf')
-  itemB_node << Tree::TreeNode.new('track02.wav')
+  itemB_node = Tree::TreeNode.new('itemB', {})
+  itemB_node << Tree::TreeNode.new('file02.pdf', {})
+  itemB_node << Tree::TreeNode.new('track02.wav', {})
   root_node << itemB_node
   root_node
 end
