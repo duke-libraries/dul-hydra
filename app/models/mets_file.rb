@@ -96,11 +96,11 @@ class METSFile
   end
 
   def mets_hdr_agent
-    @mets_hdr_agent ||= mets_hdr.xpath('agent') if mets_hdr
+    @mets_hdr_agent ||= mets_hdr.xpath('agent') if mets_hdr.present?
   end
 
   def mets_hdr_agent_id_attr
-    @mets_hdr_agent_id_attr ||= mets_hdr_agent.attr('ID') if mets_hdr_agent
+    @mets_hdr_agent_id_attr ||= mets_hdr_agent.attr('ID') if mets_hdr_agent.present?
   end
 
 end
