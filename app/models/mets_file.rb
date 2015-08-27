@@ -63,7 +63,7 @@ class METSFile
   end
 
   def struct_metadata
-    @struct_metadata ||= struct_map.xpath('div')
+    @struct_metadata ||= struct_map.xpath('div') if struct_map.present?
   end
 
   private
