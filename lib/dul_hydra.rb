@@ -5,6 +5,7 @@ module DulHydra
 
   autoload :BatchError, 'dul_hydra/error'
   autoload :Configurable
+  autoload :Error
   autoload :Jobs
   autoload :Reports
 

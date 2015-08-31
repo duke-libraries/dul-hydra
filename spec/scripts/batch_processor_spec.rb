@@ -20,7 +20,6 @@ module DulHydra::Batch::Scripts
         batch_obj_rs = batch_obj.batch_object_relationships
         batch_obj_rs.each { |r| expect(obj.send(r.name).pid).to eq(r.object) }
         obj.events.each do |event|
-          expect(event).to be_success
           expect(event.pid).to eq(obj.pid)
           expect(event.event_date_time).to be_within(3.minutes).of(DateTime.now)
           case event.type

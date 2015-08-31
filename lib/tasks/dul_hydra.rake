@@ -116,8 +116,10 @@ namespace :dul_hydra do
       script = DulHydra::Scripts::CsvToXml.new(opts)
       script.execute
     end
-    desc "Runs the fixity check routine"
+    desc "[DEPRECATED] Runs the fixity check routine"
     task :fixity_check => :environment do
+      warn "[DEPRECATION] The task `dul_hydra:batch:fixity_check` is deprecated and will be removed" \
+           " from DulHydra v5.0. Use `dul_hydra:fixity:check` instead."
       opts = {
         :dryrun => ENV['dryrun'] == 'true' ? true : false,
         :limit => ENV.fetch('limit', 1000).to_i,
@@ -125,11 +127,12 @@ namespace :dul_hydra do
         :report => ENV['report']
       }
       mailto = ENV['mailto']
+
       puts "Running batch fixity check with options #{opts} ..."
       bfc = DulHydra::Scripts::BatchFixityCheck.new(opts)
       bfc.execute
       if bfc.total > 0
-        BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
+       BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
       end
     end
     desc "Make manifest MANIFEST based on files in directory DIRPATH"
@@ -162,6 +165,21 @@ namespace :dul_hydra do
       raise "Must specify collection pid.  Ex: COLLECTION_PID=duke:72" unless ENV['COLLECTION_PID']
       thumb = DulHydra::Scripts::Thumbnails.new(ENV['COLLECTION_PID'])
       thumb.execute if thumb.collection
+    end
+  end
+
+  namespace :fixity do
+    desc "Run fixity check routine"
+    task :check => :environment do
+      args = {}
+      if ENV["before_days"]
+        args[:before_days] = ENV["before_days"].to_i
+      end
+      if ENV["limit"]
+        args[:limit] = ENV["limit"].to_i
+      end
+      puts "Running fixity check with args #{args.inspect}."
+      DulHydra::Fixity.check(**args)
     end
   end
 
