@@ -62,6 +62,14 @@ module DulHydra
 
       # Context used in alert message selection
       mattr_accessor :alert_message_context
+
+      mattr_accessor :fixity_check_limit do
+        ENV["FIXITY_CHECK_LIMIT"] || 10**5
+      end
+
+      mattr_accessor :fixity_check_period_in_days do
+        ENV["FIXITY_CHECK_PERIOD"] || 60
+      end
     end
 
     module ClassMethods

@@ -9,14 +9,13 @@ require 'equivalent-xml/rspec_matchers'
 require 'capybara/rails'
 require 'capybara/rspec'
 require 'dul_hydra'
-require 'dul_hydra/error'
 require 'database_cleaner'
 require "ddr/auth/test_helpers"
+require "resque"
+
+Resque.inline = true
 
 DatabaseCleaner.strategy = :truncation
-
-Ddr::Antivirus.scanner_adapter = :null
-Ddr::Antivirus.logger = Logger.new(File::NULL)
 
 # XXX Hack to bypass file characterization
 # See https://github.com/duke-libraries/ddr-models/issues/315
