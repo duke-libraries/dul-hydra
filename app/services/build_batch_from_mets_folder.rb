@@ -15,14 +15,14 @@ class BuildBatchFromMETSFolder
   def call
     @batch = create_batch
     traverse_filesystem
-    batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_READY)
+    batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
     batch
   end
 
   private
 
   def create_batch
-    DulHydra::Batch::Models::Batch.create(user: batch_user, name: batch_name, description: batch_description)
+    Ddr::Batch::Batch.create(user: batch_user, name: batch_name, description: batch_description)
   end
 
   def traverse_filesystem

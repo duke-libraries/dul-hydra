@@ -36,7 +36,7 @@ module DulHydra::Batch::Scripts
       end
       it "should produce the appropriate batch" do
         processor.execute
-        batch = DulHydra::Batch::Models::Batch.last
+        batch = Ddr::Batch::Batch.last
         expect(batch.user).to eq(batch_user)
         batch_objects = batch.batch_objects
         expect(batch_objects.size).to eq(3)

@@ -83,7 +83,7 @@ describe "batches/index.html.erb", :type => :feature do
       context "ready to process batch" do
         context "ready" do
           before do
-            batch.status = DulHydra::Batch::Models::Batch::STATUS_READY
+            batch.status = Ddr::Batch::Batch::STATUS_READY
             batch.save
             login_as batch.user
             visit batches_path
@@ -99,7 +99,7 @@ describe "batches/index.html.erb", :type => :feature do
         before { login_as batch.user }
         context "validated and valid" do
           before do
-            batch.status = DulHydra::Batch::Models::Batch::STATUS_VALIDATED
+            batch.status = Ddr::Batch::Batch::STATUS_VALIDATED
             batch.save
             visit batches_path
           end
@@ -111,7 +111,7 @@ describe "batches/index.html.erb", :type => :feature do
         end
         context "validated and invalid" do
           before do
-            batch.status = DulHydra::Batch::Models::Batch::STATUS_INVALID
+            batch.status = Ddr::Batch::Batch::STATUS_INVALID
             batch.save
             visit batches_path
           end
@@ -138,7 +138,7 @@ describe "batches/index.html.erb", :type => :feature do
       end
       context "user has some finished batches" do
         before do
-          batch.status = DulHydra::Batch::Models::Batch::STATUS_FINISHED
+          batch.status = Ddr::Batch::Batch::STATUS_FINISHED
           batch.save
           login_as batch.user
           visit batches_path
@@ -153,9 +153,9 @@ describe "batches/index.html.erb", :type => :feature do
     context "deleting batches" do
       before { login_as batch.user }
       context "no delete-able batches" do
-        [ DulHydra::Batch::Models::Batch::STATUS_QUEUED, DulHydra::Batch::Models::Batch::STATUS_RUNNING,
-          DulHydra::Batch::Models::Batch::STATUS_FINISHED, DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED,
-          DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE ].each do |status|
+        [ Ddr::Batch::Batch::STATUS_QUEUED, Ddr::Batch::Batch::STATUS_RUNNING,
+          Ddr::Batch::Batch::STATUS_FINISHED, Ddr::Batch::Batch::STATUS_INTERRUPTED,
+          Ddr::Batch::Batch::STATUS_RESTARTABLE ].each do |status|
             context "status #{status}" do
               before do
                 batch.status = status

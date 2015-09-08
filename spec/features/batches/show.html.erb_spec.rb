@@ -14,7 +14,7 @@ describe "batches/show.html.erb", :type => :feature do
       end
       context "ready to process batch" do
         before do
-          batch.status = DulHydra::Batch::Models::Batch::STATUS_READY
+          batch.status = Ddr::Batch::Batch::STATUS_READY
           batch.save
           visit batch_path(batch)
         end
@@ -25,7 +25,7 @@ describe "batches/show.html.erb", :type => :feature do
       context "validate action" do
         context "validated and valid" do
           before do
-            batch.status = DulHydra::Batch::Models::Batch::STATUS_VALIDATED
+            batch.status = Ddr::Batch::Batch::STATUS_VALIDATED
             batch.save
             visit batch_path(batch)
           end
@@ -35,7 +35,7 @@ describe "batches/show.html.erb", :type => :feature do
         end
         context "validated and invalid" do
           before do
-            batch.status = DulHydra::Batch::Models::Batch::STATUS_INVALID
+            batch.status = Ddr::Batch::Batch::STATUS_INVALID
             batch.save
             visit batch_path(batch)
           end
@@ -46,10 +46,10 @@ describe "batches/show.html.erb", :type => :feature do
       end
       context "delete action" do
         context "not delete-able" do
-          [ DulHydra::Batch::Models::Batch::STATUS_QUEUED, DulHydra::Batch::Models::Batch::STATUS_RUNNING,
-            DulHydra::Batch::Models::Batch::STATUS_VALIDATING, DulHydra::Batch::Models::Batch::STATUS_PROCESSING,
-            DulHydra::Batch::Models::Batch::STATUS_FINISHED, DulHydra::Batch::Models::Batch::STATUS_INTERRUPTED,
-            DulHydra::Batch::Models::Batch::STATUS_RESTARTABLE ].each do |status|
+          [ Ddr::Batch::Batch::STATUS_QUEUED, Ddr::Batch::Batch::STATUS_RUNNING,
+            Ddr::Batch::Batch::STATUS_VALIDATING, Ddr::Batch::Batch::STATUS_PROCESSING,
+            Ddr::Batch::Batch::STATUS_FINISHED, Ddr::Batch::Batch::STATUS_INTERRUPTED,
+            Ddr::Batch::Batch::STATUS_RESTARTABLE ].each do |status|
             context "status #{status}" do
               before do
                 batch.status = status

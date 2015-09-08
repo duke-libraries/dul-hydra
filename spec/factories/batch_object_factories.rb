@@ -77,7 +77,7 @@ FactoryGirl.define do
     end
   end
 
-  factory :ingest_batch_object, :class => DulHydra::Batch::Models::IngestBatchObject do
+  factory :ingest_batch_object, :class => Ddr::Batch::IngestBatchObject do
     has_identifier
     has_label
 
@@ -112,7 +112,7 @@ FactoryGirl.define do
     end
   end
 
-  factory :update_batch_object, :class => DulHydra::Batch::Models::UpdateBatchObject do
+  factory :update_batch_object, :class => Ddr::Batch::UpdateBatchObject do
     has_identifier
     has_label
     has_pid

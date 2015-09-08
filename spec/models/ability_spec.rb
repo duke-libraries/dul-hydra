@@ -23,31 +23,6 @@ describe Ability, type: :model, abilities: true do
     end
   end
 
-  describe "Batch permissions" do
-    let(:resource) { FactoryGirl.create(:batch) }
-    describe "when the user is the creator of the batch" do
-      before { allow(auth_context).to receive(:user) { resource.user } }
-      it { should be_able_to(:manage, resource) }
-    end
-    describe "when the user is not the creator of the batch" do
-      it { should_not be_able_to(:manage, resource) }
-    end
-  end
-
-  describe "BatchObject permissions" do
-    let(:batch) { FactoryGirl.create(:batch) }
-    let(:resource) { DulHydra::Batch::Models::BatchObject.create(batch: batch) }
-    before { allow(subject).to receive(:user) { batch.user } }
-    describe "when the user can :manage the batch" do
-      before { subject.can :manage, batch }
-      it { should be_able_to(:manage, resource) }
-    end
-    describe "when the user cannot :manage the batch" do
-      before { subject.cannot :manage, batch }
-      it { should_not be_able_to(:manage, resource) }
-    end
-  end
-
   describe "ExportSet abilities" do
     describe "auth context is authenticated" do
       let(:resource) { FactoryGirl.create(:content_export_set_with_pids) }
