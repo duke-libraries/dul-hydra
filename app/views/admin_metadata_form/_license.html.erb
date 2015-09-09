@@ -1,0 +1,8 @@
+<%= f.label :license %>
+<% if inherited_license = current_object.inherited_license %>
+  <p class="form-control-static">
+    <%= inherited_license.title %> (inherited)
+  </p>
+<% else %>
+  <%= f.select :license, license_options_for_select, {include_blank: "N/A"}, {class: "form-control"} %>
+<% end %>
