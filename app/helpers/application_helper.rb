@@ -1,5 +1,20 @@
 module ApplicationHelper
 
+  # Controls what fields are displayed on the admin metadata tab and edit form
+  def admin_metadata_fields
+    [:license, :local_id, :display_format]
+  end
+
+  def render_admin_metadata_field(field)
+    render field.to_s
+  rescue ActionView::MissingTemplate
+    current_object.send(field)
+  end
+
+  def license_options_for_select
+    options_from_collection_for_select(Ddr::Models::License.all, :url, :title, current_object.license)
+  end
+
   def alert_messages
     Ddr::Alerts::Message.active.pluck(:message)
   end

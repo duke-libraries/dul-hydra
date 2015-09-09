@@ -7,6 +7,7 @@ class CollectionsController < ApplicationController
 
   before_action :set_desc_metadata, only: :create
   self.tabs << :tab_reports
+  helper_method :admin_metadata_fields
 
   def items
     get_children
@@ -31,6 +32,10 @@ class CollectionsController < ApplicationController
   end
 
   protected
+
+  def admin_metadata_fields
+    [:license, :local_id, :display_format, :admin_set]
+  end
 
   def tab_reports
     Tab.new("reports",
