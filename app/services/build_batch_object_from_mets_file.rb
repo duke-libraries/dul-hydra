@@ -15,7 +15,7 @@ class BuildBatchObjectFromMETSFile
   private
 
   def create_update_object
-    update_object = DulHydra::Batch::Models::UpdateBatchObject.create(batch: batch, pid: mets_file.repo_pid, identifier: mets_file.local_id)
+    update_object = Ddr::Batch::UpdateBatchObject.create(batch: batch, pid: mets_file.repo_pid, identifier: mets_file.local_id)
     add_local_id(update_object) if mets_file.local_id.present?
     if display_format = METSFileDisplayFormat.get(mets_file, display_formats)
       add_display_format(update_object, display_format)
@@ -27,80 +27,80 @@ class BuildBatchObjectFromMETSFile
   end
 
   def add_local_id(update_object)
-    DulHydra::Batch::Models::BatchObjectAttribute.create(
+    Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
       datastream: Ddr::Datastreams::ADMIN_METADATA,
       name: 'local_id',
-      operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR)
-    DulHydra::Batch::Models::BatchObjectAttribute.create(
+      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
+    Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
       datastream: Ddr::Datastreams::ADMIN_METADATA,
       name: 'local_id',
       value: mets_file.local_id,
-      value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING,
-      operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
+      value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
+      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD)
   end
 
   def add_display_format(update_object, display_format)
-    DulHydra::Batch::Models::BatchObjectAttribute.create(
+    Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
       datastream: Ddr::Datastreams::ADMIN_METADATA,
       name: 'display_format',
-      operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR)
-    DulHydra::Batch::Models::BatchObjectAttribute.create(
+      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
+    Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
       datastream: Ddr::Datastreams::ADMIN_METADATA,
       name: 'display_format',
       value: display_format,
-      value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING,
-      operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
+      value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
+      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD)
   end
 
   def add_research_help_contact(update_object)
-    DulHydra::Batch::Models::BatchObjectAttribute.create(
+    Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
       datastream: Ddr::Datastreams::ADMIN_METADATA,
-      name: 'research_contact',
-      operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR)
-    DulHydra::Batch::Models::BatchObjectAttribute.create(
+      name: 'research_help_contact',
+      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
+    Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
       datastream: Ddr::Datastreams::ADMIN_METADATA,
       name: 'research_help_contact',
       value: mets_file.header_agent_id,
-      value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING,
-      operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
+      value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
+      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD)
   end
 
   def add_desc_metadata(update_object)
     # To replicate existing behavior, which is that the metadata harvested from the metadata
     # folder completely replaces the existing metadata, first we need a directive to clear out
     # all existing metadata
-    DulHydra::Batch::Models::BatchObjectAttribute.create(
+    Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
       datastream: Ddr::Datastreams::DESC_METADATA,
-      operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL
+      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL
       )
     # Now we create the directives to add the attribute values from the METS file
     mets_file.desc_metadata_attributes_values.each do |entry|
       attr_name = entry.keys.first
-      DulHydra::Batch::Models::BatchObjectAttribute.create(
+      Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
         datastream: Ddr::Datastreams::DESC_METADATA,
-        operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD,
+        operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
         name: attr_name,
         value: entry[attr_name],
-        value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING
+        value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
         )
     end
   end
 
   def add_struct_metadata(update_object)
-    DulHydra::Batch::Models::BatchObjectDatastream.create(
+    Ddr::Batch::BatchObjectDatastream.create(
       batch_object: update_object,
       name: Ddr::Datastreams::STRUCT_METADATA,
-      operation: DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADDUPDATE,
+      operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADDUPDATE,
       payload: translate_struct_map(mets_file.struct_metadata),
-      payload_type: DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
+      payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
   end
 
   def translate_struct_map(mets_file_struct_map)

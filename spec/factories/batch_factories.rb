@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :batch, :class => DulHydra::Batch::Models::Batch do
+  factory :batch, :class => Ddr::Batch::Batch do
     name "Batch"
     description "This is a batch of stuff to do."
     user { FactoryGirl.create(:user) }

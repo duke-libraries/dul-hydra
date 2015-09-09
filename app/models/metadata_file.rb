@@ -78,19 +78,19 @@ class MetadataFile < ActiveRecord::Base
   end
 
   def procezz
-    @batch = DulHydra::Batch::Models::Batch.create(
+    @batch = Ddr::Batch::Batch.create(
                 :user => user,
                 :name => I18n.t('batch.metadata_file.batch_name'),
                 :description => metadata_file_name
                 )
     CSV.foreach(metadata.path, effective_options[:csv]) do |row|
-      obj = DulHydra::Batch::Models::UpdateBatchObject.new(:batch => @batch)
+      obj = Ddr::Batch::UpdateBatchObject.new(:batch => @batch)
       obj.model = row.field("model") if row.headers.include?("model")
       obj.pid = row.field("pid") if row.headers.include?("pid")
-      att = DulHydra::Batch::Models::BatchObjectAttribute.new(
+      att = Ddr::Batch::BatchObjectAttribute.new(
                 batch_object: obj,
                 datastream: Ddr::Datastreams::DESC_METADATA,
-                operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL)
+                operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL)
       obj.batch_object_attributes << att
       obj.save
       row.headers.each_with_index do |header, idx|
@@ -100,13 +100,13 @@ class MetadataFile < ActiveRecord::Base
           end
           if canonical_attribute_name(header).present?
             parse_field(row.field(header, idx), header).each do |value|
-              att = DulHydra::Batch::Models::BatchObjectAttribute.new(
+              att = Ddr::Batch::BatchObjectAttribute.new(
                         batch_object: obj,
                         datastream: Ddr::Datastreams::DESC_METADATA,
                         name: canonical_attribute_name(header),
-                        operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD,
+                        operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                         value: value,
-                        value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING
+                        value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
                         )
               # puts canonical_attribute_name(header)
               # puts parse_field(row.field(header, idx), header)
@@ -128,7 +128,7 @@ class MetadataFile < ActiveRecord::Base
         end
       end
     end
-    @batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_READY)
+    @batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
   end
 
   def downcase_repeatable_field_names

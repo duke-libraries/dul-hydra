@@ -12,16 +12,16 @@ end
 
 shared_examples "a successful metadata file processing" do
   it "should create a batch with an appropriate UpdateBatchObject" do
-    expect(@batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_READY)
-    expect(@batch_object).to be_a(DulHydra::Batch::Models::UpdateBatchObject)
+    expect(@batch.status).to eq(Ddr::Batch::Batch::STATUS_READY)
+    expect(@batch_object).to be_a(Ddr::Batch::UpdateBatchObject)
     expect(@attributes.size).to eq(11)
     expect(@attributes[0].datastream).to eq(Ddr::Datastreams::DESC_METADATA)
-    expect(@attributes[0].operation).to eq(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_CLEAR_ALL)
+    expect(@attributes[0].operation).to eq(Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL)
     actual_md = {}
     @attributes[1..-1].each do |att|
       expect(att.datastream).to eq(Ddr::Datastreams::DESC_METADATA)
-      expect(att.operation).to eq(DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD)
-      expect(att.value_type).to eq(DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING)
+      expect(att.operation).to eq(Ddr::Batch::BatchObjectAttribute::OPERATION_ADD)
+      expect(att.value_type).to eq(Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING)
       actual_md[att.name] ||= []
       actual_md[att.name] << att.value
     end
@@ -107,7 +107,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
       allow_any_instance_of(MetadataFile).to receive_message_chain(:metadata, :path).and_return(delimited_file)
       allow_any_instance_of(MetadataFile).to receive(:effective_options).and_return(options)
       metadata_file.procezz
-      @batch = DulHydra::Batch::Models::Batch.all.last
+      @batch = Ddr::Batch::Batch.all.last
       @batch_object = @batch.batch_objects.first
       @attributes = @batch_object.batch_object_attributes
     end

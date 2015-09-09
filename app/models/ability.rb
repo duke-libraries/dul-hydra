@@ -1,7 +1,7 @@
 class Ability < Ddr::Auth::Ability
 
   self.ability_definitions += [ DulHydra::AliasAbilityDefinitions,
-                                DulHydra::BatchAbilityDefinitions,
+                                Ddr::Batch::BatchAbilityDefinitions,
                                 DulHydra::ExportSetAbilityDefinitions,
                                 DulHydra::MetadataFileAbilityDefinitions,
                                 DulHydra::IngestFolderAbilityDefinitions,

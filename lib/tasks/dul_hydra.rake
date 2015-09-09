@@ -103,31 +103,6 @@ namespace :dul_hydra do
        BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
       end
     end
-    desc "Make manifest MANIFEST based on files in directory DIRPATH"
-    task :make_manifest => :environment do
-      raise "Must specify directory path to files.  Ex.: DIRPATH=/nas/VOLUME/na_COL/" unless ENV['DIRPATH']
-      raise "Must specify manifest.  Ex.: MANIFEST=/srv/fedora-working/ingest/COL/manifests/item.yml" unless ENV['MANIFEST']
-      opts = { :dirpath => ENV['DIRPATH'], :manifest => ENV['MANIFEST'] }
-      opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
-      mm = DulHydra::Batch::Scripts::ManifestMaker.new(opts)
-      mm.execute
-    end
-    desc "Create ingest batch objects from MANIFEST"
-    task :process_manifest => :environment do
-      raise "Must specify manifest.  Ex.: MANIFEST=/srv/fedora-working/ingest/COL/manifests/item.yml" unless ENV['MANIFEST']
-      opts = { :manifest => ENV['MANIFEST'] }
-      opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
-      mp = DulHydra::Batch::Scripts::ManifestProcessor.new(opts)
-      mp.execute
-    end
-    desc "Process ingest batch for BATCH_ID"
-    task :process_ingest => :environment do
-      raise "Must specify batch ID.  Ex.: BATCH_ID=7" unless ENV['BATCH_ID']
-      opts = { :batch_id => ENV['BATCH_ID'] }
-      opts[:log_dir] = ENV['LOG_DIR'] if ENV['LOG_DIR']
-      bp = DulHydra::Batch::Scripts::BatchProcessor.new(opts)
-      bp.execute
-    end
     desc "Sets missing thumbnails in collection specified by COLLECTION_PID="
     task :thumbnails => :environment do
       raise "Must specify collection pid.  Ex: COLLECTION_PID=duke:72" unless ENV['COLLECTION_PID']
