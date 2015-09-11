@@ -1,0 +1,6 @@
+<%= render partial: "tab_actions", locals: {tab: tab} %>
+<% if current_object.has_struct_metadata? %>
+	<%= render partial: "struct_map" %>
+<% else %>
+	<div class="col-md-4 h5">No structural metadata</div>
+<% end %>
