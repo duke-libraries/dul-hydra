@@ -3,6 +3,7 @@ class ItemsController < ApplicationController
   include DulHydra::Controller::RepositoryBehavior
   include DulHydra::Controller::HasParentBehavior
   include DulHydra::Controller::HasChildrenBehavior
+  include DulHydra::Controller::HasStructuralMetadataBehavior
 
   before_action :set_desc_metadata, only: :create
 

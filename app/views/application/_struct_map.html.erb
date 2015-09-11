@@ -1,0 +1,24 @@
+<table class="table table-bordered text-center">
+	<thead>
+		<tr>
+			<th class="text-center">ORDER</th>
+			<th class="text-center">ID</th>
+			<th class="text-center">LABEL</th>
+			<th class="text-center">ORDERLABEL</th>
+			<th class="text-center">TYPE</th>
+			<th class="text-center">PID</th>
+		</tr>
+	</thead>
+	<tbody>
+		<% Ddr::Models::StructDiv.new(current_object.structure.structMap_node).divs.each do |div| %>
+			<tr>
+				<td><%= div.order %></td>
+				<td><%= div.id %></td>
+				<td><%= div.label %></td>
+				<td><%= div.orderlabel %></td>
+				<td><%= div.type %></td>
+				<td><%= link_to(div.fptrs.first, catalog_path(div.fptrs.first)) %></td>
+			</tr>
+		<% end %>
+	</tbody>
+</table>

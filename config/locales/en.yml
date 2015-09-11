@@ -142,6 +142,10 @@ en:
           download: "Download N-Triples"
         errors:
           empty_form_submission: "You can't submit a form containing no descriptive metadata.  Use 'Cancel' to exit Edit mode."
+      structural_metadata:
+          label: "Structural Metadata"
+          actions:
+              struct_map_xml: "StructMap XML"
       roles:
         label: Roles
         actions:

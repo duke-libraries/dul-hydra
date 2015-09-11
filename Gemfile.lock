@@ -1,12 +1,12 @@
 GIT
   remote: git://github.com/duke-libraries/ddr-models.git
-  revision: 04b55ff246271fb2f68dad05d89864cdcc0222b9
-  ref: 04b55ff246271fb2f68dad05d89864cdcc0222b9
+  revision: f4f9603043d3a946a0bf48cb2aa4a524d8b9d381
+  ref: f4f9603043d3a946a0bf48cb2aa4a524d8b9d381
   specs:
     ddr-models (2.0.1.post)
       active-fedora (~> 7.0)
       cancancan (~> 1.12)
-      ddr-aux-client (= 1.0.0.pre.1)
+      ddr-aux-client (~> 1.0)
       devise (~> 3.4)
       ezid-client (~> 1.1, >= 1.1.1)
       grouper-rest-client
@@ -100,7 +100,7 @@ GEM
     database_cleaner (1.4.0)
     ddr-alerts (1.0.0)
       rails (~> 4.1.6)
-    ddr-aux-client (1.0.0.pre.1)
+    ddr-aux-client (1.0.0)
     ddr-batch (1.0.0.rc1)
       ddr-models (~> 2.0)
       devise (~> 3.4)
