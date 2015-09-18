@@ -8,7 +8,7 @@ module DulHydra
         configure_blacklight_for_children
         # Set instance vars for compatibility with Blacklight helpers and views
         query = current_object.association_query(:children)
-        @response, @document_list = get_search_results(params, {q: query})
+        @response, @document_list = search_results(params, {q: query})
       end
 
       def configure_blacklight_for_children
