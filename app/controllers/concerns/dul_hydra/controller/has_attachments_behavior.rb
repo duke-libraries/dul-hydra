@@ -11,7 +11,7 @@ module DulHydra
       def get_attachments
         configure_blacklight_for_attachments
         query = current_object.association_query(:attachments)
-        @response, @document_list = get_search_results(params, {q: query})
+        @response, @document_list = search_results(params, {q: query})
       end
 
       def configure_blacklight_for_attachments
