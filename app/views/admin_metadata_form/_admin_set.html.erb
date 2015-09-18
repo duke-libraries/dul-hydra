@@ -1,2 +1,2 @@
 <%= f.label :admin_set, "Admin Set" %>
-<%= f.text_field :admin_set, class: "form-control" %>
+<%= f.select :admin_set, admin_set_options_for_select, {include_blank: "N/A"}, {class: "form-control"} %>
