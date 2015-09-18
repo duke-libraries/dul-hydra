@@ -72,13 +72,15 @@ describe BatchesController, type: :controller, batch: true do
 
   describe "#procezz" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
-    before do
-      sign_in batch.user
+    before { sign_in batch.user }
+    it "should enqueue the job" do
+      expect(Resque).to receive(:enqueue).with(Ddr::Batch::BatchProcessorJob, batch.id, batch.user.id)
       get :procezz, :id => batch.id
-      batch.reload
     end
-    it "should set the status of the batch to QUEUED" do
-      expect(batch.status).to eq(Ddr::Batch::Batch::STATUS_QUEUED)
+    it "should redirect to the batches url" do
+      allow(Resque).to receive(:enqueue).with(Ddr::Batch::BatchProcessorJob, batch.id, batch.user.id)
+      get :procezz, :id => batch.id
+      expect(response).to redirect_to(batches_url)
     end
   end
 
