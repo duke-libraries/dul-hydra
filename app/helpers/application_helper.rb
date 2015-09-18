@@ -15,6 +15,10 @@ module ApplicationHelper
     options_from_collection_for_select(Ddr::Models::License.all, :url, :title, current_object.license)
   end
 
+  def admin_set_options_for_select
+    options_from_collection_for_select(Ddr::Models::AdminSet.all, :code, :title, current_object.admin_set)
+  end
+
   def alert_messages
     Ddr::Alerts::Message.active.pluck(:message)
   end
