@@ -151,14 +151,13 @@ en:
         label: Roles
         actions:
           edit: Modify
+      versions:
+        actions:
+          upload: "Upload New Version"
       admin_metadata:
         label: Admin Metadata
         actions:
           edit: Edit
-      collection_info:
-        label: "Collection Info"
-        actions:
-          download: "Download CSV Report"
       pending_batches:
           label: Pending
       finished_batches:

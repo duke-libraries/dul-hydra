@@ -32,13 +32,6 @@
   <% else %>
     <%= object_info_item label: "virus.not_scanned", status: "warning" %>
   <% end %>
-
-  <% if current_object.has_content? %>
-  <li class="list-group-item">
-    <span class="badge"><%= current_object.content.versions.length %></span>
-    <%= t("dul_hydra.object_info.versions") %>
-  </li>
-  <% end %>
 <% end %>
 
 <%# EVENTS %>
