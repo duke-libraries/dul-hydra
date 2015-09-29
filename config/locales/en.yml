@@ -5,6 +5,7 @@ en:
   dul_hydra:        
     admin_metadata:
       local_id: "Local ID"
+      ead_id: "EAD ID"
     techmd:
       file_human_size: "File Size"
       pronom_identifier: "PRONOM Identifier"
