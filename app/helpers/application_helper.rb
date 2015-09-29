@@ -2,7 +2,7 @@ module ApplicationHelper
 
   # Controls what fields are displayed on the admin metadata tab and edit form
   def admin_metadata_fields
-    [:license, :local_id, :display_format]
+    [:license, :local_id, :display_format, :ead_id]
   end
 
   def render_admin_metadata_field(field)

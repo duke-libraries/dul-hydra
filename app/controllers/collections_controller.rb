@@ -34,7 +34,7 @@ class CollectionsController < ApplicationController
   protected
 
   def admin_metadata_fields
-    [:license, :local_id, :display_format, :admin_set]
+    [:license, :local_id, :display_format, :admin_set, :ead_id]
   end
 
   def tab_reports
