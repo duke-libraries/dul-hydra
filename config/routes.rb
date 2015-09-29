@@ -16,10 +16,6 @@ DulHydra::Application.routes.draw do
     /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
   end
 
-  def tab_constraint
-    /attachments|items|components|descriptive_metadata|permissions|default_permissions/
-  end
-
   namespace :admin do
     get 'dashboard', to: 'dashboard#show'
     get 'reports/:type', to: 'reports#show', as: 'report', constraints: {format: 'csv'}
@@ -34,6 +30,7 @@ DulHydra::Application.routes.draw do
   def content_routes
     get 'upload'
     patch 'upload'
+    get 'versions'
   end
 
   def event_routes
