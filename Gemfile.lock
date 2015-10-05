@@ -83,8 +83,8 @@ GEM
     ddr-antivirus (2.0.0)
     ddr-aux-client (1.2.1)
       hashie (~> 3.4)
-    ddr-batch (1.0.0.rc1)
-      ddr-models (~> 2.0)
+    ddr-batch (1.0.0)
+      ddr-models (~> 2.1.0)
       devise (~> 3.4)
       log4r
       paperclip (~> 4.2.0)
@@ -435,7 +435,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (~> 1.0.0)
-  ddr-batch (= 1.0.0.rc1)
+  ddr-batch (= 1.0.0)
   ddr-models (= 2.1.0)
   deprecation
   devise
