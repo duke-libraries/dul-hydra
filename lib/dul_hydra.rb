@@ -3,8 +3,11 @@ require 'ddr-models'
 module DulHydra
   extend ActiveSupport::Autoload
 
-  autoload :Configurable
   autoload :BatchError, 'dul_hydra/error'
+  autoload :Configurable
+  autoload :Error
+  autoload :Jobs
+  autoload :Reports
 
   autoload_under 'ability_definitions' do
     autoload :AliasAbilityDefinitions

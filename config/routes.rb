@@ -5,20 +5,22 @@ DulHydra::Application.routes.draw do
   root :to => "catalog#index"
   Blacklight.add_routes(self)
 
-  get 'superuser' => 'superuser#toggle'
+  scope 'superuser', as: 'superuser' do
+    get 'sign_in', to: 'superuser#create'
+    get 'sign_out', to: 'superuser#destroy'
+  end
 
-  get 'id/*permanent_id' => 'permanent_ids#show'
+  get 'id/*permanent_id', to: 'permanent_ids#show'
 
   def pid_constraint
     /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
   end
 
-  def tab_constraint
-    /attachments|items|components|descriptive_metadata|permissions|default_permissions/
-  end
+  namespace :admin do
+    get 'dashboard', to: 'dashboard#show'
+    get 'reports/:type', to: 'reports#show', as: 'report', constraints: {format: 'csv'}
 
-  if defined?(DulHydra::ResqueAdmin)
-    namespace :admin do
+    if defined?(DulHydra::ResqueAdmin)
       constraints DulHydra::ResqueAdmin do
         mount Resque::Server, at: '/queues'
       end
@@ -28,11 +30,12 @@ DulHydra::Application.routes.draw do
   def content_routes
     get 'upload'
     patch 'upload'
+    get 'versions'
   end
 
   def event_routes
     get 'events'
-    get 'events/:event_id' => :event
+    get 'events/:event_id', to: :event
   end
 
   def roles_routes
@@ -81,10 +84,10 @@ DulHydra::Application.routes.draw do
   end
 
   repository_resource :collections do
-    get 'collection_info'
     get 'items'
     get 'attachments'
     get 'targets'
+    get 'report'
   end
   repository_resource :items do
     get 'components'

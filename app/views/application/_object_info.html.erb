@@ -1,72 +1,40 @@
 <ul class="list-group" id="object-info">
 
   <li class="list-group-item active">
-    Object Info
+    <%= t("dul_hydra.object_info.header") %>
   </li>
 
-  <% if current_object.permanent_id %>
-    <li class="list-group-item">
-      <strong class="pull-right"><%= current_object.permanent_id %></strong>
-      Permanent ID
-    </li>
+  <% if permanent_id = current_object.permanent_id %>
+    <%= object_info_item value: permanent_id, label: "permanent_id.assigned" %> 
   <% else %>
-    <li class="list-group-item list-group-item-warning">
-      Permanent ID Not Assigned
-    </li>
+    <%= object_info_item label: "permanent_id.not_assigned", status: "warning" %> 
   <% end %>
 
   <% if current_object.published? %>
-    <li class="list-group-item list-group-item-info">
-      Published
-    </li>
+    <%= object_info_item label: "published", status: "info" %>
   <% else %>
-    <li class="list-group-item list-group-item-warning">
-      Not Published
-    </li>
+    <%= object_info_item label: "not_published", status: "warning" %>
   <% end %>
 
-<% if current_object.can_have_content? %>
-  <li class="list-group-item list-group-item-#{original_filename_info[:context]}">
-    <span class="pull-right"><%= original_filename_info[:value] %></span>
-    Original Filename
-  </li>
-<% end %>
+  <%= object_info_item value: format_date(current_object.create_date), label: "create_date" %>
 
-  <li class="list-group-item">
-    <span class="pull-right"><%= format_date current_object.create_date %></span>
-    Created
-  </li>
-
-  <li class="list-group-item">
-    <span class="pull-right"><%= format_date current_object.modified_date %></span>
-    Modified
-  </li>
+  <%= object_info_item value: format_date(current_object.modified_date), label: "modified_date" %>
 
   <% if last_fixity_check = current_object.last_fixity_check %>
-    <li class="list-group-item list-group-item-<%= last_fixity_check.success? ? 'success' : 'danger' %>">
-      <span class="pull-right"><%= format_date last_fixity_check.event_date_time %></span>
-      Fixity Checked
-    </li>
+    <%= object_info_item value: format_date(last_fixity_check.event_date_time), label: "fixity.checked", status: (last_fixity_check.success? ? "success" : "danger") %>
   <% else %>
-    <li class="list-group-item list-group-item-warning">
-      Not Fixity Checked
-    </li>
+    <%= object_info_item label: "fixity.not_checked", status: "warning" %>
   <% end %>
 
 <% if current_object.can_have_content? %>
   <% if last_virus_check = current_object.last_virus_check %>
-    <li class="list-group-item list-group-item-<%= last_virus_check.success? ? 'success' : 'danger' %>">
-      <span class="pull-right"><%= format_date last_virus_check.event_date_time %></span>
-      Virus Scanned
-    </li>
+    <%= object_info_item value: format_date(last_virus_check.event_date_time), label: "virus.scanned", status: (last_virus_check.success? ? 'success' : 'danger') %>
   <% else %>
-    <li class="list-group-item list-group-item-warning">
-      Not Virus Scanned
-    </li>
+    <%= object_info_item label: "virus.not_scanned", status: "warning" %>
   <% end %>
 <% end %>
 
-<%# events %>
+<%# EVENTS %>
   <li class="list-group-item">
     <span class="badge"><%= current_object.events.count %></span>
     <%= link_to_unless_current "Events", {action: "events"} %>

@@ -5,7 +5,9 @@ module DulHydra
 
       included do
         before_action :upload_content, only: :create
-        self.tabs.unshift :tab_content_info
+        self.tabs.unshift :tab_tech_metadata
+        self.tabs << :tab_versions
+        helper_method :tech_metadata_fields
       end
 
       def upload
@@ -25,7 +27,23 @@ module DulHydra
         end
       end
 
+      def versions
+        if request.xhr?
+          # For async loading of tab content
+          @tab = tab_versions
+          render "versions", layout: false
+        else
+          redirect_to action: "show", tab: "versions"
+        end
+      end
+
       protected
+
+      def tech_metadata_fields
+        DulHydra.techmd_show_fields.map do |field|
+          [field, Array(current_object.techmd.send(field))]
+        end.to_h
+      end
 
       def notify_upload
         notify_update(summary: "Object content was updated")
@@ -57,20 +75,28 @@ module DulHydra
         content_params.values_at :checksum, :checksum_type
       end
 
-      def tab_content_info
-        Tab.new("content_info",
+      def tab_tech_metadata
+        Tab.new("tech_metadata",
                 actions: [
-                          TabAction.new("download",
-                                        url_for(controller: "downloads", action: "show", id: current_object),
-                                        current_object.has_content? && can?(:download, current_object)
-                                        ),
-                          TabAction.new("upload",
-                                        url_for(action: "upload"),
-                                        can?(:upload, current_object)
-                                        )
-                         ]
-                )
+                  TabAction.new("fits_xml",
+                                download_path(current_object, "fits"),
+                                show_ds_download_link?(current_object.fits)
+                               ),
+                ]
+               )
+      end
 
+      def tab_versions
+        Tab.new("versions",
+                actions: [
+                  TabAction.new("upload",
+                                url_for(id: current_object, action: "upload"),
+                                can?(:upload, current_object)
+                               ),
+                ],
+                guard: current_object.has_content?,
+                href: url_for(id: current_object, action: "versions")
+               )
       end
 
     end

@@ -6,6 +6,9 @@ module DulHydra
   module Scripts
     class BatchFixityCheck
 
+      warn "[DEPRECATION] `DulHydra::Scripts::BatchFixityCheck` is deprecated and will be removed." \
+           " Use `DulHydra::Fixity.check` instead."
+
       # TODO migrate defaults to config
       DEFAULT_LIMIT = 1000
       DEFAULT_PERIOD = "60DAYS"

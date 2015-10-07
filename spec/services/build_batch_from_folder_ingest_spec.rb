@@ -38,7 +38,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
       expect(batch.id).to be_present
       expect(batch.name).to eq(batch_name)
       expect(batch.description).to eq(batch_description)
-      expect(batch.status).to eq(DulHydra::Batch::Models::Batch::STATUS_READY)
+      expect(batch.status).to eq(Ddr::Batch::Batch::STATUS_READY)
 
       # Batch objects
       batch_objects = batch.batch_objects
@@ -48,9 +48,9 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
 
       # All batch object expectations
       batch_objects.each do |obj|
-        expect(obj.type).to eq('DulHydra::Batch::Models::IngestBatchObject')
+        expect(obj.type).to eq('Ddr::Batch::IngestBatchObject')
         admin_policy_relationships = obj.batch_object_relationships.where(
-                                        name: DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY)
+                                        name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY)
         expect(admin_policy_relationships.size).to eq(1)
         expect(admin_policy_relationships.first.object).to eq(collections.first.pid)
       end
@@ -68,7 +68,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
         expect(obj.pid).to be_present
         item_pids << obj.pid
         parent_relationships = obj.batch_object_relationships.where(
-                                  name: DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT)
+                                  name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT)
         expect(parent_relationships.size).to eq(1)
         expect(parent_relationships.first.object).to eq(collections.first.pid)
         item_titles << obj.batch_object_attributes.where(name: 'title').first.value
@@ -85,7 +85,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
       components.each do |obj|
         # Parent relationship
         parent_relationships = obj.batch_object_relationships.where(
-                                  name: DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT)
+                                  name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT)
         expect(parent_relationships.size).to eq(1)
         expect(item_pids).to include(parent_relationships.first.object)
         # Content datastream

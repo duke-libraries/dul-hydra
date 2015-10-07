@@ -1,0 +1,4 @@
+<% if license = current_object.effective_license %>
+  <%= license.title %>
+  <% if license.pid != current_object.pid %>(inherited)<% end %>
+<% end %>

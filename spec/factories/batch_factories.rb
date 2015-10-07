@@ -1,11 +1,11 @@
 FactoryGirl.define do
-  factory :batch, :class => DulHydra::Batch::Models::Batch do
+  factory :batch, :class => Ddr::Batch::Batch do
     name "Batch"
     description "This is a batch of stuff to do."
     user { FactoryGirl.create(:user) }
 
     factory :batch_with_basic_ingest_batch_objects do
-      ignore do
+      transient do
         object_count 3
       end
       after(:create) do |batch, evaluator|
@@ -14,7 +14,7 @@ FactoryGirl.define do
     end
 
     factory :batch_with_generic_ingest_batch_objects do
-      ignore do
+      transient do
         object_count 3
       end
       after(:create) do |batch, evaluator|
@@ -25,6 +25,12 @@ FactoryGirl.define do
     factory :batch_with_basic_update_batch_object do
       after(:create) do |batch|
         FactoryGirl.create(:basic_update_batch_object, :batch => batch)
+      end
+    end
+
+    factory :batch_with_basic_clear_attribute_batch_object do
+      after(:create) do |batch|
+        FactoryGirl.create(:basic_update_clear_attribute_batch_object, batch: batch)
       end
     end
 

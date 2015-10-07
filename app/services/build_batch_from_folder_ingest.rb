@@ -16,14 +16,14 @@ class BuildBatchFromFolderIngest
   def call
     @batch = create_batch
     traverse_filesystem
-    batch.update_attributes(status: DulHydra::Batch::Models::Batch::STATUS_READY)
+    batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
     batch    
   end
 
   private
 
   def create_batch
-    DulHydra::Batch::Models::Batch.create(user: user, name: batch_name, description: batch_description)
+    Ddr::Batch::Batch.create(user: user, name: batch_name, description: batch_description)
   end
 
   def traverse_filesystem
@@ -36,7 +36,7 @@ class BuildBatchFromFolderIngest
     object_model = content_modeler.new(node).call
     pid = assign_pid(node) if ['Collection', 'Item'].include?(object_model)
     self.collection_pid = pid if object_model == 'Collection'
-    batch_object = DulHydra::Batch::Models::IngestBatchObject.create(batch: batch, model: object_model, pid: pid)
+    batch_object = Ddr::Batch::IngestBatchObject.create(batch: batch, model: object_model, pid: pid)
     add_relationships(batch_object, node.parent)
     add_metadata(batch_object, node)
     add_content_datastream(batch_object, node) if object_model == 'Component'
@@ -49,14 +49,14 @@ class BuildBatchFromFolderIngest
 
   def add_relationships(batch_object, parent_node)
     batch_object.batch_object_relationships <<
-          create_relationship(DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY, collection_pid)
+          create_relationship(Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY, collection_pid)
     case batch_object.model
     when 'Item'
       batch_object.batch_object_relationships <<
-            create_relationship(DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT, parent_node.content[:pid])
+            create_relationship(Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT, parent_node.content[:pid])
     when 'Component'
       batch_object.batch_object_relationships <<
-            create_relationship(DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT, parent_node.content[:pid])
+            create_relationship(Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT, parent_node.content[:pid])
     end
   end
 
@@ -64,13 +64,13 @@ class BuildBatchFromFolderIngest
     locator = Filesystem.node_locator(node)
     metadata_provider.metadata(locator).each do |key, value|
       Array(value).each do |v|
-        DulHydra::Batch::Models::BatchObjectAttribute.create(
+        Ddr::Batch::BatchObjectAttribute.create(
               batch_object: batch_object,
               datastream: Ddr::Datastreams::DESC_METADATA,
               name: key,
-              operation: DulHydra::Batch::Models::BatchObjectAttribute::OPERATION_ADD,
+              operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
               value: v,
-              value_type: DulHydra::Batch::Models::BatchObjectAttribute::VALUE_TYPE_STRING
+              value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
         )
       end
     end
@@ -79,11 +79,11 @@ class BuildBatchFromFolderIngest
   def add_content_datastream(batch_object, node)
     full_filepath = Filesystem.path_to_node(node)
     rel_filepath = Filesystem.path_to_node(node, 'relative')
-    ds = DulHydra::Batch::Models::BatchObjectDatastream.create(
+    ds = Ddr::Batch::BatchObjectDatastream.create(
       name: Ddr::Datastreams::CONTENT,
-      operation: DulHydra::Batch::Models::BatchObjectDatastream::OPERATION_ADD,
+      operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADD,
       payload: full_filepath,
-      payload_type: DulHydra::Batch::Models::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
+      payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
       checksum: checksum_provider.checksum(rel_filepath),
       checksum_type: Ddr::Datastreams::CHECKSUM_TYPE_SHA256
     )
@@ -91,11 +91,11 @@ class BuildBatchFromFolderIngest
   end
 
   def create_relationship(relationship_name, relationship_target_pid)
-    DulHydra::Batch::Models::BatchObjectRelationship.create(
+    Ddr::Batch::BatchObjectRelationship.create(
         name: relationship_name,
-        operation: DulHydra::Batch::Models::BatchObjectRelationship::OPERATION_ADD,
+        operation: Ddr::Batch::BatchObjectRelationship::OPERATION_ADD,
         object: relationship_target_pid,
-        object_type: DulHydra::Batch::Models::BatchObjectRelationship::OBJECT_TYPE_PID
+        object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID
     )
   end
 

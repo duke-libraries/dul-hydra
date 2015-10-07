@@ -1,0 +1,3 @@
+<% if admin_set = Ddr::Models::AdminSet.call(current_object) %>
+  <%= admin_set.title %>
+<% end %>

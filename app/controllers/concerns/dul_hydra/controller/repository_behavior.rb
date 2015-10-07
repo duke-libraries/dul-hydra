@@ -23,6 +23,7 @@ module DulHydra
         helper_method :current_document
         helper_method :current_bookmarks
         helper_method :get_solr_response_for_field_values
+        helper_method :admin_metadata_fields
 
         copy_blacklight_config_from CatalogController
       end
@@ -102,6 +103,11 @@ module DulHydra
       end
 
       protected
+
+      # Controls what fields are displayed on the admin metadata tab and edit form
+      def admin_metadata_fields
+        [:license, :local_id, :display_format, :ead_id]
+      end      
 
       def admin_metadata_params
         params.require(:adminMetadata).tap do |p|

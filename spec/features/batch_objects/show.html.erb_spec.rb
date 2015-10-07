@@ -12,9 +12,9 @@ describe "batch_objects/show.html.erb", type: :feature, batch: true do
       @admin_policy_pid = @parent_pid = nil
       batch_object.batch_object_relationships.each do |r|
         case r.name
-        when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY
+        when Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY
           @admin_policy_pid = r.object
-        when DulHydra::Batch::Models::BatchObjectRelationship::RELATIONSHIP_PARENT
+        when Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT
           @parent_pid = r.object
         end
       end

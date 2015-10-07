@@ -12,8 +12,9 @@ describe "export_sets/index.html.erb", type: :feature, export_sets: true do
   context "user has bookmarks" do
     let(:object) { FactoryGirl.create(:test_content) }
     before do
-      object.read_users = [user.user_key]
-      object.save
+      # object.read_users = [user.user_key]
+      # object.save
+      user.can :read, object
       user.bookmarks.create(document_id: object.pid)
     end
     it "should have a New Export Set->Content link" do
@@ -25,8 +26,9 @@ describe "export_sets/index.html.erb", type: :feature, export_sets: true do
     let(:object) { FactoryGirl.create(:test_content) }
     let(:export_set) { ExportSet.new(user: user, pids: [object.pid], export_type: ExportSet::Types::CONTENT) }
     before do
-      object.read_users = [export_set.user.user_key]
-      object.save
+      # object.read_users = [export_set.user.user_key]
+      # object.save
+      user.can :read, object
       export_set.create_archive
     end
     it "should list the export set" do

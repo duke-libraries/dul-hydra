@@ -1,5 +1,25 @@
 module ApplicationHelper
 
+  def render_admin_metadata_field(field)
+    render field.to_s
+  rescue ActionView::MissingTemplate
+    current_object.send(field)
+  end
+
+  def research_help_contact_options_for_select
+    # FIXME https://github.com/duke-libraries/ddr-models/issues/394
+    Ddr::Contacts.load_contacts unless Ddr::Contacts.contacts 
+    options_from_collection_for_select(Ddr::Contacts.contacts.to_h.values, :slug, :name, current_object.research_help_contact)
+  end
+  
+  def license_options_for_select
+    options_from_collection_for_select(Ddr::Models::License.all, :url, :title, current_object.license)
+  end
+
+  def admin_set_options_for_select
+    options_from_collection_for_select(Ddr::Models::AdminSet.all, :code, :title, current_object.admin_set)
+  end
+
   def alert_messages
     Ddr::Alerts::Message.active.pluck(:message)
   end
@@ -58,6 +78,10 @@ module ApplicationHelper
     else
       current_object.identifier
     end
+  end
+
+  def object_info_item(value: nil, label:, status: nil)
+    render partial: "object_info_item", locals: {value: value, label: label, status: status}
   end
 
   def render_tab(tab)
@@ -134,7 +158,7 @@ module ApplicationHelper
 
   def format_date(date)
     if date
-      date = Time.parse(date) if !date.respond_to?(:localtime)
+      date = Time.parse(date.to_s) if !date.respond_to?(:localtime)
       date.localtime.to_s
     end
   end
@@ -155,7 +179,7 @@ module ApplicationHelper
   end
 
   def link_to_create_model(model)
-    link_to I18n.t("dul_hydra.#{model.underscore}.new_menu", default: model), controller: model.tableize, action: "new"
+    link_to I18n.t("dul_hydra.#{model.underscore}.new_menu", default: model), send("new_#{model.tableize.singularize}_path")
   end
 
   def document_or_object_url(doc_or_obj)

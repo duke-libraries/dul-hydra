@@ -10,7 +10,7 @@ describe Ability, type: :model, abilities: true do
   describe "aliases" do
     it "should alias actions to :read" do
       expect(subject.aliased_actions[:read])
-        .to include(:attachments, :collection_info, :components, :event, :events, :items, :targets)
+        .to include(:attachments, :components, :event, :events, :items, :targets, :versions)
     end
     it "should alias actions to :grant" do
       expect(subject.aliased_actions[:grant]).to include(:roles)
@@ -18,30 +18,8 @@ describe Ability, type: :model, abilities: true do
     it "should alias actions to :update" do
       expect(subject.aliased_actions[:update]).to include(:admin_metadata)
     end
-  end
-
-  describe "Batch permissions" do
-    let(:resource) { FactoryGirl.create(:batch) }
-    describe "when the user is the creator of the batch" do
-      before { allow(auth_context).to receive(:user) { resource.user } }
-      it { should be_able_to(:manage, resource) }
-    end
-    describe "when the user is not the creator of the batch" do
-      it { should_not be_able_to(:manage, resource) }
-    end
-  end
-
-  describe "BatchObject permissions" do
-    let(:batch) { FactoryGirl.create(:batch) }
-    let(:resource) { DulHydra::Batch::Models::BatchObject.create(batch: batch) }
-    before { allow(subject).to receive(:user) { batch.user } }
-    describe "when the user can :manage the batch" do
-      before { subject.can :manage, batch }
-      it { should be_able_to(:manage, resource) }
-    end
-    describe "when the user cannot :manage the batch" do
-      before { subject.cannot :manage, batch }
-      it { should_not be_able_to(:manage, resource) }
+    it "should alias actions to :audit" do
+      expect(subject.aliased_actions[:audit]).to include(:report)
     end
   end
 

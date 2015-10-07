@@ -1,0 +1,7 @@
+<h4>Select Report</h4>
+<%= form_tag report_collection_path(id: current_object, format: "csv"), method: :get do %>
+  <div class="form-group">
+    <input type="radio" name="type" value="techmd" checked /> Technical Metadata
+  </div>
+  <input type="submit" class="btn btn-primary" value="Generate Report" />
+<% end %>
