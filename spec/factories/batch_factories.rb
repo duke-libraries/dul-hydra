@@ -5,7 +5,7 @@ FactoryGirl.define do
     user { FactoryGirl.create(:user) }
 
     factory :batch_with_basic_ingest_batch_objects do
-      ignore do
+      transient do
         object_count 3
       end
       after(:create) do |batch, evaluator|
@@ -14,7 +14,7 @@ FactoryGirl.define do
     end
 
     factory :batch_with_generic_ingest_batch_objects do
-      ignore do
+      transient do
         object_count 3
       end
       after(:create) do |batch, evaluator|

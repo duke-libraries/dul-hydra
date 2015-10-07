@@ -34,7 +34,7 @@ FactoryGirl.define do
     sequence(:identifier) { |n| [ "testparent%05d" % n ] }
 
     factory :test_parent_has_children do
-      ignore do
+      transient do
         child_count 3
       end
       after(:create) do |parent, evaluator|
