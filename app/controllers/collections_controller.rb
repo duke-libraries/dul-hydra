@@ -15,13 +15,18 @@ class CollectionsController < ApplicationController
   def report
     respond_to do |format|
       format.csv do
-        rep = DulHydra::Reports::CollectionReport.new(params[:id])
+        rep = DulHydra::Reports::Report.new
         basename = current_object.title_display.gsub /[^\w\.\-]/, "_"
         case params.require(:type)
         when "techmd"
+          rep.filters << DulHydra::Reports::IsGovernedByFilter.new(current_object.pid)
           rep.filters << DulHydra::Reports::HasContentFilter
           rep.columns += DulHydra::Reports::Columns::TechnicalMetadata
           basename += "__TECHMD"
+        when "descmd"
+          rep.filters << DulHydra::Reports::IsMemberOfCollectionFilter.new(current_object.pid)
+          rep.columns += DulHydra::Reports::Columns::DescriptiveMetadata
+          basename += "__DESCMD"
         end
         csv = rep.run
         filename = basename + ".csv"

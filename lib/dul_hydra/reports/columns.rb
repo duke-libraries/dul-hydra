@@ -21,5 +21,10 @@ module DulHydra::Reports
 
     TechnicalMetadata = constants(false).select { |c| c.to_s =~ /\ATECHMD_/ }.map { |c| const_get(c) }
 
+    DescriptiveMetadata = Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.map do |t|
+      field = ActiveFedora::SolrService.solr_name t, :stored_searchable
+      Column.new field, header: t.to_s
+    end
+
   end
 end
