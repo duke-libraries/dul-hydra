@@ -34,7 +34,7 @@ module ApplicationHelper
     # having been added as a helper method to CatalogController
     response, doc = get_solr_response_for_doc_id(pid)
     # XXX This is not consistent with Ddr::Models::Base#title_display
-    title = doc.nil? ? pid : doc.fetch(Ddr::IndexFields::TITLE, pid)
+    title = doc.nil? ? pid : doc.fetch(Ddr::Index::Fields::TITLE, pid)
     link_to(title, catalog_path(pid), :class => "parent-link").html_safe
   end
 

@@ -1,11 +1,12 @@
 source 'http://rubygems.org'
 
 gem 'rails', '~> 4.1.6'
-gem 'hydra-head', '~> 7.2.0'
+gem 'hydra-head', '~> 9.3'
 gem 'ddr-alerts', '~> 1.0.0'
-gem 'ddr-batch', '1.0.0'
-gem 'ddr-models', '2.1.3'
-gem 'rubydora', '>= 1.8.1'
+gem 'ddr-batch', github: 'duke-libraries/ddr-batch', branch: 'fcrepo4'
+gem 'ddr-models', '3.0.0.alpha.2'
+# Need to include this until 9.5.1+ release of AF
+gem 'active-fedora', github: 'projecthydra/active_fedora', ref: 'f85b4eab16f45cb4c1491a27bb20b05821bd9c44'
 gem 'devise'
 gem 'deprecation'
 
@@ -23,7 +24,7 @@ gem 'therubyracer', '~> 0.11.3', require: 'v8', group: :production
 gem 'mime-types', '~> 2.6'
 
 # Export sets
-gem 'rubyzip', '< 1.0.0'
+gem 'rubyzip'
 gem 'paperclip', '~> 4.2.0'
 
 # Filesystem representation
@@ -31,7 +32,7 @@ gem 'rubytree'
 
 group :development, :test do
   gem 'sqlite3'
-  gem 'jettywrapper', '~> 1.8'
+  gem 'jettywrapper', '~> 2.0'
 end
 
 group :test do
@@ -48,7 +49,7 @@ group :production do
   gem 'mysql2'
 end
 
-gem 'sass-rails', '~> 4.0.1'
+gem 'sass-rails', '~> 5.0.4'
 gem 'jquery-rails'
 gem 'uglifier', '~> 1.3.0'
 

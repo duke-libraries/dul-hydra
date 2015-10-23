@@ -17,8 +17,8 @@ module DulHydra
       def configure_blacklight_for_targets
         blacklight_config.configure do |config|
           config.sort_fields.clear
-          config.add_sort_field "#{Ddr::IndexFields::LOCAL_ID} asc", label: "Local ID"
-          config.add_sort_field "#{Ddr::IndexFields::TITLE} asc", label: "Title"
+          config.add_sort_field "#{Ddr::Index::Fields::LOCAL_ID} asc", label: "Local ID"
+          config.add_sort_field "#{Ddr::Index::Fields::TITLE} asc", label: "Title"
         end
       end
 

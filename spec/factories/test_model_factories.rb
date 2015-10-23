@@ -25,13 +25,13 @@ end
 FactoryGirl.define do
 
   factory :test_model do
-    title [ "DulHydra Test Object" ]
-    sequence(:identifier) { |n| [ "test%05d" % n ] }
+    dc_title [ "DulHydra Test Object" ]
+    sequence(:dc_identifier) { |n| [ "test%05d" % n ] }
   end
 
   factory :test_parent do
-    title [ "DulHydra Test Parent Object" ]
-    sequence(:identifier) { |n| [ "testparent%05d" % n ] }
+    dc_title [ "DulHydra Test Parent Object" ]
+    sequence(:dc_identifier) { |n| [ "testparent%05d" % n ] }
 
     factory :test_parent_has_children do
       transient do
@@ -44,8 +44,8 @@ FactoryGirl.define do
   end
 
   factory :test_child do
-    title [ "DulHydra Test Child Object" ]
-    sequence(:identifier) { |n| [ "testchild%05d" % n ] }
+    dc_title [ "DulHydra Test Child Object" ]
+    sequence(:dc_identifier) { |n| [ "testchild%05d" % n ] }
 
     factory :test_child_has_parent do
       association :parent, :factory => :test_parent
@@ -53,8 +53,8 @@ FactoryGirl.define do
   end
 
   factory :test_content do
-    title [ "DulHydra Test Content Object" ]
-    sequence(:identifier) { |n| [ "testcontent%05d" % n ] }
+    dc_title [ "DulHydra Test Content Object" ]
+    sequence(:dc_identifier) { |n| [ "testcontent%05d" % n ] }
     after(:build) do |c|
       c.upload File.new(File.join(Rails.root, "spec", "fixtures", "imageA.tif"))
     end
@@ -65,8 +65,8 @@ FactoryGirl.define do
   end
 
   factory :test_model_omnibus do
-    title [ "DulHydra Test Omnibus Object" ]
-    sequence(:identifier) { |n| [ "test%05d" % n ] }
+    dc_title [ "DulHydra Test Omnibus Object" ]
+    sequence(:dc_identifier) { |n| [ "test%05d" % n ] }
     after(:build) do |c|
       c.upload File.new(File.join(Rails.root, "spec", "fixtures", "imageA.tif"))
     end

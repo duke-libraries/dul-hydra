@@ -2,6 +2,7 @@ require 'dul_hydra'
 
 class ApplicationController < ActionController::Base
 
+  # XXX This collection of modules may be wrong for hydra-head 9.x
   include Blacklight::Controller
   include Blacklight::Base
   include Hydra::Controller::ControllerBehavior
@@ -42,15 +43,19 @@ class ApplicationController < ActionController::Base
 
   def find_models_with_gated_discovery(model, opts={})
     solr_opts = {
-      q: "#{Ddr::IndexFields::ACTIVE_FEDORA_MODEL}:\"#{model.name}\"",
+      q: "#{Ddr::Index::Fieldss::ACTIVE_FEDORA_MODEL}:\"#{model.name}\"",
       fq: gated_discovery_filters.join(" OR "),
-      sort: "#{Ddr::IndexFields::TITLE} ASC",
+      sort: "#{Ddr::Index::Fieldss::TITLE} ASC",
       rows: 9999
     }
     solr_opts.merge! opts
     solr_response = query_solr(solr_opts)
     solr_results = solr_response.docs
     ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
+  end
+
+  def add_access_controls_to_solr_params(request_params, solr_params)
+    apply_gated_discovery(solr_params)
   end
 
   def all_permissions

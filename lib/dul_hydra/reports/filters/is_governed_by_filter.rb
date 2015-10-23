@@ -3,7 +3,7 @@ module DulHydra::Reports
 
     def initialize(pid)
       self.clauses = [
-        raw_query(Ddr::IndexFields::IS_GOVERNED_BY, "info:fedora/#{pid}")
+        raw_query(Ddr::Index::Fields::IS_GOVERNED_BY, "info:fedora/#{pid}")
       ]
     end
 

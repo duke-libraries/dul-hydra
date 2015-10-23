@@ -134,12 +134,12 @@ module DulHydra
       end
 
       def objects_last_checked_before_period(rows)
-        q = "#{Ddr::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO NOW-#{period}]"
-        ActiveFedora::SolrService.query(q, rows: rows, sort: "#{Ddr::IndexFields::LAST_FIXITY_CHECK_ON} asc")
+        q = "#{Ddr::Index::Fields::LAST_FIXITY_CHECK_ON}:[* TO NOW-#{period}]"
+        ActiveFedora::SolrService.query(q, rows: rows, sort: "#{Ddr::Index::Fields::LAST_FIXITY_CHECK_ON} asc")
       end
 
       def objects_never_checked(rows)
-        q = "-#{Ddr::IndexFields::LAST_FIXITY_CHECK_ON}:[* TO *]"
+        q = "-#{Ddr::Index::Fields::LAST_FIXITY_CHECK_ON}:[* TO *]"
         ActiveFedora::SolrService.query(q, rows: rows)
       end
 

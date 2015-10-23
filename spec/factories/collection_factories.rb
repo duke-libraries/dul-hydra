@@ -1,8 +1,8 @@
 FactoryGirl.define do
 
   factory :collection do
-    title [ "Test Collection" ]
-    sequence(:identifier) { |n| [ "coll%05d" % n ] }
+    dc_title [ "Test Collection" ]
+    sequence(:dc_identifier) { |n| [ "coll%05d" % n ] }
 
     trait :has_item do
       children { [ FactoryGirl.create(:item) ] }

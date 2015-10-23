@@ -13,9 +13,9 @@ module DulHydra::Reports
 
     PID = Column.new("id", header: "Fedora PID")
 
-    Ddr::IndexFields.constants(false).each do |field|
+    Ddr::Index::Fields.constants(false).each do |field|
       key = field.to_s.downcase
-      column = Column.new(Ddr::IndexFields.const_get(field), header: field_header(key))
+      column = Column.new(Ddr::Index::Fields.const_get(field), header: field_header(key))
       const_set(field, column)
     end
 
