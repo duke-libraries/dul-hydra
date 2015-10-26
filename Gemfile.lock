@@ -76,9 +76,9 @@ GEM
       nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
       rsolr (~> 1.0.11)
-    bootstrap-sass (3.3.5)
+    bootstrap-sass (3.3.5.1)
       autoprefixer-rails (>= 5.0.0.1)
-      sass (>= 3.2.19)
+      sass (>= 3.3.0)
     builder (3.2.2)
     cancancan (1.13.1)
     capybara (2.4.4)
@@ -439,6 +439,7 @@ PLATFORMS
 
 DEPENDENCIES
   active-fedora!
+  blacklight (= 5.15.0)
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (~> 1.0.0)
@@ -457,7 +458,7 @@ DEPENDENCIES
   nest (= 1.1.2)
   orderly
   paperclip (~> 4.2.0)
-  rails (~> 4.1.6)
+  rails (~> 4.1.13)
   resque (= 1.25.2)
   resque-pool (= 0.3.0)
   rspec-its

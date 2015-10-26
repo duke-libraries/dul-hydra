@@ -1,6 +1,7 @@
 source 'http://rubygems.org'
 
-gem 'rails', '~> 4.1.6'
+gem 'rails', '~> 4.1.13'
+gem 'blacklight', '5.15.0'
 gem 'hydra-head', '~> 9.3'
 gem 'ddr-alerts', '~> 1.0.0'
 gem 'ddr-batch', github: 'duke-libraries/ddr-batch', branch: 'fcrepo4'

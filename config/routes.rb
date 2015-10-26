@@ -3,7 +3,8 @@ require 'resque/server'
 DulHydra::Application.routes.draw do
 
   root :to => "catalog#index"
-  Blacklight.add_routes(self)
+
+  blacklight_for :catalog
 
   scope 'superuser', as: 'superuser' do
     get 'sign_in', to: 'superuser#create'

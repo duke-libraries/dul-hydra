@@ -1,6 +1,7 @@
 class CatalogController < ApplicationController
 
   include Hydra::Catalog
+  #include Blacklight::Catalog
 
   # Adds method from Blacklight::SolrHelper to helper context
   helper_method :get_solr_response_for_doc_id
@@ -13,7 +14,7 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
 
-    config.search_builder_class = Hydra::SearchBuilder
+    config.search_builder_class = SearchBuilder
 
     config.default_solr_params = {
       :qt => 'search',

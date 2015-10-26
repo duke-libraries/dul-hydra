@@ -4,15 +4,15 @@ class ApplicationController < ActionController::Base
 
   # XXX This collection of modules may be wrong for hydra-head 9.x
   include Blacklight::Controller
-  include Blacklight::Base
+  #include Blacklight::Base
   include Hydra::Controller::ControllerBehavior
-  include Hydra::AccessControlsEnforcement
+  # include Hydra::AccessControlsEnforcement
   include Ddr::Auth::RoleBasedAccessControlsEnforcement
 
   # This applies appropriate access controls to all Blacklight solr queries
-  self.solr_search_params_logic += [:add_access_controls_to_solr_params]
+  # self.search_params_logic += [:add_access_controls_to_solr_params]
 
-  protect_from_forgery
+  protect_from_forgery with: :exception
 
   before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
@@ -52,10 +52,6 @@ class ApplicationController < ActionController::Base
     solr_response = query_solr(solr_opts)
     solr_results = solr_response.docs
     ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
-  end
-
-  def add_access_controls_to_solr_params(request_params, solr_params)
-    apply_gated_discovery(solr_params)
   end
 
   def all_permissions

@@ -19,14 +19,9 @@
 # Ignore all config yaml files
 /config/*.yml
 /config/metadata_file_profiles/*.yml
-# Except for these ...
-!/config/predicate_mappings.yml
 
 # Environment configs
 /config/environments/*.rb
-
-# Ignore certain translation files
-/config/locales/admin_set.yml
 
 # SimpleCov / Coveralls
 /coverage

@@ -1,3 +1,3 @@
-class SearchBuilder < Blacklight::SearchBuilder
-  include Blacklight::Solr::SearchBuilderBehavior
+class SearchBuilder < Hydra::SearchBuilder
+
 end
