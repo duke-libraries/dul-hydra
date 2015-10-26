@@ -1,7 +1,6 @@
 require 'spec_helper'
 
-module DulHydra::Batch::Scripts
-
+module DulHydra::Scripts
   RSpec.describe ProcessSimpleIngest, type: :script, batch: true, simple_ingest: true do
 
     let(:config_hash) do
@@ -53,5 +52,4 @@ module DulHydra::Batch::Scripts
     end
 
   end
-
 end

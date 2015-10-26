@@ -1,5 +1,4 @@
-module DulHydra::Batch::Scripts
-
+module DulHydra::Scripts
   class IngestFolderProcessor
 
     def initialize(opts={})
@@ -8,5 +7,4 @@ module DulHydra::Batch::Scripts
     end
 
   end
-
 end

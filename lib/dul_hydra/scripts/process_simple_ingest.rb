@@ -1,5 +1,4 @@
-module DulHydra::Batch::Scripts
-
+module DulHydra::Scripts
   class ProcessSimpleIngest
 
     attr_reader :batch_user, :configuration, :filepath
@@ -70,13 +69,13 @@ module DulHydra::Batch::Scripts
 
     def build_batch(filesystem)
       batch_builder = BuildBatchFromFolderIngest.new(
-                          batch_user,
-                          filesystem,
-                          ModelSimpleIngestContent,
-                          SimpleIngestMetadata.new(File.join(filepath, 'data', METADATA_FILE), configuration[:metadata]),
-                          SimpleIngestChecksum.new(File.join(filepath, CHECKSUM_FILE)),
-                          "Simple Ingest",
-                          filesystem.root.name)
+        batch_user,
+        filesystem,
+        ModelSimpleIngestContent,
+        SimpleIngestMetadata.new(File.join(filepath, 'data', METADATA_FILE), configuration[:metadata]),
+        SimpleIngestChecksum.new(File.join(filepath, CHECKSUM_FILE)),
+        "Simple Ingest",
+        filesystem.root.name)
       batch = batch_builder.call
     end
 
