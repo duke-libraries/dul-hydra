@@ -7,7 +7,7 @@ module DulHydra::Scripts
     let(:item) { FactoryGirl.create(:item, :member_of_collection, :has_part) }
     let(:collection) { item.collection }
     let(:component) { item.children.first }
-    let(:thumbnails_script) { DulHydra::Scripts::Thumbnails.new(collection.pid) }
+    let(:thumbnails_script) { DulHydra::Scripts::Thumbnails.new(collection.id) }
 
     context "thumbnail does not exist" do
 

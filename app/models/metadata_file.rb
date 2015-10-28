@@ -86,7 +86,7 @@ class MetadataFile < ActiveRecord::Base
     CSV.foreach(metadata.path, effective_options[:csv]) do |row|
       obj = Ddr::Batch::UpdateBatchObject.new(:batch => @batch)
       obj.model = row.field("model") if row.headers.include?("model")
-      obj.pid = row.field("pid") if row.headers.include?("pid")
+      obj.id = row.field("pid") if row.headers.include?("pid")
       att = Ddr::Batch::BatchObjectAttribute.new(
                 batch_object: obj,
                 datastream: Ddr::Datastreams::DESC_METADATA,
@@ -116,14 +116,14 @@ class MetadataFile < ActiveRecord::Base
           end
         end
       end
-      unless obj.pid.present?
+      unless obj.id.present?
         if obj.identifier.present?
           if collection_pid.present?
             @collection ||= ActiveFedora::Base.find(collection_pid, :cast => true)
           else
             @collection = nil
           end
-          obj.pid = Ddr::Utils.pid_for_identifier(obj.identifier, {model: model(row), collection: @collection})
+          obj.id = Ddr::Utils.pid_for_identifier(obj.identifier, {model: model(row), collection: @collection})
           obj.save
         end
       end

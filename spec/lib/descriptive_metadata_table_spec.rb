@@ -32,7 +32,7 @@ module DulHydra
         first_identifier_index = dm_table.headers.index(:identifier)
         identifier_indices = first_identifier_index .. first_identifier_index+2
         objects.each_with_index do |obj, i|
-          expect(dm_table[i][:pid]).to eq(obj.pid)
+          expect(dm_table[i][:pid]).to eq(obj.id)
           expect(dm_table[i][:title]).to eq(obj.title.first)
           j = 0
           while idx = dm_table[i].index(:identifier, first_identifier_index + j)

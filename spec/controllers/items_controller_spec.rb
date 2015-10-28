@@ -2,12 +2,12 @@ require 'spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_item
-  post :create, parent_id: collection.pid, descMetadata: {title: ["New Item"]}
+  post :create, parent_id: collection.id, descMetadata: {title: ["New Item"]}
 end
 
 def create_item_and_component opts={}
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, parent_id: collection.pid, descMetadata: {title: ["New Item"]}, content: {file: fixture_file_upload('imageA.tif', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
+  post :create, parent_id: collection.id, descMetadata: {title: ["New Item"]}, content: {file: fixture_file_upload('imageA.tif', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
 end
 
 describe ItemsController, type: :controller, items: true do
@@ -26,7 +26,7 @@ describe ItemsController, type: :controller, items: true do
     let(:new_object) do
       Proc.new do
         controller.current_ability.can(:add_children, collection)
-        get :new, parent_id: collection.pid
+        get :new, parent_id: collection.id
       end
     end
   end
@@ -37,7 +37,7 @@ describe ItemsController, type: :controller, items: true do
     describe "when the user cannot add children to the collection" do
       before { controller.current_ability.cannot(:add_children, collection) }
       it "should be unauthorized" do
-        get :new, parent_id: collection.pid
+        get :new, parent_id: collection.id
         expect(response.response_code).to eq(403)
       end
     end

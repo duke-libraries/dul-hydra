@@ -2,7 +2,7 @@ require 'spec_helper'
 
 def create_attachment opts={}
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, attached_to_id: attach_to.pid, content: {file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum, checksum_type: checksum_type}, descMetadata: {title: ["New Attachment"]}
+  post :create, attached_to_id: attach_to.id, content: {file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum, checksum_type: checksum_type}, descMetadata: {title: ["New Attachment"]}
 end
 
 describe AttachmentsController, type: :controller, attachments: true do
@@ -21,7 +21,7 @@ describe AttachmentsController, type: :controller, attachments: true do
     let(:new_object) do
       Proc.new do
         controller.current_ability.can(:add_attachment, attach_to)
-        get :new, attached_to_id: attach_to.pid
+        get :new, attached_to_id: attach_to.id
       end
     end
   end
@@ -32,7 +32,7 @@ describe AttachmentsController, type: :controller, attachments: true do
       let(:attach_to) { FactoryGirl.create(:collection) }
       before { controller.current_ability.cannot(:add_attachment, attach_to) }
       it "should be unauthorized" do
-        get :new, attached_to_id: attach_to.pid
+        get :new, attached_to_id: attach_to.id
         expect(response.response_code).to eq(403)
       end
     end

@@ -3,7 +3,7 @@ require 'support/shared_examples_for_repository_controllers'
 
 def create_component opts={}
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, parent_id: item.pid, content: {file: fixture_file_upload('imageA.tif', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
+  post :create, parent_id: item.id, content: {file: fixture_file_upload('imageA.tif', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
 end
 
 describe ComponentsController, type: :controller, components: true do
@@ -22,7 +22,7 @@ describe ComponentsController, type: :controller, components: true do
     let(:new_object) do
       Proc.new do
         controller.current_ability.can(:add_children, item)
-        get :new, parent_id: item.pid
+        get :new, parent_id: item.id
       end
     end
   end
@@ -33,14 +33,14 @@ describe ComponentsController, type: :controller, components: true do
     context "and user cannot add children to item" do
       # before { item.save! }
       it "should be unauthorized" do
-        get :new, parent_id: item.pid
+        get :new, parent_id: item.id
         expect(response.response_code).to eq(403)
       end
     end
     context "and user can add children to item" do
       before { controller.current_ability.can(:add_children, item) }
       it "should be authorized" do
-        get :new, parent_id: item.pid
+        get :new, parent_id: item.id
         expect(response.response_code).to eq(200)
       end
     end

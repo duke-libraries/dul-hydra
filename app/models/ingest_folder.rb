@@ -187,7 +187,7 @@ class IngestFolder < ActiveRecord::Base
   def create_batch_object_for_parent(parent_identifier)
     parent_model = Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(model, "parent")).name
     parent_pid = ActiveFedora::Base.connection_for_pid('0').mint
-    policy_pid = collection_admin_policy ? collection_admin_policy.pid : collection_pid
+    policy_pid = collection_admin_policy ? collection_admin_policy.id : collection_pid
     obj = Ddr::Batch::IngestBatchObject.create(
             batch: @batch,
             identifier: parent_identifier,
@@ -242,7 +242,7 @@ class IngestFolder < ActiveRecord::Base
         @parent_hash[parent_id] = parent_pid
       end
     end
-    policy_pid = collection_admin_policy ? collection_admin_policy.pid : collection_pid
+    policy_pid = collection_admin_policy ? collection_admin_policy.id : collection_pid
     obj = Ddr::Batch::IngestBatchObject.create(
             batch: @batch,
             identifier: file_identifier,

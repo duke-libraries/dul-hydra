@@ -140,7 +140,7 @@ describe IngestFolder, type: :model, ingest: true do
   end
   context "operations" do
     let(:collection) { FactoryGirl.create(:collection) }
-    let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user, :collection_pid => collection.pid) }
+    let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user, :collection_pid => collection.id) }
     before do
       allow(Dir).to receive(:foreach).with("/mount/base/path/subpath").and_return(
         Enumerator.new { |y| y << "Thumbs.db" << "movie.mp4" << "file01001.tif" << "file01002.tif" << "pdf" << "targets" }
@@ -198,7 +198,7 @@ describe IngestFolder, type: :model, ingest: true do
         it_behaves_like "batch objects without individual permissions"
         it "should have an admin_policy relationship with the collection's admin policy" do
           user.batches.first.batch_objects.each do |obj|
-            expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.admin_policy.pid)
+            expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.admin_policy.id)
           end
         end
       end
@@ -213,7 +213,7 @@ describe IngestFolder, type: :model, ingest: true do
           it_behaves_like "batch objects without individual permissions"
           it "should have an admin_policy relationship with the collection" do
             user.batches.first.batch_objects.each do |obj|
-              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
+              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.id)
             end
           end
         end
@@ -227,7 +227,7 @@ describe IngestFolder, type: :model, ingest: true do
           it_behaves_like "batch objects without individual permissions"
           it "should have an admin_policy relationship with the collection" do
             user.batches.first.batch_objects.each do |obj|
-              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
+              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.id)
             end
           end
         end

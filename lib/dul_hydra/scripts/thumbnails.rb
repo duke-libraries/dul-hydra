@@ -18,7 +18,7 @@ module DulHydra::Scripts
             item.thumbnail.content = component.thumbnail.content
             item.thumbnail.mimeType = component.thumbnail.mimeType
             unless item.save
-              puts "Thumbnails script unable to save item #{item.pid}"
+              puts "Thumbnails script unable to save item #{item.id}"
             end
           end
         end
@@ -28,7 +28,7 @@ module DulHydra::Scripts
         @collection.thumbnail.content = item.thumbnail.content
         @collection.thumbnail.mimeType = item.thumbnail.mimeType
         unless @collection.save
-          puts "Thumbnails script unable to save collection #{collection.pid}"
+          puts "Thumbnails script unable to save collection #{collection.id}"
         end
       end
     end

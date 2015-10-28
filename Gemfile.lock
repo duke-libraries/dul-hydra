@@ -26,6 +26,26 @@ GIT
       rdf-rdfxml (~> 1.1.0)
       rsolr (~> 1.0.10)
 
+PATH
+  remote: ../ddr-models-f4
+  specs:
+    ddr-models (3.0.0.alpha.2)
+      active-fedora (~> 9.5)
+      active-triples (~> 0.7.2)
+      cancancan (~> 1.12)
+      ddr-antivirus (= 2.0.0)
+      ddr-aux-client (~> 1.2, >= 1.2.2)
+      devise (~> 3.4)
+      ezid-client (~> 1.1, >= 1.1.1)
+      grouper-rest-client
+      hydra-core (~> 9.3)
+      hydra-validations (~> 0.5)
+      net-ldap (~> 0.11)
+      omniauth-shibboleth (~> 1.2.0)
+      rails (~> 4.1.13)
+      rdf-vocab (~> 0.8)
+      resque (~> 1.25)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -100,22 +120,6 @@ GEM
     ddr-antivirus (2.0.0)
     ddr-aux-client (1.2.2)
       hashie (~> 3.4)
-    ddr-models (3.0.0.alpha.2)
-      active-fedora (~> 9.5)
-      active-triples (~> 0.7.2)
-      cancancan (~> 1.12)
-      ddr-antivirus (= 2.0.0)
-      ddr-aux-client (~> 1.2, >= 1.2.2)
-      devise (~> 3.4)
-      ezid-client (~> 1.1, >= 1.1.1)
-      grouper-rest-client
-      hydra-core (~> 9.3)
-      hydra-validations (~> 0.5)
-      net-ldap (~> 0.11)
-      omniauth-shibboleth (~> 1.2.0)
-      rails (~> 4.1.13)
-      rdf-vocab (~> 0.8)
-      resque (~> 1.25)
     deprecation (0.2.2)
       activesupport
     devise (3.5.2)
@@ -149,7 +153,7 @@ GEM
       rest-client (>= 1.6.1)
     haml (4.0.7)
       tilt
-    hashie (3.4.2)
+    hashie (3.4.3)
     htmlentities (4.3.4)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
@@ -444,7 +448,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (~> 1.0.0)
   ddr-batch!
-  ddr-models (= 3.0.0.alpha.2)
+  ddr-models!
   deprecation
   devise
   equivalent-xml
@@ -469,3 +473,6 @@ DEPENDENCIES
   sqlite3
   therubyracer (~> 0.11.3)
   uglifier (~> 1.3.0)
+
+BUNDLED WITH
+   1.10.6

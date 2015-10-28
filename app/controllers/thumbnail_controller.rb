@@ -3,7 +3,7 @@ class ThumbnailController < ApplicationController
   include Hydra::Controller::DownloadBehavior
 
   def datastream_name
-    "#{asset.pid.sub(/:/, "-")}-thumbnail"
+    "#{asset.id.sub(/:/, "-")}-thumbnail"
   end
 
   def datastream_to_show

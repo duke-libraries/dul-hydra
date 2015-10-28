@@ -24,7 +24,7 @@ module DulHydra
       # rows
       rows = objects.collect do |obj|
         row = Array.new(cols.size)
-        row[0] = obj.pid
+        row[0] = obj.id
         col_index.keys.each do |term|
           start = cols.index(term)
           values = term_values(obj, term)

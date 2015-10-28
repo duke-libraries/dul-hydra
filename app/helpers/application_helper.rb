@@ -191,7 +191,7 @@ module ApplicationHelper
     if opts[:access]
       models = models.select { |m| can? opts[:access], m }
     end
-    options = models.collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
+    options = models.collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.id] }
     options_for_select options, opts[:selected]
   end
 

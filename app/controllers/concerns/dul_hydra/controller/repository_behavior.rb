@@ -209,7 +209,7 @@ module DulHydra
       end
 
       def notify_event type, args={}
-        args[:pid] ||= current_object.pid
+        args[:pid] ||= current_object.id
         args[:user_key] ||= current_user.user_key
         args.merge! event_params
         Ddr::Notifications.notify_event(type, args)

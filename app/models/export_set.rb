@@ -127,7 +127,7 @@ class ExportSet < ActiveRecord::Base
           # write content to file
           File.open(temp_file_path, 'wb', :encoding => 'ascii-8bit') do |f|
             f.write object.content.content
-            logger.debug "Wrote object #{object.pid} content to file."
+            logger.debug "Wrote object #{object.id} content to file."
           end
           # Use original source file name, if available, or the generated file name.
           # Note that we keep the path of the source file in order to reduce the likelihood
