@@ -2,23 +2,14 @@ require 'dul_hydra'
 
 class ApplicationController < ActionController::Base
 
-  # XXX This collection of modules may be wrong for hydra-head 9.x
   include Blacklight::Controller
-  #include Blacklight::Base
-  include Hydra::Controller::ControllerBehavior
-  # include Hydra::AccessControlsEnforcement
   include Ddr::Auth::RoleBasedAccessControlsEnforcement
-
-  # This applies appropriate access controls to all Blacklight solr queries
-  # self.search_params_logic += [:add_access_controls_to_solr_params]
 
   protect_from_forgery with: :exception
 
   before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  helper_method :group_service
-  helper_method :all_permissions
   helper_method :find_models_with_gated_discovery
   helper_method :acting_as_superuser?
 
@@ -52,15 +43,6 @@ class ApplicationController < ActionController::Base
     solr_response = query_solr(solr_opts)
     solr_results = solr_response.docs
     ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
-  end
-
-  def all_permissions
-    warn "[DEPRECATION] `all_permissions` is deprecated and should not be used with role-based access control."
-    # IMPORTANT - rights controller behavior depends on the permissions being
-    # ordered from lowest to highest so that assignment of multiple permissions
-    # to a user or group results in the highest permission being granted.
-    # No doubt this is really terrible, but there it is.
-    ["discover", "read", "edit"]
   end
 
 end
