@@ -75,7 +75,7 @@ RSpec.configure do |config|
       FileUtils.remove_entry_secure(Ddr::Models.multires_image_external_file_store)
     end
   end
-  config.after(:each) { ActiveFedora::Cleaner.clean! }
+  config.after(:each, type: :controller) { ActiveFedora::Cleaner.clean! }
   config.after(:each, type: :feature) { Warden.test_reset! }
 
   # Redirect all output to file

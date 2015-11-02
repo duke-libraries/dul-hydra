@@ -7,19 +7,27 @@ end
 
 class TestParent < TestModel
   include Ddr::Models::HasChildren
-  has_many :children, property: :is_part_of, class_name: 'TestChild'
+  has_many :children,
+           predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf,
+           class_name: 'TestChild'
 end
 
 class TestChild < TestModel
-  belongs_to :parent, property: :is_part_of, class_name: 'TestParent'
+  belongs_to :parent,
+             predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf,
+             class_name: 'TestParent'
 end
 
 class TestModelOmnibus < TestModel
   include Ddr::Models::Governable
   include Ddr::Models::HasContent
   include Ddr::Models::HasAttachments
-  has_many :children, property: :is_part_of, class_name: 'TestChild'
-  belongs_to :parent, property: :is_part_of, class_name: 'TestParent'
+  has_many :children,
+           predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf,
+           class_name: 'TestChild'
+  belongs_to :parent,
+             predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf,
+             class_name: 'TestParent'
 end
 
 FactoryGirl.define do

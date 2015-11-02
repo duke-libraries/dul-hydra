@@ -14,7 +14,7 @@ module DulHydra
 
         attr_reader :current_object
 
-        include Blacklight::Base
+        include Blacklight::Base # XXX probably not needed here
         include DulHydra::Controller::TabbedViewBehavior
 
         self.tabs = [ :tab_descriptive_metadata, :tab_admin_metadata, :tab_roles ]
@@ -122,7 +122,7 @@ module DulHydra
       end
 
       def log_current_object
-        logger.debug "CURRENT OBJECT: #{current_object.inspect}"
+        logger.debug "CURRENT OBJECT: #{current_object.model_and_id}"
       end
 
       def dul_hydra_layout
@@ -173,9 +173,10 @@ module DulHydra
                   TabAction.new("edit",
                                 url_for(action: "edit"),
                                 can?(:edit, current_object)),
-                  TabAction.new("download",
-                                download_path(current_object, "descMetadata"),
-                                show_ds_download_link?(current_object.descMetadata))
+                  # TODO fix or remove
+                  # TabAction.new("download",
+                  #               download_path(current_object, "descMetadata"),
+                  #               show_ds_download_link?(current_object.descMetadata))
                 ]
                )
       end

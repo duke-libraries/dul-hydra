@@ -1,14 +1,23 @@
 GIT
-  remote: git://github.com/duke-libraries/ddr-batch.git
-  revision: bbba5b2704a4ec6f9b8831be426ec6d3e506eb75
-  branch: fcrepo4
+  remote: git://github.com/duke-libraries/ddr-models.git
+  revision: 0994d4462482d674006e255ea702e1a3e173650c
+  ref: 0994d4462482d674006e255ea702e1a3e173650c
   specs:
-    ddr-batch (1.0.0.post)
-      ddr-models (~> 3.0.0.alpha.1)
+    ddr-models (3.0.0.alpha.3)
+      active-fedora (~> 9.5)
+      active-triples (~> 0.7.2)
+      cancancan (~> 1.12)
+      ddr-antivirus (= 2.0.0)
+      ddr-aux-client (~> 1.2, >= 1.2.2)
       devise (~> 3.4)
-      log4r
-      paperclip (~> 4.2.0)
+      ezid-client (~> 1.1, >= 1.1.1)
+      grouper-rest-client
+      hydra-validations (~> 0.5)
+      net-ldap (~> 0.11)
+      omniauth-shibboleth (~> 1.2.0)
       rails (~> 4.1.13)
+      rdf-vocab (~> 0.8)
+      resque (~> 1.25)
 
 GIT
   remote: git://github.com/projecthydra/active_fedora.git
@@ -25,26 +34,6 @@ GIT
       om (~> 3.1)
       rdf-rdfxml (~> 1.1.0)
       rsolr (~> 1.0.10)
-
-PATH
-  remote: ../ddr-models-f4
-  specs:
-    ddr-models (3.0.0.alpha.2)
-      active-fedora (~> 9.5)
-      active-triples (~> 0.7.2)
-      cancancan (~> 1.12)
-      ddr-antivirus (= 2.0.0)
-      ddr-aux-client (~> 1.2, >= 1.2.2)
-      devise (~> 3.4)
-      ezid-client (~> 1.1, >= 1.1.1)
-      grouper-rest-client
-      hydra-core (~> 9.3)
-      hydra-validations (~> 0.5)
-      net-ldap (~> 0.11)
-      omniauth-shibboleth (~> 1.2.0)
-      rails (~> 4.1.13)
-      rdf-vocab (~> 0.8)
-      resque (~> 1.25)
 
 GEM
   remote: http://rubygems.org/
@@ -120,6 +109,12 @@ GEM
     ddr-antivirus (2.0.0)
     ddr-aux-client (1.2.2)
       hashie (~> 3.4)
+    ddr-batch (2.0.0.alpha.1)
+      ddr-models
+      devise (~> 3.4)
+      log4r
+      paperclip (~> 4.2.0)
+      rails (~> 4.1.13)
     deprecation (0.2.2)
       activesupport
     devise (3.5.2)
@@ -235,8 +230,8 @@ GEM
     nest (1.1.2)
       redis
     net-http-persistent (2.9.4)
-    net-ldap (0.11)
-    netrc (0.10.3)
+    net-ldap (0.12.0)
+    netrc (0.11.0)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
     nom-xml (0.5.3)
@@ -447,7 +442,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (~> 1.0.0)
-  ddr-batch!
+  ddr-batch (= 2.0.0.alpha.1)
   ddr-models!
   deprecation
   devise

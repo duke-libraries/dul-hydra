@@ -49,7 +49,7 @@ shared_examples "a repository object controller" do
       end
       it "should not save an empty string metadata element" do
         create_object.call
-        expect(assigns(:current_object).description).to be_blank
+        expect(assigns(:current_object).dc_description).to be_blank
       end
       it "should grant roles to the creator" do
         expect_any_instance_of(object_class).to receive(:grant_roles_to_creator).with(user)
@@ -99,10 +99,10 @@ shared_examples "a repository object controller" do
         expect(response).to redirect_to(action: "show", id: object, tab: "descriptive_metadata")
       end
       it "should update the object" do
-        expect{ update_metadata; object.reload }.to change { object.descMetadata }
+        expect{ update_metadata; object.reload }.to change { object.dc_title }
       end
       it "should create an update event" do
-        expect{ update_metadata }.to change { object.update_events.count }.by(1)
+        expect{ update_metadata; object.reload }.to change { object.update_events.count }.by(1)
       end
       it "should record the comment in the update event" do
         update_metadata
