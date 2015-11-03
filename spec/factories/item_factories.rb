@@ -5,7 +5,7 @@ FactoryGirl.define do
     sequence(:dc_identifier) { |n| [ "item%05d" % n ] }
 
     trait :member_of_collection do
-      collection
+      association :parent, factory: :collection
     end
 
     trait :has_part do

@@ -16,7 +16,7 @@ module DulHydra::Scripts
           component = item.first_child
           if component.has_thumbnail?
             item.thumbnail.content = component.thumbnail.content
-            item.thumbnail.mimeType = component.thumbnail.mimeType
+            item.thumbnail.mime_type = component.thumbnail.mime_type
             unless item.save
               puts "Thumbnails script unable to save item #{item.id}"
             end
@@ -26,7 +26,7 @@ module DulHydra::Scripts
       item = @collection.first_child
       if item.has_thumbnail?
         @collection.thumbnail.content = item.thumbnail.content
-        @collection.thumbnail.mimeType = item.thumbnail.mimeType
+        @collection.thumbnail.mime_type = item.thumbnail.mime_type
         unless @collection.save
           puts "Thumbnails script unable to save collection #{collection.id}"
         end
