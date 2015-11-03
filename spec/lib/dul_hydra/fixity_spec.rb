@@ -1,7 +1,7 @@
 require "spec_helper"
 
 module DulHydra
-  RSpec.describe Fixity do
+  RSpec.describe Fixity, fixity: true do
 
     let(:obj) { FactoryGirl.create(:item) }
 
