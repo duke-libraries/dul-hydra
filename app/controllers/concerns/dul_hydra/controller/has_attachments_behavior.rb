@@ -10,7 +10,8 @@ module DulHydra
 
       def get_attachments
         configure_blacklight_for_attachments
-        query = current_object.association_query(:attachments)
+        rel = { current_object.class.reflect_on_association(:attachments) => current_object.id }
+        query = ActiveFedora::SolrQueryBuilder.construct_query_for_rel(rel)
         @response, @document_list = get_search_results(params, {q: query})
       end
 

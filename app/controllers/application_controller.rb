@@ -34,9 +34,9 @@ class ApplicationController < ActionController::Base
 
   def find_models_with_gated_discovery(model, opts={})
     solr_opts = {
-      q: "#{Ddr::Index::Fieldss::ACTIVE_FEDORA_MODEL}:\"#{model.name}\"",
+      q: "#{Ddr::Index::Fields::ACTIVE_FEDORA_MODEL}:\"#{model.name}\"",
       fq: gated_discovery_filters.join(" OR "),
-      sort: "#{Ddr::Index::Fieldss::TITLE} ASC",
+      sort: "#{Ddr::Index::Fields::TITLE} ASC",
       rows: 9999
     }
     solr_opts.merge! opts

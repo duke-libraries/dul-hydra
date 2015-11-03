@@ -11,6 +11,10 @@ FactoryGirl.define do
     trait :has_target do
       targets { [ FactoryGirl.create(:target) ] }
     end
+
+    trait :has_attachment do
+      attachments { [ FactoryGirl.create(:attachment) ] }
+    end
   end
 
 end

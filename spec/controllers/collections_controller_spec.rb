@@ -1,14 +1,5 @@
 require 'spec_helper'
-require 'support/collections_controller_spec_helper'
 require 'support/shared_examples_for_repository_controllers'
-
-def create_collection
-  post :create, descMetadata: {title: ["New Collection"]}
-end
-
-def new_collection
-  get :new
-end
 
 describe CollectionsController, type: :controller, collections: true do
 
@@ -16,27 +7,74 @@ describe CollectionsController, type: :controller, collections: true do
   before { sign_in user }
 
   it_behaves_like "a repository object controller" do
-    let(:create_object) { Proc.new { create_collection } }
-    let(:new_object) { Proc.new { new_collection } }
+    let(:object) { FactoryGirl.create(:collection) }
+  end
+
+  describe "#new" do
+    describe "when the user can create a Collection" do
+      before { controller.current_ability.can(:create, Collection) }
+      it "renders the new template" do
+        get :new
+        expect(response).to render_template(:new)
+      end
+    end
+    describe "when the user cannot create a Collection" do
+      it "is unauthorized" do
+        get :new
+        expect(response.response_code).to eq(403)
+      end
+    end
+  end
+
+  describe "#create" do
+    describe "when the user can create a Collection" do
+      before { controller.current_ability.can(:create, Collection) }
+      it "persists the new Collection" do
+        expect {
+          post :create, descMetadata: {title: ["New Collection"]}
+        }.to change{ Collection.count }.by(1)
+      end
+      it "doesn't save an empty string metadata value" do
+        post :create, descMetadata: {title: ["New Collection"], description: [""]}
+        expect(assigns(:current_object).dc_description).to be_blank
+      end
+      it "grants the Curator role to the creator" do
+        post :create, descMetadata: {title: ["New Collection"]}
+        expect(assigns(:current_object).roles.granted?(type: Ddr::Auth::Roles::CURATOR, agent: user, scope: "resource"))
+          .to be true
+      end
+      it "records a creation event" do
+        expect {
+          post :create, descMetadata: {title: ["New Collection"]}
+        }.to change { Ddr::Events::CreationEvent.count }.by(1)
+      end
+      it "redirects after creating the new object" do
+        post :create, descMetadata: {title: ["New Collection"]}
+        expect(response).to be_redirect
+      end
+    end
+    describe "when the user cannot create objects of this type" do
+      it "is unauthorized" do
+        post :create, descMetadata: {title: ["New Collection"]}
+        expect(response.response_code).to eq(403)
+      end
+    end
   end
 
   describe "#items" do
     let(:collection) { FactoryGirl.create(:collection, :has_item) }
-    context "when the user can read the collection" do
+    describe "when the user can read the collection" do
       before do
-        controller.current_ability.can :read, collection
+        collection.roles.grant type: "Viewer", agent: user
+        collection.save!
       end
-      it "should render the items" do
+      it "renders the items" do
         get :items, id: collection
-        expect(response).to be_successful
         expect(response).to render_template(:items)
       end
     end
     context "when the user cannot read the collection" do
-      before do
-        controller.current_ability.cannot :read, collection
-      end
-      it "should be unauthorized" do
+      it "is unauthorized" do
         get :items, id: collection
         expect(response.response_code).to eq 403
       end
@@ -44,26 +82,18 @@ describe CollectionsController, type: :controller, collections: true do
   end
 
   describe "#attachments" do
-    let(:collection) { FactoryGirl.create(:collection) }
-    let(:attachment) { FactoryGirl.create(:attachment) }
-    before do
-      attachment.attached_to = collection
-      attachment.save
-    end
+    let(:collection) { FactoryGirl.create(:collection, :has_attachment) }
     context "when the user can read the collection" do
       before do
-        controller.current_ability.can :read, collection
+        collection.roles.grant type: "Viewer", agent: user
+        collection.save!
       end
       it "should render the attachments" do
         get :attachments, id: collection
-        expect(response).to be_successful
         expect(response).to render_template(:attachments)
       end
     end
     context "when the user cannot read the collection" do
-      before do
-        controller.current_ability.cannot :read, collection
-      end
       it "should be unauthorized" do
         get :attachments, id: collection
         expect(response.response_code).to eq 403
@@ -73,21 +103,18 @@ describe CollectionsController, type: :controller, collections: true do
 
   describe "#targets" do
     let(:collection) { FactoryGirl.create(:collection, :has_target) }
-    context "when the user can read the collection" do
+    describe "when the user can read the collection" do
       before do
-        controller.current_ability.can :read, collection
+        collection.roles.grant type: "Viewer", agent: user
+        collection.save!
       end
-      it "should render the targets" do
+      it "renders the targets" do
         get :targets, id: collection
-        expect(response).to be_successful
         expect(response).to render_template(:targets)
       end
     end
-    context "when the user cannot read the collection" do
-      before do
-        controller.current_ability.cannot :read, collection
-      end
-      it "should be unauthorized" do
+    describe "when the user cannot read the collection" do
+      it "is unauthorized" do
         get :targets, id: collection
         expect(response.response_code).to eq 403
       end

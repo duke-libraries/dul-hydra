@@ -1,4 +1,3 @@
-# Common behavior for repository object controllers
 module DulHydra
   module Controller
     module RepositoryBehavior
@@ -14,7 +13,10 @@ module DulHydra
 
         attr_reader :current_object
 
-        include Blacklight::Base # XXX probably not needed here
+        include Blacklight::Base
+        # REFACTOR Adding :apply_gated_discovery here duplicates Ddr::Models::Catalog
+        self.search_params_logic += [:apply_gated_discovery]
+
         include DulHydra::Controller::TabbedViewBehavior
 
         self.tabs = [ :tab_descriptive_metadata, :tab_admin_metadata, :tab_roles ]
