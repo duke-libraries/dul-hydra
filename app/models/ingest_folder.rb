@@ -162,10 +162,10 @@ class IngestFolder < ActiveRecord::Base
             else
               @file_count += 1
               if add_parents && !target?(dirpath)
-                parent_id = parent_identifier(extract_identifier_from_filename(entry))
-                unless @parent_hash.has_key?(parent_id)
+                parent_loc_id = parent_local_id(extract_identifier_from_filename(entry))
+                unless @parent_hash.has_key?(parent_loc_id)
                   @parent_count += 1
-                  @parent_hash[parent_id] = nil
+                  @parent_hash[parent_loc_id] = nil
                 end
               end
             end
@@ -184,46 +184,44 @@ class IngestFolder < ActiveRecord::Base
     end
   end
 
-  def create_batch_object_for_parent(parent_identifier)
+  def create_batch_object_for_parent(parent_loc_id)
     parent_model = Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(model, "parent")).name
-    parent_pid = ActiveFedora::Base.connection_for_pid('0').mint
     policy_pid = collection_admin_policy ? collection_admin_policy.id : collection_pid
     obj = Ddr::Batch::IngestBatchObject.create(
             batch: @batch,
-            identifier: parent_identifier,
-            model: parent_model,
-            pid: parent_pid
+            identifier: parent_loc_id,
+            model: parent_model
             )
     Ddr::Batch::BatchObjectAttribute.create(
             batch_object: obj,
-            datastream: Ddr::Datastreams::ADMIN_METADATA,
+            datastream: 'adminMetadata',
             name: 'local_id',
             operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
-            value: parent_identifier,
+            value: parent_loc_id,
             value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
             )
     Ddr::Batch::BatchObjectRelationship.create(
             batch_object: obj,
             name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
             object: policy_pid,
-            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID,
+            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_REPO_ID,
             operation: Ddr::Batch::BatchObjectRelationship::OPERATION_ADD
             )
     Ddr::Batch::BatchObjectRelationship.create(
             batch_object: obj,
             name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT,
             object: collection_pid,
-            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID,
+            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_REPO_ID,
             operation: Ddr::Batch::BatchObjectRelationship::OPERATION_ADD
             ) if collection_pid
-    parent_pid
+    obj.id
   end
 
-  def parent_identifier(child_identifier)
+  def parent_local_id(child_local_id)
     case parent_id_length
-    when nil then child_identifier
-    when 0 then child_identifier
-    else child_identifier[0, parent_id_length]
+    when nil then child_local_id
+    when 0 then child_local_id
+    else child_local_id[0, parent_id_length]
     end
   end
 
@@ -235,11 +233,11 @@ class IngestFolder < ActiveRecord::Base
     file_identifier = extract_identifier_from_filename(file_entry)
     file_model = target?(dirpath) ? IngestFolder.default_target_model : model
     if add_parents && !target?(dirpath)
-      parent_id = parent_identifier(file_identifier)
-      parent_pid = @parent_hash.fetch(parent_id, nil)
-      if parent_pid.blank?
-        parent_pid = create_batch_object_for_parent(parent_id)
-        @parent_hash[parent_id] = parent_pid
+      parent_loc_id = parent_local_id(file_identifier)
+      parent_rec_id = @parent_hash.fetch(parent_loc_id, nil)
+      if parent_rec_id.blank?
+        parent_rec_id = create_batch_object_for_parent(parent_loc_id)
+        @parent_hash[parent_loc_id] = parent_rec_id
       end
     end
     policy_pid = collection_admin_policy ? collection_admin_policy.id : collection_pid
@@ -250,7 +248,7 @@ class IngestFolder < ActiveRecord::Base
             )
     Ddr::Batch::BatchObjectAttribute.create(
             batch_object: obj,
-            datastream: Ddr::Datastreams::ADMIN_METADATA,
+            datastream: 'adminMetadata',
             name: 'local_id',
             operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
             value: file_identifier,
@@ -269,21 +267,21 @@ class IngestFolder < ActiveRecord::Base
             batch_object: obj,
             name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY,
             object: policy_pid,
-            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID,
+            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_REPO_ID,
             operation: Ddr::Batch::BatchObjectRelationship::OPERATION_ADD
             )
     Ddr::Batch::BatchObjectRelationship.create(
             batch_object: obj,
             name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT,
-            object: parent_pid,
-            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID,
+            object: parent_rec_id,
+            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_REC_ID,
             operation: Ddr::Batch::BatchObjectRelationship::OPERATION_ADD
-            ) if add_parents && parent_pid
+            ) if add_parents && parent_rec_id
     Ddr::Batch::BatchObjectRelationship.create(
             batch_object: obj,
             name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_COLLECTION,
             object: collection_pid,
-            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID,
+            object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_REPO_ID,
             operation: Ddr::Batch::BatchObjectRelationship::OPERATION_ADD
             ) if target?(dirpath) && collection_pid
     obj.save

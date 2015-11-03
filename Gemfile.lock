@@ -109,7 +109,7 @@ GEM
     ddr-antivirus (2.0.0)
     ddr-aux-client (1.2.2)
       hashie (~> 3.4)
-    ddr-batch (2.0.0.alpha.1)
+    ddr-batch (2.0.0.alpha.2)
       ddr-models
       devise (~> 3.4)
       log4r
@@ -442,7 +442,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (~> 1.0.0)
-  ddr-batch (= 2.0.0.alpha.1)
+  ddr-batch (= 2.0.0.alpha.2)
   ddr-models!
   deprecation
   devise

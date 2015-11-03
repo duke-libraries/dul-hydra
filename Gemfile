@@ -4,7 +4,7 @@ gem 'rails', '~> 4.1.13'
 gem 'blacklight', '5.15.0'
 gem 'hydra-head', '~> 9.3'
 gem 'ddr-alerts', '~> 1.0.0'
-gem 'ddr-batch', '2.0.0.alpha.1'
+gem 'ddr-batch', '2.0.0.alpha.2'
 #gem 'ddr-models', '3.0.0.alpha.3'
 gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: '2b98a0adc89e45c1d21d6e533faf941fb5e79e9f'
 # Need to include this until 9.5.1+ release of AF
