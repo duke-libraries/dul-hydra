@@ -119,7 +119,7 @@ class ExportSet < ActiveRecord::Base
     Dir.mktmpdir do |tmpdir|
       logger.debug "Created temp directory #{tmpdir} for export set content archive."
       zip_path = File.join(tmpdir, generate_archive_file_name('zip'))
-      Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |zip_file|
+      Zip::File.open(zip_path, Zip::File::CREATE) do |zip_file|
         logger.debug "Created zip file #{zip_path} for export set content archive."
         objects.each do |object|
           # use guaranteed unique file name based on PID and dsID
