@@ -31,9 +31,9 @@ shared_examples "a proper set of batch objects" do
     expect(dss.fetch('T001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T001.tiff"))
     expect(dss.fetch('T002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T002.tiff"))
     expect(rels.fetch('f').fetch('parent').object).to eql(ingest_folder.collection_pid)
-    expect(rels.fetch('file01001').fetch('parent').object).to eql(objects.fetch('f').pid)
-    expect(rels.fetch('file01002').fetch('parent').object).to eql(objects.fetch('f').pid)
-    expect(rels.fetch('file01').fetch('parent').object).to eql(objects.fetch('f').pid)
+    expect(rels.fetch('file01001').fetch('parent').object).to eql(objects.fetch('f').id.to_s)
+    expect(rels.fetch('file01002').fetch('parent').object).to eql(objects.fetch('f').id.to_s)
+    expect(rels.fetch('file01').fetch('parent').object).to eql(objects.fetch('f').id.to_s)
     expect(rels.fetch('T001').fetch('collection').object).to eql(ingest_folder.collection_pid)
     expect(rels.fetch('T002').fetch('collection').object).to eql(ingest_folder.collection_pid)
   end
@@ -185,7 +185,11 @@ describe IngestFolder, type: :model, ingest: true do
       let(:dss) { {} }
       let(:rels) { {} }
       let(:parent_model) { Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
-      before { allow_any_instance_of(IngestFolder).to receive(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) }
+      before do
+        allow(Ddr::Utils).to receive(:relationship_object_reflection).and_call_original
+        allow(Ddr::Utils).to receive(:relationship_object_reflection).with('TestParent', 'parent') { 'something' }
+        allow_any_instance_of(IngestFolder).to receive(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt'))
+      end
 
       context "collection has admin policy" do
         before do

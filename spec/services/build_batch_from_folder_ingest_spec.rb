@@ -52,7 +52,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
         admin_policy_relationships = obj.batch_object_relationships.where(
                                         name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY)
         expect(admin_policy_relationships.size).to eq(1)
-        expect(admin_policy_relationships.first.object).to eq(collections.first.id)
+        expect(admin_policy_relationships.first.object).to eq(collections.first.id.to_s)
       end
 
       # Collection expectations
@@ -70,7 +70,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
         parent_relationships = obj.batch_object_relationships.where(
                                   name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT)
         expect(parent_relationships.size).to eq(1)
-        expect(parent_relationships.first.object).to eq(collections.first.id)
+        expect(parent_relationships.first.object).to eq(collections.first.id.to_s)
         item_titles << obj.batch_object_attributes.where(name: 'title').first.value
       end
       expect(item_titles).to include('Title 1')
@@ -87,7 +87,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
         parent_relationships = obj.batch_object_relationships.where(
                                   name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT)
         expect(parent_relationships.size).to eq(1)
-        expect(item_pids).to include(parent_relationships.first.object)
+        expect(item_pids.map(&:to_s)).to include(parent_relationships.first.object)
         # Content datastream
         content_datastreams = obj.batch_object_datastreams.where(
                                   name: Ddr::Datastreams::CONTENT)

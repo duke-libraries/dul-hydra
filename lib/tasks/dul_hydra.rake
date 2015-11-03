@@ -56,7 +56,7 @@ namespace :dul_hydra do
       processor_args = { filepath: ENV['FOLDER'] }
       processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
       processor_args[:batch_user] = ENV['BATCH_USER']
-      processor = DulHydra::Batch::Scripts::ProcessSimpleIngest.new(processor_args)
+      processor = DulHydra::Scripts::ProcessSimpleIngest.new(processor_args)
       processor.execute
     end
     desc "Creates update batch from folder of METS files"
@@ -68,7 +68,7 @@ namespace :dul_hydra do
       processor_args[:batch_user] = ENV['BATCH_USER']
       processor_args[:collection_pid] = ENV['COLLECTION_PID']
       processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
-      processor = DulHydra::Batch::Scripts::ProcessMETSFolder.new(processor_args)
+      processor = DulHydra::Scripts::ProcessMETSFolder.new(processor_args)
       processor.execute
     end
     desc "Converts CSV file to one or more XML files"

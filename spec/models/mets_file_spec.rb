@@ -8,14 +8,14 @@ RSpec.describe METSFile, type: :model, batch: true, mets_file: true do
 
   before do
     allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml }
-    allow(Ddr::Utils).to receive(:pid_for_identifier) { 'test:5' }
-    allow(ActiveFedora::SolrService).to receive(:query).with("_query_:\"{!raw f=id}test:5\"") { [ { "active_fedora_model_ssi"=>"Item" } ] }
+    allow(Ddr::Utils).to receive(:pid_for_identifier) { 'test-5' }
+    allow(ActiveFedora::SolrService).to receive(:query).with("{!terms f=id}test-5") { [ { "active_fedora_model_ssi"=>"Item" } ] }
   end
 
   its(:local_id) { is_expected.to eq('efghi01003') }
   its(:collection_id) { is_expected.to eq('abcd') }
   its(:collection) { is_expected.to eq(collection) }
-  its(:repo_pid) { is_expected.to eq('test:5') }
+  its(:repo_pid) { is_expected.to eq('test-5') }
   its(:repo_model) { is_expected.to eq('Item') }
   its(:root_type_attr) { is_expected.to eq('Resource:slideshow') }
   its(:header_agent_id) { is_expected.to eq('library')}
