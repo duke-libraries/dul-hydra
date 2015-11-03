@@ -10,7 +10,8 @@ module DulHydra
 
       def get_targets
         configure_blacklight_for_targets
-        query = current_object.association_query(:targets)
+        rel = { current_object.class.reflect_on_association(:targets) => current_object.id }
+        query = ActiveFedora::SolrQueryBuilder.construct_query_for_rel(rel)
         @response, @document_list = get_search_results(params, {q: query})
       end
 

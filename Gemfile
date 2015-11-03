@@ -6,7 +6,7 @@ gem 'hydra-head', '~> 9.3'
 gem 'ddr-alerts', '~> 1.0.0'
 gem 'ddr-batch', '2.0.0.alpha.1'
 #gem 'ddr-models', '3.0.0.alpha.3'
-gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: '0994d4462482d674006e255ea702e1a3e173650c'
+gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: '2b98a0adc89e45c1d21d6e533faf941fb5e79e9f'
 # Need to include this until 9.5.1+ release of AF
 gem 'active-fedora', github: 'projecthydra/active_fedora', ref: 'f85b4eab16f45cb4c1491a27bb20b05821bd9c44'
 gem 'devise'
