@@ -76,6 +76,7 @@ RSpec.configure do |config|
     end
   end
   config.after(:each, type: :controller) { ActiveFedora::Cleaner.clean! }
+  config.after(:each, fixity: true) { ActiveFedora::Cleaner.clean! }
   config.after(:each, type: :feature) { Warden.test_reset! }
 
   # Redirect all output to file
