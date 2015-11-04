@@ -80,7 +80,7 @@ GEM
     database_cleaner (1.4.0)
     ddr-alerts (1.0.0)
       rails (~> 4.1.6)
-    ddr-antivirus (2.0.0)
+    ddr-antivirus (2.1.1)
     ddr-aux-client (1.2.2)
       hashie (~> 3.4)
     ddr-batch (1.0.1)
@@ -89,10 +89,10 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
-    ddr-models (2.3.0)
+    ddr-models (2.3.1)
       active-fedora (~> 7.0)
       cancancan (~> 1.12)
-      ddr-antivirus (= 2.0.0)
+      ddr-antivirus (~> 2.1.1)
       ddr-aux-client (~> 1.2, >= 1.2.2)
       devise (~> 3.4)
       ezid-client (~> 1.1, >= 1.1.1)
@@ -213,7 +213,7 @@ GEM
     nest (1.1.2)
       redis
     net-http-persistent (2.9.4)
-    net-ldap (0.11)
+    net-ldap (0.12.0)
     netrc (0.10.3)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
@@ -436,7 +436,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (~> 1.0.0)
   ddr-batch (= 1.0.1)
-  ddr-models (= 2.3.0)
+  ddr-models (= 2.3.1)
   deprecation
   devise
   equivalent-xml
