@@ -26,6 +26,7 @@ module DulHydra
         helper_method :current_bookmarks
         helper_method :get_solr_response_for_field_values
         helper_method :admin_metadata_fields
+        helper_method :find_models_with_gated_discovery
 
         copy_blacklight_config_from CatalogController
       end
@@ -105,6 +106,20 @@ module DulHydra
       end
 
       protected
+
+      def find_models_with_gated_discovery(model, opts={})
+        solr_opts = {
+          q: "#{Ddr::Index::Fields::ACTIVE_FEDORA_MODEL}:\"#{model.name}\"",
+          #fq: gated_discovery_filters.join(" OR "),
+          sort: "#{Ddr::Index::Fields::TITLE} ASC",
+          rows: 9999
+        }
+        solr_opts.merge! opts
+        #solr_response = query_solr(solr_opts)
+        #solr_results = solr_response.docs
+        solr_results = get_search_results(solr_opts)[1]
+        ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
+      end
 
       # Controls what fields are displayed on the admin metadata tab and edit form
       def admin_metadata_fields

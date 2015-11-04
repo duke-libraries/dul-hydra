@@ -1,6 +1,10 @@
 require "spec_helper"
 
-RSpec.describe ApplicationController, type: :controller do
+RSpec.describe "RepositoryController", type: :controller do
+
+  controller(ApplicationController) do
+    include DulHydra::Controller::RepositoryBehavior
+  end
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
