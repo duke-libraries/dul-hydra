@@ -6,7 +6,7 @@ module DulHydra
     end
 
     def terms
-      Ddr::Datastreams::DescriptiveMetadataDatastream.term_names
+      Ddr::Models::DescriptiveMetadata.unqualified_names
     end
   end
 

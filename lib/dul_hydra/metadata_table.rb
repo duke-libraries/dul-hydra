@@ -68,9 +68,9 @@ module DulHydra
 
     def term_values(obj, term)
       if term == :format
-        obj.datastreams[datastream_id].format
+        obj.send(datastream_id).format
       else
-        obj.datastreams[datastream_id].send(term)
+        obj.send(datastream_id).send(term)
       end
     end
 
