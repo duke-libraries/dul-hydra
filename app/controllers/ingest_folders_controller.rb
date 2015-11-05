@@ -9,6 +9,11 @@ class IngestFoldersController < ApplicationController
   end
 
   def new
+    # Override default value of 100 to insure that all applicable collections are retrieved
+    # for the collection select list
+    blacklight_config.configure do |config|
+      config.max_per_page = 9999
+    end
   end
 
   def create
