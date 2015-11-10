@@ -3,7 +3,7 @@
     :quote_char: '"'
     :header_converters:
 :parse:
-    :local_identifier: identifier
+    :local_identifier: local_id
     :repeatable_fields:
         - contributor
         - creator

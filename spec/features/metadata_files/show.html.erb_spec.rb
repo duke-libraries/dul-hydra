@@ -45,7 +45,7 @@ describe "metadata_files/show.html.erb", :type => :feature, :metadata_file => tr
   context "factory version" do
     let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
     let(:headers_text) {
-      [ [ 'identifier', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ],
+      [ [ 'local_id', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ],
         [ '', '', '', 'multi', 'multi', '', ''] ]
     }
     it_behaves_like "metadata file show page"
@@ -56,7 +56,7 @@ describe "metadata_files/show.html.erb", :type => :feature, :metadata_file => tr
     let(:headers_text) {
       [ [ 'Identifier-LocalID', 'Title', 'Description', 'Subject-Topic', 'Subject-Keyword', 'Submission-Date', 'Arranger' ],
         [ '', '', '', 'multi', 'multi', '', ''],
-        [ 'identifier', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ] ]
+        [ '', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ] ]
     }
     it_behaves_like "metadata file show page"
   end
