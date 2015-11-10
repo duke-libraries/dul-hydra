@@ -15,7 +15,6 @@
     Description: description
     Digital Collection: isPartOf
     Extent: extent
-    Identifier-LocalID: identifier
     Identifier-Other: identifier
     Language: language
     Medium: medium
