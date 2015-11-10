@@ -10,7 +10,7 @@ class MetadataFile < ActiveRecord::Base
 
   def validate_data
     begin
-      valid_headers = [ :pid, :model ].concat(Ddr::Datastreams::DescriptiveMetadataDatastream.term_names)
+      valid_headers = [ :pid, :model, :local_id ].concat(Ddr::Datastreams::DescriptiveMetadataDatastream.term_names)
       as_csv_table.headers.each do |header|
         if effective_options[:schema_map].present?
           canonical_name = canonical_attribute_name(header)
@@ -108,9 +108,6 @@ class MetadataFile < ActiveRecord::Base
                         value: value,
                         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
                         )
-              # puts canonical_attribute_name(header)
-              # puts parse_field(row.field(header, idx), header)
-              # puts att.inspect
               obj.batch_object_attributes << att
             end
           end

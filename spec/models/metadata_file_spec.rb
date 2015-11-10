@@ -14,7 +14,7 @@ shared_examples "a successful metadata file processing" do
   it "should create a batch with an appropriate UpdateBatchObject" do
     expect(@batch.status).to eq(Ddr::Batch::Batch::STATUS_READY)
     expect(@batch_object).to be_a(Ddr::Batch::UpdateBatchObject)
-    expect(@attributes.size).to eq(11)
+    expect(@attributes.size).to eq(10)
     expect(@attributes[0].datastream).to eq(Ddr::Datastreams::DESC_METADATA)
     expect(@attributes[0].operation).to eq(Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL)
     actual_md = {}
@@ -96,7 +96,6 @@ describe MetadataFile, :type => :model, :metadata_file => true do
 
     let(:expected_md) do
       { "title" => [ "Updated Title" ],
-        "identifier" => [ "test12345" ],
         "description" => [ 'This is some description; this is "some more" description.' ],
         "subject" => [ "Alpha", "Beta", "Gamma" , "Delta", "Epsilon" ],
         "dateSubmitted" => [ "2010-01-22" ],
@@ -128,7 +127,6 @@ describe MetadataFile, :type => :model, :metadata_file => true do
           },
           :schema_map => {
             "Description" => "description",
-            "Identifier-LocalID" => "identifier",
             "Subject-Keyword" => "subject",
             "Subject-Topic" => "subject",
             "Submission-Date" => "dateSubmitted",
