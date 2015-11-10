@@ -29,7 +29,7 @@
                                 <%= content_tag :td, b.name %>
                                 <%= content_tag :td, b.description %>
 								<%= content_tag :td, b.created_at.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
-                                <%= content_tag :td, b.batch_objects.count %>
+                                <%= content_tag :td, b.batch_objects.size %>
                                 <%= content_tag :td, b.start.nil? ? '--' : b.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
                                 <%= content_tag :td, b.outcome.nil? ? '--' : b.outcome %>
                                 <%= content_tag :td, b.logfile_file_name.nil? ? '--' : link_to(I18n.t('batch.web.column_names.log'), b.logfile.url) %>
