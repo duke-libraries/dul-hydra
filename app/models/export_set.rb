@@ -174,7 +174,7 @@ class ExportSet < ActiveRecord::Base
       return []
     end
     query = ActiveFedora::SolrService.construct_query_for_pids(pids)
-    documents = ActiveFedora::SolrService.query(query, rows: pids.size)
+    documents = ActiveFedora::SolrService.post_query(query, rows: pids.size)
     ActiveFedora::SolrService.reify_solr_results(documents, load_from_solr: true).select {|obj| can_export? obj}
   end
 
