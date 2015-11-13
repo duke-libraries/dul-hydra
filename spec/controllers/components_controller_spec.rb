@@ -16,7 +16,7 @@ describe ComponentsController, type: :controller, components: true do
   describe "#new" do
     describe "when the user can add children to the parent Item" do
       before do
-        item.roles.grant type: "Contributor", agent: user
+        item.roles.grant role_type: "Contributor", agent: user
         item.save!
       end
       it "renders the new template" do
@@ -35,7 +35,7 @@ describe ComponentsController, type: :controller, components: true do
   describe "#create" do
     describe "when the user can add children to the item" do
       before do
-        item.roles.grant type: "Contributor", agent: user
+        item.roles.grant role_type: "Contributor", agent: user
         item.save!
       end
       it "persists a new object" do
@@ -57,7 +57,7 @@ describe ComponentsController, type: :controller, components: true do
       end
       it "grants the Editor role in resource scope to the user" do
         post :create, parent_id: item, content: {file: file}
-        expect(assigns(:current_object).roles.granted?(type: "Editor", agent: user.agent, scope: "resource"))
+        expect(assigns(:current_object).roles.granted?(role_type: "Editor", agent: user.agent, scope: "resource"))
           .to be true
       end
       it "has the item as parent" do

@@ -7,7 +7,7 @@ shared_examples "a repository object controller" do
   describe "#show" do
     describe "when the user can read the object" do
       before do
-        object.roles.grant type: "Viewer", agent: user
+        object.roles.grant role_type: "Viewer", agent: user
         object.save!
       end
       it "renders the show template" do
@@ -25,7 +25,7 @@ shared_examples "a repository object controller" do
   describe "#edit" do
     describe "when the user can edit the object" do
       before do
-        object.roles.grant type: "MetadataEditor", agent: user
+        object.roles.grant role_type: "MetadataEditor", agent: user
         object.save!
       end
       it "should render the edit template" do
@@ -44,7 +44,7 @@ shared_examples "a repository object controller" do
   describe "#update" do
     describe "when the user can edit" do
       before do
-        object.roles.grant type: "MetadataEditor", agent: user
+        object.roles.grant role_type: "MetadataEditor", agent: user
         object.save!
       end
       it "redirects to the descriptive metadata tab of the show page" do
@@ -82,7 +82,7 @@ shared_examples "a repository object controller" do
   describe "#roles" do
     describe "when the user can grant roles" do
       before do
-        object.roles.grant type: "Curator", agent: user
+        object.roles.grant role_type: "Curator", agent: user
         object.save!
       end
       it "renders the roles template" do
@@ -102,7 +102,7 @@ shared_examples "a repository object controller" do
     describe "GET" do
       describe "when the user can update admin metadata" do
         before do
-          object.roles.grant type: "Editor", agent: user
+          object.roles.grant role_type: "Editor", agent: user
           object.save!
         end
         it "renders the admin_metadata template" do
@@ -120,7 +120,7 @@ shared_examples "a repository object controller" do
     describe "PATCH" do
       describe "when the user can update admin metadata" do
         before do
-          object.roles.grant type: "Editor", agent: user
+          object.roles.grant role_type: "Editor", agent: user
           object.save!
         end
         it "redirects to the admin metadata tab of the show page" do

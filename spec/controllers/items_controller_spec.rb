@@ -38,7 +38,7 @@ describe ItemsController, type: :controller, items: true do
     end
     describe "when the user can add children to the collection" do
       before do
-        collection.roles.grant type: "Contributor", agent: user
+        collection.roles.grant role_type: "Contributor", agent: user
         collection.save!
       end
       it "persists the new Item" do
@@ -52,7 +52,7 @@ describe ItemsController, type: :controller, items: true do
       end
       it "grants the Editor role to the creator" do
         post :create, parent_id: collection, descMetadata: {title: ["New Item"]}
-        expect(assigns(:current_object).roles.granted?(type: Ddr::Auth::Roles::EDITOR, agent: user, scope: "resource"))
+        expect(assigns(:current_object).roles.granted?(role_type: "Editor", agent: user.to_s, scope: "resource"))
           .to be true
       end
       it "records a creation event" do
