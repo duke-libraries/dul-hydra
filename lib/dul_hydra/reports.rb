@@ -14,6 +14,7 @@ module DulHydra
       autoload :Filter
       autoload :HasContentFilter
       autoload :IsGovernedByFilter
+      autoload :IsMemberOfCollectionFilter
       autoload :StaticFilter
     end
 
