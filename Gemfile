@@ -5,9 +5,7 @@ gem 'blacklight', '5.15.0'
 gem 'hydra-head', '~> 9.3'
 gem 'ddr-alerts', '~> 1.0.0'
 gem 'ddr-batch', '2.0.0.alpha.2'
-gem 'ddr-models', '3.0.0.alpha.4'
-# Need to include this until 9.5.1+ release of AF
-gem 'active-fedora', github: 'projecthydra/active_fedora', ref: 'f85b4eab16f45cb4c1491a27bb20b05821bd9c44'
+gem 'ddr-models', '3.0.0.beta.1'
 gem 'devise'
 gem 'deprecation'
 

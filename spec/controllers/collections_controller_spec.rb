@@ -40,7 +40,7 @@ describe CollectionsController, type: :controller, collections: true do
       end
       it "grants the Curator role to the creator" do
         post :create, descMetadata: {title: ["New Collection"]}
-        expect(assigns(:current_object).roles.granted?(type: Ddr::Auth::Roles::CURATOR, agent: user, scope: "resource"))
+        expect(assigns(:current_object).roles.granted?(role_type: "Curator", agent: user.to_s, scope: "resource"))
           .to be true
       end
       it "records a creation event" do
@@ -65,7 +65,7 @@ describe CollectionsController, type: :controller, collections: true do
     let(:collection) { FactoryGirl.create(:collection, :has_item) }
     describe "when the user can read the collection" do
       before do
-        collection.roles.grant type: "Viewer", agent: user
+        collection.roles.grant role_type: "Viewer", agent: user
         collection.save!
       end
       it "renders the items" do
@@ -85,7 +85,7 @@ describe CollectionsController, type: :controller, collections: true do
     let(:collection) { FactoryGirl.create(:collection, :has_attachment) }
     context "when the user can read the collection" do
       before do
-        collection.roles.grant type: "Viewer", agent: user
+        collection.roles.grant role_type: "Viewer", agent: user
         collection.save!
       end
       it "should render the attachments" do
@@ -105,7 +105,7 @@ describe CollectionsController, type: :controller, collections: true do
     let(:collection) { FactoryGirl.create(:collection, :has_target) }
     describe "when the user can read the collection" do
       before do
-        collection.roles.grant type: "Viewer", agent: user
+        collection.roles.grant role_type: "Viewer", agent: user
         collection.save!
       end
       it "renders the targets" do

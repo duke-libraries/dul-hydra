@@ -15,7 +15,7 @@ describe AttachmentsController, type: :controller, attachments: true do
   describe "#new" do
     describe "when the user can create an object of this type" do
       before do
-        attach_to.roles.grant type: "Curator", agent: user
+        attach_to.roles.grant role_type: "Curator", agent: user
         attach_to.save!
       end
       it "renders the new template" do
@@ -34,7 +34,7 @@ describe AttachmentsController, type: :controller, attachments: true do
   describe "#create" do
     describe "when the user can add attachments to the object" do
       before do
-        attach_to.roles.grant type: "Curator", agent: user
+        attach_to.roles.grant role_type: "Curator", agent: user
         attach_to.save!
       end
       it "persists a new Attachment" do
@@ -72,7 +72,7 @@ describe AttachmentsController, type: :controller, attachments: true do
       it "grants roles to the creator" do
         post :create, attached_to_id: attach_to, content: {file: file},
              descMetadata: {title: ["New Attachment"]}
-        expect(assigns(:current_object).roles.granted?(type: "Editor", agent: user.agent, scope: "resource"))
+        expect(assigns(:current_object).roles.granted?(role_type: "Editor", agent: user.agent, scope: "resource"))
           .to be true
       end
       it "records a creation event" do
