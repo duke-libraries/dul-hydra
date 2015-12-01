@@ -89,7 +89,7 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
-    ddr-models (2.3.1)
+    ddr-models (2.3.2)
       active-fedora (~> 7.0)
       cancancan (~> 1.12)
       ddr-antivirus (~> 2.1.1)
@@ -123,7 +123,8 @@ GEM
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (2.5.2)
-    ezid-client (1.1.1)
+    ezid-client (1.2.0)
+      hashie
     factory_girl (4.5.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.5.0)
@@ -213,7 +214,7 @@ GEM
     nest (1.1.2)
       redis
     net-http-persistent (2.9.4)
-    net-ldap (0.12.0)
+    net-ldap (0.12.1)
     netrc (0.10.3)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
@@ -436,7 +437,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (~> 1.0.0)
   ddr-batch (= 1.0.1)
-  ddr-models (= 2.3.1)
+  ddr-models (= 2.3.2)
   deprecation
   devise
   equivalent-xml
