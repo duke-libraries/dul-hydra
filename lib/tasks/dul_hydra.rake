@@ -211,4 +211,10 @@ namespace :dul_hydra do
     end
   end
 
+  desc "Run FITS file characterization process on content files"
+  task :characterize_files, [:limit] => :environment do |t, args|
+    queued = DulHydra::FileCharacterization.call(args[:limit])
+    puts "#{queued} FITS file characterization job(s) submitted for processing."
+  end
+
 end
