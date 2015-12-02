@@ -169,25 +169,45 @@ namespace :dul_hydra do
   end
 
   namespace :queues do
-    task :interrupt, [:signal] do |t, args|
-      pid_file = File.join(Rails.root, "tmp/pids/resque-pool.pid")
-      pid = `cat #{pid_file}`
-      system "kill -#{args[:signal]} #{pid}"
+    desc "Report the status of the pool manager"
+    task :status => :environment do
+      puts "The pool manager is #{DulHydra::Queues.running? ? 'running' : 'stopped'}."
     end
 
     desc "Start the queue pool manager and workers"
     task :start => :environment do
-      system "resque-pool --daemon --environment #{Rails.env}"
+      if DulHydra::Queues.start
+        puts "Starting pool manager and workers."
+      else
+        puts "Error attempting to start pool manager and workers (may already be running)."
+      end
     end
 
     desc "Stop the pool manager and workers"
     task :stop => :environment do
-      Rake::Task["dul_hydra:queues:interrupt"].invoke("QUIT")
+      if DulHydra::Queues.stop
+        puts "Shutting down workers and pool manager."
+      else
+        puts "Error attempting to shut down workers and pool manager (may not be running)."
+      end
     end
 
-    desc "Restart the pool manager and workers"
+    desc "Restart (stop/start) the pool manager and workers"
     task :restart => :environment do
-      Rake::Task["dul_hydra:queues:interrupt"].invoke("HUP")
+      if DulHydra::Queues.restart
+        puts "Restarting pool manager and workers."
+      else
+        puts "Error attempting to restart pool manager and workers."
+      end
+    end
+
+    desc "Reload the pool manager config and restart workers"
+    task :reload => :environment do
+      if DulHydra::Queues.reload
+        puts "Reloading pool manager config and restarting workers."
+      else
+        puts "Error attempting to reload pool manager config and restart workers."
+      end
     end
   end
 

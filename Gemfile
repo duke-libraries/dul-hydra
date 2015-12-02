@@ -13,7 +13,7 @@ gem 'log4r'
 
 # Background processing
 gem 'resque', '1.25.2'
-gem 'resque-pool', '0.3.0'
+gem 'resque-pool', '~> 0.6.0'
 gem 'nest', '1.1.2'
 
 # ExecJS runtime
