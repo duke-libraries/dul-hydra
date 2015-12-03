@@ -32,6 +32,7 @@ gem 'rubytree'
 group :development, :test do
   gem 'sqlite3'
   gem 'jettywrapper', '~> 2.0'
+  gem 'rubydora', '1.8.1'
 end
 
 group :test do
@@ -42,6 +43,7 @@ group :test do
   gem 'equivalent-xml'
   gem 'database_cleaner'
   gem 'factory_girl_rails', '~> 4.4'
+  gem 'rdf-isomorphic'
 end
 
 group :production do
