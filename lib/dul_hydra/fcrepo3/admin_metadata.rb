@@ -5,9 +5,17 @@ module DulHydra::Fcrepo3
 
     attr_reader :source
 
+    def self.convert!(source)
+      new(source).convert!
+    end
+
     # @param f3_datastream [Rubydora::Datastream] the Fcrepo3 source datastream
     def initialize(f3_datastream)
       @source = f3_datastream
+    end
+
+    def convert!
+      source.content = f4_graph.dump(:ntriples)
     end
 
     def subject
@@ -20,26 +28,28 @@ module DulHydra::Fcrepo3
 
     def f4_graph
       graph = f3_graph
-      graph.insert f4_role_statement(graph)
-      graph.delete *f3_role_statements
+      insert_f4_role_statement(graph)
+      delete_f3_role_statements(graph)
       graph
     end
 
-    def f3_role_statements
-      [[nil, Ddr::Vocab::Roles.hasRole, nil],
-       [nil, RDF.type, Ddr::Vocab::Roles.Role],
-       [nil, Ddr::Vocab::Roles.type, nil],
-       [nil, Ddr::Vocab::Roles.agent, nil],
-       [nil, Ddr::Vocab::Roles.scope, nil]]
+    def delete_f3_role_statements(graph)
+      statements = graph.query(f3_has_role_query).map { |solution| [solution[:role], nil, nil] }
+      statements << [nil, Ddr::Vocab::Roles.hasRole, nil]
+      graph.delete *statements
     end
 
-    def f4_role_statement(graph)
+    def insert_f4_role_statement(graph)
       roles = []
       graph.query(f3_role_query) do |solution|
         roles << Ddr::Auth::Roles::Role.new(solution.to_hash)
       end
       role_set = Ddr::Auth::Roles::RoleSet.new(roles: roles)
-      [subject, Ddr::Vocab::Roles.roleSet, role_set.to_json]
+      graph.insert [subject, Ddr::Vocab::Roles.roleSet, role_set.to_json]
+    end
+
+    def f3_has_role_query
+      RDF::Query.new({ has_role: { Ddr::Vocab::Roles.hasRole => :role } })
     end
 
     def f3_role_query

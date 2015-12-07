@@ -1,13 +1,14 @@
 source 'http://rubygems.org'
 
 gem 'rails', '~> 4.1.13'
-gem 'blacklight', '5.15.0'
-gem 'hydra-head', '~> 9.3'
+gem 'blacklight', '5.16'
+gem 'hydra-head', '~> 9.5'
 gem 'ddr-alerts', '~> 1.0.0'
 gem 'ddr-batch', '2.0.0.alpha.2'
 gem 'ddr-models', '3.0.0.beta.1'
 gem 'devise'
 gem 'deprecation'
+gem 'fedora-migrate', github: 'projecthydra-labs/fedora-migrate', branch: 'fedora-4.4'
 
 gem 'log4r'
 
