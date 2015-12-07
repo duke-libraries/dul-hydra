@@ -1,3 +1,13 @@
+GIT
+  remote: git://github.com/projecthydra-labs/fedora-migrate.git
+  revision: 0ce40bfcd4b427489f1007dd7206907b435733c4
+  branch: fedora-4.4
+  specs:
+    fedora-migrate (0.2.0)
+      hydra-head (~> 9.5)
+      rchardet
+      rubydora (~> 1.8)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -45,7 +55,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.8)
     arel (5.0.1.20140414130214)
-    autoprefixer-rails (6.0.3)
+    autoprefixer-rails (6.1.2)
       execjs
       json
     axiom-types (0.1.1)
@@ -55,16 +65,16 @@ GEM
     bcp47 (0.3.3)
       i18n
     bcrypt (3.1.10)
-    blacklight (5.15.0)
+    blacklight (5.16.0)
       bootstrap-sass (~> 3.2)
       deprecation
       kaminari (>= 0.15)
       nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
       rsolr (~> 1.0.11)
-    bootstrap-sass (3.3.5.1)
-      autoprefixer-rails (>= 5.0.0.1)
-      sass (>= 3.3.0)
+    bootstrap-sass (3.3.6)
+      autoprefixer-rails (>= 5.2.1)
+      sass (>= 3.3.4)
     builder (3.2.2)
     cancancan (1.13.1)
     capybara (2.4.4)
@@ -154,21 +164,21 @@ GEM
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     http_logger (0.5.1)
-    hydra-access-controls (9.3.0)
+    hydra-access-controls (9.5.0)
       active-fedora (~> 9.0)
       activesupport (~> 4.0)
-      blacklight (~> 5.10)
+      blacklight (~> 5.16)
       cancancan (~> 1.8)
-      deprecation (~> 0.1)
+      deprecation (~> 0.2)
       sass-rails
-    hydra-core (9.3.0)
+    hydra-core (9.5.0)
       active-fedora (~> 9.1)
-      hydra-access-controls (= 9.3.0)
+      hydra-access-controls (= 9.5.0)
       jettywrapper (>= 2.0.0)
       rails (~> 4.0)
-    hydra-head (9.3.0)
-      hydra-access-controls (= 9.3.0)
-      hydra-core (= 9.3.0)
+    hydra-head (9.5.0)
+      hydra-access-controls (= 9.5.0)
+      hydra-core (= 9.5.0)
       rails (>= 3.2.6)
     hydra-validations (0.5.0)
       activemodel (~> 4.0)
@@ -278,6 +288,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.4.2)
+    rchardet (1.6.1)
     rdf (1.99.0)
       link_header (~> 0.0, >= 0.0.8)
     rdf-aggregate-repo (1.99.0)
@@ -456,7 +467,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  blacklight (= 5.15.0)
+  blacklight (= 5.16)
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (~> 1.0.0)
@@ -466,7 +477,8 @@ DEPENDENCIES
   devise
   equivalent-xml
   factory_girl_rails (~> 4.4)
-  hydra-head (~> 9.3)
+  fedora-migrate!
+  hydra-head (~> 9.5)
   jettywrapper (~> 2.0)
   jquery-rails
   log4r
