@@ -10,3 +10,11 @@ FedoraMigrate::Hooks.module_eval do
   end
 
 end
+
+FedoraMigrate::ObjectMover.class_eval do
+
+  def id_component
+    nil
+  end
+
+end
