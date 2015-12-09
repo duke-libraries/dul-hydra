@@ -6,4 +6,3 @@
 <info:fedora/duke:141764> <http://repository.lib.duke.edu/vocab/asset/workflowState> "published" .
 <info:fedora/duke:141764> <http://repository.lib.duke.edu/vocab/contact/assistance> "rubenstein" .
 <info:fedora/duke:141764> <http://repository.lib.duke.edu/vocab/asset/eadId> "dukeandsons" .
-<info:fedora/duke:141764> <http://repository.lib.duke.edu/vocab/roles/roleSet> "{\"roles\":[{\"agent\":\"repository_admins\",\"role_type\":\"Curator\",\"scope\":\"policy\"},{\"agent\":\"public\",\"role_type\":\"Viewer\",\"scope\":\"policy\"},{\"agent\":\"MetadataEditor1@duke.edu\",\"role_type\":\"MetadataEditor\",\"scope\":\"policy\"},{\"agent\":\"MetadataEditor2@duke.edu\",\"role_type\":\"MetadataEditor\",\"scope\":\"policy\"},{\"agent\":\"MetadataEditor3@duke.edu\",\"role_type\":\"MetadataEditor\",\"scope\":\"policy\"},{\"agent\":\"metadata_architects\",\"role_type\":\"MetadataEditor\",\"scope\":\"policy\"}]}" .

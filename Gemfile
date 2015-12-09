@@ -8,7 +8,7 @@ gem 'ddr-batch', '2.0.0.alpha.2'
 gem 'ddr-models', '3.0.0.beta.1'
 gem 'devise'
 gem 'deprecation'
-gem 'fedora-migrate', github: 'projecthydra-labs/fedora-migrate', branch: 'fedora-4.4'
+gem 'fedora-migrate', github: 'projecthydra-labs/fedora-migrate', ref: '710d1a27ea114084d38bb9f6ffab05efa792be75'
 
 gem 'log4r'
 
