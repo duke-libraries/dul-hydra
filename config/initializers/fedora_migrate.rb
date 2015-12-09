@@ -1,14 +1,17 @@
 require "fedora-migrate"
-require "dul_hydra/fcrepo3/admin_metadata"
+require "dul_hydra/migration"
+require "rdf/vocab"
 
 FedoraMigrate::Hooks.module_eval do
+  include DulHydra::Migration::Hooks
+end
 
-  def before_rdf_datastream_migration
-    if source.dsid == "adminMetadata"
-      DulHydra::Fcrepo3::AdminMetadata.convert!(source)
-    end
+[ Component, Attachment, Target ].each do |model|
+  model.class_eval do
+    property :legacy_original_filename,
+             predicate: RDF::Vocab::PREMIS.hasOriginalName,
+             multiple: false
   end
-
 end
 
 FedoraMigrate::ObjectMover.class_eval do
