@@ -26,16 +26,16 @@ module DulHydra
       end
 
       mattr_accessor :techmd_report_fields do
-        [ Ddr::IndexFields::TECHMD_FORMAT_LABEL,
-          Ddr::IndexFields::TECHMD_FORMAT_VERSION,
-          Ddr::IndexFields::TECHMD_MEDIA_TYPE,
-          Ddr::IndexFields::TECHMD_PRONOM_IDENTIFIER,
-          Ddr::IndexFields::TECHMD_CREATING_APPLICATION,
-          Ddr::IndexFields::TECHMD_VALID,
-          Ddr::IndexFields::TECHMD_WELL_FORMED,
-          Ddr::IndexFields::TECHMD_FILE_SIZE,
-          Ddr::IndexFields::TECHMD_CREATION_TIME,
-          Ddr::IndexFields::TECHMD_MODIFICATION_TIME,
+        [ Ddr::Index::Fields::TECHMD_FORMAT_LABEL,
+          Ddr::Index::Fields::TECHMD_FORMAT_VERSION,
+          Ddr::Index::Fields::TECHMD_MEDIA_TYPE,
+          Ddr::Index::Fields::TECHMD_PRONOM_IDENTIFIER,
+          Ddr::Index::Fields::TECHMD_CREATING_APPLICATION,
+          Ddr::Index::Fields::TECHMD_VALID,
+          Ddr::Index::Fields::TECHMD_WELL_FORMED,
+          Ddr::Index::Fields::TECHMD_FILE_SIZE,
+          Ddr::Index::Fields::TECHMD_CREATION_TIME,
+          Ddr::Index::Fields::TECHMD_MODIFICATION_TIME,
         ]
       end
 
