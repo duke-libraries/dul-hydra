@@ -1,24 +1,3 @@
-GIT
-  remote: git://github.com/duke-libraries/ddr-models.git
-  revision: 5bea94f93a0e0ffc6c47044e1cdeb36724964381
-  ref: 5bea94f93a0e0ffc6c47044e1cdeb36724964381
-  specs:
-    ddr-models (2.3.2.post)
-      active-fedora (~> 7.0)
-      activeresource
-      cancancan (~> 1.12)
-      ddr-antivirus (~> 2.1.1)
-      devise (~> 3.4)
-      ezid-client (~> 1.1, >= 1.1.1)
-      grouper-rest-client
-      hydra-core (~> 7.2)
-      hydra-validations (~> 0.5)
-      net-ldap (~> 0.11)
-      omniauth-shibboleth (~> 1.2.0)
-      rails (~> 4.1.6)
-      rdf-vocab (~> 0.8)
-      resque (~> 1.25)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -106,12 +85,27 @@ GEM
     ddr-alerts (1.0.0)
       rails (~> 4.1.6)
     ddr-antivirus (2.1.1)
-    ddr-batch (1.0.1)
-      ddr-models (~> 2.3.0)
+    ddr-batch (1.0.2.rc1)
+      ddr-models (~> 2.3)
       devise (~> 3.4)
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
+    ddr-models (2.4.0.rc1)
+      active-fedora (~> 7.0)
+      activeresource
+      cancancan (~> 1.12)
+      ddr-antivirus (~> 2.1.1)
+      devise (~> 3.4)
+      ezid-client (~> 1.1, >= 1.1.1)
+      grouper-rest-client
+      hydra-core (~> 7.2)
+      hydra-validations (~> 0.5)
+      net-ldap (~> 0.11)
+      omniauth-shibboleth (~> 1.2.0)
+      rails (~> 4.1.6)
+      rdf-vocab (~> 0.8)
+      resque (~> 1.25)
     deprecation (0.2.2)
       activesupport
     devise (3.5.1)
@@ -444,8 +438,8 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (~> 1.0.0)
-  ddr-batch (= 1.0.1)
-  ddr-models!
+  ddr-batch (= 1.0.2.rc1)
+  ddr-models (= 2.4.0.rc1)
   deprecation
   devise
   equivalent-xml
