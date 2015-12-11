@@ -1,29 +1,6 @@
 require 'spec_helper'
 
 describe "batches/index.html.erb", :type => :feature do
-  context "ingest folders" do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:menu_label) { I18n.t('dul_hydra.ingest_folder.new_menu') }
-    before { login_as user }
-    context "user has no permitted ingest folders" do
-      before do
-        allow(IngestFolder).to receive(:permitted_folders).with(user).and_return(nil)
-        visit batches_path
-      end
-      it "should not include a link to create an ingest folder" do
-        expect(page).to_not have_link(menu_label, new_ingest_folder_path)
-      end
-    end
-    context "user has permitted ingest folders" do
-      before do
-        allow(IngestFolder).to receive(:permitted_folders).with(user).and_return(["/base/path/"])
-        visit batches_path
-      end
-      it "should include a link to create an ingest folder" do
-        expect(page).to have_link(menu_label, new_ingest_folder_path)
-      end
-    end
-  end
   context "metadata files", :metadata_file => true do
     let(:user) { FactoryGirl.create(:user) }
     let(:menu_label) { I18n.t('dul_hydra.metadata_file.new_menu') }

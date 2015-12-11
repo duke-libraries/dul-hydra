@@ -1,6 +1,6 @@
 class IngestFoldersController < ApplicationController
 
-  before_filter :new_ingest_folder, :only => [:create]
+  before_filter :new_ingest_folder, :only => [:new, :create]
 
   load_and_authorize_resource
 

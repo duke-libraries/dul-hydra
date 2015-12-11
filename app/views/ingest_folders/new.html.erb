@@ -4,7 +4,7 @@
   <div class="col-md-5">
     <% if @ingest_folder.errors.any? %>
       <div class="alert alert-danger">
-		<strong><%= pluralize(@ingest_folder.errors.count, "error") %> 
+		<strong><%= pluralize(@ingest_folder.errors.count, "error") %>
 		  prohibited this ingest folder from being scanned:</strong>
 		<ul>
 		  <% @ingest_folder.errors.full_messages.each do |msg| %>
@@ -14,6 +14,11 @@
 	  </div>
 	<% end %>
     <%= form_for @ingest_folder do |f| %>
+    <div class="form-group">
+      <%= f.label :collection_pid %>
+      <%= f.hidden_field :collection_pid %>
+      <%= object_display_title(@ingest_folder.collection_pid) %>
+    </div>
 		<div class="form-group">
 			<%= f.label :base_path %>
 			<%= f.select :base_path, options_for_select(permitted_folder_bases), {}, {class: 'form-control'} %>
@@ -25,10 +30,6 @@
 		<div class="form-group">
 			<%= f.label :checksum_type %>
 			<%= f.select :checksum_type, options_for_select(Ddr::Datastreams::CHECKSUM_TYPES, @ingest_folder.checksum_type || IngestFolder.default_checksum_type), class: 'form-control' %>
-		</div>
-		<div class="form-group">
-			<%= f.label :collection_pid %>
-			<%= f.select :collection_pid, model_options_for_select(Collection, access: :add_children), { :prompt =>  t('dul_hydra.prompts.select') % "Collection" }, {class: 'form-control'} %>
 		</div>
 		<div class="form-group">
 			<%= f.label :parent_id_length %>
