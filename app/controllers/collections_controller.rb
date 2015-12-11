@@ -6,7 +6,7 @@ class CollectionsController < ApplicationController
   include DulHydra::Controller::HasTargetsBehavior
 
   before_action :set_desc_metadata, only: :create
-  self.tabs << :tab_reports
+  self.tabs += [ :tab_reports, :tab_actions ]
 
   def items
     get_children
@@ -45,6 +45,10 @@ class CollectionsController < ApplicationController
     Tab.new("reports",
             guard: can?(:report, current_object)
            )
+  end
+
+  def tab_actions
+    Tab.new("actions")
   end
 
 end
