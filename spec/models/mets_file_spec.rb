@@ -18,12 +18,15 @@ RSpec.describe METSFile, type: :model, batch: true, mets_file: true do
   its(:repo_pid) { is_expected.to eq('test:5') }
   its(:repo_model) { is_expected.to eq('Item') }
   its(:root_type_attr) { is_expected.to eq('Resource:slideshow') }
-  its(:header_agent_id) { is_expected.to eq('library')}
+  its(:header_agent_id) { is_expected.to eq('library') }
+  its(:ead_id) { is_expected.to eq('abcdcollection') }
+  its(:aspace_id) { is_expected.to eq('123456abcdef654321') }
 
   # public methods currently untested
   # dmd_secs
   # dmd_sec
   # desc_metadata
+  # amd_secs
   # struct_maps
   # struct_map
   # struct_metadata
