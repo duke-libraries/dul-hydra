@@ -10,7 +10,7 @@ class MetadataFile < ActiveRecord::Base
 
   def validate_data
     begin
-      valid_headers = [ :pid, :model, :local_id ].concat(Ddr::Datastreams::DescriptiveMetadataDatastream.term_names)
+      valid_headers = [ :pid, :model, :local_id, :permanent_id ].concat(Ddr::Datastreams::DescriptiveMetadataDatastream.term_names)
       as_csv_table.headers.each do |header|
         if effective_options[:schema_map].present?
           canonical_name = canonical_attribute_name(header)
