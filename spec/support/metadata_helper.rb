@@ -40,6 +40,15 @@ def sample_mets_xml
         </xmlData>
       </mdWrap>
     </dmdSec>
+    <amdSec ID="abcd_efghi01003-amd">
+      <sourceMD>
+        <mdWrap>
+          <xmlData>
+            <dcterms:source>abcdcollection/123456abcdef654321</dcterms:source>
+          </xmlData>
+        </mdWrap>
+      </sourceMD>
+    </amdSec>
     <fileSec>
       <fileGrp ID="efghi010030010" USE="DEFAULT">
         <file USE="THUMBNAIL" ID="efghi010030010-thm">
@@ -231,6 +240,68 @@ def sample_mets_xml_with_missing_type_attr
         </xmlData>
       </mdWrap>
     </dmdSec>
+  </mets>
+  EOS
+end
+
+def sample_mets_xml_with_ead_id_no_aspace_id
+  xml = <<-EOS
+  <mets xmlns:duke="http://library.duke.edu/metadata/terms" xmlns:dcterms="http://purl.org/dc/terms" xmlns:xlink="http://www.w3.org/TR/xlink/" ID="abcd_efghi01003" TYPE="Resource:slideshow">
+    <metsHdr>
+      <agent ID="library" ROLE="CUSTODIAN">
+        <name>Library</name>
+      </agent>
+    </metsHdr>
+    <dmdSec ID="abcd_efghi01003">
+      <mdWrap>
+        <xmlData>
+          <duke:dcmitype>Still Image</duke:dcmitype>
+          <dcterms:extent>12.5 in x 9.5 in</dcterms:extent>
+          <dcterms:title>Document Title</dcterms:title>
+          <dcterms:abstract>Document abstract.</dcterms:abstract>
+        </xmlData>
+      </mdWrap>
+    </dmdSec>
+    <amdSec ID="abcd_efghi01003-amd">
+      <sourceMD>
+        <mdWrap>
+          <xmlData>
+            <dcterms:source>abcdcollection</dcterms:source>
+          </xmlData>
+        </mdWrap>
+      </sourceMD>
+    </amdSec>
+  </mets>
+  EOS
+end
+
+def sample_mets_xml_with_aspace_id_no_ead_id
+  xml = <<-EOS
+  <mets xmlns:duke="http://library.duke.edu/metadata/terms" xmlns:dcterms="http://purl.org/dc/terms" xmlns:xlink="http://www.w3.org/TR/xlink/" ID="abcd_efghi01003" TYPE="Resource:slideshow">
+    <metsHdr>
+      <agent ID="library" ROLE="CUSTODIAN">
+        <name>Library</name>
+      </agent>
+    </metsHdr>
+    <dmdSec ID="abcd_efghi01003">
+      <mdWrap>
+        <xmlData>
+          <duke:dcmitype>Still Image</duke:dcmitype>
+          <dcterms:extent>12.5 in x 9.5 in</dcterms:extent>
+          <dcterms:title>Document Title</dcterms:title>
+          <dcterms:abstract>Document abstract.</dcterms:abstract>
+        </xmlData>
+      </mdWrap>
+    </dmdSec>
+    <amdSec ID="abcd_efghi01003-amd">
+      <sourceMD>
+        <mdWrap>
+          <xmlData>
+            <dcterms:source>/123456abcdef654321</dcterms:source>
+          </xmlData>
+        </mdWrap>
+      </sourceMD>
+    </amdSec>
   </mets>
   EOS
 end

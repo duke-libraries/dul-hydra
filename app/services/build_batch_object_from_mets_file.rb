@@ -22,6 +22,8 @@ class BuildBatchObjectFromMETSFile
     end
     add_research_help_contact(update_object) if mets_file.repo_model == 'Collection' && mets_file.header_agent_id.present?
     add_desc_metadata(update_object) if mets_file.desc_metadata.present?
+    add_ead_id(update_object) if mets_file.ead_id.present?
+    add_aspace_id(update_object) if mets_file.aspace_id.present?
     add_struct_metadata(update_object) if mets_file.struct_metadata.present?
     update_object
   end
@@ -92,6 +94,36 @@ class BuildBatchObjectFromMETSFile
         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
         )
     end
+  end
+
+  def add_ead_id(update_object)
+    Ddr::Batch::BatchObjectAttribute.create(
+        batch_object: update_object,
+        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        name: 'ead_id',
+        operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
+    Ddr::Batch::BatchObjectAttribute.create(
+        batch_object: update_object,
+        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        name: 'ead_id',
+        value: mets_file.ead_id,
+        value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
+        operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD)
+  end
+
+  def add_aspace_id(update_object)
+    Ddr::Batch::BatchObjectAttribute.create(
+        batch_object: update_object,
+        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        name: 'aspace_id',
+        operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
+    Ddr::Batch::BatchObjectAttribute.create(
+        batch_object: update_object,
+        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        name: 'aspace_id',
+        value: mets_file.aspace_id,
+        value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
+        operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD)
   end
 
   def add_struct_metadata(update_object)

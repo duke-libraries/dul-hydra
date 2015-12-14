@@ -24,6 +24,7 @@ class ValidateMETSFile
     validate_repository_match
     validate_root_type_attribute
     validate_desc_metadata
+    validate_admin_metadata
     validate_struct_metadata
     results
   end
@@ -95,6 +96,26 @@ class ValidateMETSFile
       end
     else
       warning("Cannot validate element name #{node.name}")
+    end
+  end
+
+  def validate_admin_metadata
+    case mets_file.amd_secs.size
+      when 0
+        warning("No amdSec")
+      when 1
+        validate_source
+      else
+        error("Multiple amdSecs")
+    end
+  end
+
+  def validate_source
+    case
+      when (mets_file.ead_id.present? && mets_file.aspace_id.blank?)
+        warning("EAD ID but no ArchivesSpace ID")
+      when (mets_file.aspace_id.present? && mets_file.ead_id.blank?)
+        warning("ArchivesSpace ID but no EAD ID")
     end
   end
 

@@ -82,6 +82,40 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     end
   end
 
+  context "EAD ID" do
+    it "should clear and re-assign the EAD ID" do
+      batch_object = service.call
+      attrs = batch_object.batch_object_attributes
+      clear_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+                                operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
+                                name: 'ead_id')
+      add_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+                              operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
+                              name: 'ead_id',
+                              value: 'abcdcollection')
+      expect(clear_attrs.size).to eq(1)
+      expect(add_attrs.size).to eq(1)
+      expect(clear_attrs.first.id).to be < add_attrs.first.id
+    end
+  end
+
+  context "ArchivesSpace ID" do
+    it "should clear and re-assign the ArchivesSpace ID" do
+      batch_object = service.call
+      attrs = batch_object.batch_object_attributes
+      clear_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+                                operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
+                                name: 'aspace_id')
+      add_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+                              operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
+                              name: 'aspace_id',
+                              value: '123456abcdef654321')
+      expect(clear_attrs.size).to eq(1)
+      expect(add_attrs.size).to eq(1)
+      expect(clear_attrs.first.id).to be < add_attrs.first.id
+    end
+  end
+
   context "structural metadata" do
     it "should populate the structural metadata datastream" do
       batch_object = service.call
