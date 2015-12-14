@@ -1,6 +1,6 @@
 class MetadataFilesController < ApplicationController
 
-  before_filter :new_metadata_file, :only => [:create]
+  before_filter :new_metadata_file, :only => [ :new, :create ]
 
 	load_and_authorize_resource
 

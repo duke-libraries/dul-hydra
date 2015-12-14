@@ -1,22 +1,6 @@
 require 'spec_helper'
 
 describe "batches/index.html.erb", :type => :feature do
-  context "metadata files", :metadata_file => true do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:menu_label) { I18n.t('dul_hydra.metadata_file.new_menu') }
-    let(:metadata_file_creator) { Role.create("Metadata File Creator", ability: "create", model: "MetadataFile") }
-    before do
-      login_as user
-    end
-    context "user is not permitted to upload metadata files" do
-      before do
-        visit batches_path
-      end
-      it "should not include a link to upload a metadata file" do
-        expect(page).to_not have_link(menu_label, new_metadata_file_path)
-      end
-    end
-  end
   context "batches" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
     let(:other_user) { FactoryGirl.create(:user) }
