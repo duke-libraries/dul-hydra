@@ -5,6 +5,7 @@ module DulHydra
     autoload :Migrator
     autoload :MultiresImageFilePath
     autoload :OriginalFilename
+    autoload :RDFDatastreamMerger
     autoload :Roles
   end
 end
