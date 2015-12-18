@@ -16,7 +16,7 @@ module DulHydra::Migration
         allow(datastream).to receive(:dsLocation) { "file:/dev/null" }
       }
       it "sets the target property" do
-        expect { subject.migrate }.to change(target, :multires_image_file_path).from(nil).to("file:/dev/null")
+        expect { subject.migrate }.to change(target, :multires_image_file_path).from(nil).to("/dev/null")
       end
     end
 

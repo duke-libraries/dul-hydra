@@ -6,7 +6,7 @@ module DulHydra::Migration
 
     def migrate
       if multiresImage && multiresImage.external? && multiresImage.has_content?
-        target.multires_image_file_path = multiresImage.dsLocation
+        target.multires_image_file_path = URI.parse(multiresImage.dsLocation).path
       end
     end
 
