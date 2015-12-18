@@ -15,27 +15,25 @@ class CollectionsController < ApplicationController
   def report
     respond_to do |format|
       format.csv do
-        rep = DulHydra::Reports::Report.new
-        basename = current_object.title_display.gsub /[^\w\.\-]/, "_"
-        case params.require(:type)
-        when "techmd"
-          rep.filters << DulHydra::Reports::IsGovernedByFilter.new(current_object.pid)
-          rep.filters << DulHydra::Reports::HasContentFilter
-          rep.columns += DulHydra::Reports::Columns::TechnicalMetadata
-          basename += "__TECHMD"
-        when "descmd"
-          rep.filters << DulHydra::Reports::IsMemberOfCollectionFilter.new(current_object.pid)
-          rep.columns += DulHydra::Reports::Columns::DescriptiveMetadata
-          basename += "__DESCMD"
-        end
+        rep = case report_type
+              when "descmd"
+                DulHydra::Reports::CollectionDescriptiveMetadataReport.new(current_object)
+              when "techmd"
+                DulHydra::Reports::CollectionTechnicalMetadataReport.new(current_object)
+              else
+                render nothing: true, status: 404
+              end
         csv = rep.run
-        filename = basename + ".csv"
-        send_data csv.read, type: "text/csv", filename: filename
+        send_data csv.to_s, type: "text/csv", filename: rep.filename
       end
     end
   end
 
   protected
+
+  def report_type
+    type = params.require(:type)
+  end
 
   def admin_metadata_fields
     super + [:admin_set, :research_help_contact]
