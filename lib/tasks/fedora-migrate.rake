@@ -6,6 +6,7 @@ module FedoraMigrate::Hooks
   def before_object_migration
     target.fcrepo3_pid = source.pid
     DulHydra::Migration::MultiresImageFilePath.new(self).migrate
+    DulHydra::Migration::RDFDatastreamMerger.new(self).merge
   end
 
   def after_object_migration
@@ -13,7 +14,7 @@ module FedoraMigrate::Hooks
   end
 
   def before_rdf_datastream_migration
-    if source.dsid == "adminMetadata"
+    if source.dsid == "mergedMetadata"
       DulHydra::Migration::Roles.new(self).migrate
     end
   end
@@ -27,7 +28,7 @@ end
 desc "Migrate all my objects"
 task migrate: :environment do
   FedoraMigrate.migrate_repository(namespace: "duke",
-                                   options: { convert: [ 'descMetadata', 'adminMetadata' ] })
+                                   options: { convert: [ 'mergedMetadata' ] })
 end
 
 namespace :test do
