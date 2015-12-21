@@ -1,3 +1,13 @@
+GIT
+  remote: git://github.com/projecthydra-labs/fedora-migrate.git
+  revision: 757504b6443bc39fae02882b27e33e1aa9204fdb
+  ref: 757504b6443bc39fae02882b27e33e1aa9204fdb
+  specs:
+    fedora-migrate (0.3.0)
+      hydra-head (~> 9.5)
+      rchardet
+      rubydora (~> 1.8)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -142,10 +152,6 @@ GEM
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     fastercsv (1.5.5)
-    fedora-migrate (0.3.0)
-      hydra-head (~> 9.5)
-      rchardet
-      rubydora (~> 1.8)
     ffi (1.9.10)
     grouper-rest-client (0.2.7)
       json (>= 1.5.1)
@@ -472,7 +478,7 @@ DEPENDENCIES
   devise
   equivalent-xml
   factory_girl_rails (~> 4.4)
-  fedora-migrate (= 0.3.0)
+  fedora-migrate!
   hydra-head (~> 9.5)
   jettywrapper (~> 2.0)
   jquery-rails
