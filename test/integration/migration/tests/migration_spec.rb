@@ -63,11 +63,14 @@ RSpec.describe 'migration' do
     expect(duke_1.roles.count).to eq(2)
     expect(duke_1.roles.granted?(agent: 'public', role_type: 'Viewer', scope: 'policy')).to be true
     expect(duke_1.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
+    expect(duke_1.admin_policy).to eq(duke_1)
     # duke:2
     expect(duke_2).to be_a(Item)
     expect(duke_2.permanent_id).to eq('ark:/99999/fk4kk9hs76')
     expect(duke_2.desc_metadata.extent).to contain_exactly('3.5 x 6 cm')
     expect(duke_2.roles.count).to eq(0)
+    expect(duke_2.admin_policy).to eq(duke_1)
+    expect(duke_2.parent).to eq(duke_1)
     # duke:3
     expect(duke_3).to be_a(Component)
     expect(duke_3.permanent_id).to eq('ark:/99999/fk4fx7hc5z')
@@ -76,6 +79,8 @@ RSpec.describe 'migration' do
     expect(duke_3.roles.count).to eq(0)
     expect(duke_3.content.original_name).to eq('dscsi010010010.tif')
     expect(duke_3.legacy_original_filename).to be_nil
+    expect(duke_3.admin_policy).to eq(duke_1)
+    expect(duke_3.parent).to eq(duke_2)
     # duke:5
     expect(duke_5).to be_a(Component)
     expect(duke_5.permanent_id).to eq('ark:/99999/fk4b56sk1k')
@@ -84,6 +89,8 @@ RSpec.describe 'migration' do
     expect(duke_5.roles.count).to eq(0)
     expect(duke_5.content.original_name).to eq('dscsi010010020.tif')
     expect(duke_5.legacy_original_filename).to be_nil
+    expect(duke_5.admin_policy).to eq(duke_1)
+    expect(duke_5.parent).to eq(duke_2)
     # duke:6
     expect(duke_6).to be_a(Target)
     expect(duke_6.permanent_id).to eq('ark:/99999/fk46d62r7z')
@@ -91,6 +98,8 @@ RSpec.describe 'migration' do
     expect(duke_6.roles.count).to eq(0)
     expect(duke_6.content.original_name).to eq('dscT001.tif')
     expect(duke_6.legacy_original_filename).to be_nil
+    expect(duke_6.admin_policy).to eq(duke_1)
+    expect(duke_6.collection).to eq(duke_1)
     # duke:7
     expect(duke_7).to be_a(Collection)
     expect(duke_7.permanent_id).to eq('ark:/99999/fk43n2cv3b')
@@ -99,16 +108,21 @@ RSpec.describe 'migration' do
     expect(duke_7.roles.granted?(agent: 'repo:admins', role_type: 'Curator', scope: 'policy')).to be true
     expect(duke_7.roles.granted?(agent: 'public', role_type: 'Viewer', scope: 'policy')).to be true
     expect(duke_7.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
+    expect(duke_7.admin_policy).to eq(duke_7)
     # duke:8
     expect(duke_8).to be_a(Item)
     expect(duke_8.permanent_id).to eq('ark:/99999/fk4zw1p68n')
     expect(duke_8.desc_metadata.type).to contain_exactly('Data')
     expect(duke_8.roles.count).to eq(0)
+    expect(duke_8.admin_policy).to eq(duke_7)
+    expect(duke_8.parent).to eq(duke_7)
     # duke:9
     expect(duke_9).to be_a(Item)
     expect(duke_9.permanent_id).to eq('ark:/99999/fk4v40zd3r')
     expect(duke_9.desc_metadata.description).to contain_exactly('Project proposal')
     expect(duke_9.roles.count).to eq(0)
+    expect(duke_9.admin_policy).to eq(duke_7)
+    expect(duke_9.parent).to eq(duke_7)
     # duke:10
     expect(duke_10).to be_a(Component)
     expect(duke_10.permanent_id).to eq('ark:/99999/fk4xw4n98j')
@@ -118,6 +132,8 @@ RSpec.describe 'migration' do
     expect(duke_10.roles.granted?(agent: 'public', role_type: 'Downloader', scope: 'resource')).to be true
     expect(duke_10.content.original_name).to eq('product-list_300.csv')
     expect(duke_10.legacy_original_filename).to be_nil
+    expect(duke_10.admin_policy).to eq(duke_7)
+    expect(duke_10.parent).to eq(duke_8)
     # duke:11
     expect(duke_11).to be_a(Component)
     expect(duke_11.permanent_id).to eq('ark:/99999/fk42n5bz2q')
@@ -127,6 +143,8 @@ RSpec.describe 'migration' do
     expect(duke_11.roles.granted?(agent: 'repo:project_team', role_type: 'Downloader', scope: 'resource')).to be true
     expect(duke_11.content.original_name).to eq('J20110711-00608.pdf')
     expect(duke_11.legacy_original_filename).to be_nil
+    expect(duke_11.admin_policy).to eq(duke_7)
+    expect(duke_11.parent).to eq(duke_9)
   end
 
 end
