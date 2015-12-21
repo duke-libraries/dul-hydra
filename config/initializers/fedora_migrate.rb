@@ -1,9 +1,7 @@
 require "fedora-migrate"
-require "dul_hydra/migration"
-require "rdf/vocab"
 
-FedoraMigrate::ObjectMover.class_eval do
-  def id_component
-    nil
+FedoraMigrate::TargetConstructor.class_eval do
+  def build
+    target.new
   end
 end
