@@ -18,7 +18,7 @@ RSpec.describe 'migration' do
         DulHydra::Migration::RDFDatastreamMerger.new(self).merge
       end
       def after_object_migration
-        DulHydra::Migration::OriginalFilename.new(self).migrate
+        DulHydra::Migration::OriginalFilename.new(self).migrate if target.can_have_content?
       end
       def before_rdf_datastream_migration
         if source.dsid == "mergedMetadata"
