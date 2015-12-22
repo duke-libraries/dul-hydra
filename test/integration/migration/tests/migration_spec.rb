@@ -75,6 +75,8 @@ RSpec.describe 'migration' do
     expect(subj.roles.count).to eq(0)
     expect(subj.admin_policy).to eq(duke_1)
     expect(subj.parent).to eq(duke_1)
+    expect(subj.structMetadata.mime_type).to eq('text/xml')
+    expect(subj.structMetadata.content.length).to eq(379)
     expect(subj.thumbnail.mime_type).to eq('image/png')
     expect(subj.thumbnail.size).to eq(25037)
     # duke:3
