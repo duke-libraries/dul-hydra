@@ -57,94 +57,132 @@ RSpec.describe 'migration' do
     duke_10 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:10').first
     duke_11 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:11').first
     # duke:1
-    expect(duke_1).to be_a(Collection)
-    expect(duke_1.permanent_id).to eq('ark:/99999/fk4qc07m0z')
-    expect(duke_1.desc_metadata.spatial).to contain_exactly('Durham (N.C.)', 'North Carolina', 'United States')
-    expect(duke_1.roles.count).to eq(2)
-    expect(duke_1.roles.granted?(agent: 'public', role_type: 'Viewer', scope: 'policy')).to be true
-    expect(duke_1.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
-    expect(duke_1.admin_policy).to eq(duke_1)
+    subj = duke_1
+    expect(subj).to be_a(Collection)
+    expect(subj.permanent_id).to eq('ark:/99999/fk4qc07m0z')
+    expect(subj.desc_metadata.spatial).to contain_exactly('Durham (N.C.)', 'North Carolina', 'United States')
+    expect(subj.roles.count).to eq(2)
+    expect(subj.roles.granted?(agent: 'public', role_type: 'Viewer', scope: 'policy')).to be true
+    expect(subj.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
+    expect(subj.admin_policy).to eq(duke_1)
+    expect(subj.thumbnail.mime_type).to eq('image/png')
+    expect(subj.thumbnail.size).to eq(25037)
     # duke:2
-    expect(duke_2).to be_a(Item)
-    expect(duke_2.permanent_id).to eq('ark:/99999/fk4kk9hs76')
-    expect(duke_2.desc_metadata.extent).to contain_exactly('3.5 x 6 cm')
-    expect(duke_2.roles.count).to eq(0)
-    expect(duke_2.admin_policy).to eq(duke_1)
-    expect(duke_2.parent).to eq(duke_1)
+    subj = duke_2
+    expect(subj).to be_a(Item)
+    expect(subj.permanent_id).to eq('ark:/99999/fk4kk9hs76')
+    expect(subj.desc_metadata.extent).to contain_exactly('3.5 x 6 cm')
+    expect(subj.roles.count).to eq(0)
+    expect(subj.admin_policy).to eq(duke_1)
+    expect(subj.parent).to eq(duke_1)
+    expect(subj.thumbnail.mime_type).to eq('image/png')
+    expect(subj.thumbnail.size).to eq(25037)
     # duke:3
-    expect(duke_3).to be_a(Component)
-    expect(duke_3.permanent_id).to eq('ark:/99999/fk4fx7hc5z')
-    expect(duke_3.desc_metadata.title).to be_empty
-    expect(duke_3.multires_image_file_path).to eq('/tmp/image-server-data/0/b/4f/0b4fc12b-ce86-46e2-be6b-6ac8e2cfba6b/dscsi010010010.ptif')
-    expect(duke_3.roles.count).to eq(0)
-    expect(duke_3.content.original_name).to eq('dscsi010010010.tif')
-    expect(duke_3.legacy_original_filename).to be_nil
-    expect(duke_3.admin_policy).to eq(duke_1)
-    expect(duke_3.parent).to eq(duke_2)
+    subj = duke_3
+    expect(subj).to be_a(Component)
+    expect(subj.permanent_id).to eq('ark:/99999/fk4fx7hc5z')
+    expect(subj.desc_metadata.title).to be_empty
+    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/0/b/4f/0b4fc12b-ce86-46e2-be6b-6ac8e2cfba6b/dscsi010010010.ptif')
+    expect(subj.roles.count).to eq(0)
+    expect(subj.legacy_original_filename).to be_nil
+    expect(subj.admin_policy).to eq(duke_1)
+    expect(subj.parent).to eq(duke_2)
+    expect(subj.content.mime_type).to eq('image/tiff')
+    expect(subj.content.original_name).to eq('dscsi010010010.tif')
+    expect(subj.content.size).to eq(4481808)
+    expect(subj.thumbnail.mime_type).to eq('image/png')
+    expect(subj.thumbnail.size).to eq(25037)
+    expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.content.length).to eq(4566)
     # duke:5
-    expect(duke_5).to be_a(Component)
-    expect(duke_5.permanent_id).to eq('ark:/99999/fk4b56sk1k')
-    expect(duke_5.desc_metadata.title).to be_empty
-    expect(duke_5.multires_image_file_path).to eq('/tmp/image-server-data/e/3/84/e3847b68-ebfa-4b28-837a-1401789947f8/dscsi010010020.ptif')
-    expect(duke_5.roles.count).to eq(0)
-    expect(duke_5.content.original_name).to eq('dscsi010010020.tif')
-    expect(duke_5.legacy_original_filename).to be_nil
-    expect(duke_5.admin_policy).to eq(duke_1)
-    expect(duke_5.parent).to eq(duke_2)
+    subj = duke_5
+    expect(subj).to be_a(Component)
+    expect(subj.permanent_id).to eq('ark:/99999/fk4b56sk1k')
+    expect(subj.desc_metadata.title).to be_empty
+    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/e/3/84/e3847b68-ebfa-4b28-837a-1401789947f8/dscsi010010020.ptif')
+    expect(subj.roles.count).to eq(0)
+    expect(subj.legacy_original_filename).to be_nil
+    expect(subj.admin_policy).to eq(duke_1)
+    expect(subj.parent).to eq(duke_2)
+    expect(subj.content.mime_type).to eq('image/tiff')
+    expect(subj.content.original_name).to eq('dscsi010010020.tif')
+    expect(subj.content.size).to eq(4688604)
+    expect(subj.thumbnail.mime_type).to eq('image/png')
+    expect(subj.thumbnail.size).to eq(14721)
+    expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.content.length).to eq(4558)
     # duke:6
-    expect(duke_6).to be_a(Target)
-    expect(duke_6.permanent_id).to eq('ark:/99999/fk46d62r7z')
-    expect(duke_6.desc_metadata.title).to be_empty
-    expect(duke_6.roles.count).to eq(0)
-    expect(duke_6.content.original_name).to eq('dscT001.tif')
-    expect(duke_6.legacy_original_filename).to be_nil
-    expect(duke_6.admin_policy).to eq(duke_1)
-    expect(duke_6.collection).to eq(duke_1)
+    subj = duke_6
+    expect(subj).to be_a(Target)
+    expect(subj.permanent_id).to eq('ark:/99999/fk46d62r7z')
+    expect(subj.desc_metadata.title).to be_empty
+    expect(subj.roles.count).to eq(0)
+    expect(subj.legacy_original_filename).to be_nil
+    expect(subj.admin_policy).to eq(duke_1)
+    expect(subj.collection).to eq(duke_1)
+    expect(subj.content.mime_type).to eq('image/tiff')
+    expect(subj.content.original_name).to eq('dscT001.tif')
+    expect(subj.content.size).to eq(28507714)
+    expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.content.length).to eq(5817)
     # duke:7
-    expect(duke_7).to be_a(Collection)
-    expect(duke_7.permanent_id).to eq('ark:/99999/fk43n2cv3b')
-    expect(duke_7.desc_metadata.temporal).to contain_exactly('2011')
-    expect(duke_7.roles.count).to eq(3)
-    expect(duke_7.roles.granted?(agent: 'repo:admins', role_type: 'Curator', scope: 'policy')).to be true
-    expect(duke_7.roles.granted?(agent: 'public', role_type: 'Viewer', scope: 'policy')).to be true
-    expect(duke_7.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
-    expect(duke_7.admin_policy).to eq(duke_7)
+    subj = duke_7
+    expect(subj).to be_a(Collection)
+    expect(subj.permanent_id).to eq('ark:/99999/fk43n2cv3b')
+    expect(subj.desc_metadata.temporal).to contain_exactly('2011')
+    expect(subj.roles.count).to eq(3)
+    expect(subj.roles.granted?(agent: 'repo:admins', role_type: 'Curator', scope: 'policy')).to be true
+    expect(subj.roles.granted?(agent: 'public', role_type: 'Viewer', scope: 'policy')).to be true
+    expect(subj.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
+    expect(subj.admin_policy).to eq(duke_7)
     # duke:8
-    expect(duke_8).to be_a(Item)
-    expect(duke_8.permanent_id).to eq('ark:/99999/fk4zw1p68n')
-    expect(duke_8.desc_metadata.type).to contain_exactly('Data')
-    expect(duke_8.roles.count).to eq(0)
-    expect(duke_8.admin_policy).to eq(duke_7)
-    expect(duke_8.parent).to eq(duke_7)
+    subj = duke_8
+    expect(subj).to be_a(Item)
+    expect(subj.permanent_id).to eq('ark:/99999/fk4zw1p68n')
+    expect(subj.desc_metadata.type).to contain_exactly('Data')
+    expect(subj.roles.count).to eq(0)
+    expect(subj.admin_policy).to eq(duke_7)
+    expect(subj.parent).to eq(duke_7)
     # duke:9
-    expect(duke_9).to be_a(Item)
-    expect(duke_9.permanent_id).to eq('ark:/99999/fk4v40zd3r')
-    expect(duke_9.desc_metadata.description).to contain_exactly('Project proposal')
-    expect(duke_9.roles.count).to eq(0)
-    expect(duke_9.admin_policy).to eq(duke_7)
-    expect(duke_9.parent).to eq(duke_7)
+    subj = duke_9
+    expect(subj).to be_a(Item)
+    expect(subj.permanent_id).to eq('ark:/99999/fk4v40zd3r')
+    expect(subj.desc_metadata.description).to contain_exactly('Project proposal')
+    expect(subj.roles.count).to eq(0)
+    expect(subj.admin_policy).to eq(duke_7)
+    expect(subj.parent).to eq(duke_7)
     # duke:10
-    expect(duke_10).to be_a(Component)
-    expect(duke_10.permanent_id).to eq('ark:/99999/fk4xw4n98j')
-    expect(duke_10.desc_metadata.title).to be_empty
-    expect(duke_10.multires_image_file_path).to be_nil
-    expect(duke_10.roles.count).to eq(1)
-    expect(duke_10.roles.granted?(agent: 'public', role_type: 'Downloader', scope: 'resource')).to be true
-    expect(duke_10.content.original_name).to eq('product-list_300.csv')
-    expect(duke_10.legacy_original_filename).to be_nil
-    expect(duke_10.admin_policy).to eq(duke_7)
-    expect(duke_10.parent).to eq(duke_8)
+    subj = duke_10
+    expect(subj).to be_a(Component)
+    expect(subj.permanent_id).to eq('ark:/99999/fk4xw4n98j')
+    expect(subj.desc_metadata.title).to be_empty
+    expect(subj.multires_image_file_path).to be_nil
+    expect(subj.roles.count).to eq(1)
+    expect(subj.roles.granted?(agent: 'public', role_type: 'Downloader', scope: 'resource')).to be true
+    expect(subj.legacy_original_filename).to be_nil
+    expect(subj.admin_policy).to eq(duke_7)
+    expect(subj.parent).to eq(duke_8)
+    expect(subj.content.mime_type).to eq('text/comma-separated-values')
+    expect(subj.content.original_name).to eq('product-list_300.csv')
+    expect(subj.content.size).to eq(493)
+    expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.content.length).to eq(2409)
     # duke:11
-    expect(duke_11).to be_a(Component)
-    expect(duke_11.permanent_id).to eq('ark:/99999/fk42n5bz2q')
-    expect(duke_11.desc_metadata.title).to be_empty
-    expect(duke_11.multires_image_file_path).to be_nil
-    expect(duke_11.roles.count).to eq(1)
-    expect(duke_11.roles.granted?(agent: 'repo:project_team', role_type: 'Downloader', scope: 'resource')).to be true
-    expect(duke_11.content.original_name).to eq('J20110711-00608.pdf')
-    expect(duke_11.legacy_original_filename).to be_nil
-    expect(duke_11.admin_policy).to eq(duke_7)
-    expect(duke_11.parent).to eq(duke_9)
+    subj = duke_11
+    expect(subj).to be_a(Component)
+    expect(subj.permanent_id).to eq('ark:/99999/fk42n5bz2q')
+    expect(subj.desc_metadata.title).to be_empty
+    expect(subj.multires_image_file_path).to be_nil
+    expect(subj.roles.count).to eq(1)
+    expect(subj.roles.granted?(agent: 'repo:project_team', role_type: 'Downloader', scope: 'resource')).to be true
+    expect(subj.legacy_original_filename).to be_nil
+    expect(subj.admin_policy).to eq(duke_7)
+    expect(subj.parent).to eq(duke_9)
+    expect(subj.content.mime_type).to eq('application/pdf')
+    expect(subj.content.original_name).to eq('J20110711-00608.pdf')
+    expect(subj.content.size).to eq(203237)
+    expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.content.length).to eq(3785)
   end
 
 end
