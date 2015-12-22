@@ -1,6 +1,6 @@
 <h4>Initiate Action</h4>
 <p>Note: If an action is not linked, you are not authorized to initiate that action.</p>
-<ul class=""list-group">
+<ul class="list-group">
   <li class="list-group-item">
     <%= link_to_if can?(:add_children, current_object) && can?(:create, IngestFolder),
                    'Folder Ingest',
