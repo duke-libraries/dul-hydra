@@ -70,6 +70,10 @@ module DulHydra
       mattr_accessor :fixity_check_period_in_days do
         ENV["FIXITY_CHECK_PERIOD"] || 60
       end
+
+      # Base path for METS folders
+      mattr_accessor :mets_folder_base_path
+
     end
 
     module ClassMethods

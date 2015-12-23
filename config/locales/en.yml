@@ -2,7 +2,7 @@ en:
   ddr:
     errors:
       multiple_object_matches: "%{criteria} retrieved multiple repository objects"
-  dul_hydra:        
+  dul_hydra:
     admin_metadata:
       local_id: "Local ID"
       ead_id: "EAD ID"
@@ -126,11 +126,11 @@ en:
         license: 'Copyright / license statement inherited by objects governed by this Admin Policy'
       messages:
         updated: 'Admin Policy updated'
-        changed: "Policy successfully changed." 
+        changed: "Policy successfully changed."
       page_titles:
         edit: 'Editing Admin Policy'
     tabs:
-      tech_metadata: 
+      tech_metadata:
         label: "Tech Metadata"
         actions:
           download: "Download File"
@@ -177,6 +177,10 @@ en:
               metadata: Metadata File
               profile: Metadata File Type
               rows: Rows (excludes header row)
+          mets_folder:
+              collection_id: Collection
+              folder_path: Folder Path
+              files_scanned: Files Scanned
   batch:
       ingest_folder:
           batch_name: Folder Ingest
@@ -204,6 +208,14 @@ en:
               parse_error: Error parsing the file
               attribute_name: Invalid attribute name
               mapped_attribute_name: Attribute mapped to invalid name
+      mets_folder:
+          batch_name: METS Folder Update
+          create_batch: Create Update Batch
+          folder: Folder
+          not_readable: "%{path} does not exist or is not readable"
+          objects_to_update: Objects to be Updated
+          scan_folder: Scan Folder
+          submitted: Scanning ...
       manifest:
           validation_failed: "Did not process manifest due to manifest validation errors"
           validation_skipped: "Skipped validation"

@@ -120,6 +120,12 @@ DulHydra::Application.routes.draw do
     end
   end
 
+  resources :mets_folders, :only => [:new, :create, :show] do
+    member do
+      get 'procezz'
+    end
+  end
+
   get '/help', to: redirect(DulHydra.help_url)
 
 end

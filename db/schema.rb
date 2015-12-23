@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150729205548) do
+ActiveRecord::Schema.define(version: 20151223153654) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
@@ -160,6 +160,15 @@ ActiveRecord::Schema.define(version: 20150729205548) do
     t.string   "metadata_content_type"
     t.integer  "metadata_file_size"
     t.datetime "metadata_updated_at"
+  end
+
+  create_table "mets_folders", force: true do |t|
+    t.integer  "user_id"
+    t.string   "base_path"
+    t.string   "sub_path"
+    t.string   "collection_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "searches", force: true do |t|
