@@ -4,10 +4,11 @@ gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
 gem 'ddr-alerts', '~> 1.0.0'
 gem 'ddr-batch', '1.0.2.rc1'
-gem 'ddr-models', '2.4.0.rc2'
+gem 'ddr-models', '2.4.0.rc6'
 gem 'rubydora', '>= 1.8.1'
 gem 'devise'
 gem 'deprecation'
+gem 'virtus', '~> 1.0.5'
 
 gem 'log4r'
 
