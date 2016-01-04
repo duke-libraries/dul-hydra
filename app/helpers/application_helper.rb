@@ -7,9 +7,7 @@ module ApplicationHelper
   end
 
   def research_help_contact_options_for_select
-    # FIXME https://github.com/duke-libraries/ddr-models/issues/394
-    Ddr::Contacts.load_contacts unless Ddr::Contacts.contacts 
-    options_from_collection_for_select(Ddr::Contacts.contacts.to_h.values, :slug, :name, current_object.research_help_contact)
+    options_from_collection_for_select(Ddr::Models::Contact.all, :slug, :name, current_object.research_help_contact)
   end
   
   def license_options_for_select
