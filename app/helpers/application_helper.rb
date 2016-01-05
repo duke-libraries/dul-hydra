@@ -9,7 +9,7 @@ module ApplicationHelper
   def research_help_contact_options_for_select
     options_from_collection_for_select(Ddr::Models::Contact.all, :slug, :name, current_object.research_help_contact)
   end
-  
+
   def license_options_for_select
     options_from_collection_for_select(Ddr::Models::License.all, :url, :title, current_object.license)
   end
@@ -174,6 +174,11 @@ module ApplicationHelper
 
   def link_to_document_or_object(doc_or_obj, access = :read)
 	link_to_if can?(access, doc_or_obj), doc_or_obj.title_display, document_or_object_url(doc_or_obj)
+  end
+
+  def link_to_object(pid, access = :read)
+    doc = SolrDocument.find(pid)
+    link_to_if can?(access, doc), pid, document_or_object_url(doc)
   end
 
   def link_to_create_model(model)
