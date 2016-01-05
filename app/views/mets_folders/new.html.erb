@@ -1,0 +1,42 @@
+<h1>METS Folder</h1>
+
+<div class="row">
+  <div class="col-md-5">
+    <% if @mets_folder.errors.any? %>
+        <div class="alert alert-danger">
+          <strong><%= pluralize(@mets_folder.errors.count, "error") %>
+            prohibited this METS folder from being scanned:</strong>
+          <ul>
+            <% @mets_folder.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+    <%= form_for @mets_folder do |f| %>
+        <div class="form-group">
+          <%= f.label :collection_id %>
+          <%= f.hidden_field :collection_id %>
+          <%= object_display_title(@mets_folder.collection_id) %>
+        </div>
+        <div class="form-group">
+          <%= f.label :base_path %>
+          <%= f.hidden_field :base_path %>
+          <%= @mets_folder.base_path %>
+        </div>
+        <div class="form-group">
+          <%= f.label 'Folder Path' %>
+          <%= f.text_field :sub_path, class: 'form-control' %>
+        </div>
+        <div class="form-group">
+          <%= f.submit t('batch.mets_folder.scan_folder'), :id => 'mets_folders_submit_button', :class => "btn btn-primary", 'data-loading-text' => t('batch.mets_folder.submitted') %>
+        </div>
+    <% end %>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $('#new_mets_folder').submit(function() {
+    $('#mets_folders_submit_button').button('loading');
+  });
+</script>

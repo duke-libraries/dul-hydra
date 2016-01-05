@@ -1,0 +1,10 @@
+<h4>Initiate Action</h4>
+<p>Note: If an action is not linked, you are not authorized to initiate that action.</p>
+<ul class="list-group">
+  <li class="list-group-item">
+    <%= link_to_if can?(:edit, current_object),
+                   'METS Folder Update',
+                   new_mets_folder_path(mets_folder: { collection_id: current_object })
+    %>
+  </li>
+</ul>
