@@ -12,6 +12,11 @@ form.bookmark_toggle {
 }
 /* END Blacklight */
 
+#role-types-permissions-modal .modal-dialog {
+    /* https://github.com/duke-libraries/dul-hydra/issues/1521 */
+    width: 60%;
+}
+
 .rights-form legend {
     font-size: medium;
     font-weight: bold;
