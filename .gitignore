@@ -40,3 +40,5 @@
 # fedora-migrate
 /migration_report
 /test/integration/migration/fixtures/f3-migration-jetty-*.zip
+/test/integration/migration/fixtures/events-*.sql
+/test/integration/migration/fixtures/events-*.zip

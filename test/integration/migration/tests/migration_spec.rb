@@ -7,6 +7,8 @@ RSpec.describe 'migration' do
 
   let(:f3_jetty_zip_fixture) { 'f3-migration-jetty-C.zip' }
   let(:f3_jetty_zip_fixture_path) { Rails.root.join('test', 'integration', 'migration', 'fixtures', f3_jetty_zip_fixture) }
+  let(:f3_events_sql_fixture) { 'events-C.sql' }
+  let(:f3_events_sql_fixture_path) { Rails.root.join('test', 'integration', 'migration', 'fixtures', f3_events_sql_fixture) }
   let(:f3_temp_dir) { Dir.mktmpdir }
   let(:f3_jetty_dir) { File.join(f3_temp_dir, 'jetty') }
 
@@ -19,6 +21,7 @@ RSpec.describe 'migration' do
       end
       def after_object_migration
         DulHydra::Migration::OriginalFilename.new(self).migrate if target.can_have_content?
+        DulHydra::Migration::EventsMigrator.new(self).migrate
       end
       def before_rdf_datastream_migration
         if source.dsid == "mergedMetadata"
@@ -35,6 +38,11 @@ RSpec.describe 'migration' do
     Dir.chdir("#{f3_jetty_dir}") do
       @f3_jetty_pid = spawn('java -Djetty.port=8984 -Dsolr.solr.home=solr -Xmx256m -jar start.jar')
       sleep 45
+    end
+    ar_connection = ActiveRecord::Base.connection()
+    events_sql = File.read(f3_events_sql_fixture_path)
+    events_sql.split(";\n").each do |s|
+      ar_connection.execute(s.strip) unless s.strip.empty?
     end
   end
 
@@ -67,6 +75,7 @@ RSpec.describe 'migration' do
     expect(subj.admin_policy).to eq(duke_1)
     expect(subj.thumbnail.mime_type).to eq('image/png')
     expect(subj.thumbnail.size).to eq(25037)
+    expect(subj.events.count).to eq(14)
     # duke:2
     subj = duke_2
     expect(subj).to be_a(Item)
@@ -79,6 +88,7 @@ RSpec.describe 'migration' do
     expect(subj.structMetadata.content.length).to eq(379)
     expect(subj.thumbnail.mime_type).to eq('image/png')
     expect(subj.thumbnail.size).to eq(25037)
+    expect(subj.events.count).to eq(9)
     # duke:3
     subj = duke_3
     expect(subj).to be_a(Component)
@@ -96,6 +106,7 @@ RSpec.describe 'migration' do
     expect(subj.thumbnail.size).to eq(25037)
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(4566)
+    expect(subj.events.count).to eq(12)
     # duke:5
     subj = duke_5
     expect(subj).to be_a(Component)
@@ -113,6 +124,7 @@ RSpec.describe 'migration' do
     expect(subj.thumbnail.size).to eq(14721)
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(4558)
+    expect(subj.events.count).to eq(13)
     # duke:6
     subj = duke_6
     expect(subj).to be_a(Target)
@@ -127,6 +139,7 @@ RSpec.describe 'migration' do
     expect(subj.content.size).to eq(28507714)
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(5817)
+    expect(subj.events.count).to eq(11)
     # duke:7
     subj = duke_7
     expect(subj).to be_a(Collection)
@@ -137,6 +150,7 @@ RSpec.describe 'migration' do
     expect(subj.roles.granted?(agent: 'public', role_type: 'Viewer', scope: 'policy')).to be true
     expect(subj.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
     expect(subj.admin_policy).to eq(duke_7)
+    expect(subj.events.count).to eq(12)
     # duke:8
     subj = duke_8
     expect(subj).to be_a(Item)
@@ -145,6 +159,7 @@ RSpec.describe 'migration' do
     expect(subj.roles.count).to eq(0)
     expect(subj.admin_policy).to eq(duke_7)
     expect(subj.parent).to eq(duke_7)
+    expect(subj.events.count).to eq(7)
     # duke:9
     subj = duke_9
     expect(subj).to be_a(Item)
@@ -153,6 +168,7 @@ RSpec.describe 'migration' do
     expect(subj.roles.count).to eq(0)
     expect(subj.admin_policy).to eq(duke_7)
     expect(subj.parent).to eq(duke_7)
+    expect(subj.events.count).to eq(7)
     # duke:10
     subj = duke_10
     expect(subj).to be_a(Component)
@@ -169,6 +185,7 @@ RSpec.describe 'migration' do
     expect(subj.content.size).to eq(493)
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(2409)
+    expect(subj.events.count).to eq(10)
     # duke:11
     subj = duke_11
     expect(subj).to be_a(Component)
@@ -185,6 +202,7 @@ RSpec.describe 'migration' do
     expect(subj.content.size).to eq(203237)
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(3785)
+    expect(subj.events.count).to eq(12)
   end
 
 end

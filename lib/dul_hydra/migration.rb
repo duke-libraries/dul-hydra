@@ -4,6 +4,7 @@ module DulHydra
 
     autoload :MigratedObjectFinder
     autoload :Migrator
+    autoload :EventsMigrator
     autoload :MultiresImageFilePath
     autoload :OriginalFilename
     autoload :RDFDatastreamMerger
