@@ -2,8 +2,6 @@ class SimpleIngestMetadata
 
   attr_reader :metadata_filepath, :metadata_profile
 
-  DATA_PREFIX = 'data'
-
   # Used in accommodation of case and spacing errors in column headings
   NORMALIZED_TERMS = Ddr::Vocab::Vocabulary.term_names(RDF::DC).map(&:downcase).map(&:to_s)
 
@@ -15,9 +13,8 @@ class SimpleIngestMetadata
 
   def metadata(locator)
     metadata = {}
-    loc = locator.present? ? File.join(DATA_PREFIX, locator) : DATA_PREFIX
-    if metadata_grid[loc]
-      metadata_grid[loc].each do |heading, field_contents|
+    if metadata_grid[locator]
+      metadata_grid[locator].each do |heading, field_contents|
         unless field_contents.blank?
           metadata = add_field_to_metadata(metadata, heading, field_contents)
         end
@@ -65,7 +62,9 @@ class SimpleIngestMetadata
       @metadata_grid = {}
       as_csv_table.each do |row|
         locator = row.field(0)
-        locator.sub!(/\/$/,"")  # remove trailing slash if present
+        if locator.present?
+          locator.sub!(/\/$/,"")  # remove trailing slash if there is one
+        end
         row.delete(0)
         @metadata_grid[locator] = row
       end

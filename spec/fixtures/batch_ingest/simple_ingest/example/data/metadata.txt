@@ -1,4 +1,4 @@
 path	title	subject
-data	Collection Title	Foo; Bar
-data/itemA	Item A Title	Baz
-data/itemA/image1.tiff	Component 1 Title	
+	Collection Title	Foo; Bar
+itemA	Item A Title	Baz
+itemA/image1.tiff	Component 1 Title
