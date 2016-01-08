@@ -7,7 +7,8 @@ module DulHydra
       def get_children
         configure_blacklight_for_children
         # Set instance vars for compatibility with Blacklight helpers and views
-        query = current_object.association_query(:children)
+        rel = { current_object.class.reflect_on_association(:children) => current_object.id }
+        query = ActiveFedora::SolrQueryBuilder.construct_query_for_rel(rel)
         @response, @document_list = get_search_results(params, {q: query})
       end
 
