@@ -39,6 +39,10 @@ module DulHydra
 
       protected
 
+      def admin_metadata_fields
+        super + [ :original_filename ]
+      end
+
       def tech_metadata_fields
         DulHydra.techmd_show_fields.map do |field|
           [field, Array(current_object.techmd.send(field))]
