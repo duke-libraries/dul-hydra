@@ -99,30 +99,52 @@ RSpec.describe ValidateMETSFile, type: :service, batch: true, mets_file: true do
         expect(results.warnings).to include("#{mets_file.filepath}: Missing TYPE attribute on root node")
       end
     end
-  end
-  context "invalid struct metadata" do
-    context "missing ID attribute" do
-      before do
-        allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml_with_missing_div_id_attr }
-        # allow(Ddr::Utils).to receive(:pid_for_identifier).and_call_original
-        allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
-        allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010') { 'test:7' }
-      end
-      it "should report a warning" do
-        results = validation_service.call
-        expect(results.errors).to include("#{mets_file.filepath}: Div does not have ID attribute")
+    context "invalid admin metadata" do
+      context "source" do
+        context "EAD ID without ArchivesSpace ID" do
+          before do
+            allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml_with_ead_id_no_aspace_id }
+          end
+          it "should report a warning" do
+            results = validation_service.call
+            expect(results.warnings).to include("#{mets_file.filepath}: EAD ID but no ArchivesSpace ID")
+          end
+        end
+        context "ArchivesSpace ID without EAD ID" do
+          before do
+            allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml_with_aspace_id_no_ead_id }
+          end
+          it "should report a warning" do
+            results = validation_service.call
+            expect(results.warnings).to include("#{mets_file.filepath}: ArchivesSpace ID but no EAD ID")
+          end
+        end
       end
     end
-    context "no repository object matching ID attribute" do
+    context "invalid struct metadata" do
       context "missing ID attribute" do
         before do
-          allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml }
+          allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml_with_missing_div_id_attr }
+          # allow(Ddr::Utils).to receive(:pid_for_identifier).and_call_original
           allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
-          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010') { nil }
+          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010') { 'test:7' }
         end
-        it "should report a warning" do
+        it "should report an error" do
           results = validation_service.call
-          expect(results.errors).to include("#{mets_file.filepath}: Unable to locate repository object for div ID efghi010030010")
+          expect(results.errors).to include("#{mets_file.filepath}: Div does not have ID attribute")
+        end
+      end
+      context "no repository object matching ID attribute" do
+        context "missing ID attribute" do
+          before do
+            allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml }
+            allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
+            allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010') { nil }
+          end
+          it "should report an error" do
+            results = validation_service.call
+            expect(results.errors).to include("#{mets_file.filepath}: Unable to locate repository object for div ID efghi010030010")
+          end
         end
       end
     end

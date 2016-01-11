@@ -17,7 +17,7 @@
 				<td><%= div.label %></td>
 				<td><%= div.orderlabel %></td>
 				<td><%= div.type %></td>
-				<td><%= link_to(div.fptrs.first, catalog_path(div.fptrs.first)) %></td>
+				<td><%= link_to_object(div.fptrs.first) %></td>
 			</tr>
 		<% end %>
 	</tbody>

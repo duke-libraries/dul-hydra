@@ -3,17 +3,18 @@ source 'http://rubygems.org'
 gem 'rails', '~> 4.1.6'
 gem 'hydra-head', '~> 7.2.0'
 gem 'ddr-alerts', '~> 1.0.0'
-gem 'ddr-batch', '1.0.1'
-gem 'ddr-models', '2.3.2'
+gem 'ddr-batch', '1.0.2'
+gem 'ddr-models', '2.4.1'
 gem 'rubydora', '>= 1.8.1'
 gem 'devise'
 gem 'deprecation'
+gem 'virtus', '~> 1.0.5'
 
 gem 'log4r'
 
 # Background processing
 gem 'resque', '1.25.2'
-gem 'resque-pool', '0.3.0'
+gem 'resque-pool', '~> 0.6.0'
 gem 'nest', '1.1.2'
 
 # ExecJS runtime

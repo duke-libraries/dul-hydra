@@ -4,6 +4,9 @@ class METSFile
 
   COLLECTION_ID_SEPARATOR = '_'
   DISPLAY_FORMAT_TYPE_SEPARATOR = ':'
+  SOURCE_IDS_SEPARATOR = '/'
+
+  SourceIds = Struct.new(:ead_id, :aspace_id)
 
   def initialize(filepath, collection=nil)
     @filepath = filepath
@@ -36,6 +39,18 @@ class METSFile
 
   def header_agent_id
     @header_agent_id ||= mets_hdr_agent_id_attr.value if mets_hdr_agent_id_attr
+  end
+
+  def amd_secs
+    @amd_secs ||= mets_doc.xpath('//amdSec')
+  end
+
+  def ead_id
+    @ead_id ||= source_ids.ead_id if source_ids
+  end
+
+  def aspace_id
+    @aspace_id ||= source_ids.aspace_id if source_ids
   end
 
   def dmd_secs
@@ -101,6 +116,22 @@ class METSFile
 
   def mets_hdr_agent_id_attr
     @mets_hdr_agent_id_attr ||= mets_hdr_agent.attr('ID') if mets_hdr_agent.present?
+  end
+
+  def amd_sec
+    amd_secs.first
+  end
+
+  def source_metadata
+    @source_metadata ||= amd_sec.xpath('sourceMD/mdWrap/xmlData') if amd_sec.present?
+  end
+
+  def source_ids_element
+    @source_ids_element ||= source_metadata.xpath('dcterms:source').first if source_metadata.present?
+  end
+
+  def source_ids
+    @source_ids ||= SourceIds.new(*source_ids_element.content.split(SOURCE_IDS_SEPARATOR)) if source_ids_element
   end
 
 end

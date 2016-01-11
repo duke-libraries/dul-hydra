@@ -106,7 +106,7 @@ module DulHydra
 
       # Controls what fields are displayed on the admin metadata tab and edit form
       def admin_metadata_fields
-        [:license, :local_id, :display_format, :ead_id]
+        [:license, :local_id, :display_format, :ead_id, :aspace_id]
       end      
 
       def admin_metadata_params

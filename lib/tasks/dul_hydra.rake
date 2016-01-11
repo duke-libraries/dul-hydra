@@ -141,8 +141,8 @@ namespace :dul_hydra do
 
     desc "Re-index all currently indexed objects"
     task :reindex_all => :environment do
-      Ddr::Index.pids do |pid|
-        Resque.enqueue(DulHydra::Jobs::UpdateIndex, pid)
+      Ddr::Index.pids.each do |pid|
+        Resque.enqueue(Ddr::Jobs::UpdateIndex, pid)
       end
       puts "All indexed object queued for re-indexing."
     end
@@ -152,7 +152,7 @@ namespace :dul_hydra do
       conn = ActiveFedora::RubydoraConnection.new(ActiveFedora.config.credentials).connection
       conn.search(nil) do |object|
         next if object.pid.start_with?('fedora-system:')
-        Resque.enqueue(DulHydra::Jobs::UpdateIndex, object.pid)
+        Resque.enqueue(Ddr::Jobs::UpdateIndex, object.pid)
       end
       puts "All repository objects queued for indexing."
     end
@@ -169,26 +169,52 @@ namespace :dul_hydra do
   end
 
   namespace :queues do
-    task :interrupt, [:signal] do |t, args|
-      pid_file = File.join(Rails.root, "tmp/pids/resque-pool.pid")
-      pid = `cat #{pid_file}`
-      system "kill -#{args[:signal]} #{pid}"
+    desc "Report the status of the pool manager"
+    task :status => :environment do
+      puts "The pool manager is #{DulHydra::Queues.running? ? 'running' : 'stopped'}."
     end
 
     desc "Start the queue pool manager and workers"
     task :start => :environment do
-      system "resque-pool --daemon --environment #{Rails.env}"
+      if DulHydra::Queues.start
+        puts "Starting pool manager and workers."
+      else
+        puts "Error attempting to start pool manager and workers (may already be running)."
+      end
     end
 
     desc "Stop the pool manager and workers"
     task :stop => :environment do
-      Rake::Task["dul_hydra:queues:interrupt"].invoke("QUIT")
+      if DulHydra::Queues.stop
+        puts "Shutting down workers and pool manager."
+      else
+        puts "Error attempting to shut down workers and pool manager (may not be running)."
+      end
     end
 
-    desc "Restart the pool manager and workers"
+    desc "Restart (stop/start) the pool manager and workers"
     task :restart => :environment do
-      Rake::Task["dul_hydra:queues:interrupt"].invoke("HUP")
+      if DulHydra::Queues.restart
+        puts "Restarting pool manager and workers."
+      else
+        puts "Error attempting to restart pool manager and workers."
+      end
     end
+
+    desc "Reload the pool manager config and restart workers"
+    task :reload => :environment do
+      if DulHydra::Queues.reload
+        puts "Reloading pool manager config and restarting workers."
+      else
+        puts "Error attempting to reload pool manager config and restart workers."
+      end
+    end
+  end
+
+  desc "Run FITS file characterization process on content files"
+  task :characterize_files, [:limit] => :environment do |t, args|
+    queued = DulHydra::FileCharacterization.call(args[:limit])
+    puts "#{queued} FITS file characterization job(s) submitted for processing."
   end
 
 end

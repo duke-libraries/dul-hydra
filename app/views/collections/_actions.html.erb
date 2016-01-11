@@ -1,0 +1,16 @@
+<h4>Initiate Action</h4>
+<p>Note: If an action is not linked, you are not authorized to initiate that action.</p>
+<ul class="list-group">
+  <li class="list-group-item">
+    <%= link_to_if can?(:add_children, current_object) && can?(:create, IngestFolder),
+                   'Folder Ingest',
+                   new_ingest_folder_path(ingest_folder: { collection_pid: current_object })
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:create, MetadataFile),
+                   'Metadata File Upload',
+                   new_metadata_file_path(metadata_file: { collection_pid: current_object })
+    %>
+  </li>
+</ul>

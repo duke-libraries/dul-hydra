@@ -60,4 +60,23 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe "#link_to_object" do
+    let(:pid) { 'test:1' }
+    let(:solr_doc) { SolrDocument.new('id' => pid, Ddr::Index::Fields::ACTIVE_FEDORA_MODEL => 'Item') }
+    before { allow(SolrDocument).to receive(:find).with(pid) { solr_doc } }
+    context "can access" do
+      before { allow(helper).to receive(:can?) { true } }
+      it "should return the correct link to the object" do
+        expect(helper.link_to_object(pid)).to include(item_path('test:1'))
+      end
+    end
+    context "cannot access" do
+      before { allow(helper).to receive(:can?) { false } }
+      it "should return the pid without a link" do
+        expect(helper.link_to_object(pid)).to eq(pid)
+      end
+    end
+  end
+
 end
