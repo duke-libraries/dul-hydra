@@ -33,7 +33,7 @@ module DulHydra
       end
 
       def running?
-        system("pgrep -qf resque-pool")
+        system("pgrep -f resque-pool")
       end
 
       def interrupt(signal)
