@@ -25,10 +25,34 @@ module FedoraMigrate::Hooks
 
 end
 
-desc "Migrate all my objects"
-task migrate: :environment do
-  FedoraMigrate.migrate_repository(namespace: "duke",
-                                   options: { convert: [ 'mergedMetadata' ] })
+namespace :duke do
+  namespace :migrate do
+    desc "Migrate all my objects"
+    task all: :environment do
+      FedoraMigrate.migrate_repository(namespace: "duke",
+                                       options: { convert: [ 'mergedMetadata' ] })
+    end
+    desc "Migrate a single object"
+    task :object, [:pid] => :environment do |t, args|
+      raise "Please provide a pid, example changeme:1234" if args[:pid].nil?
+      Resque.enqueue(DulHydra::Migration::MigrateSingleObjectJob, (args[:pid]))
+    end
+    desc "Migrate the relationships for a single object"
+    task :object_relationships, [:pid] => :environment do |t, args|
+      raise "Please provide a pid, example changeme:1234" if args[:pid].nil?
+      Resque.enqueue(DulHydra::Migration::MigrateSingleObjectRelationshipsJob, (args[:pid]))
+    end
+    desc "Migrate list of objects"
+    task :list_objects, [:pid_list_file_path] => :environment do |t, args|
+      raise "Please a path to the pid list file, example pid_list.txt" if args[:pid_list_file_path].nil?
+      DulHydra::Migration::MigrateListObjects.new(args[:pid_list_file_path]).migrate
+    end
+    desc "Migrate the relationships of list of objects"
+    task :list_object_relationships, [:pid_list_file_path] => :environment do |t, args|
+      raise "Please a path to the pid list file, example pid_list.txt" if args[:pid_list_file_path].nil?
+      DulHydra::Migration::MigrateListObjectRelationships.new(args[:pid_list_file_path]).migrate
+    end
+  end
 end
 
 namespace :test do
