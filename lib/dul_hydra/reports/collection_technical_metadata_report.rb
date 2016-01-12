@@ -3,7 +3,7 @@ module DulHydra::Reports
 
     def initialize(collection, **args)
       super(collection, **args) do
-        where is_governed_by: collection.pid
+        is_governed_by collection
         has_content
         fields :id, Ddr::Index::Fields.techmd
       end
