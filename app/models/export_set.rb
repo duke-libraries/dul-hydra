@@ -1,4 +1,4 @@
-require 'zip/zip'
+require 'zip'
 
 class ExportSet < ActiveRecord::Base
 
@@ -119,7 +119,7 @@ class ExportSet < ActiveRecord::Base
     Dir.mktmpdir do |tmpdir|
       logger.debug "Created temp directory #{tmpdir} for export set content archive."
       zip_path = File.join(tmpdir, generate_archive_file_name('zip'))
-      Zip::ZipFile.open(zip_path, Zip::ZipFile::CREATE) do |zip_file|
+      Zip::File.open(zip_path, Zip::File::CREATE) do |zip_file|
         logger.debug "Created zip file #{zip_path} for export set content archive."
         objects.each do |object|
           # use guaranteed unique file name based on PID and dsID
@@ -127,7 +127,7 @@ class ExportSet < ActiveRecord::Base
           # write content to file
           File.open(temp_file_path, 'wb', :encoding => 'ascii-8bit') do |f|
             f.write object.content.content
-            logger.debug "Wrote object #{object.pid} content to file."
+            logger.debug "Wrote object #{object.id} content to file."
           end
           # Use original source file name, if available, or the generated file name.
           # Note that we keep the path of the source file in order to reduce the likelihood

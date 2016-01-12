@@ -3,18 +3,22 @@ ENV["RAILS_ENV"] ||= 'test'
 
 require File.expand_path("../../config/environment", __FILE__)
 
+warn "WARNING: Deprecations are silenced by default!"
+Deprecation.default_deprecation_behavior = :silence
+
 require 'rspec/rails'
 require 'rspec/matchers' # req by equivalent-xml custom matcher `be_equivalent_to`
 require 'equivalent-xml/rspec_matchers'
 require 'capybara/rails'
 require 'capybara/rspec'
 require 'dul_hydra'
-require 'database_cleaner'
 require "ddr/auth/test_helpers"
-require "resque"
+require "active_fedora/cleaner"
 
+require "resque"
 Resque.inline = true
 
+require 'database_cleaner'
 DatabaseCleaner.strategy = :truncation
 
 # XXX Hack to bypass file characterization
@@ -56,7 +60,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     DatabaseCleaner.clean
-    ActiveFedora::Base.destroy_all
+    ActiveFedora::Cleaner.clean!
     Ddr::Models.configure do |config|
       config.external_file_store = Dir.mktmpdir
       config.multires_image_external_file_store = Dir.mktmpdir
@@ -71,7 +75,8 @@ RSpec.configure do |config|
       FileUtils.remove_entry_secure(Ddr::Models.multires_image_external_file_store)
     end
   end
-  config.after(:each) { ActiveFedora::Base.destroy_all }
+  config.after(:each, type: :controller) { ActiveFedora::Cleaner.clean! }
+  config.after(:each, fixity: true) { ActiveFedora::Cleaner.clean! }
   config.after(:each, type: :feature) { Warden.test_reset! }
 
   # Redirect all output to file

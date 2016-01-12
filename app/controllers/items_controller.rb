@@ -18,14 +18,14 @@ class ItemsController < ApplicationController
     child_params = params[:content]
     if child_params[:file].present?
       # create the component
-      child = Component.new(parent_id: current_object.pid)
+      child = Component.new(parent_id: current_object.id)
       # set permissions on the component
       child.grant_roles_to_creator(current_user)
       child.copy_admin_policy_or_roles_from(current_object)
       # upload the file
       child.upload child_params[:file]
       if child.save
-        notify_event :creation, pid: child.pid
+        notify_event :creation, pid: child.id
         # verify checksum if provided
         if child_params[:checksum].present?
           begin

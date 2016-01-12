@@ -28,10 +28,10 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should clear and re-assign the local id" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+      clear_attrs = attrs.where(datastream: 'adminMetadata',
                                 operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
                                 name: 'local_id')
-      add_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+      add_attrs = attrs.where(datastream: 'adminMetadata',
                               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                               name: 'local_id',
                               value: 'efghi01003')
@@ -45,10 +45,10 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should clear and re-assign the display format" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+      clear_attrs = attrs.where(datastream: 'adminMetadata',
                                 operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
                                 name: 'display_format')
-      add_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+      add_attrs = attrs.where(datastream: 'adminMetadata',
                               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                               name: 'display_format',
                               value: 'multi_image')

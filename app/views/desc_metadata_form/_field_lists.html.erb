@@ -1,3 +1,3 @@
-<% vocabs.each do |vocab| %>
-  <%= render partial: 'desc_metadata_form/field_list', locals: {label: Ddr::Vocab::Vocabulary.label(vocab), terms: current_object.desc_metadata_terms(Ddr::Vocab::Vocabulary.namespace_prefix(vocab))} %>
+<% current_object.descMetadata.mappings.each do |mapping| %>
+  <%= render partial: 'desc_metadata_form/field_list', locals: {mapping: mapping} %>
 <% end %>

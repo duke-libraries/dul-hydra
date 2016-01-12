@@ -6,20 +6,20 @@ FactoryGirl.define do
 
       factory :batch_object_add_admin_policy do
         name "admin_policy"
-        object { create(:collection).pid }
-        object_type Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID
+        object { create(:collection).id }
+        object_type Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_REPO_ID
       end
 
       factory :batch_object_add_parent do
         name "parent"
-        object { create(:test_parent).pid }
-        object_type Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID
+        object { create(:test_parent).id }
+        object_type Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_REPO_ID
       end
 
       factory :batch_object_add_target_for_collection do
         name "collection"
-        object { create(:collection).pid }
-        object_type Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID
+        object { create(:collection).id }
+        object_type Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_REPO_ID
       end
 
     end

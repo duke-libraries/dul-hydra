@@ -1,11 +1,11 @@
 FactoryGirl.define do
 
   factory :item do
-    title [ "Test Item" ]
-    sequence(:identifier) { |n| [ "item%05d" % n ] }
+    dc_title [ "Test Item" ]
+    sequence(:dc_identifier) { |n| [ "item%05d" % n ] }
 
     trait :member_of_collection do
-      collection
+      association :parent, factory: :collection
     end
 
     trait :has_part do

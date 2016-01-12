@@ -52,12 +52,12 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
         admin_policy_relationships = obj.batch_object_relationships.where(
                                         name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_ADMIN_POLICY)
         expect(admin_policy_relationships.size).to eq(1)
-        expect(admin_policy_relationships.first.object).to eq(collections.first.pid)
+        expect(admin_policy_relationships.first.object).to eq(collections.first.id.to_s)
       end
 
       # Collection expectations
       expect(collections.count).to eq(1)
-      expect(collections.first.pid).to be_present
+      expect(collections.first.id).to be_present
       expect(collections.first.batch_object_attributes.where(name: 'title').first.value).to eq('Collection Title')
 
       # Item expectations
@@ -65,12 +65,12 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
       item_pids = []
       item_titles = []
       items.each do |obj|
-        expect(obj.pid).to be_present
-        item_pids << obj.pid
+        expect(obj.id).to be_present
+        item_pids << obj.id
         parent_relationships = obj.batch_object_relationships.where(
                                   name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT)
         expect(parent_relationships.size).to eq(1)
-        expect(parent_relationships.first.object).to eq(collections.first.pid)
+        expect(parent_relationships.first.object).to eq(collections.first.id.to_s)
         item_titles << obj.batch_object_attributes.where(name: 'title').first.value
       end
       expect(item_titles).to include('Title 1')
@@ -87,7 +87,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
         parent_relationships = obj.batch_object_relationships.where(
                                   name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT)
         expect(parent_relationships.size).to eq(1)
-        expect(item_pids).to include(parent_relationships.first.object)
+        expect(item_pids.map(&:to_s)).to include(parent_relationships.first.object)
         # Content datastream
         content_datastreams = obj.batch_object_datastreams.where(
                                   name: Ddr::Datastreams::CONTENT)

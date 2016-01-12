@@ -9,8 +9,14 @@
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:create, MetadataFile),
-                   'Metadata File Upload',
-                   new_metadata_file_path(metadata_file: { collection_pid: current_object })
+        'Metadata File Upload',
+        new_metadata_file_path(metadata_file: { collection_pid: current_object })
+	%>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:edit, current_object),
+        'METS Folder Update',
+        new_mets_folder_path(mets_folder: { collection_id: current_object })
     %>
   </li>
 </ul>

@@ -31,12 +31,12 @@ class BuildBatchObjectFromMETSFile
   def add_local_id(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: 'adminMetadata',
       name: 'local_id',
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: 'adminMetadata',
       name: 'local_id',
       value: mets_file.local_id,
       value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -46,12 +46,12 @@ class BuildBatchObjectFromMETSFile
   def add_display_format(update_object, display_format)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: 'adminMetadata',
       name: 'display_format',
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: 'adminMetadata',
       name: 'display_format',
       value: display_format,
       value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,

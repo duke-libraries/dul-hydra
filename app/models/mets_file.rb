@@ -103,7 +103,7 @@ class METSFile
   def model(pid)
     q = ActiveFedora::SolrService.construct_query_for_pids([ pid ])
     r = ActiveFedora::SolrService.query(q)
-    r.first[Ddr::IndexFields::ACTIVE_FEDORA_MODEL] unless r.empty?
+    r.first[Ddr::Index::Fields::ACTIVE_FEDORA_MODEL] unless r.empty?
   end
 
   def mets_hdr

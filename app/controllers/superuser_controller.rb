@@ -11,7 +11,7 @@ class SuperuserController < ApplicationController
     sign_in(:superuser, current_user)
     session[:manage_menu] ||= []
     session[:manage_menu] << Queue
-    flash[:alert] = "<strong>Caution!</strong> You are now acting as Superuser.".html_safe
+    flash[:alert] = "Caution! You are now acting as Superuser."
     redirect_to :back
   end
 

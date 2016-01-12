@@ -19,14 +19,9 @@
 # Ignore all config yaml files
 /config/*.yml
 /config/metadata_file_profiles/*.yml
-# Except for these ...
-!/config/predicate_mappings.yml
 
 # Environment configs
 /config/environments/*.rb
-
-# Ignore certain translation files
-/config/locales/admin_set.yml
 
 # SimpleCov / Coveralls
 /coverage
@@ -41,3 +36,9 @@
 
 # Ignore Mac .DS_Store files
 .DS_Store
+
+# fedora-migrate
+/migration_report
+/test/integration/migration/fixtures/f3-migration-jetty-*.zip
+/test/integration/migration/fixtures/events-*.sql
+/test/integration/migration/fixtures/events-*.zip

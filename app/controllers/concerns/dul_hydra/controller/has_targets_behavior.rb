@@ -10,15 +10,16 @@ module DulHydra
 
       def get_targets
         configure_blacklight_for_targets
-        query = current_object.association_query(:targets)
+        rel = { current_object.class.reflect_on_association(:targets) => current_object.id }
+        query = ActiveFedora::SolrQueryBuilder.construct_query_for_rel(rel)
         @response, @document_list = get_search_results(params, {q: query})
       end
 
       def configure_blacklight_for_targets
         blacklight_config.configure do |config|
           config.sort_fields.clear
-          config.add_sort_field "#{Ddr::IndexFields::LOCAL_ID} asc", label: "Local ID"
-          config.add_sort_field "#{Ddr::IndexFields::TITLE} asc", label: "Title"
+          config.add_sort_field "#{Ddr::Index::Fields::LOCAL_ID} asc", label: "Local ID"
+          config.add_sort_field "#{Ddr::Index::Fields::TITLE} asc", label: "Title"
         end
       end
 

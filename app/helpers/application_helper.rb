@@ -32,7 +32,7 @@ module ApplicationHelper
     # having been added as a helper method to CatalogController
     response, doc = get_solr_response_for_doc_id(pid)
     # XXX This is not consistent with Ddr::Models::Base#title_display
-    title = doc.nil? ? pid : doc.fetch(Ddr::IndexFields::TITLE, pid)
+    title = doc.nil? ? pid : doc.fetch(Ddr::Index::Fields::TITLE, pid)
     link_to(title, catalog_path(pid), :class => "parent-link").html_safe
   end
 
@@ -194,7 +194,7 @@ module ApplicationHelper
     if opts[:access]
       models = models.select { |m| can? opts[:access], m }
     end
-    options = models.collect { |m| [m.title.is_a?(Array) ? m.title.first : m.title, m.pid] }
+    options = models.collect { |m| [m.dc_title.is_a?(Array) ? m.dc_title.first : m.dc_title, m.id] }
     options_for_select options, opts[:selected]
   end
 
