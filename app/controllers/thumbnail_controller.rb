@@ -6,8 +6,8 @@ class ThumbnailController < ApplicationController
     "#{asset.id.sub(/:/, "-")}-thumbnail"
   end
 
-  def datastream_to_show
-    asset.datastreams[Ddr::Datastreams::THUMBNAIL]
+  def load_file
+    asset.attached_files[Ddr::Datastreams::THUMBNAIL]
   end
 
 end
