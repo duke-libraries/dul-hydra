@@ -86,10 +86,10 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should clear and re-assign the EAD ID" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+      clear_attrs = attrs.where(datastream: 'adminMetadata',
                                 operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
                                 name: 'ead_id')
-      add_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+      add_attrs = attrs.where(datastream: 'adminMetadata',
                               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                               name: 'ead_id',
                               value: 'abcdcollection')
@@ -103,10 +103,10 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should clear and re-assign the ArchivesSpace ID" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+      clear_attrs = attrs.where(datastream: 'adminMetadata',
                                 operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
                                 name: 'aspace_id')
-      add_attrs = attrs.where(datastream: Ddr::Datastreams::ADMIN_METADATA,
+      add_attrs = attrs.where(datastream: 'adminMetadata',
                               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                               name: 'aspace_id',
                               value: '123456abcdef654321')

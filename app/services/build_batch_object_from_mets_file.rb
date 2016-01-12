@@ -61,12 +61,12 @@ class BuildBatchObjectFromMETSFile
   def add_research_help_contact(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: 'adminMetadata',
       name: 'research_help_contact',
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: 'adminMetadata',
       name: 'research_help_contact',
       value: mets_file.header_agent_id,
       value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -99,12 +99,12 @@ class BuildBatchObjectFromMETSFile
   def add_ead_id(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        datastream: 'adminMetadata',
         name: 'ead_id',
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        datastream: 'adminMetadata',
         name: 'ead_id',
         value: mets_file.ead_id,
         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -114,12 +114,12 @@ class BuildBatchObjectFromMETSFile
   def add_aspace_id(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        datastream: 'adminMetadata',
         name: 'aspace_id',
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        datastream: 'adminMetadata',
         name: 'aspace_id',
         value: mets_file.aspace_id,
         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
