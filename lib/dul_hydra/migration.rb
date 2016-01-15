@@ -8,5 +8,9 @@ module DulHydra
     autoload :OriginalFilename
     autoload :RDFDatastreamMerger
     autoload :Roles
+    autoload :MigrateListObjects
+    autoload :MigrateListObjectRelationships
+    autoload :MigrateSingleObjectJob
+    autoload :MigrateSingleObjectRelationshipsJob
   end
 end
