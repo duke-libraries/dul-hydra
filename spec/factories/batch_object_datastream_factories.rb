@@ -20,8 +20,8 @@ FactoryGirl.define do
         name Ddr::Datastreams::CONTENT
         payload File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'id001.tif')
         payload_type Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
-        checksum "120ad0814f207c45d968b05f7435034ecfee8ac1a0958cd984a070dad31f66f3"
-        checksum_type Ddr::Datastreams::CHECKSUM_TYPE_SHA256
+        checksum "257fa1025245d2d2a60ae81ac7922ca9581ca314"
+        checksum_type Ddr::Datastreams::CHECKSUM_TYPE_SHA1
       end
 
     end

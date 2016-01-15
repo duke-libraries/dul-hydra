@@ -48,7 +48,7 @@ module DulHydra::Batch::Scripts
         expect(batch_objects[2].batch_object_attributes.where(name: 'title').first.value).to eq('Component 1 Title')
         content_ds = batch_objects[2].batch_object_datastreams.where(name: Ddr::Datastreams::CONTENT).first
         expect(content_ds.payload).to eq(File.join(folder_path, 'data', 'itemA', 'image1.tiff'))
-        expect(content_ds.checksum).to eq('bda5fda452d0047c27e9e0048ed59428cb9e6d5d46fe9c27dff5c8e39b75a59e')
+        expect(content_ds.checksum).to eq('548bd2678027f3acb4d4c5ccedf6f92ca07f74bd')
       end
     end
 

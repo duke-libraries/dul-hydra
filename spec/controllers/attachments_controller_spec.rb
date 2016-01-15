@@ -75,7 +75,7 @@ describe AttachmentsController, type: :controller, attachments: true do
       end
       it "should validate the checksum when provided" do
         expect(controller).to receive(:validate_checksum)
-        create_attachment(checksum: "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18", checksum_type: "SHA-256")
+        create_attachment(checksum: "ff01aab0eada29d35bb423c5c73a9f67a22bc1fd", checksum_type: "SHA-1")
       end
     end
     describe "user cannot add attachments to object" do
