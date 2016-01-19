@@ -4,7 +4,7 @@
 	<span class="glyphicon glyphicon-cog"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
-	<% if manage_menu.include?(Queue) %>
+	<% if manage_menu.include?("Queue") %>
 	    <li>
 		  <%= link_to admin_resque_server_path, target: "_blank" do %>
 		    <span class="glyphicon glyphicon-tasks"></span> Queues
