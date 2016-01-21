@@ -91,7 +91,7 @@ describe ItemsController, type: :controller, items: true do
         end
         it "should validate the checksum if provided" do
           expect_any_instance_of(Component).to receive(:validate_checksum!)
-          create_item_and_component(checksum: "bda5fda452d0047c27e9e0048ed59428cb9e6d5d46fe9c27dff5c8e39b75a59e", checksum_type: "SHA-256")
+          create_item_and_component(checksum: "75e2e0cec6e807f6ae63610d46448f777591dd6b", checksum_type: "SHA-1")
         end
       end
     end

@@ -69,7 +69,7 @@ describe IngestFolder, type: :model, ingest: true do
   let(:mount_point_path) { "/mount/" }
   let(:base_path) { File.join(mount_point_name, "base/path/") }
   let(:checksum_directory) { "/fixity/fedora_ingest/" }
-  let(:checksum_type) { "sha256" }
+  let(:checksum_type) { "sha1" }
   let(:user) { FactoryGirl.create(:user) }
   before do
     allow(File).to receive(:readable?).and_return(true)

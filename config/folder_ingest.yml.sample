@@ -4,7 +4,7 @@ config:
     target_folder: targets
     checksum_file:
         location: /dir/fixity/fedora_ingest/
-        type: SHA-256
+        type: SHA-1
 files:
     included_extensions:
         - .pdf

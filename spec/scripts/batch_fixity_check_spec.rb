@@ -49,8 +49,8 @@ module DulHydra
             createDate = Time.parse(row["dsCreateDate"])
             expect(createDate).to be_a Time
             expect(createDate).to_not be_utc
-            expect(row["dsChecksumType"]).to eq("SHA-256")
-            expect(row["dsChecksum"]).to match(/^\h{64}$/)
+            expect(row["dsChecksumType"]).to eq("SHA-1")
+            expect(row["dsChecksum"]).to match(/^\h{40}$/)
             expect(row["dsChecksumValid"]).to match(/^(true|false)$/)
           end
         end

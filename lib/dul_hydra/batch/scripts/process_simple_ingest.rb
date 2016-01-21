@@ -4,7 +4,7 @@ module DulHydra::Batch::Scripts
 
     attr_reader :batch_user, :configuration, :filepath
 
-    CHECKSUM_FILE = 'manifest-sha256.txt'
+    CHECKSUM_FILE = 'manifest-sha1.txt'
     METADATA_FILE = 'metadata.txt'
     DEFAULT_CONFIG_FILE = Rails.root.join('config', 'simple_ingest.yml')
     DEFAULT_ARGUMENTS = { config_file: DEFAULT_CONFIG_FILE }

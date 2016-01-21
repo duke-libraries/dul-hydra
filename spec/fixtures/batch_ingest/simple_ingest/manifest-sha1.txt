@@ -1,0 +1,5 @@
+7cc5abd7ed8c1c907d86bba5e6e18ed6c6ec995c data/file01001.tif
+75e2e0cec6e807f6ae63610d46448f777591dd6b data/file01002.tif
+a6ae0d815c1a2aef551b45fe34a35ceea1828a4d data/pdf/file01.pdf
+2cf23f0035c12b6242093e93d0f7eeba0b1e08e8 data/targets/T001.tiff
+ff01aab0eada29d35bb423c5c73a9f67a22bc1fd data/targets/T002.tiff
