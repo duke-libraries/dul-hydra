@@ -8,7 +8,7 @@ class BuildBatchFromFolderIngest
     @filesystem = filesystem
     @content_modeler = content_modeler
     @metadata_provider = metadata_provider
-    @checksum_provider = checksum_provider    
+    @checksum_provider = checksum_provider
     @batch_name = batch_name
     @batch_description = batch_description
   end
@@ -17,7 +17,7 @@ class BuildBatchFromFolderIngest
     @batch = create_batch
     traverse_filesystem
     batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
-    batch    
+    batch
   end
 
   private
@@ -89,7 +89,7 @@ class BuildBatchFromFolderIngest
       payload: full_filepath,
       payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
       checksum: checksum_provider.checksum(rel_filepath),
-      checksum_type: Ddr::Datastreams::CHECKSUM_TYPE_SHA256
+      checksum_type: Ddr::Datastreams::CHECKSUM_TYPE_SHA1
     )
     batch_object.batch_object_datastreams << ds
   end

@@ -79,7 +79,7 @@ describe ComponentsController, type: :controller, components: true do
       end
       it "validates the checksum when provided" do
         expect(controller).to receive(:validate_checksum)
-        post :create, parent_id: item, content: {file: file, checksum: "bda5fda452d0047c27e9e0048ed59428cb9e6d5d46fe9c27dff5c8e39b75a59e", checksum_type: "SHA-256"}
+        post :create, parent_id: item, content: {file: file, checksum: "75e2e0cec6e807f6ae63610d46448f777591dd6b", checksum_type: "SHA-1"}
       end
     end
     describe "when the user cannot add children to the item" do

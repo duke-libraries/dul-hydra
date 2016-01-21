@@ -102,8 +102,8 @@ describe AttachmentsController, type: :controller, attachments: true do
         expect(controller).to receive(:validate_checksum)
         post :create, attached_to_id: attach_to,
              content: {file: file,
-                       checksum: "b3f5fc721b5b7ea0c1756a68ed4626463c610170aa199f798fb630ddbea87b18",
-                       checksum_type: "SHA-256"},
+                       checksum: "ff01aab0eada29d35bb423c5c73a9f67a22bc1fd",
+                       checksum_type: "SHA-1"},
              descMetadata: {title: ["New Attachment"]}
       end
     end

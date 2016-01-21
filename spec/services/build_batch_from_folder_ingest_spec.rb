@@ -33,7 +33,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
 
     it "should build an appropriate batch" do
       batch = batch_builder.call
-    
+
       # Batch expectations
       expect(batch.id).to be_present
       expect(batch.name).to eq(batch_name)
@@ -92,7 +92,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
         content_datastreams = obj.batch_object_datastreams.where(
                                   name: Ddr::Datastreams::CONTENT)
         expect(content_datastreams.size).to eq(1)
-        expect(content_datastreams.first.checksum_type).to eq(Ddr::Datastreams::CHECKSUM_TYPE_SHA256)
+        expect(content_datastreams.first.checksum_type).to eq(Ddr::Datastreams::CHECKSUM_TYPE_SHA1)
         component_filepaths << content_datastreams.first.payload
         component_checksums << content_datastreams.first.checksum
       end
