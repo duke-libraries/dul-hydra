@@ -137,10 +137,12 @@ namespace :dul_hydra do
 
     desc "Index all objects in the repository (except fedora-system: objects)."
     task :update_all => :environment do
-      conn = ActiveFedora::RubydoraConnection.new(ActiveFedora.config.credentials).connection
-      conn.search(nil) do |object|
-        next if object.pid.start_with?('fedora-system:')
-        Resque.enqueue(Ddr::Jobs::UpdateIndex, object.pid)
+      # See ActiveFedora::Indexing#reindex_everything
+      descendants = ActiveFedora::Base.descendant_uris(ActiveFedora::Base.id_to_uri(''))
+      descendants.shift # Discard the root uri
+      descendants.each do |uri|
+        id = ActiveFedora::Base.uri_to_id(uri)
+        Resque.enqueue(Ddr::Jobs::UpdateIndex, id)
       end
       puts "All repository objects queued for indexing."
     end
