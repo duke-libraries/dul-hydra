@@ -13,6 +13,7 @@ RSpec.describe 'migration' do
   before do
     module FedoraMigrate::Hooks
       def before_object_migration
+        DulHydra::Migration::SourceObjectIntegrity.new(self.source).verify
         target.fcrepo3_pid = source.pid
         DulHydra::Migration::MultiresImageFilePath.new(self).migrate
         DulHydra::Migration::RDFDatastreamMerger.new(self).merge
@@ -36,6 +37,7 @@ RSpec.describe 'migration' do
       @f3_jetty_pid = spawn('java -Djetty.port=8984 -Dsolr.solr.home=solr -Xmx256m -jar start.jar')
       sleep 45
     end
+    allow_any_instance_of(Rubydora::Datastream).to receive(:dsChecksumValid) { true }
   end
 
   after do
