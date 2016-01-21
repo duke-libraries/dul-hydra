@@ -4,6 +4,7 @@ require "dul_hydra/migration"
 module FedoraMigrate::Hooks
 
   def before_object_migration
+    DulHydra::Migration::SourceObjectIntegrity.new(self.source).verify
     target.fcrepo3_pid = source.pid
     DulHydra::Migration::MultiresImageFilePath.new(self).migrate
     DulHydra::Migration::RDFDatastreamMerger.new(self).merge

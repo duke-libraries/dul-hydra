@@ -12,5 +12,6 @@ module DulHydra
     autoload :MigrateListObjectRelationships
     autoload :MigrateSingleObjectJob
     autoload :MigrateSingleObjectRelationshipsJob
+    autoload :SourceObjectIntegrity
   end
 end
