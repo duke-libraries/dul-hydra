@@ -12,6 +12,7 @@ module FedoraMigrate::Hooks
 
   def after_object_migration
     DulHydra::Migration::OriginalFilename.new(self).migrate if target.can_have_content?
+    DulHydra::Migration::TargetObjectIntegrity.new(self.source, self.target).verify
   end
 
   def before_rdf_datastream_migration

@@ -5,7 +5,7 @@ require 'dul_hydra/migration'
 
 RSpec.describe 'migration' do
 
-  let(:f3_jetty_zip_fixture) { 'f3-migration-jetty-C.zip' }
+  let(:f3_jetty_zip_fixture) { 'f3-migration-jetty-D.zip' }
   let(:f3_jetty_zip_fixture_path) { Rails.root.join('test', 'integration', 'migration', 'fixtures', f3_jetty_zip_fixture) }
   let(:f3_temp_dir) { Dir.mktmpdir }
   let(:f3_jetty_dir) { File.join(f3_temp_dir, 'jetty') }
@@ -20,6 +20,7 @@ RSpec.describe 'migration' do
       end
       def after_object_migration
         DulHydra::Migration::OriginalFilename.new(self).migrate if target.can_have_content?
+        DulHydra::Migration::TargetObjectIntegrity.new(self.source, self.target).verify
       end
       def before_rdf_datastream_migration
         if source.dsid == "mergedMetadata"
@@ -68,7 +69,7 @@ RSpec.describe 'migration' do
     expect(subj.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
     expect(subj.admin_policy).to eq(duke_1)
     expect(subj.thumbnail.mime_type).to eq('image/png')
-    expect(subj.thumbnail.size).to eq(25037)
+    expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
     # duke:2
     subj = duke_2
     expect(subj).to be_a(Item)
@@ -80,22 +81,22 @@ RSpec.describe 'migration' do
     expect(subj.structMetadata.mime_type).to eq('text/xml')
     expect(subj.structMetadata.content.length).to eq(379)
     expect(subj.thumbnail.mime_type).to eq('image/png')
-    expect(subj.thumbnail.size).to eq(25037)
+    expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
     # duke:3
     subj = duke_3
     expect(subj).to be_a(Component)
     expect(subj.permanent_id).to eq('ark:/99999/fk4fx7hc5z')
     expect(subj.desc_metadata.title).to be_empty
-    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/0/b/4f/0b4fc12b-ce86-46e2-be6b-6ac8e2cfba6b/dscsi010010010.ptif')
+    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/9/3/ec/93ecb451-d63e-46a4-8d13-2c596d2f73ef/dscsi010010010.ptif')
     expect(subj.roles.count).to eq(0)
     expect(subj.legacy_original_filename).to be_nil
     expect(subj.admin_policy).to eq(duke_1)
     expect(subj.parent).to eq(duke_2)
     expect(subj.content.mime_type).to eq('image/tiff')
     expect(subj.content.original_name).to eq('dscsi010010010.tif')
-    expect(subj.content.size).to eq(4481808)
+    expect(subj.content.checksum.value).to eq('67db06ad416d7a12b0a7e193fbe3cc971478bfd9')
     expect(subj.thumbnail.mime_type).to eq('image/png')
-    expect(subj.thumbnail.size).to eq(25037)
+    expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(4566)
     # duke:5
@@ -103,16 +104,16 @@ RSpec.describe 'migration' do
     expect(subj).to be_a(Component)
     expect(subj.permanent_id).to eq('ark:/99999/fk4b56sk1k')
     expect(subj.desc_metadata.title).to be_empty
-    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/e/3/84/e3847b68-ebfa-4b28-837a-1401789947f8/dscsi010010020.ptif')
+    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/e/2/22/e222c06d-eee1-4c28-9368-deb4022fd87b/dscsi010010020.ptif')
     expect(subj.roles.count).to eq(0)
     expect(subj.legacy_original_filename).to be_nil
     expect(subj.admin_policy).to eq(duke_1)
     expect(subj.parent).to eq(duke_2)
     expect(subj.content.mime_type).to eq('image/tiff')
     expect(subj.content.original_name).to eq('dscsi010010020.tif')
-    expect(subj.content.size).to eq(4688604)
+    expect(subj.content.checksum.value).to eq('e6ca91f2de4caa2a7246aaa323268d8357514760')
     expect(subj.thumbnail.mime_type).to eq('image/png')
-    expect(subj.thumbnail.size).to eq(14721)
+    expect(subj.thumbnail.checksum.value).to eq('ebe2258ef66be055cb1a0da9be08577bd65c29b6')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(4558)
     # duke:6
@@ -126,7 +127,7 @@ RSpec.describe 'migration' do
     expect(subj.collection).to eq(duke_1)
     expect(subj.content.mime_type).to eq('image/tiff')
     expect(subj.content.original_name).to eq('dscT001.tif')
-    expect(subj.content.size).to eq(28507714)
+    expect(subj.content.checksum.value).to eq('9443a4dbcf2091af929ba07b4651e6991760a7d6')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(5817)
     # duke:7
@@ -168,7 +169,7 @@ RSpec.describe 'migration' do
     expect(subj.parent).to eq(duke_8)
     expect(subj.content.mime_type).to eq('text/comma-separated-values')
     expect(subj.content.original_name).to eq('product-list_300.csv')
-    expect(subj.content.size).to eq(493)
+    expect(subj.content.checksum.value).to eq('3aeafead5f4130932233315067d7b16c65e415f4')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(2409)
     # duke:11
@@ -184,7 +185,7 @@ RSpec.describe 'migration' do
     expect(subj.parent).to eq(duke_9)
     expect(subj.content.mime_type).to eq('application/pdf')
     expect(subj.content.original_name).to eq('J20110711-00608.pdf')
-    expect(subj.content.size).to eq(203237)
+    expect(subj.content.checksum.value).to eq('b4a33e872beb5ceb2a9e3c1b192c983f5500c8b9')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(3785)
   end
