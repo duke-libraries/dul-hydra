@@ -1,4 +1,5 @@
 source 'http://rubygems.org'
+ruby '2.2.4'
 
 gem 'rails', '~> 4.1.13'
 gem 'blacklight', '5.16'
