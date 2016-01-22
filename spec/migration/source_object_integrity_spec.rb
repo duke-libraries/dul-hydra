@@ -2,6 +2,9 @@ require 'migration_helper'
 
 module DulHydra::Migration
   RSpec.describe SourceObjectIntegrity do
+
+    subject { described_class.new(source) }
+
     let(:source) { Rubydora::DigitalObject.new('test:1') }
     let(:datastream) { Rubydora::Datastream.new(source, 'content') }
 
@@ -14,7 +17,7 @@ module DulHydra::Migration
         allow(datastream).to receive(:dsChecksumValid) { false }
       end
       it "should raise an exception" do
-        expect { described_class.new(source).verify }.to raise_error(FedoraMigrate::Errors::MigrationError)
+        expect { subject.verify }.to raise_error(FedoraMigrate::Errors::MigrationError)
       end
     end
 
@@ -22,8 +25,8 @@ module DulHydra::Migration
       before do
         allow(datastream).to receive(:dsChecksumValid) { true }
       end
-      it "should raise an exception" do
-        expect { described_class.new(source).verify }.not_to raise_error
+      it "should not raise an exception" do
+        expect { subject.verify }.not_to raise_error
       end
     end
 

@@ -13,5 +13,6 @@ module DulHydra
     autoload :MigrateSingleObjectJob
     autoload :MigrateSingleObjectRelationshipsJob
     autoload :SourceObjectIntegrity
+    autoload :TargetObjectIntegrity
   end
 end
