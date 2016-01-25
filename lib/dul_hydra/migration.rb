@@ -12,7 +12,10 @@ module DulHydra
     autoload :MigrateListObjectRelationships
     autoload :MigrateSingleObjectJob
     autoload :MigrateSingleObjectRelationshipsJob
+    autoload :MigrateSingleObjectStructMetadataJob
+    autoload :MigrateStructMetadata
     autoload :SourceObjectIntegrity
+    autoload :StructMetadata
     autoload :TargetObjectIntegrity
   end
 end
