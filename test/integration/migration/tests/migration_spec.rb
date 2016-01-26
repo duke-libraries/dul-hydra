@@ -49,6 +49,7 @@ RSpec.describe 'migration' do
   it "migrates the Fedora 3 objects" do
     FedoraMigrate.migrate_repository(namespace: "duke",
                                      options: { convert: [ 'mergedMetadata' ] })
+    DulHydra::Migration::MigrateStructMetadata.migrate
     duke_1 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:1').first
     duke_2 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:2').first
     duke_3 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:3').first
@@ -79,7 +80,9 @@ RSpec.describe 'migration' do
     expect(subj.admin_policy).to eq(duke_1)
     expect(subj.parent).to eq(duke_1)
     expect(subj.structMetadata.mime_type).to eq('text/xml')
-    expect(subj.structMetadata.content.length).to eq(379)
+    expect(subj.structMetadata.content.length).to eq(439)
+    expect(subj.structMetadata.content).to include(duke_3.id)
+    expect(subj.structMetadata.content).to include(duke_5.id)
     expect(subj.thumbnail.mime_type).to eq('image/png')
     expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
     # duke:3

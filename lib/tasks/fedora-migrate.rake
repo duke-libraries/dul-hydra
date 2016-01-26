@@ -33,6 +33,7 @@ namespace :duke do
     task all: :environment do
       FedoraMigrate.migrate_repository(namespace: "duke",
                                        options: { convert: [ 'mergedMetadata' ] })
+      DulHydra::Migration::MigrateStructMetadata.migrate
     end
     desc "Migrate a single object"
     task :object, [:pid] => :environment do |t, args|
