@@ -139,7 +139,7 @@ class ValidateMETSFile
   def validate_div(node)
     div_id_attr = node.attr('ID')
     if div_id_attr.present?
-      unless Ddr::Utils.pid_for_identifier(div_id_attr)
+      unless Ddr::Utils.pid_for_identifier(div_id_attr, model: 'Component')
         error("Unable to locate repository object for div ID #{div_id_attr}")
       end
     else
