@@ -217,4 +217,32 @@ namespace :dul_hydra do
     puts "#{queued} FITS file characterization job(s) submitted for processing."
   end
 
+  namespace :thumbnail do
+    desc "Copy thumbnail from one object to another"
+    task :copy, [:source_id, :target_id] => :environment do |t, args|
+      source_obj = ActiveFedora::Base.find(args[:source_id])
+      target_obj = ActiveFedora::Base.find(args[:target_id])
+      if target_obj.copy_thumbnail_from(source_obj)
+        target_obj.save!
+        puts "Thumbanil copied from source #{source_obj.id} to target #{target_obj.id}."
+      else
+        puts "ERROR: Thumbnail not found on source #{source_obj.id}."
+      end
+    end
+
+    desc "Upload thumbnail for an object"
+    task :upload, [:file, :target_id] => :environment do |t, args|
+      target_obj = ActiveFedora::Base.find(args[:target_id])
+      File.open(args[:file], "rb") do |file|
+        target_obj.thumbnail.content = file
+        target_obj.thumbnail.mimeType = Ddr::Utils.mime_type_for(file)
+        if target_obj.save
+          puts "File #{file.path} uploaded as thumbnail for #{target_obj.id}."
+        else
+          puts "ERROR: Thumbnail not updated."
+        end
+      end
+    end
+  end
+
 end
