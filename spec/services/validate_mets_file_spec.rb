@@ -13,8 +13,8 @@ RSpec.describe ValidateMETSFile, type: :service, batch: true, mets_file: true do
     before do
       allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml }
       allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
-      allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010') { 'test:7' }
-      allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030020') { 'test:8' }
+      allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010', model: 'Component') { 'test:7' }
+      allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030020', model: 'Component') { 'test:8' }
     end
     it "should return no errors or warnings" do
       results = validation_service.call
@@ -127,7 +127,7 @@ RSpec.describe ValidateMETSFile, type: :service, batch: true, mets_file: true do
           allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml_with_missing_div_id_attr }
           # allow(Ddr::Utils).to receive(:pid_for_identifier).and_call_original
           allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
-          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010') { 'test:7' }
+          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010', model: 'Component') { 'test:7' }
         end
         it "should report an error" do
           results = validation_service.call
@@ -139,7 +139,7 @@ RSpec.describe ValidateMETSFile, type: :service, batch: true, mets_file: true do
           before do
             allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml }
             allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
-            allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010') { nil }
+            allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010', model: 'Component') { nil }
           end
           it "should report an error" do
             results = validation_service.call
