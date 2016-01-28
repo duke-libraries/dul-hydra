@@ -145,7 +145,7 @@ class BuildBatchObjectFromMETSFile
 
   def add_to_struct_map(stru, node)
     div = create_div(stru, node)
-    create_fptr(stru, div, Ddr::Utils.pid_for_identifier(div['ID']))
+    create_fptr(stru, div, Ddr::Utils.pid_for_identifier(div['ID'], model: 'Component'))
   end
 
   def create_div(stru, node)
