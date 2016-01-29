@@ -23,6 +23,7 @@ module DulHydra::Migration
           raise FedoraMigrate::Errors::MigrationError, "#{item.id}: Unable to save migrated structMetadata"
         end
       end
+      new_struct_metadata
     end
 
     def transmogrify(struct_metadata_xml)

@@ -14,6 +14,8 @@ module DulHydra
     autoload :MigrateSingleObjectRelationshipsJob
     autoload :MigrateSingleObjectStructMetadataJob
     autoload :MigrateStructMetadata
+    autoload :MigrationReport
+    autoload :MigrationTimer
     autoload :SourceObjectIntegrity
     autoload :StructMetadata
     autoload :TargetObjectIntegrity
