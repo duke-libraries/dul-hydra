@@ -158,7 +158,7 @@ class BuildBatchObjectFromMETSFile
 
   def create_fptr(stru, div, pid)
     fptr = Nokogiri::XML::Node.new('fptr', stru.as_xml_document)
-    fptr['CONTENTIDS'] = "info:fedora/#{pid}"
+    fptr['CONTENTIDS'] = pid
     div.add_child(fptr)
   end
 
