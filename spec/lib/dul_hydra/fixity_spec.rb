@@ -10,14 +10,14 @@ module DulHydra
         Ddr::Events::FixityCheckEvent.create(pid: obj.id, event_date_time: Time.now.utc)
       end
       it "should not queue the pid for fixity checking" do
-        expect(Resque).not_to receive(:enqueue).with(DulHydra::Jobs::FixityCheck, obj.id)
+        expect(Resque).not_to receive(:enqueue).with(Ddr::Jobs::FixityCheck, obj.id)
         described_class.check
       end
     end
 
     describe "with an object that has not previously been checked" do
       it "should queue the pid for fixity checking" do
-        expect(Resque).to receive(:enqueue).with(DulHydra::Jobs::FixityCheck, obj.id)
+        expect(Resque).to receive(:enqueue).with(Ddr::Jobs::FixityCheck, obj.id)
         described_class.check
       end
     end
@@ -27,7 +27,7 @@ module DulHydra
         Ddr::Events::FixityCheckEvent.create(pid: obj.id, event_date_time: Time.now.ago(1.year).utc)
       end
       it "should queue the pid for fixity checking" do
-        expect(Resque).to receive(:enqueue).with(DulHydra::Jobs::FixityCheck, obj.id)
+        expect(Resque).to receive(:enqueue).with(Ddr::Jobs::FixityCheck, obj.id)
         described_class.check
       end
     end

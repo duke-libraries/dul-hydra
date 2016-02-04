@@ -9,7 +9,6 @@ module DulHydra
   autoload :DescriptiveMetadataTable
   autoload :Error
   autoload :Fixity
-  autoload :Jobs
   autoload :Queues
   autoload :MetadataTable
   autoload :Reports
