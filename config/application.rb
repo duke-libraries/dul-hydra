@@ -18,6 +18,8 @@ module DulHydra
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
     # config.time_zone = 'Central Time (US & Canada)'
 
+    config.autoload_paths << "#{Rails.root}/lib"
+
     # Enable escaping HTML in JSON.
     config.active_support.escape_html_entities_in_json = true
 
