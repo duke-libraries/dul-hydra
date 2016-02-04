@@ -95,10 +95,10 @@ def sample_xml_struct_metadata
     <mets xmlns="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink">
       <structMap TYPE="default">
         <div LABEL="1" TYPE="Image" ID="efghi010030010" ORDER="1">
-          <fptr CONTENTIDS="info:fedora/test:19"/>
+          <fptr CONTENTIDS="test-19"/>
         </div>
         <div LABEL="2" TYPE="Image" ID="efghi010030020" ORDER="2">
-          <fptr CONTENTIDS="info:fedora/test:20"/>
+          <fptr CONTENTIDS="test-20"/>
         </div>
       </structMap>
     </mets>
