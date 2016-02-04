@@ -10,13 +10,8 @@
 
   <ul class="list-unstyled">
     <li>
-      <%= current_object.class.to_s %> <%= current_object.pid %>
+      <%= current_object.class.to_s %>
     </li>
-    <% if current_object.respond_to?(:identifier) && current_object.identifier.present? %>
-      <li class="small">
-	<%= current_object.identifier.first %>
-      </li>
-    <% end %>
     <% if current_document.has_content? %>
       <li class="small">
         <%= render partial: 'document_content', locals: {document: current_document} %>
