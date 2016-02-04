@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151223153654) do
+ActiveRecord::Schema.define(version: 20160126203842) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
@@ -170,6 +170,37 @@ ActiveRecord::Schema.define(version: 20151223153654) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "migration_reports", force: true do |t|
+    t.string   "fcrepo3_pid"
+    t.string   "fcrepo4_id"
+    t.string   "model"
+    t.string   "object_status",                        default: "NEEDED"
+    t.string   "relationship_status",                  default: "NEEDED"
+    t.string   "struct_metadata_status"
+    t.text     "object",                 limit: 65535
+    t.text     "relationships",          limit: 65535
+    t.text     "struct_metadata",        limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "migration_reports", ["fcrepo3_pid"], name: "index_migration_reports_on_fcrepo3_pid", unique: true
+  add_index "migration_reports", ["fcrepo4_id"], name: "index_migration_reports_on_fcrepo4_id", unique: true
+  add_index "migration_reports", ["model"], name: "index_migration_reports_on_model"
+  add_index "migration_reports", ["object_status"], name: "index_migration_reports_on_object_status"
+  add_index "migration_reports", ["relationship_status"], name: "index_migration_reports_on_relationship_status"
+  add_index "migration_reports", ["struct_metadata_status"], name: "index_migration_reports_on_struct_metadata_status"
+
+  create_table "migration_timers", force: true do |t|
+    t.integer  "migration_report_id"
+    t.string   "event"
+    t.float    "duration"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "migration_timers", ["migration_report_id"], name: "index_migration_timers_on_migration_report_id"
 
   create_table "searches", force: true do |t|
     t.text     "query_params"
