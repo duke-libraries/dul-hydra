@@ -1,5 +1,4 @@
 require "fedora-migrate"
-require "dul_hydra/migration"
 
 module FedoraMigrate::Hooks
 

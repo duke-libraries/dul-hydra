@@ -1,5 +1,4 @@
 require 'fedora-migrate'
-require 'dul_hydra/migration'
 
 FedoraMigrate::TargetConstructor.class_eval do
   def build

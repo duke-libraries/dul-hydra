@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'active_fedora/cleaner'
 require 'fedora-migrate'
-require 'dul_hydra/migration'
 
 RSpec.describe 'migration' do
 
