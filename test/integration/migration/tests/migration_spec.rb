@@ -4,7 +4,7 @@ require 'fedora-migrate'
 
 RSpec.describe 'migration' do
 
-  let(:f3_jetty_zip_fixture) { 'f3-migration-jetty-D.zip' }
+  let(:f3_jetty_zip_fixture) { 'f3-migration-jetty-E.zip' }
   let(:f3_jetty_zip_fixture_path) { Rails.root.join('test', 'integration', 'migration', 'fixtures', f3_jetty_zip_fixture) }
   let(:f3_temp_dir) { Dir.mktmpdir }
   let(:f3_jetty_dir) { File.join(f3_temp_dir, 'jetty') }
@@ -89,7 +89,7 @@ RSpec.describe 'migration' do
     expect(subj).to be_a(Component)
     expect(subj.permanent_id).to eq('ark:/99999/fk4fx7hc5z')
     expect(subj.desc_metadata.title).to be_empty
-    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/9/3/ec/93ecb451-d63e-46a4-8d13-2c596d2f73ef/dscsi010010010.ptif')
+    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/4/5/8d/458d64db-2ab9-4538-a1a6-99f135c36246/dscsi010010010.ptif')
     expect(subj.roles.count).to eq(0)
     expect(subj.legacy_original_filename).to be_nil
     expect(subj.admin_policy).to eq(duke_1)
@@ -106,7 +106,7 @@ RSpec.describe 'migration' do
     expect(subj).to be_a(Component)
     expect(subj.permanent_id).to eq('ark:/99999/fk4b56sk1k')
     expect(subj.desc_metadata.title).to be_empty
-    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/e/2/22/e222c06d-eee1-4c28-9368-deb4022fd87b/dscsi010010020.ptif')
+    expect(subj.multires_image_file_path).to eq('/tmp/image-server-data/0/a/4d/0a4d6c85-3085-4d80-8ffd-64b9680a20e1/dscsi010010020.ptif')
     expect(subj.roles.count).to eq(0)
     expect(subj.legacy_original_filename).to be_nil
     expect(subj.admin_policy).to eq(duke_1)
