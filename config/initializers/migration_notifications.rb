@@ -7,3 +7,5 @@ ActiveSupport::Notifications.subscribe 'migration_timer' do |name, start, finish
   end
   timr.save
 end
+
+ActiveSupport::Notifications.subscribe Ddr::Notifications::MIGRATION, Ddr::Events::MigrationEvent

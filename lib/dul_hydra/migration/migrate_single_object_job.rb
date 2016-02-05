@@ -10,17 +10,33 @@ module DulHydra::Migration
         ActiveSupport::Notifications.instrument('migration_timer',
                                                 rept_id: report.id,
                                                 event: MigrationTimer::OBJECT_MIGRATION_EVENT) do
-          object = FedoraMigrate::ObjectMover.new(FedoraMigrate.source.connection.find(id),
-                                                  nil,
-                                                  { convert: [ 'mergedMetadata' ] }
-                                                  ).migrate
-          report.model = object['class']
-          report.object = object.to_json
-          report.object_status = MigrationReport::MIGRATION_SUCCESS
-          report.fcrepo4_id = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => id).first.id
-          report.save!
+          object = migrate(id)
+          make_report(report, object)
         end
       end
+    end
+
+    private
+
+    def self.migrate(id)
+      ActiveSupport::Notifications.instrument(Ddr::Notifications::MIGRATION) do |payload|
+        object = FedoraMigrate::ObjectMover.new(FedoraMigrate.source.connection.find(id),
+                                             nil,
+                                             { convert: [ 'mergedMetadata' ] }
+        ).migrate
+        object['id'] = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => id).first.id
+        payload[:pid] = object['id']
+        payload[:software] = "DulHydra #{DulHydra::VERSION}"
+        object
+      end
+    end
+
+    def self.make_report(report, object)
+      report.model = object['class']
+      report.object = object.to_json
+      report.object_status = MigrationReport::MIGRATION_SUCCESS
+      report.fcrepo4_id = object['id']
+      report.save!
     end
 
   end
