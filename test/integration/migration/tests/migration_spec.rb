@@ -46,8 +46,26 @@ RSpec.describe 'migration' do
   end
 
   it "migrates the Fedora 3 objects" do
-    FedoraMigrate.migrate_repository(namespace: "duke",
-                                     options: { convert: [ 'mergedMetadata' ] })
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:1')
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:2')
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:3')
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:5')
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:6')
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:7')
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:8')
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:9')
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:10')
+    DulHydra::Migration::MigrateSingleObjectJob.perform('duke:11')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:1')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:2')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:3')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:5')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:6')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:7')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:8')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:9')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:10')
+    DulHydra::Migration::MigrateSingleObjectRelationshipsJob.perform('duke:11')
     DulHydra::Migration::MigrateStructMetadata.migrate
     duke_1 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:1').first
     duke_2 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:2').first
@@ -59,8 +77,19 @@ RSpec.describe 'migration' do
     duke_9 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:9').first
     duke_10 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:10').first
     duke_11 = ActiveFedora::Base.where(Ddr::Index::Fields::FCREPO3_PID => 'duke:11').first
+    duke_1_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:1').first
+    duke_2_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:2').first
+    duke_3_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:3').first
+    duke_5_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:5').first
+    duke_6_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:6').first
+    duke_7_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:7').first
+    duke_8_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:8').first
+    duke_9_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:9').first
+    duke_10_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:10').first
+    duke_11_rept = DulHydra::Migration::MigrationReport.where(fcrepo3_pid: 'duke:11').first
     # duke:1
     subj = duke_1
+    rept = duke_1_rept
     expect(subj).to be_a(Collection)
     expect(subj.permanent_id).to eq('ark:/99999/fk4qc07m0z')
     expect(subj.desc_metadata.spatial).to contain_exactly('Durham (N.C.)', 'North Carolina', 'United States')
@@ -70,8 +99,15 @@ RSpec.describe 'migration' do
     expect(subj.admin_policy).to eq(duke_1)
     expect(subj.thumbnail.mime_type).to eq('image/png')
     expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
+    expect(rept.fcrepo4_id).to eq(subj.id)
+    expect(rept.model).to eq('Collection')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to be_nil
+    expect(rept.migration_timers.count).to eq(3)
     # duke:2
     subj = duke_2
+    rept = duke_2_rept
     expect(subj).to be_a(Item)
     expect(subj.permanent_id).to eq('ark:/99999/fk4kk9hs76')
     expect(subj.desc_metadata.extent).to contain_exactly('3.5 x 6 cm')
@@ -84,8 +120,15 @@ RSpec.describe 'migration' do
     expect(subj.structMetadata.content).to include(duke_5.id)
     expect(subj.thumbnail.mime_type).to eq('image/png')
     expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
+    expect(rept.fcrepo4_id).to eq(subj.id)
+    expect(rept.model).to eq('Item')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.migration_timers.count).to eq(4)
     # duke:3
     subj = duke_3
+    rept = duke_3_rept
     expect(subj).to be_a(Component)
     expect(subj.permanent_id).to eq('ark:/99999/fk4fx7hc5z')
     expect(subj.desc_metadata.title).to be_empty
@@ -101,8 +144,15 @@ RSpec.describe 'migration' do
     expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(4566)
+    expect(rept.fcrepo4_id).to eq(subj.id)
+    expect(rept.model).to eq('Component')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to be_nil
+    expect(rept.migration_timers.count).to eq(4)
     # duke:5
     subj = duke_5
+    rept = duke_5_rept
     expect(subj).to be_a(Component)
     expect(subj.permanent_id).to eq('ark:/99999/fk4b56sk1k')
     expect(subj.desc_metadata.title).to be_empty
@@ -118,8 +168,15 @@ RSpec.describe 'migration' do
     expect(subj.thumbnail.checksum.value).to eq('ebe2258ef66be055cb1a0da9be08577bd65c29b6')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(4558)
+    expect(rept.fcrepo4_id).to eq(subj.id)
+    expect(rept.model).to eq('Component')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to be_nil
+    expect(rept.migration_timers.count).to eq(4)
     # duke:6
     subj = duke_6
+    rept = duke_6_rept
     expect(subj).to be_a(Target)
     expect(subj.permanent_id).to eq('ark:/99999/fk46d62r7z')
     expect(subj.desc_metadata.title).to be_empty
@@ -132,8 +189,14 @@ RSpec.describe 'migration' do
     expect(subj.content.checksum.value).to eq('9443a4dbcf2091af929ba07b4651e6991760a7d6')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(5817)
+    expect(rept.model).to eq('Target')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to be_nil
+    expect(rept.migration_timers.count).to eq(3)
     # duke:7
     subj = duke_7
+    rept = duke_7_rept
     expect(subj).to be_a(Collection)
     expect(subj.permanent_id).to eq('ark:/99999/fk43n2cv3b')
     expect(subj.desc_metadata.temporal).to contain_exactly('2011')
@@ -142,24 +205,42 @@ RSpec.describe 'migration' do
     expect(subj.roles.granted?(agent: 'public', role_type: 'Viewer', scope: 'policy')).to be true
     expect(subj.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
     expect(subj.admin_policy).to eq(duke_7)
+    expect(rept.model).to eq('Collection')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to be_nil
+    expect(rept.migration_timers.count).to eq(2)
     # duke:8
     subj = duke_8
+    rept = duke_8_rept
     expect(subj).to be_a(Item)
     expect(subj.permanent_id).to eq('ark:/99999/fk4zw1p68n')
     expect(subj.desc_metadata.type).to contain_exactly('Data')
     expect(subj.roles.count).to eq(0)
     expect(subj.admin_policy).to eq(duke_7)
     expect(subj.parent).to eq(duke_7)
+    expect(rept.model).to eq('Item')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to be_nil
+    expect(rept.migration_timers.count).to eq(2)
     # duke:9
     subj = duke_9
+    rept = duke_9_rept
     expect(subj).to be_a(Item)
     expect(subj.permanent_id).to eq('ark:/99999/fk4v40zd3r')
     expect(subj.desc_metadata.description).to contain_exactly('Project proposal')
     expect(subj.roles.count).to eq(0)
     expect(subj.admin_policy).to eq(duke_7)
     expect(subj.parent).to eq(duke_7)
+    expect(rept.model).to eq('Item')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to be_nil
+    expect(rept.migration_timers.count).to eq(2)
     # duke:10
     subj = duke_10
+    rept = duke_10_rept
     expect(subj).to be_a(Component)
     expect(subj.permanent_id).to eq('ark:/99999/fk4xw4n98j')
     expect(subj.desc_metadata.title).to be_empty
@@ -174,8 +255,14 @@ RSpec.describe 'migration' do
     expect(subj.content.checksum.value).to eq('3aeafead5f4130932233315067d7b16c65e415f4')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(2409)
+    expect(rept.model).to eq('Component')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to be_nil
+    expect(rept.migration_timers.count).to eq(2)
     # duke:11
     subj = duke_11
+    rept = duke_11_rept
     expect(subj).to be_a(Component)
     expect(subj.permanent_id).to eq('ark:/99999/fk42n5bz2q')
     expect(subj.desc_metadata.title).to be_empty
@@ -190,6 +277,11 @@ RSpec.describe 'migration' do
     expect(subj.content.checksum.value).to eq('b4a33e872beb5ceb2a9e3c1b192c983f5500c8b9')
     expect(subj.fits.mime_type).to eq('text/xml')
     expect(subj.fits.content.length).to eq(3785)
+    expect(rept.model).to eq('Component')
+    expect(rept.object_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.relationship_status).to eq(DulHydra::Migration::MigrationReport::MIGRATION_SUCCESS)
+    expect(rept.struct_metadata_status).to be_nil
+    expect(rept.migration_timers.count).to eq(2)
   end
 
 end
