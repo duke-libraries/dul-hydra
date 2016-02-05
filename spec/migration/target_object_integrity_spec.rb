@@ -13,6 +13,7 @@ module DulHydra::Migration
       let(:source_datastream) { Rubydora::Datastream.new(source, 'content') }
       before do
         allow(source).to receive(:datastreams) { [ [ 'content', source_datastream ] ] }
+        allow(source_datastream).to receive_message_chain(:content, :present?) { true }
         allow(target).to receive(:attached_files) { { } }
       end
       it "should raise an exception" do
@@ -51,6 +52,7 @@ module DulHydra::Migration
         let(:source_datastream) { Rubydora::Datastream.new(source, 'content') }
         before do
           allow(source).to receive(:datastreams) { [ [ 'content', source_datastream ] ] }
+          allow(source_datastream).to receive_message_chain(:content, :present?) { true }
           allow(source_datastream).to receive(:checksum) { '75e2e0cec6e807f6ae63610d46448f777591dd6b' }
           allow(source_datastream).to receive(:checksumType) { 'SHA-1' }
           allow(target).to receive(:attached_files) { { 'content' => target_file } }
