@@ -8,9 +8,8 @@ module DulHydra::Migration
       report = MigrationReport.find_or_create_by(fcrepo3_pid: id)
       unless report.object_status == MigrationReport::MIGRATION_SUCCESS
         ActiveSupport::Notifications.instrument('migration_timer',
-                                                pid: id,
+                                                rept_id: report.id,
                                                 event: MigrationTimer::OBJECT_MIGRATION_EVENT) do
-          source_obj = FedoraMigrate.source.connection.find(id)
           object = FedoraMigrate::ObjectMover.new(FedoraMigrate.source.connection.find(id),
                                                   nil,
                                                   { convert: [ 'mergedMetadata' ] }
