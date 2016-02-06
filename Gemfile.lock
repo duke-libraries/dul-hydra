@@ -24,7 +24,7 @@ GEM
       activesupport (= 4.1.14)
       builder (~> 3.1)
       erubis (~> 2.7.0)
-    active-fedora (9.6.2)
+    active-fedora (9.8.2)
       active-triples (~> 0.7.1)
       activesupport (>= 4.1.0)
       deprecation
@@ -34,7 +34,7 @@ GEM
       om (~> 3.1)
       rdf-rdfxml (~> 1.1)
       rsolr (~> 1.0.10)
-    active-triples (0.7.3)
+    active-triples (0.7.4)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
       deprecation (~> 0.1)
@@ -101,14 +101,14 @@ GEM
     ddr-alerts (1.0.0)
       rails (~> 4.1.6)
     ddr-antivirus (2.1.1)
-    ddr-batch (2.0.0.alpha.3)
+    ddr-batch (2.0.0.beta.2)
       ddr-models
       devise (~> 3.4)
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
-    ddr-models (3.0.0.beta.6)
-      active-fedora (~> 9.6.2)
+    ddr-models (3.0.0.beta.10)
+      active-fedora (~> 9.8.1)
       active-triples (~> 0.7.2)
       activeresource
       cancancan (~> 1.12)
@@ -247,7 +247,7 @@ GEM
     nest (1.1.2)
       redis
     net-http-persistent (2.9.4)
-    net-ldap (0.13.0)
+    net-ldap (0.14.0)
     netrc (0.11.0)
     nokogiri (1.6.7.1)
       mini_portile2 (~> 2.0.0.rc2)
@@ -477,8 +477,8 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (~> 1.0.0)
-  ddr-batch (= 2.0.0.alpha.3)
-  ddr-models (= 3.0.0.beta.6)
+  ddr-batch (= 2.0.0.beta.2)
+  ddr-models (= 3.0.0.beta.10)
   deprecation
   devise
   equivalent-xml

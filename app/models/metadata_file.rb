@@ -10,7 +10,7 @@ class MetadataFile < ActiveRecord::Base
 
   def validate_data
     begin
-      valid_headers = [ :pid, :model, :local_id, :permanent_id ].concat(Ddr::Datastreams::DescriptiveMetadataDatastream.term_names)
+      valid_headers = [ :pid, :model, :local_id, :permanent_id ].concat(Ddr::Models::DescriptiveMetadata.unqualified_names)
       as_csv_table.headers.each do |header|
         if effective_options[:schema_map].present?
           canonical_name = canonical_attribute_name(header)
@@ -61,7 +61,7 @@ class MetadataFile < ActiveRecord::Base
 
   def canonical_attribute_name(attribute_name)
     unless effective_options[:schema_map].present?
-      return attribute_name if Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.include?(attribute_name.to_sym)
+      return attribute_name if Ddr::Models::DescriptiveMetadata.unqualified_names.include?(attribute_name.to_sym)
     else
       @downcased_schema_map ||= MetadataFile.downcase_schema_map_keys(effective_options[:schema_map])
       return @downcased_schema_map[attribute_name.downcase] if @downcased_schema_map.has_key?(attribute_name.downcase)

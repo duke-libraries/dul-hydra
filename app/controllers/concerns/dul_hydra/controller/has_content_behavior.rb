@@ -6,7 +6,6 @@ module DulHydra
       included do
         before_action :upload_content, only: :create
         self.tabs.unshift :tab_tech_metadata
-        self.tabs << :tab_versions
         helper_method :tech_metadata_fields
       end
 
@@ -24,16 +23,6 @@ module DulHydra
               redirect_to(action: "show") and return
             end
           end
-        end
-      end
-
-      def versions
-        if request.xhr?
-          # For async loading of tab content
-          @tab = tab_versions
-          render "versions", layout: false
-        else
-          redirect_to action: "show", tab: "versions"
         end
       end
 
@@ -91,16 +80,12 @@ module DulHydra
       end
 
       def tab_versions
-        Tab.new("versions",
-                actions: [
-                  TabAction.new("upload",
-                                url_for(id: current_object, action: "upload"),
-                                can?(:upload, current_object)
-                               ),
-                ],
-                guard: current_object.has_content?,
-                href: url_for(id: current_object, action: "versions")
-               )
+        super.tap do |t|
+          t.actions << TabAction.new("upload",
+                                     url_for(id: current_object, action: "upload"),
+                                     can?(:upload, current_object)
+                                    )
+        end
       end
 
     end
