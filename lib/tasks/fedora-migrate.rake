@@ -28,12 +28,6 @@ end
 
 namespace :duke do
   namespace :migrate do
-    desc "Migrate all my objects"
-    task all: :environment do
-      FedoraMigrate.migrate_repository(namespace: "duke",
-                                       options: { convert: [ 'mergedMetadata' ] })
-      DulHydra::Migration::MigrateStructMetadata.migrate
-    end
     desc "Empty out the Fedora4 repository and migration reports"
     task reset: :environment do
       ActiveFedora::Cleaner.clean!
