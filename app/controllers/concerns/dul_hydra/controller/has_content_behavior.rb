@@ -40,7 +40,7 @@ module DulHydra
       protected
 
       def admin_metadata_fields
-        super + [ :original_filename ]
+        super + [ :original_filename, :multires_image_file_path ]
       end
 
       def tech_metadata_fields
