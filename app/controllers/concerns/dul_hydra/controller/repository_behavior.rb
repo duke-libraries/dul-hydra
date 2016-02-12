@@ -219,7 +219,7 @@ module DulHydra
       end
 
       def submitted_roles
-        Ddr::Auth::Roles::DetachedRoleSet.from_json(roles_param)
+        Ddr::Auth::Roles::RoleSet.from_json(roles_param)
       end
 
       def roles_param

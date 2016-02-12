@@ -124,7 +124,8 @@
 <% end %>
 
 <script type="text/javascript">
-  var initial_roles = <%= current_object.roles.to_json.html_safe %>;
+  var initial_role_set = <%= current_object.roles.to_json.html_safe %>;
+  var initial_roles = initial_role_set.roles;
   var role_container = $("#roles-granted tbody.granted");
   var role_alerts = $("#role-alerts");
   var agent_field = $("#grant-role-form select[name='agent']");
@@ -197,7 +198,8 @@
 
   function rolesToSubmit() {
     var roles = grantedRoles().map(getRoleHandler).get();
-    return JSON.stringify(roles);
+    var role_set = {"roles": roles};
+    return JSON.stringify(role_set);
   }
 
   function rolesFormSubmitHandler(e) {
