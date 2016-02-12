@@ -34,14 +34,14 @@ DulHydra::Application.routes.draw do
 
     get   'roles'
     patch 'roles'
+
+    get   'versions'
   end
 
   # Common routes for content-bearing objects
   def content_routes
     get   'upload'
     patch 'upload'
-
-    get   'versions'
   end
 
   resources :collections, only: [:new, :create, :show, :edit, :update] do
