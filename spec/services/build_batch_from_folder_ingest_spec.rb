@@ -90,7 +90,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
         expect(item_pids.map(&:to_s)).to include(parent_relationships.first.object)
         # Content datastream
         content_datastreams = obj.batch_object_datastreams.where(
-                                  name: Ddr::Datastreams::CONTENT)
+                                  name: Ddr::Models::File::CONTENT)
         expect(content_datastreams.size).to eq(1)
         expect(content_datastreams.first.checksum_type).to eq(Ddr::Datastreams::CHECKSUM_TYPE_SHA1)
         component_filepaths << content_datastreams.first.payload

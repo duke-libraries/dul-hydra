@@ -62,15 +62,15 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should clear and re-assign all descriptive metadata" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_all_attrs = attrs.where(datastream: Ddr::Datastreams::DESC_METADATA,
+      clear_all_attrs = attrs.where(datastream: Ddr::Models::File::DESC_METADATA,
                                     operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL)
-      add_attrs = attrs.where(datastream: Ddr::Datastreams::DESC_METADATA,
+      add_attrs = attrs.where(datastream: Ddr::Models::File::DESC_METADATA,
                               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD).order('id')
-      add_spatial_1_attrs = attrs.where(datastream: Ddr::Datastreams::DESC_METADATA,
+      add_spatial_1_attrs = attrs.where(datastream: Ddr::Models::File::DESC_METADATA,
                                         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                                         name: 'spatial',
                                         value: 'Durham County (NC)')
-      add_spatial_2_attrs = attrs.where(datastream: Ddr::Datastreams::DESC_METADATA,
+      add_spatial_2_attrs = attrs.where(datastream: Ddr::Models::File::DESC_METADATA,
                                         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                                         name: 'spatial',
                                         value: 'Durham (NC)')
@@ -120,7 +120,7 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should populate the structural metadata datastream" do
       batch_object = service.call
       dss = batch_object.batch_object_datastreams
-      add_update_dss = dss.where(name: Ddr::Datastreams::STRUCT_METADATA,
+      add_update_dss = dss.where(name: Ddr::Models::File::STRUCT_METADATA,
                                  operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADDUPDATE)
       expect(add_update_dss.size).to eq(1)
       expect(add_update_dss.first.payload).to be_equivalent_to(sample_xml_struct_metadata)
