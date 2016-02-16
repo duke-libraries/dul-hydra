@@ -77,10 +77,10 @@ describe BatchesController, type: :controller, batch: true do
       expect(Resque).to receive(:enqueue).with(Ddr::Batch::BatchProcessorJob, batch.id, batch.user.id)
       get :procezz, :id => batch.id
     end
-    it "should redirect to the batches url" do
+    it "should redirect to the batch url" do
       allow(Resque).to receive(:enqueue).with(Ddr::Batch::BatchProcessorJob, batch.id, batch.user.id)
       get :procezz, :id => batch.id
-      expect(response).to redirect_to(batches_url)
+      expect(response).to redirect_to(batch_url)
     end
   end
 

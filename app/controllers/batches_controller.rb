@@ -36,7 +36,7 @@ class BatchesController < ApplicationController
   def procezz
     Resque.enqueue(Ddr::Batch::BatchProcessorJob, @batch.id, current_user.id)
     flash[:notice] = I18n.t('batch.web.batch_queued', :id => @batch.id)
-    redirect_to batches_url
+    redirect_to batch_url
   end
 
   def validate
