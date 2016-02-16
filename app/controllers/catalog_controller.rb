@@ -48,6 +48,8 @@ class CatalogController < ApplicationController
     # :show may be set to false if you don't want the facet to be drawn in the
     # facet bar
     config.add_facet_field Ddr::Index::Fields::ACTIVE_FEDORA_MODEL.to_s, :label => 'Type'
+    config.add_facet_field Ddr::Index::Fields::ADMIN_SET_FACET.to_s, label: 'Admin Set',
+                                helper_method: 'admin_set_title'
     config.add_facet_field 'workflow_state_ssi', label: 'Publication Status', query: {
         published: { label: 'Published', fq: "#{Ddr::Index::Fields::WORKFLOW_STATE}:published" },
         not_published: { label: 'Not Published', fq: "-#{Ddr::Index::Fields::WORKFLOW_STATE}:published" }
