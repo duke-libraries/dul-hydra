@@ -79,7 +79,7 @@ class BuildBatchObjectFromMETSFile
     # all existing metadata
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::DESC_METADATA,
+      datastream: Ddr::Models::File::DESC_METADATA,
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL
       )
     # Now we create the directives to add the attribute values from the METS file
@@ -87,7 +87,7 @@ class BuildBatchObjectFromMETSFile
       attr_name = entry.keys.first
       Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::DESC_METADATA,
+        datastream: Ddr::Models::File::DESC_METADATA,
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
         name: attr_name,
         value: entry[attr_name],
@@ -129,7 +129,7 @@ class BuildBatchObjectFromMETSFile
   def add_struct_metadata(update_object)
     Ddr::Batch::BatchObjectDatastream.create(
       batch_object: update_object,
-      name: Ddr::Datastreams::STRUCT_METADATA,
+      name: Ddr::Models::File::STRUCT_METADATA,
       operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADDUPDATE,
       payload: translate_struct_map(mets_file.struct_metadata),
       payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)

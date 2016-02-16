@@ -15,11 +15,11 @@ shared_examples "a successful metadata file processing" do
     expect(@batch.status).to eq(Ddr::Batch::Batch::STATUS_READY)
     expect(@batch_object).to be_a(Ddr::Batch::UpdateBatchObject)
     expect(@attributes.size).to eq(10)
-    expect(@attributes[0].datastream).to eq(Ddr::Datastreams::DESC_METADATA)
+    expect(@attributes[0].datastream).to eq(Ddr::Models::File::DESC_METADATA)
     expect(@attributes[0].operation).to eq(Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL)
     actual_md = {}
     @attributes[1..-1].each do |att|
-      expect(att.datastream).to eq(Ddr::Datastreams::DESC_METADATA)
+      expect(att.datastream).to eq(Ddr::Models::File::DESC_METADATA)
       expect(att.operation).to eq(Ddr::Batch::BatchObjectAttribute::OPERATION_ADD)
       expect(att.value_type).to eq(Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING)
       actual_md[att.name] ||= []

@@ -256,7 +256,7 @@ class IngestFolder < ActiveRecord::Base
             )
     Ddr::Batch::BatchObjectDatastream.create(
             batch_object: obj,
-            name: Ddr::Datastreams::CONTENT,
+            name: Ddr::Models::File::CONTENT,
             operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADD,
             payload: File.join(dirpath, file_entry),
             payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,

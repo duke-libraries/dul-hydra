@@ -7,7 +7,7 @@ class ThumbnailController < ApplicationController
   end
 
   def load_file
-    asset.attached_files[Ddr::Datastreams::THUMBNAIL]
+    asset.attached_files[Ddr::Models::File::THUMBNAIL]
   end
 
 end

@@ -70,7 +70,7 @@ class BuildBatchFromFolderIngest
       Array(value).each do |v|
         Ddr::Batch::BatchObjectAttribute.create(
               batch_object: batch_object,
-              datastream: Ddr::Datastreams::DESC_METADATA,
+              datastream: Ddr::Models::File::DESC_METADATA,
               name: key,
               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
               value: v,
@@ -84,7 +84,7 @@ class BuildBatchFromFolderIngest
     full_filepath = Filesystem.path_to_node(node)
     rel_filepath = Filesystem.path_to_node(node, 'relative')
     ds = Ddr::Batch::BatchObjectDatastream.create(
-      name: Ddr::Datastreams::CONTENT,
+      name: Ddr::Models::File::CONTENT,
       operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADD,
       payload: full_filepath,
       payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
