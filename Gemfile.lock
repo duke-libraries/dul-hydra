@@ -101,7 +101,7 @@ GEM
     ddr-alerts (1.0.0)
       rails (~> 4.1.6)
     ddr-antivirus (2.1.1)
-    ddr-batch (2.0.0.beta.2)
+    ddr-batch (2.0.0.beta.3)
       ddr-models
       devise (~> 3.4)
       log4r
@@ -477,7 +477,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (~> 1.0.0)
-  ddr-batch (= 2.0.0.beta.2)
+  ddr-batch (= 2.0.0.beta.3)
   ddr-models (= 3.0.0.beta.10)
   deprecation
   devise
