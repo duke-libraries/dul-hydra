@@ -7,13 +7,17 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
   let(:batch_name) { "Test Ingest Batch" }
   let(:batch_description) { "Testing ingest batch building" }
   let(:filesystem) { Filesystem.new }
-  let(:batch_builder) { described_class.new(user, filesystem, content_modeler, metadata_provider, checksum_provider, batch_name, batch_description) }
+  let(:batch_builder) { described_class.new(user: user, filesystem: filesystem, content_modeler: content_modeler,
+                                            metadata_provider: metadata_provider, checksum_provider: checksum_provider,
+                                            admin_set: admin_set, batch_name: batch_name,
+                                            batch_description: batch_description) }
 
   context 'simple ingest' do
 
     let(:content_modeler) { ModelSimpleIngestContent }
     let(:metadata_provider) { double("SimpleIngestMetadata") }
     let(:checksum_provider) { double("SimpleIngestChecksum") }
+    let(:admin_set) { "abc" }
 
     before do
       filesystem.tree = filesystem_simple_ingest
@@ -59,6 +63,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
       expect(collections.count).to eq(1)
       expect(collections.first.id).to be_present
       expect(collections.first.batch_object_attributes.where(name: 'title').first.value).to eq('Collection Title')
+      expect(collections.first.batch_object_attributes.where(name: 'admin_set').first.value).to eq('abc')
 
       # Item expectations
       expect(items.count).to eq(4)

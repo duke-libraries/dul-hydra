@@ -1,7 +1,7 @@
 module DulHydra::Scripts
   class ProcessSimpleIngest
 
-    attr_reader :batch_user, :configuration, :filepath
+    attr_reader :batch_user, :configuration, :filepath, :admin_set
 
     CHECKSUM_FILE = 'manifest-sha1.txt'
     METADATA_FILE = 'metadata.txt'
@@ -13,6 +13,7 @@ module DulHydra::Scripts
       raise DulHydra::BatchError, "Unable to find user #{args.fetch(:batch_user)}" unless @batch_user.present?
       @configuration = load_configuration(args.fetch(:config_file, DEFAULT_CONFIG_FILE))
       @filepath = args.fetch(:filepath)
+      @admin_set = args.fetch(:admin_set, nil)
     end
 
     def execute
@@ -69,13 +70,15 @@ module DulHydra::Scripts
 
     def build_batch(filesystem)
       batch_builder = BuildBatchFromFolderIngest.new(
-        batch_user,
-        filesystem,
-        ModelSimpleIngestContent,
-        SimpleIngestMetadata.new(File.join(filepath, 'data', METADATA_FILE), configuration[:metadata]),
-        SimpleIngestChecksum.new(File.join(filepath, CHECKSUM_FILE)),
-        "Simple Ingest",
-        filesystem.root.name)
+        user: batch_user,
+        filesystem: filesystem,
+        content_modeler: ModelSimpleIngestContent,
+        metadata_provider: SimpleIngestMetadata.new(File.join(filepath, 'data', METADATA_FILE),
+                                                    configuration[:metadata]),
+        checksum_provider: SimpleIngestChecksum.new(File.join(filepath, CHECKSUM_FILE)),
+        admin_set: admin_set,
+        batch_name: "Simple Ingest",
+        batch_description: filesystem.root.name)
       batch = batch_builder.call
     end
 
