@@ -97,7 +97,7 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
-    ddr-models (2.4.4)
+    ddr-models (2.4.6)
       active-fedora (~> 7.0)
       activeresource
       cancancan (~> 1.12)
@@ -228,7 +228,7 @@ GEM
     nest (1.1.2)
       redis
     net-http-persistent (2.9.4)
-    net-ldap (0.13.0)
+    net-ldap (0.14.0)
     netrc (0.10.3)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
@@ -456,7 +456,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (~> 1.0.0)
   ddr-batch (= 1.0.2)
-  ddr-models (= 2.4.4)
+  ddr-models (= 2.4.6)
   deprecation
   devise
   equivalent-xml
