@@ -107,7 +107,7 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
-    ddr-models (3.0.0.beta.10)
+    ddr-models (3.0.0.beta.11)
       active-fedora (~> 9.8.1)
       active-triples (~> 0.7.2)
       activeresource
@@ -478,7 +478,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (~> 1.0.0)
   ddr-batch (= 2.0.0.beta.3)
-  ddr-models (= 3.0.0.beta.10)
+  ddr-models (= 3.0.0.beta.11)
   deprecation
   devise
   equivalent-xml
