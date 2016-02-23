@@ -4,7 +4,7 @@ require 'fedora-migrate'
 
 RSpec.describe 'migration' do
 
-  let(:f3_jetty_zip_fixture) { 'f3-migration-jetty-E.zip' }
+  let(:f3_jetty_zip_fixture) { 'f3-migration-jetty-F.zip' }
   let(:f3_jetty_zip_fixture_path) { Rails.root.join('test', 'integration', 'migration', 'fixtures', f3_jetty_zip_fixture) }
   let(:f3_temp_dir) { Dir.mktmpdir }
   let(:f3_jetty_dir) { File.join(f3_temp_dir, 'jetty') }
@@ -16,18 +16,16 @@ RSpec.describe 'migration' do
         target.fcrepo3_pid = source.pid
         DulHydra::Migration::MultiresImageFilePath.new(self).migrate
         DulHydra::Migration::RDFDatastreamMerger.new(self).merge
+        DulHydra::Migration::DatastreamLabel.new(self).prepare
       end
       def after_object_migration
-        DulHydra::Migration::OriginalFilename.new(self).migrate if target.can_have_content?
+        DulHydra::Migration::LegacyOriginalFilename.new(self).migrate if target.can_have_content?
         DulHydra::Migration::TargetObjectIntegrity.new(self.source, self.target).verify
       end
       def before_rdf_datastream_migration
         if source.dsid == "mergedMetadata"
           DulHydra::Migration::Roles.new(self).migrate
         end
-      end
-      def after_datastream_migration
-        target.original_name = nil # fedora-migrate uses dsLabel to set original_name
       end
     end
     ActiveFedora::Cleaner.clean!
@@ -98,6 +96,7 @@ RSpec.describe 'migration' do
     expect(subj.roles.granted?(agent: 'repo:metadata_editors', role_type: 'MetadataEditor', scope: 'policy')).to be true
     expect(subj.admin_policy).to eq(duke_1)
     expect(subj.thumbnail.mime_type).to eq('image/png')
+    expect(subj.thumbnail.original_name).to eq('thumbnail.png')
     expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
     expect(subj.events.where(type: 'Ddr::Events::MigrationEvent').count).to eq(2)
     expect(rept.fcrepo4_id).to eq(subj.id)
@@ -116,10 +115,12 @@ RSpec.describe 'migration' do
     expect(subj.admin_policy).to eq(duke_1)
     expect(subj.parent).to eq(duke_1)
     expect(subj.structMetadata.mime_type).to eq('text/xml')
+    expect(subj.structMetadata.original_name).to be_empty
     expect(subj.structMetadata.content.length).to eq(439)
     expect(subj.structMetadata.content).to include(duke_3.id)
     expect(subj.structMetadata.content).to include(duke_5.id)
     expect(subj.thumbnail.mime_type).to eq('image/png')
+    expect(subj.thumbnail.original_name).to eq('thumbnail.png')
     expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
     expect(subj.events.where(type: 'Ddr::Events::MigrationEvent').count).to eq(3)
     expect(rept.fcrepo4_id).to eq(subj.id)
@@ -143,8 +144,10 @@ RSpec.describe 'migration' do
     expect(subj.content.original_name).to eq('dscsi010010010.tif')
     expect(subj.content.checksum.value).to eq('67db06ad416d7a12b0a7e193fbe3cc971478bfd9')
     expect(subj.thumbnail.mime_type).to eq('image/png')
+    expect(subj.thumbnail.original_name).to eq('thumbnail.png')
     expect(subj.thumbnail.checksum.value).to eq('200e3f3a78e0230292245dbd29193182298cd469')
     expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.original_name).to be_empty
     expect(subj.fits.content.length).to eq(4566)
     expect(subj.events.where(type: 'Ddr::Events::MigrationEvent').count).to eq(2)
     expect(rept.fcrepo4_id).to eq(subj.id)
@@ -168,8 +171,10 @@ RSpec.describe 'migration' do
     expect(subj.content.original_name).to eq('dscsi010010020.tif')
     expect(subj.content.checksum.value).to eq('e6ca91f2de4caa2a7246aaa323268d8357514760')
     expect(subj.thumbnail.mime_type).to eq('image/png')
+    expect(subj.thumbnail.original_name).to eq('thumbnail.png')
     expect(subj.thumbnail.checksum.value).to eq('ebe2258ef66be055cb1a0da9be08577bd65c29b6')
     expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.original_name).to be_empty
     expect(subj.fits.content.length).to eq(4558)
     expect(subj.events.where(type: 'Ddr::Events::MigrationEvent').count).to eq(2)
     expect(rept.fcrepo4_id).to eq(subj.id)
@@ -192,6 +197,7 @@ RSpec.describe 'migration' do
     expect(subj.content.original_name).to eq('dscT001.tif')
     expect(subj.content.checksum.value).to eq('9443a4dbcf2091af929ba07b4651e6991760a7d6')
     expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.original_name).to be_empty
     expect(subj.fits.content.length).to eq(5817)
     expect(subj.events.where(type: 'Ddr::Events::MigrationEvent').count).to eq(2)
     expect(rept.model).to eq('Target')
@@ -262,6 +268,7 @@ RSpec.describe 'migration' do
     expect(subj.content.original_name).to eq('product-list_300.csv')
     expect(subj.content.checksum.value).to eq('3aeafead5f4130932233315067d7b16c65e415f4')
     expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.original_name).to be_empty
     expect(subj.fits.content.length).to eq(2409)
     expect(subj.events.where(type: 'Ddr::Events::MigrationEvent').count).to eq(2)
     expect(rept.model).to eq('Component')
@@ -285,6 +292,7 @@ RSpec.describe 'migration' do
     expect(subj.content.original_name).to eq('J20110711-00608.pdf')
     expect(subj.content.checksum.value).to eq('b4a33e872beb5ceb2a9e3c1b192c983f5500c8b9')
     expect(subj.fits.mime_type).to eq('text/xml')
+    expect(subj.fits.original_name).to be_empty
     expect(subj.fits.content.length).to eq(3785)
     expect(subj.events.where(type: 'Ddr::Events::MigrationEvent').count).to eq(2)
     expect(rept.model).to eq('Component')
