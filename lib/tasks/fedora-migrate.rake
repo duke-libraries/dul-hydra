@@ -7,10 +7,11 @@ module FedoraMigrate::Hooks
     target.fcrepo3_pid = source.pid
     DulHydra::Migration::MultiresImageFilePath.new(self).migrate
     DulHydra::Migration::RDFDatastreamMerger.new(self).merge
+    DulHydra::Migration::DatastreamLabel.new(self).prepare
   end
 
   def after_object_migration
-    DulHydra::Migration::OriginalFilename.new(self).migrate if target.can_have_content?
+    DulHydra::Migration::LegacyOriginalFilename.new(self).migrate if target.can_have_content?
     DulHydra::Migration::TargetObjectIntegrity.new(self.source, self.target).verify
   end
 
@@ -18,10 +19,6 @@ module FedoraMigrate::Hooks
     if source.dsid == "mergedMetadata"
       DulHydra::Migration::Roles.new(self).migrate
     end
-  end
-
-  def after_datastream_migration
-    target.original_name = nil # fedora-migrate uses dsLabel to set original_name
   end
 
 end
