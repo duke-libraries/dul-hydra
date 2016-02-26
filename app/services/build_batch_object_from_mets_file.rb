@@ -31,12 +31,12 @@ class BuildBatchObjectFromMETSFile
   def add_local_id(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: 'adminMetadata',
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'local_id',
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: 'adminMetadata',
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'local_id',
       value: mets_file.local_id,
       value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -46,12 +46,12 @@ class BuildBatchObjectFromMETSFile
   def add_display_format(update_object, display_format)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: 'adminMetadata',
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'display_format',
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: 'adminMetadata',
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'display_format',
       value: display_format,
       value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -61,12 +61,12 @@ class BuildBatchObjectFromMETSFile
   def add_research_help_contact(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: 'adminMetadata',
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'research_help_contact',
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: 'adminMetadata',
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'research_help_contact',
       value: mets_file.header_agent_id,
       value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -79,7 +79,7 @@ class BuildBatchObjectFromMETSFile
     # all existing metadata
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Models::File::DESC_METADATA,
+      datastream: Ddr::Models::Metadata::DESC_METADATA,
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL
       )
     # Now we create the directives to add the attribute values from the METS file
@@ -87,7 +87,7 @@ class BuildBatchObjectFromMETSFile
       attr_name = entry.keys.first
       Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Models::File::DESC_METADATA,
+        datastream: Ddr::Models::Metadata::DESC_METADATA,
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
         name: attr_name,
         value: entry[attr_name],
@@ -99,12 +99,12 @@ class BuildBatchObjectFromMETSFile
   def add_ead_id(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: 'adminMetadata',
+        datastream: Ddr::Models::Metadata::ADMIN_METADATA,
         name: 'ead_id',
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: 'adminMetadata',
+        datastream: Ddr::Models::Metadata::ADMIN_METADATA,
         name: 'ead_id',
         value: mets_file.ead_id,
         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -114,12 +114,12 @@ class BuildBatchObjectFromMETSFile
   def add_aspace_id(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: 'adminMetadata',
+        datastream: Ddr::Models::Metadata::ADMIN_METADATA,
         name: 'aspace_id',
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: 'adminMetadata',
+        datastream: Ddr::Models::Metadata::ADMIN_METADATA,
         name: 'aspace_id',
         value: mets_file.aspace_id,
         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
