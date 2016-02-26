@@ -70,7 +70,7 @@ class BuildBatchFromFolderIngest
       Array(value).each do |v|
         Ddr::Batch::BatchObjectAttribute.create(
               batch_object: batch_object,
-              datastream: Ddr::Models::File::DESC_METADATA,
+              datastream: Ddr::Models::Metadata::DESC_METADATA,
               name: key,
               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
               value: v,

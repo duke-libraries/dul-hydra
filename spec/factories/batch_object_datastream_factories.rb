@@ -5,13 +5,13 @@ FactoryGirl.define do
       operation Ddr::Batch::BatchObjectDatastream::OPERATION_ADD
 
       factory :batch_object_add_desc_metadata_datastream_bytes do
-        name Ddr::Models::File::DESC_METADATA
+        name Ddr::Models::Metadata::DESC_METADATA
         payload '_:test <http://purl.org/dc/terms/title> "Test Object Title" .'
         payload_type Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_BYTES
       end
 
       factory :batch_object_add_desc_metadata_datastream_file do
-        name Ddr::Models::File::DESC_METADATA
+        name Ddr::Models::Metadata::DESC_METADATA
         payload "/tmp/qdc-rdf.nt"
         payload_type Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
       end
@@ -30,7 +30,7 @@ FactoryGirl.define do
       operation Ddr::Batch::BatchObjectDatastream::OPERATION_ADDUPDATE
 
       factory :batch_object_addupdate_desc_metadata_datastream_file do
-        name Ddr::Models::File::DESC_METADATA
+        name Ddr::Models::Metadata::DESC_METADATA
         payload "/tmp/qdc-rdf.nt"
         payload_type Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME
       end

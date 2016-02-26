@@ -89,7 +89,7 @@ class MetadataFile < ActiveRecord::Base
       obj.id = row.field("pid") if row.headers.include?("pid")
       att = Ddr::Batch::BatchObjectAttribute.new(
                 batch_object: obj,
-                datastream: Ddr::Models::File::DESC_METADATA,
+                datastream: Ddr::Models::Metadata::DESC_METADATA,
                 operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL)
       obj.batch_object_attributes << att
       obj.save
@@ -102,7 +102,7 @@ class MetadataFile < ActiveRecord::Base
             parse_field(row.field(header, idx), header).each do |value|
               att = Ddr::Batch::BatchObjectAttribute.new(
                         batch_object: obj,
-                        datastream: Ddr::Models::File::DESC_METADATA,
+                        datastream: Ddr::Models::Metadata::DESC_METADATA,
                         name: canonical_attribute_name(header),
                         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                         value: value,

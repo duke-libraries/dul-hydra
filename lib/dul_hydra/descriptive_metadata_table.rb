@@ -2,7 +2,7 @@ module DulHydra
 
   class DescriptiveMetadataTable < MetadataTable
     def datastream_id
-      Ddr::Models::File::DESC_METADATA
+      Ddr::Models::Metadata::DESC_METADATA
     end
 
     def terms

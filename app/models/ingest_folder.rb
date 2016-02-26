@@ -194,7 +194,7 @@ class IngestFolder < ActiveRecord::Base
             )
     Ddr::Batch::BatchObjectAttribute.create(
             batch_object: obj,
-            datastream: 'adminMetadata',
+            datastream: Ddr::Models::Metadata::ADMIN_METADATA,
             name: 'local_id',
             operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
             value: parent_loc_id,
@@ -248,7 +248,7 @@ class IngestFolder < ActiveRecord::Base
             )
     Ddr::Batch::BatchObjectAttribute.create(
             batch_object: obj,
-            datastream: 'adminMetadata',
+            datastream: Ddr::Models::Metadata::ADMIN_METADATA,
             name: 'local_id',
             operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
             value: file_identifier,
