@@ -20,18 +20,12 @@ class InspectMETSFolder
   private
 
   def inspect_folder
-    validate_folderpath
     scan_results = ScanFilesystem.new(mets_folder.full_path, scanner_config).call
     raise DulHydra::BatchError, "#{mets_folder.full_path} does not appear to be a valid METS folder" unless mets_folder?(scan_results.filesystem)
     results.warnings, results.errors = validate_mets_files(scan_results.filesystem)
     results.file_count = scan_results.filesystem.file_count
     results.exclusions = scan_results.exclusions
     results.filesystem = scan_results.filesystem
-  end
-
-  def validate_folderpath
-    raise DulHydra::BatchError, "#{mets_folder.full_path} not found or is not a directory" unless Dir.exist?(mets_folder.full_path)
-    raise DulHydra::BatchError, "#{mets_folder.full_path} is not readable" unless File.readable?(mets_folder.full_path)
   end
 
   def mets_folder?(filesystem)

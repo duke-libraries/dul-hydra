@@ -44,30 +44,6 @@ RSpec.describe InspectMETSFolder, type: :service, batch: true, mets_folder: true
 
   subject { InspectMETSFolder.new(mets_folder, mets_folder_config) }
 
-  describe "mets folder" do
-    describe "filepath" do
-      context 'valid filepath' do
-        it "should not raise an error" do
-          expect { subject.call }.to_not raise_error
-        end
-      end
-      context "folder path does not point to an existing directory" do
-        before { allow(Dir).to receive(:exist?) { false } }
-        it "should raise a not found or not directory error" do
-          expect { subject.call }.to raise_error(DulHydra::BatchError, /not found or is not a directory/)
-        end
-      end
-      context "folder path is not readable" do
-        before do
-          allow(File).to receive(:readable?).with(mets_folder_path) { false }
-        end
-        it "should raise a not readable error" do
-          expect { subject.call }.to raise_error(DulHydra::BatchError, /not readable/)
-        end
-      end
-    end
-  end
-
   describe "filesystem" do
     context "valid for mets folder" do
       it "should report the number of files" do
