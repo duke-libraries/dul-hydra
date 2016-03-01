@@ -44,9 +44,16 @@ DulHydra::Application.routes.draw do
     patch 'upload'
   end
 
+  # Common routes for publication
+  def publication_routes
+    get 'publish'
+    get 'unpublish'
+  end
+
   resources :collections, only: [:new, :create, :show, :edit, :update] do
     member do
       model_routes
+      publication_routes
       get 'items'
       get 'attachments'
       get 'targets'
@@ -57,6 +64,7 @@ DulHydra::Application.routes.draw do
   resources :items, only: [:new, :create, :show, :edit, :update] do
     member do
       model_routes
+      publication_routes
       get 'components'
     end
   end
@@ -64,6 +72,7 @@ DulHydra::Application.routes.draw do
   resources :components, only: [:new, :create, :show, :edit, :update] do
     member do
       model_routes
+      publication_routes
       content_routes
     end
   end
