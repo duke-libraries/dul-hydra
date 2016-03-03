@@ -16,7 +16,6 @@ class BuildBatchObjectFromMETSFile
 
   def create_update_object
     update_object = Ddr::Batch::UpdateBatchObject.create(batch: batch, pid: mets_file.repo_pid, identifier: mets_file.local_id)
-    add_local_id(update_object) if mets_file.local_id.present?
     if display_format = METSFileDisplayFormat.get(mets_file, display_formats)
       add_display_format(update_object, display_format)
     end
@@ -26,21 +25,6 @@ class BuildBatchObjectFromMETSFile
     add_aspace_id(update_object) if mets_file.aspace_id.present?
     add_struct_metadata(update_object) if mets_file.struct_metadata.present?
     update_object
-  end
-
-  def add_local_id(update_object)
-    Ddr::Batch::BatchObjectAttribute.create(
-      batch_object: update_object,
-      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
-      name: 'local_id',
-      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
-    Ddr::Batch::BatchObjectAttribute.create(
-      batch_object: update_object,
-      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
-      name: 'local_id',
-      value: mets_file.local_id,
-      value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
-      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD)
   end
 
   def add_display_format(update_object, display_format)

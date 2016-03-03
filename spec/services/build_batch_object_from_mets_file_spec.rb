@@ -25,19 +25,11 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
   end
 
   context "local id" do
-    it "should clear and re-assign the local id" do
+    it "should leave the local id alone" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_attrs = attrs.where(datastream: Ddr::Models::Metadata::ADMIN_METADATA,
-                                operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
-                                name: 'local_id')
-      add_attrs = attrs.where(datastream: Ddr::Models::Metadata::ADMIN_METADATA,
-                              operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
-                              name: 'local_id',
-                              value: 'efghi01003')
-      expect(clear_attrs.size).to eq(1)
-      expect(add_attrs.size).to eq(1)
-      expect(clear_attrs.first.id).to be < add_attrs.first.id
+      local_id_attrs = attrs.where(name: 'local_id')
+      expect(local_id_attrs.size).to eq(0)
     end
   end
 
