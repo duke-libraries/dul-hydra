@@ -10,11 +10,11 @@ module DulHydra::Migration
     private
 
     def self.query(limit)
-      builder = Ddr::Index::QueryBuilder.new do |bldr|
-                  q "struct_maps_ssi:*info\\:fedora/duke\\:*"
-                  limit limit
-                end
-      builder.query
+      Ddr::Index::Query.new do
+        q "#{Ddr::Index::Fields::STRUCT_MAPS}:*info\\:fedora*"
+        fields :id
+        limit limit
+      end
     end
 
   end
