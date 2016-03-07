@@ -14,6 +14,8 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:7' }
     allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010', model: 'Component') { 'test:19' }
     allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030020', model: 'Component') { 'test:20' }
+    allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030030', model: 'Component') { 'test:21' }
+    allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', model: 'Component') { 'test:25' }
   end
 
   context "batch object" do

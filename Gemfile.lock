@@ -136,7 +136,7 @@ GEM
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (2.5.2)
-    ezid-client (1.2.0)
+    ezid-client (1.4.2)
       hashie
     factory_girl (4.5.0)
       activesupport (>= 3.0.0)
