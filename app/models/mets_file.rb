@@ -81,6 +81,10 @@ class METSFile
     @struct_metadata ||= struct_map.xpath('div') if struct_map.present?
   end
 
+  def struct_metadata_fptr_nodes
+    struct_metadata.xpath('//fptr')
+  end
+
   private
 
   def mets_doc

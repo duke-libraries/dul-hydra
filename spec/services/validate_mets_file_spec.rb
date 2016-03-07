@@ -15,6 +15,8 @@ RSpec.describe ValidateMETSFile, type: :service, batch: true, mets_file: true do
       allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
       allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010', model: 'Component') { 'test:7' }
       allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030020', model: 'Component') { 'test:8' }
+      allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030030', model: 'Component') { 'test:9' }
+      allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', model: 'Component') { 'test:12' }
     end
     it "should return no errors or warnings" do
       results = validation_service.call
@@ -124,27 +126,24 @@ RSpec.describe ValidateMETSFile, type: :service, batch: true, mets_file: true do
     context "invalid struct metadata" do
       context "missing ID attribute" do
         before do
-          allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml_with_missing_div_id_attr }
-          # allow(Ddr::Utils).to receive(:pid_for_identifier).and_call_original
-          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
-          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010', model: 'Component') { 'test:7' }
+          allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml_with_missing_fptr_fileid_attr }
         end
         it "should report an error" do
           results = validation_service.call
-          expect(results.errors).to include("#{mets_file.filepath}: Div does not have ID attribute")
+          expect(results.errors).to include("#{mets_file.filepath}: Fptr does not have fileID attribute")
         end
       end
       context "no repository object matching ID attribute" do
-        context "missing ID attribute" do
-          before do
-            allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml }
-            allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
-            allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010', model: 'Component') { nil }
-          end
-          it "should report an error" do
-            results = validation_service.call
-            expect(results.errors).to include("#{mets_file.filepath}: Unable to locate repository object for div ID efghi010030010")
-          end
+        before do
+          allow(File).to receive(:read).with(mets_filepath) { sample_mets_xml }
+          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', collection: collection) { 'test:5' }
+          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030010', model: 'Component') { nil }
+          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030020', model: 'Component') { 'test:9' }
+          allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030030', model: 'Component') { 'test:8' }
+        end
+        it "should report an error" do
+          results = validation_service.call
+          expect(results.errors).to include("#{mets_file.filepath}: Unable to locate repository object for fptr fileID efghi010030010")
         end
       end
     end
