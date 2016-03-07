@@ -115,35 +115,24 @@ class BuildBatchObjectFromMETSFile
       batch_object: update_object,
       name: Ddr::Models::File::STRUCT_METADATA,
       operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADDUPDATE,
-      payload: translate_struct_map(mets_file.struct_metadata),
+      payload: translate_struct_map(mets_file),
       payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
   end
 
-  def translate_struct_map(mets_file_struct_map)
-    structure = Ddr::Models::Structure.new(Ddr::Models::Structure.template)
-    mets_file_struct_map.each do |node|
-      add_to_struct_map(structure, node)
+  def translate_struct_map(mets_file)
+    mets_file.struct_metadata_fptr_nodes.each do |fptr_node|
+      update_fptr(fptr_node)
     end
+    structure = Ddr::Models::Structure.new(Ddr::Models::Structure.template)
+    mets_file.struct_metadata.each { |node| structure.structMap_node('default').add_child(node) }
     structure.to_xml
   end
 
-  def add_to_struct_map(stru, node)
-    div = create_div(stru, node)
-    create_fptr(stru, div, Ddr::Utils.pid_for_identifier(div['ID'], model: 'Component'))
-  end
-
-  def create_div(stru, node)
-    div = Nokogiri::XML::Node.new('div', stru.as_xml_document)
-    node_attrs = node.attributes
-    node_attrs.keys.each { |k| div[k] = node_attrs[k] }
-    stru.structMap_node('default').add_child(div)
-    div
-  end
-
-  def create_fptr(stru, div, pid)
-    fptr = Nokogiri::XML::Node.new('fptr', stru.as_xml_document)
-    fptr['CONTENTIDS'] = pid
-    div.add_child(fptr)
+  def update_fptr(fptr_node)
+    local_id = fptr_node['fileID']
+    pid = Ddr::Utils.pid_for_identifier(local_id, model: 'Component')
+    fptr_node['CONTENTIDS'] = pid
+    fptr_node.attributes['fileID'].remove
   end
 
 end

@@ -49,42 +49,34 @@ def sample_mets_xml
         </mdWrap>
       </sourceMD>
     </amdSec>
-    <fileSec>
-      <fileGrp ID="efghi010030010" USE="DEFAULT">
-        <file USE="THUMBNAIL" ID="efghi010030010-thm">
-          <FLocat LOCTYPE="URL" xlink:href="http://library.university.edu/media/abcd/thm/efghi010030010.jpg"/>
-        </file>
-        <file USE="MEDIUM" ID="efghi010030010-med">
-          <FLocat LOCTYPE="URL" xlink:href="http://library.university.edu/media/abcd/med/efghi010030010.jpg"/>
-        </file>
-        <file USE="LARGE" ID="efghi010030010-lrg">
-          <FLocat LOCTYPE="URL" xlink:href="http://library.university.edu/media/abcd/lrg/efghi010030010.jpg"/>
-        </file>
-      </fileGrp>
-      <fileGrp ID="efghi010030020">
-        <file USE="THUMBNAIL" ID="efghi010030020-thm">
-          <FLocat LOCTYPE="URL" xlink:href="http://library.university.edu/media/abcd/thm/efghi010030020.jpg"/>
-        </file>
-        <file USE="MEDIUM" ID="efghi010030020-med">
-          <FLocat LOCTYPE="URL" xlink:href="http://library.university.edu/media/abcd/med/efghi010030020.jpg"/>
-        </file>
-        <file USE="LARGE" ID="efghi010030020-lrg">
-          <FLocat LOCTYPE="URL" xlink:href="http://library.university.edu/media/abcd/lrg/efghi010030020.jpg"/>
-        </file>
-      </fileGrp>
-    </fileSec>
-    <structMap>
-      <div LABEL="1" TYPE="Image" ID="efghi010030010" ORDER="1">
-        <fptr fileID="efghi010030010-thm"/>
-        <fptr fileID="efghi010030010-med"/>
-        <fptr fileID="efghi010030010-lrg"/>
+  <fileSec>
+    <fileGrp ID="collectiona_efghi01003-images" TYPE="Images">
+      <file ID="efghi010030010"/>
+      <file ID="efghi010030020"/>
+      <file ID="efghi010030030"/>
+    </fileGrp>
+    <fileGrp ID="collectiona_efghi01003-documents" TYPE="Documents">
+      <file ID="efghi01003"/>
+    </fileGrp>
+  </fileSec>
+  <structMap>
+    <div ID="collectiona_efghi01003-images" TYPE="Images">
+      <div ID="efghi010030010" ORDER="1">
+        <fptr fileID="efghi010030010"/>
       </div>
-      <div LABEL="2" TYPE="Image" ID="efghi010030020" ORDER="2">
-        <fptr fileID="efghi010030020-thm"/>
-        <fptr fileID="efghi010030020-med"/>
-        <fptr fileID="efghi010030020-lrg"/>
+      <div ID="efghi010030020" ORDER="2">
+        <fptr fileID="efghi010030020"/>
       </div>
-    </structMap>
+      <div ID="efghi010030030" ORDER="3">
+        <fptr fileID="efghi010030030"/>
+      </div>
+    </div>
+    <div ID="collectiona_efghi01003-documents" TYPE="Documents">
+      <div ID="efghi01003" ORDER="1">
+        <fptr fileID="efghi01003"/>
+      </div>
+    </div>
+  </structMap>
   </mets>
   EOS
 end
@@ -94,12 +86,22 @@ def sample_xml_struct_metadata
     <?xml version="1.0"?>
     <mets xmlns="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink">
       <structMap TYPE="default">
-        <div LABEL="1" TYPE="Image" ID="efghi010030010" ORDER="1">
-          <fptr CONTENTIDS="test-19"/>
-        </div>
-        <div LABEL="2" TYPE="Image" ID="efghi010030020" ORDER="2">
-          <fptr CONTENTIDS="test-20"/>
-        </div>
+    <div ID="collectiona_efghi01003-images" TYPE="Images">
+      <div ID="efghi010030010" ORDER="1">
+        <fptr CONTENTIDS="test-19"/>
+      </div>
+      <div ID="efghi010030020" ORDER="2">
+        <fptr CONTENTIDS="test-20"/>
+      </div>
+      <div ID="efghi010030030" ORDER="3">
+        <fptr CONTENTIDS="test-21"/>
+      </div>
+    </div>
+    <div ID="collectiona_efghi01003-documents" TYPE="Documents">
+      <div ID="efghi01003" ORDER="1">
+        <fptr CONTENTIDS="test-25"/>
+      </div>
+    </div>
       </structMap>
     </mets>
   EOS
@@ -306,7 +308,7 @@ def sample_mets_xml_with_aspace_id_no_ead_id
   EOS
 end
 
-def sample_mets_xml_with_missing_div_id_attr
+def sample_mets_xml_with_missing_fptr_fileid_attr
   xml = <<-EOS
   <mets xmlns:duke="http://library.duke.edu/metadata/terms" xmlns:dcterms="http://purl.org/dc/terms" xmlns:xlink="http://www.w3.org/TR/xlink/" ID="abcd_efghi01003" TYPE="Resource:slideshow">
     <metsHdr>
@@ -321,26 +323,34 @@ def sample_mets_xml_with_missing_div_id_attr
         </xmlData>
       </mdWrap>
     </dmdSec>
-    <fileSec>
-      <fileGrp ID="efghi010030010" USE="DEFAULT">
-        <file USE="THUMBNAIL" ID="efghi010030010-thm">
-          <FLocat LOCTYPE="URL" xlink:href="http://library.university.edu/media/abcd/thm/efghi010030010.jpg"/>
-        </file>
-        <file USE="MEDIUM" ID="efghi010030010-med">
-          <FLocat LOCTYPE="URL" xlink:href="http://library.university.edu/media/abcd/med/efghi010030010.jpg"/>
-        </file>
-        <file USE="LARGE" ID="efghi010030010-lrg">
-          <FLocat LOCTYPE="URL" xlink:href="http://library.university.edu/media/abcd/lrg/efghi010030010.jpg"/>
-        </file>
-      </fileGrp>
-    </fileSec>
-    <structMap>
-      <div LABEL="1" TYPE="Image" ORDER="1">
-        <fptr fileID="efghi010030010-thm"/>
-        <fptr fileID="efghi010030010-med"/>
-        <fptr fileID="efghi010030010-lrg"/>
+  <fileSec>
+    <fileGrp ID="collectiona_efghi01003-images" TYPE="Images">
+      <file ID="efghi010030010"/>
+      <file ID="efghi010030020"/>
+      <file ID="efghi010030030"/>
+    </fileGrp>
+    <fileGrp ID="collectiona_efghi01003-documents" TYPE="Documents">
+      <file ID="efghi01003"/>
+    </fileGrp>
+  </fileSec>
+  <structMap>
+    <div ID="collectiona_efghi01003-images" TYPE="Images">
+      <div ID="efghi010030010" ORDER="1">
+        <fptr fileID="efghi010030010"/>
       </div>
-    </structMap>
+      <div ID="efghi010030020" ORDER="2">
+        <fptr/>
+      </div>
+      <div ID="efghi010030030" ORDER="3">
+        <fptr fileID="efghi010030030"/>
+      </div>
+    </div>
+    <div ID="collectiona_efghi01003-documents" TYPE="Documents">
+      <div ID="efghi01003" ORDER="1">
+        <fptr fileID="efghi01003"/>
+      </div>
+    </div>
+  </structMap>
   </mets>
   EOS
 end

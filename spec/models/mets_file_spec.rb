@@ -30,5 +30,6 @@ RSpec.describe METSFile, type: :model, batch: true, mets_file: true do
   # struct_maps
   # struct_map
   # struct_metadata
+  # struct_metadata_fptr_nodes
 
 end

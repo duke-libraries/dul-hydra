@@ -131,19 +131,19 @@ class ValidateMETSFile
   end
 
   def validate_struct_map
-    mets_file.struct_metadata.each do |node|
-      validate_div(node)
+    mets_file.struct_metadata_fptr_nodes.each do |fptr_node|
+      validate_fptr(fptr_node)
     end
   end
 
-  def validate_div(node)
-    div_id_attr = node.attr('ID')
-    if div_id_attr.present?
-      unless Ddr::Utils.pid_for_identifier(div_id_attr, model: 'Component')
-        error("Unable to locate repository object for div ID #{div_id_attr}")
+  def validate_fptr(fptr_node)
+    file_id_attr = fptr_node.attr('fileID')
+    if file_id_attr.present?
+      unless Ddr::Utils.pid_for_identifier(file_id_attr, model: 'Component')
+        error("Unable to locate repository object for fptr fileID #{file_id_attr}")
       end
     else
-      error("Div does not have ID attribute")
+      error("Fptr does not have fileID attribute")
     end
   end
 
