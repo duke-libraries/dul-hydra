@@ -13,9 +13,9 @@ module DulHydra
         dm_table.headers.each do |h|
           value = case h
                     when :pid
-                      obj.pid
+                      obj.id
                     else
-                      obj.descMetadata.send(h)
+                      obj.desc_metadata.send(h)
                   end
           # value = obj.descMetadata.send(h)
           value = value.first if value.is_a? Array

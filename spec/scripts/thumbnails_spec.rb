@@ -17,22 +17,22 @@ module DulHydra::Scripts
           item.reload
         end
         it "should populate the thumbnail datastream from the child thumbnail" do
-          expect(item.datastreams['thumbnail'].checksum.value).to eq(component.datastreams['thumbnail'].checksum.value)
+          expect(item.attached_files['thumbnail'].checksum.value).to eq(component.attached_files['thumbnail'].checksum.value)
         end
       end
 
       context "child does not have thumbnail" do
         before do
-          component.datastreams['content'].content = ''
+          component.attached_files['content'].content = ''
           component.save!
           component.reload
-          component.datastreams['thumbnail'].content = ''
+          component.attached_files['thumbnail'].content = ''
           component.save!
           thumbnails_script.execute
           item.reload
         end
         it "should not populate the thumbnail datastream" do
-          expect(item.datastreams["thumbnail"]).to_not have_content
+          expect(item.attached_files["thumbnail"]).to_not have_content
         end
       end
 
@@ -41,13 +41,13 @@ module DulHydra::Scripts
     context "thumbnail already exists" do
       let(:content) { StringIO.new("awesome image") }
       before do
-        item.datastreams["thumbnail"].content = content
+        item.attached_files["thumbnail"].content = content
         item.save!
         thumbnails_script.execute
         item.reload
       end
       it "should not alter the existing thumbnail" do
-        expect(item.datastreams["thumbnail"].content).to eq("awesome image")
+        expect(item.attached_files["thumbnail"].content).to eq("awesome image")
       end
     end
 

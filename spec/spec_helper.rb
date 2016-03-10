@@ -3,8 +3,8 @@ ENV["RAILS_ENV"] ||= 'test'
 
 require File.expand_path("../../config/environment", __FILE__)
 
-warn "WARNING: Deprecations are silenced by default!"
-Deprecation.default_deprecation_behavior = :silence
+# warn "WARNING: Deprecations are silenced by default!"
+# Deprecation.default_deprecation_behavior = :silence
 
 require 'rspec/rails'
 require 'rspec/matchers' # req by equivalent-xml custom matcher `be_equivalent_to`

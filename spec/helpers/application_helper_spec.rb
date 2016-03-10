@@ -23,8 +23,8 @@ RSpec.describe ApplicationHelper, type: :helper do
 
   describe "#model_options_for_select" do
     context "access option" do
-      let(:collection1) { Collection.new(pid: 'test-1', dc_title: [ 'Collection 1' ]) }
-      let(:collection2) { Collection.new(pid: 'test-2', dc_title: [ 'Collection 2' ]) }
+      let(:collection1) { Collection.new(id: 'test-1', dc_title: [ 'Collection 1' ]) }
+      let(:collection2) { Collection.new(id: 'test-2', dc_title: [ 'Collection 2' ]) }
       before do
         allow(helper).to receive(:can?).with(:edit, collection1) { true }
         allow(helper).to receive(:can?).with(:edit, collection2) { false }

@@ -131,7 +131,7 @@ shared_examples "a repository object controller" do
           expect {
             patch :admin_metadata, id: object, adminMetadata: {local_id: "foobar"}, comment: "This is serious!"
             object.reload
-          }.to change { object.adminMetadata.local_id }
+          }.to change { object.admin_metadata.local_id }
         end
         it "creates an update event" do
           expect {
