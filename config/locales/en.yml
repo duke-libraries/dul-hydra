@@ -35,6 +35,7 @@ en:
       permanent_id:
         assigned: "Permanent ID"
         not_assigned: "Permanent ID Not Assigned"
+      permanent_url: "-"
       versions: Versions
     ingest_folder:
       new_menu: "Folder Ingest"

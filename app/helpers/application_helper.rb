@@ -371,4 +371,11 @@ module ApplicationHelper
     @admin_set_titles ||= Ddr::Models::AdminSet.all.each_with_object({}) { |a, memo| memo[a.code] = a.title }
   end
 
+  def render_permanent_url(options={})
+    if options[:document].published?
+      link_to(options[:value], options[:value])
+    else
+      content_tag :span, "Object not published", class: "small"
+    end
+  end
 end

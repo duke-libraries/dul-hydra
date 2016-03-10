@@ -67,6 +67,7 @@ class CatalogController < ApplicationController
     #   The ordering of the field names is the order of the display
     config.add_index_field Ddr::Index::Fields::ACTIVE_FEDORA_MODEL.to_s, :label => 'Type'
     config.add_index_field Ddr::Index::Fields::PERMANENT_ID.to_s, :label => 'Permanent ID'
+    config.add_index_field Ddr::Index::Fields::PERMANENT_URL.to_s, :label => 'Permanent URL', :helper_method => 'render_permanent_url'
     config.add_index_field 'id', :label => 'Fedora PID'
     config.add_index_field Ddr::Index::Fields::IDENTIFIER_ALL.to_s, :label => 'Identifier'
 
