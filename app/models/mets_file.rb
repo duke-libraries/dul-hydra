@@ -105,7 +105,7 @@ class METSFile
   end
 
   def model(pid)
-    q = ActiveFedora::SolrService.construct_query_for_pids([ pid ])
+    q = ActiveFedora::SolrQueryBuilder.construct_query_for_ids([ pid ])
     r = ActiveFedora::SolrService.query(q)
     r.first[Ddr::Index::Fields::ACTIVE_FEDORA_MODEL] unless r.empty?
   end

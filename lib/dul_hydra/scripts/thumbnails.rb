@@ -10,7 +10,7 @@ module DulHydra::Scripts
     end
 
     def execute
-      items = ActiveFedora::SolrService.lazy_reify_solr_results(@collection.children.load_from_solr)
+      items = ActiveFedora::QueryResultBuilder.lazy_reify_solr_results(@collection.children.load_from_solr)
       items.each do |item|
         unless item.has_thumbnail?
           component = item.first_child
