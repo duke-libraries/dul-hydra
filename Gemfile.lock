@@ -97,13 +97,13 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
-    ddr-models (2.4.7)
+    ddr-models (2.4.8)
       active-fedora (~> 7.0)
       activeresource
       cancancan (~> 1.12)
       ddr-antivirus (~> 2.1.1)
       devise (~> 3.4)
-      ezid-client (~> 1.1, >= 1.1.1)
+      ezid-client (~> 1.4.2)
       grouper-rest-client
       hashie (~> 3.4.3)
       hydra-core (~> 7.2)
@@ -456,7 +456,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (~> 1.0.0)
   ddr-batch (= 1.0.2)
-  ddr-models (= 2.4.7)
+  ddr-models (= 2.4.8)
   deprecation
   devise
   equivalent-xml
