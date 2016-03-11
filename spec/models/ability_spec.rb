@@ -56,13 +56,17 @@ describe Ability, type: :model, abilities: true do
 
   describe "MetadataFile abilities" do
     describe "create" do
-      describe "when the user is a member of the metadata file creators group" do
-        before { allow(auth_context).to receive(:member_of?) { true } }
-        it { should be_able_to(:create, MetadataFile) }
+      let(:collection) { Collection.new(id: 'ab/cd/ef/abcdefgh') }
+      let(:resource) { MetadataFile.new(collection_pid: collection.id) }
+      before { allow(subject).to receive(:can?).and_call_original }
+
+      describe "when the user can ingest metadata for the collection" do
+        before { allow(subject).to receive(:can?).with(:ingest_metadata, collection.id) { true } }
+        it { should be_able_to(:create, resource) }
       end
-      describe "when the user is not a member of the metadata file creators group" do
-        before { allow(auth_context).to receive(:member_of?) { false } }
-        it { should_not be_able_to(:create, MetadataFile) }
+      describe "when the user cannot ingest metadata for the collection" do
+        before { allow(subject).to receive(:can?).with(:ingest_metadata, collection.id) { false } }
+        it { should_not be_able_to(:create, resource) }
       end
     end
 
