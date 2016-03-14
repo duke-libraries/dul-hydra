@@ -8,7 +8,7 @@
     %>
   </li>
   <li class="list-group-item">
-    <%= link_to_if can?(:create, MetadataFile),
+    <%= link_to_if can?(:ingest_metadata, current_object),
         'Metadata File Upload',
         new_metadata_file_path(metadata_file: { collection_pid: current_object })
 	%>
