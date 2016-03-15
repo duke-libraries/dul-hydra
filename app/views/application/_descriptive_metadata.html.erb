@@ -3,7 +3,7 @@
 <table class="table">
   <% current_object.desc_metadata_terms.each do |term| %>
     <% label = term.to_s.titleize %>
-    <% current_object.desc_metadata_values(term).each do |value| %>
+    <% current_object.desc_metadata.values(term).each do |value| %>
       <%= render partial: 'descriptive_metadata_value', locals: {label: label, value: value} %>
     <% end %>
   <% end %>
