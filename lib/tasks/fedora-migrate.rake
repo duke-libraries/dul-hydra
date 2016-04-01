@@ -25,10 +25,11 @@ end
 
 namespace :duke do
   namespace :migrate do
-    desc "Empty out the Fedora4 repository and migration reports"
+    desc "Empty out the Fedora4 repository, migration reports, and events"
     task reset: :environment do
       ActiveFedora::Cleaner.clean!
       DulHydra::Migration::MigrationReport.destroy_all
+      Ddr::Events::Event.destroy_all
     end
     desc "Migrate a single object"
     task :object, [:pid] => :environment do |t, args|
