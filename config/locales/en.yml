@@ -4,9 +4,10 @@ en:
       multiple_object_matches: "%{criteria} retrieved multiple repository objects"
   dul_hydra:
     admin_metadata:
-      local_id: "Local ID"
-      ead_id: "EAD ID"
       aspace_id: "ArchivesSpace ID"
+      ead_id: "EAD ID"
+      fcrepo3_pid: "Fedora 3 PID"
+      local_id: "Local ID"
     techmd:
       file_human_size: "File Size"
       pronom_identifier: "PRONOM Identifier"
