@@ -24,6 +24,12 @@
     <% end %>
   </ul>
 
+  <% if current_object.locked? %>
+      <div class="text-danger">
+        <span class="glyphicon glyphicon-lock"></span> Locked
+      </div>
+  <% end %>
+
   <%# bookmark toggle control %>
   <div>
     <%= render partial: 'catalog/bookmark_control', locals: {document: current_document} %>
