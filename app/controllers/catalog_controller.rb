@@ -55,6 +55,11 @@ class CatalogController < ApplicationController
         not_published: { label: 'Not Published', fq: "-#{Ddr::Index::Fields::WORKFLOW_STATE}:published" }
     }
 
+    config.add_facet_field Ddr::Index::Fields::IS_LOCKED.to_s, label: 'Lock Status', query: {
+        locked: { label: 'Locked', fq: "#{Ddr::Index::Fields::IS_LOCKED}:true" },
+        not_locked: { label: 'Not Locked', fq: "-#{Ddr::Index::Fields::IS_LOCKED}:true" }
+    }
+
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
     # handler defaults, or have no facets.

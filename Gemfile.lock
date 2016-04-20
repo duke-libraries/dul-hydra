@@ -107,7 +107,7 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
-    ddr-models (3.0.0.beta.18)
+    ddr-models (3.0.0.beta.21)
       active-fedora (~> 9.8.1)
       active-triples (~> 0.7.2)
       activeresource
@@ -146,7 +146,7 @@ GEM
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (2.6.0)
-    ezid-client (1.4.2)
+    ezid-client (1.4.3)
       hashie
     factory_girl (4.5.0)
       activesupport (>= 3.0.0)
@@ -478,7 +478,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (~> 1.0.0)
   ddr-batch (= 2.0.0.beta.6)
-  ddr-models (= 3.0.0.beta.18)
+  ddr-models (= 3.0.0.beta.21)
   deprecation
   devise
   equivalent-xml
