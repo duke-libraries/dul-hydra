@@ -1,3 +1,3 @@
 module DulHydra
-  VERSION = "5.0.0.beta.13"
+  VERSION = "5.0.0.beta.14"
 end
