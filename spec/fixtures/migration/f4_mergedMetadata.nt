@@ -6,3 +6,5 @@
 <info:fedora/duke:141764> <http://repository.lib.duke.edu/vocab/asset/workflowState> "published" .
 <info:fedora/duke:141764> <http://repository.lib.duke.edu/vocab/contact/assistance> "rubenstein" .
 <info:fedora/duke:141764> <http://repository.lib.duke.edu/vocab/asset/eadId> "dukeandsons" .
+<info:fedora/duke:141764> <http://purl.org/dc/terms/description> "Between 1875 and the 1940s, cigarette companies often included collectible trading cards with their packages of cigarettes.\r\n\r\nCigarette card sets document popular culture from the turn of the century, often depicting the period's actresses, costumes, and sports, as well as offering fascinating insights into mainstream American humor and cultural norms." .
+<info:fedora/duke:141764> <http://purl.org/dc/terms/title> "W. Duke, Sons & Co. Advertising Materials, 1880-1910" .
