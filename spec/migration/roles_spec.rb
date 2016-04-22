@@ -18,10 +18,7 @@ module DulHydra::Migration
         expect { subject.migrate }.to change(source, :content).from(f3_ntriples).to(f4_ntriples)
       end
       it "adds the roles to target" do
-        puts f3_ntriples
-        puts source.content.encoding
         expect { subject.migrate }.to change { target.roles.as_json }.from({"roles"=>[]}).to({"roles"=>[{"agent"=>"repository_admins","role_type"=>"Curator","scope"=>"policy"},{"agent"=>"public","role_type"=>"Viewer","scope"=>"policy"},{"agent"=>"MetadataEditor1@duke.edu","role_type"=>"MetadataEditor","scope"=>"policy"},{"agent"=>"MetadataEditor2@duke.edu","role_type"=>"MetadataEditor","scope"=>"policy"},{"agent"=>"MetadataEditor3@duke.edu","role_type"=>"MetadataEditor","scope"=>"policy"},{"agent"=>"metadata_architects","role_type"=>"MetadataEditor","scope"=>"policy"}]})
-        puts source.content.encoding
       end
     end
 
