@@ -1,7 +1,6 @@
 require 'dul_hydra/version'
 
 namespace :dul_hydra do
-
   desc "Print the version string of the app"
   task :version do
     puts DulHydra::VERSION
@@ -217,4 +216,36 @@ namespace :dul_hydra do
     end
   end
 
+  namespace :python do
+    desc "Initialize Python virtual environment"
+    task :init => :environment do
+      if Dir.exist? DulHydra.python
+        puts "Python virtual environment already initialized at #{DulHydra.python}."
+      else
+        puts `virtualenv #{DulHydra.python}`
+      end
+    end
+
+    desc "Install a Python package."
+    task :install, [:package] => :environment do |t, args|
+      unless args[:package]
+        puts "Package argument is required."
+        exit(false)
+      end
+      # verify the package exists
+      begin
+        response = Net::HTTP.start('pypi.python.org', use_ssl: true) do |http|
+          http.request_head("/pypi/#{args[:package]}")
+        end
+        response.value # raises exception if not success
+      rescue Exception => e
+        puts e
+        exit(false)
+      end
+      unless Dir.exist? DulHydra.python
+        Rake::Task['dul_hydra:python:init'].invoke
+      end
+      puts `#{DulHydra.python}/bin/pip install #{args[:package]}`
+    end
+  end
 end

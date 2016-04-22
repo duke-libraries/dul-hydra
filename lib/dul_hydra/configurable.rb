@@ -74,6 +74,10 @@ module DulHydra
       # Base path for METS folders
       mattr_accessor :mets_folder_base_path
 
+      mattr_accessor :python do
+        File.join(Rails.root, "python")
+      end
+
     end
 
     module ClassMethods
