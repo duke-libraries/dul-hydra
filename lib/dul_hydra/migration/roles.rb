@@ -12,7 +12,7 @@ module DulHydra::Migration
     end
 
     def graph
-      RDF::Graph.new.from_ntriples(source.content)
+      RDF::Graph.new.from_ntriples(source.content.force_encoding(Encoding::UTF_8))
     end
 
     def grant_roles_on_target!
