@@ -6,7 +6,7 @@ class BatchesController < ApplicationController
   self.tabs = [:tab_pending_batches, :tab_finished_batches]
 
   def index
-    @batches = @batches.includes(:batch_objects, :user)
+    @batches = @batches.includes(:batch_objects, :user).order('start is not null, start DESC')
     @pending = []
     @finished = []
     @batches.each do |batch|
