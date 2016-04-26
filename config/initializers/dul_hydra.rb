@@ -21,3 +21,7 @@ Blacklight::Configuration.default_values[:http_method] = :post
 if ENV["DDR_MODELS_TEMPDIR"]
   Ddr::Models.tempdir = ENV["DDR_MODELS_TEMPDIR"]
 end
+
+if Rails.env.production?
+  Deprecation.default_deprecation_behavior = :silence
+end
