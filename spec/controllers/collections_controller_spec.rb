@@ -131,7 +131,7 @@ describe CollectionsController, type: :controller, collections: true do
       it "publishes the collection and its descendants" do
         get :publish, id: collection
         expect(flash[:success]).to be_present
-        expect(response).to render_template(:show)
+        expect(response).to redirect_to(collection_url)
       end
     end
     describe "when the user cannot publish the collection" do
@@ -153,7 +153,7 @@ describe CollectionsController, type: :controller, collections: true do
       it "unpublishes the collection and its descendants" do
         get :unpublish, id: collection
         expect(flash[:success]).to be_present
-        expect(response).to render_template(:show)
+        expect(response).to redirect_to(collection_url)
       end
     end
     describe "when the user cannot unpublish the collection" do
