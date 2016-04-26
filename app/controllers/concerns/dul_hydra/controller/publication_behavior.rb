@@ -3,15 +3,15 @@ module DulHydra
     module PublicationBehavior
 
       def publish
-        current_object.publish!
-        flash[:success] = "Collection (and descendants) published"
-        render "show"
+        Resque.enqueue(PublishJob, current_object.id, current_user.email)
+        flash[:success] = "Collection (and descendants) queued to be published"
+        redirect_to action: :show
       end
 
       def unpublish
-        current_object.unpublish!
-        flash[:success] = "Collection (and descendants) un-published"
-        render "show"
+        Resque.enqueue(UnPublishJob, current_object.id, current_user.email)
+        flash[:success] = "Collection (and descendants) queued to be un-published"
+        redirect_to action: :show
       end
 
     end
