@@ -32,6 +32,9 @@
 # Paperclip files
 /public/system
 
+# Default python virtual environment
+/python
+
 .sass-cache
 
 # Ignore Mac .DS_Store files
