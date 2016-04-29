@@ -188,6 +188,21 @@ namespace :dul_hydra do
     puts "#{queued} FITS file characterization job(s) submitted for processing."
   end
 
+  namespace :roles do
+    desc "Grant policy role on collections in admin set"
+    task :grant_policy_role_in_admin_set => :environment do
+      raise "Must specify admin set. Ex.: ADMIN_SET=foo" unless ENV['ADMIN_SET']
+      raise "Must specify role.  Ex.: ROLE=Downloader" unless ENV['ROLE']
+      raise "Must specify agent.  Ex: AGENT=tom@school.edu" unless ENV['AGENT']
+      colls = Collection.where(Ddr::Index::Fields::ADMIN_SET => ENV['ADMIN_SET'])
+      colls.each do |coll|
+        coll.roles.grant role_type: ENV['ROLE'], scope: "policy", agent: ENV['AGENT']
+        coll.save!
+      end
+      puts "#{ENV['AGENT']} granted the #{ENV['ROLE']} role in policy scope on #{colls.count} collection(s)."
+    end
+  end
+
   namespace :thumbnail do
     desc "Copy thumbnail from one object to another"
     task :copy, [:source_id, :target_id] => :environment do |t, args|
