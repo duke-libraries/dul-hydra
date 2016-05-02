@@ -20,6 +20,7 @@ en:
       file_size: "File Size (Bytes)"
       creation_time: "File Creation Time"
       modification_time: "File Modification Time"
+      message: Message
     object_info:
       header: "Object Info"
       create_date: Ingested

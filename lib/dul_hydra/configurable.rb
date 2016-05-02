@@ -14,6 +14,7 @@ module DulHydra
           :creating_application,
           :valid,
           :well_formed,
+          :message,
           :file_human_size,
           :image_width,
           :image_height,
