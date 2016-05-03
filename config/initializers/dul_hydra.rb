@@ -11,7 +11,6 @@ DulHydra.configure do |config|
     write_headers: true,
     header_converters: :symbol
   }
-  config.metadata_file_creators_group = ENV['METADATA_FILE_CREATORS_GROUP']
   config.create_menu_models = [ "Collection" ]
   config.mets_folder_base_path = ENV['METS_FOLDER_BASE_PATH']
 end
