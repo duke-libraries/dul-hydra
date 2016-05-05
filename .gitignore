@@ -35,6 +35,9 @@
 # Default python virtual environment
 /python
 
+# External programs, e.g., jars, etc.
+/contrib
+
 .sass-cache
 
 # Ignore Mac .DS_Store files

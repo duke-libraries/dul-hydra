@@ -33,7 +33,7 @@ namespace :dul_hydra do
 
   namespace :ci do
     desc "Prepare for CI build"
-    task :prepare => ['dul_hydra:config:samples', 'db:test:prepare', 'jetty:clean', 'jetty:config'] do
+    task :prepare => ['dul_hydra:config:samples', 'db:test:prepare', 'jetty:clean', 'jetty:config', 'dul_hydra:tika:download'] do
     end
 
     desc "CI build"
