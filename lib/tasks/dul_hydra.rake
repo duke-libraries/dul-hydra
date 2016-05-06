@@ -248,4 +248,32 @@ namespace :dul_hydra do
       puts `#{DulHydra.python}/bin/pip install #{args[:package]}`
     end
   end
+
+  desc <<-EOS
+Extract text from the content of one or more objects
+
+Provide one argument:
+- OBJECT_ID={id} for a single object.
+- INFILE={file path} for a file containing one object id per line.
+EOS
+  task :extract_text => :environment do
+    id = ENV["OBJECT_ID"]
+    infile = ENV["INFILE"]
+    if !id && !infile
+      puts "Either OBJECT_ID or INFILE is required."
+      exit(false)
+    elsif id && infile
+      puts "Cannot use OBJECT_ID and INFILE in the same task invocation."
+      exit(false)
+    elsif id
+      Resque.enqueue(TextExtractionJob, id)
+      puts "Object #{id} queued for text extraction."
+    elsif infile
+      File.foreach(infile) do |line|
+        id = line.chomp
+        Resque.enqueue(TextExtractionJob, id)
+        puts "Object #{id} queued for text extraction."
+      end
+    end
+  end
 end
