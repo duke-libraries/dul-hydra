@@ -133,7 +133,7 @@ module DulHydra
 
       # Controls what fields are displayed on the admin metadata tab and edit form
       def admin_metadata_fields
-        [:license, :local_id, :display_format, :ead_id, :aspace_id, :fcrepo3_pid]
+        [:license, :local_id, :display_format, :doi, :ead_id, :aspace_id, :fcrepo3_pid]
       end
 
       def admin_metadata_params
