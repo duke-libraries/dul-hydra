@@ -3,7 +3,6 @@ class DuracloudSerializationJob
 
   def self.perform(id)
     obj = ActiveFedora::Base.find(id)
-    serialization = DuracloudSerialization.new(obj)
-    serialization.call
+    DuracloudSerialization.serialize(obj)
   end
 end

@@ -7,8 +7,8 @@ class DuracloudFileSerialization
   FILE_CONTENT = "file-content"
   FILE_DIGEST  = "file-sha1.txt"
 
-  def self.call(file, dir)
-    new(file, dir).call
+  def self.serialize(file, dir)
+    new(file, dir).serialize
   end
 
   attr_reader :file, :dir
@@ -17,13 +17,17 @@ class DuracloudFileSerialization
     @file, @dir = file, dir
   end
 
-  def call
+  def serialize
     FileUtils.mkdir_p(dir)
-    FileUtils.cd(dir) do
-      write_description
-      write_content_or_digest
-    end
+    FileUtils.cd(dir) { do_serialize }
     dir
+  end
+
+  private
+
+  def do_serialize
+    write_description
+    write_content_or_digest
   end
 
   def write_description

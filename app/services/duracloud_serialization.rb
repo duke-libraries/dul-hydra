@@ -7,23 +7,25 @@ class DuracloudSerialization
   OBJECT_DESC  = "object-desc.rdf"
   DATETIME_FORMAT = "%Y%m%d_%H%M%S"
 
-  class_attribute :base_path
+  class << self
+    def enable!
+      ActiveSupport::Notifications.subscribe(EVENT, self)
+    end
 
-  def self.enable!(base_path)
-    self.base_path = base_path if base_path
-    raise "`#{self}.base_path` is not set." unless self.base_path
-    ActiveSupport::Notifications.subscribe(EVENT, self)
-  end
+    def disable!
+      ActiveSupport::Notifications.unsubscribe(self)
+    end
 
-  def self.disable!
-    ActiveSupport::Notifications.unsubscribe(self)
-  end
+    # Receives notifications
+    def call(*args)
+      event = ActiveSupport::Notifications::Event.new(*args)
+      object_id = event.payload[:id]
+      Resque.enqueue(DuracloudSerializationJob, object_id)
+    end
 
-  # Receives notifications
-  def self.call(*args)
-    event = ActiveSupport::Notifications::Event.new(*args)
-    object_id = event.payload[:id]
-    Resque.enqueue(DuracloudSerializationJob, object_id)
+    def serialize(object)
+      new(object).serialize
+    end
   end
 
   attr_reader :object, :zip_base, :target_dir
@@ -31,13 +33,13 @@ class DuracloudSerialization
   def initialize(object)
     @object = object
     @zip_base = object.modified_date.strftime(DATETIME_FORMAT)
-    @target_dir = File.join(base_path, object.id)
+    @target_dir = File.join(DulHydra.duracloud_content_path, "METADATA", object.id)
   end
 
-  def call
+  def serialize
     in_tmpdir do
       FileUtils.mkdir_p(zip_base)
-      FileUtils.cd(zip_base) { serialize }
+      FileUtils.cd(zip_base) { do_serialize }
       Bagit.call(zip_base)
       move(zip)
     end
@@ -55,16 +57,14 @@ class DuracloudSerialization
     FileUtils.mv(file, target_dir)
   end
 
-  def serialize
+  def do_serialize
     write_object_description
     write_files
   end
 
   def in_tmpdir
     Dir.mktmpdir do |tmpdir|
-      FileUtils.cd(tmpdir) do
-        yield
-      end
+      FileUtils.cd(tmpdir) { yield }
     end
   end
 
@@ -77,7 +77,8 @@ class DuracloudSerialization
 
   def write_files
     object.attached_files_having_content.each do |id, file|
-      DuracloudFileSerialization.call(file, File.absolute_path(id.to_s))
+      dest = File.absolute_path(id.to_s)
+      DuracloudFileSerialization.serialize(file, dest)
     end
   end
 

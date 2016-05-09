@@ -78,6 +78,9 @@ module DulHydra
         File.join(Rails.root, "python")
       end
 
+      mattr_accessor :duracloud_content_path do
+        File.join(Rails.root, "contrib", "duracloud", "content")
+      end
     end
 
     module ClassMethods
