@@ -5,6 +5,7 @@ en:
   dul_hydra:
     admin_metadata:
       aspace_id: "ArchivesSpace ID"
+      doi: "DOI"
       ead_id: "EAD ID"
       fcrepo3_pid: "Fedora 3 PID"
       local_id: "Local ID"
