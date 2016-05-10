@@ -23,7 +23,7 @@ Tempfile.create(["collection_summary", ".csv"]) do |outfile|
     csv << headers
     collections = Ddr::Index::Query.new do
       model "Collection"
-      fields :id, :title, :admin_set, :internal_uri
+      fields :id, :title, :admin_set, :workflow_state, :internal_uri
     end
     collections.docs.each do |doc|
       objects = Ddr::Index::Query.new { is_governed_by doc.id }
