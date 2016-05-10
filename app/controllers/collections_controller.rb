@@ -25,6 +25,7 @@ class CollectionsController < ApplicationController
                 render nothing: true, status: 404
               end
         csv = rep.run
+        csv.delete_empty_columns!
         send_data csv.to_s, type: "text/csv", filename: rep.filename
       end
     end

@@ -4,7 +4,6 @@ module DulHydra::Reports
     describe "initialization" do
       describe "default" do
         its(:title) { is_expected.to eq "Report" }
-        its(:csv_opts) { is_expected.to be_empty }
       end
       describe "with a block" do
         subject {
