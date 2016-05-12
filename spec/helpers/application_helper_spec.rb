@@ -23,8 +23,8 @@ RSpec.describe ApplicationHelper, type: :helper do
 
   describe "#model_options_for_select" do
     context "access option" do
-      let(:collection1) { Collection.new(pid: 'test:1', title: [ 'Collection 1' ]) }
-      let(:collection2) { Collection.new(pid: 'test:2', title: [ 'Collection 2' ]) }
+      let(:collection1) { Collection.new(id: 'test-1', dc_title: [ 'Collection 1' ]) }
+      let(:collection2) { Collection.new(id: 'test-2', dc_title: [ 'Collection 2' ]) }
       before do
         allow(helper).to receive(:can?).with(:edit, collection1) { true }
         allow(helper).to receive(:can?).with(:edit, collection2) { false }
@@ -37,18 +37,18 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
-  describe "#original_filename_info_value" do
-    let(:object) { TestContent.new(pid: 'test:1') }
+  describe "#original_filename_info" do
+    let(:object) { TestContent.new }
     before { allow(helper).to receive(:current_object) { object } }
     context "object has content" do
-      before { object.upload File.new(File.join(Rails.root, "spec", "fixtures", "imageA.tif")) }
+      before { object.upload! File.new(File.join(Rails.root, "spec", "fixtures", "imageA.tif")) }
       context "object has original filename" do
         it "should return the original file name" do
           expect(helper.original_filename_info).to include(value: 'imageA.tif', context: 'info')
         end
       end
       context "object does not have original filename" do
-        before { object.update_attributes(original_filename: nil) }
+        before { allow(object).to receive(:original_filename) { nil } }
         it "should return an appropriate message" do
           expect(helper.original_filename_info).to include(value: 'Missing', context: 'danger')
         end

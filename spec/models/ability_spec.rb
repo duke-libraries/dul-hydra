@@ -56,13 +56,17 @@ describe Ability, type: :model, abilities: true do
 
   describe "MetadataFile abilities" do
     describe "create" do
-      describe "when the user is a member of the metadata file creators group" do
-        before { allow(auth_context).to receive(:member_of?) { true } }
-        it { should be_able_to(:create, MetadataFile) }
+      let(:collection) { Collection.new(id: 'ab/cd/ef/abcdefgh') }
+      let(:resource) { MetadataFile.new(collection_pid: collection.id) }
+      before { allow(subject).to receive(:can?).and_call_original }
+
+      describe "when the user can ingest metadata for the collection" do
+        before { allow(subject).to receive(:can?).with(:ingest_metadata, collection.id) { true } }
+        it { should be_able_to(:create, resource) }
       end
-      describe "when the user is not a member of the metadata file creators group" do
-        before { allow(auth_context).to receive(:member_of?) { false } }
-        it { should_not be_able_to(:create, MetadataFile) }
+      describe "when the user cannot ingest metadata for the collection" do
+        before { allow(subject).to receive(:can?).with(:ingest_metadata, collection.id) { false } }
+        it { should_not be_able_to(:create, resource) }
       end
     end
 
@@ -84,6 +88,47 @@ describe Ability, type: :model, abilities: true do
         it { should be_able_to(:procezz, resource) }
       end
       describe "when the user is not the creator of the MetadataFile" do
+        it { should_not be_able_to(:procezz, resource) }
+      end
+    end
+  end
+
+  describe "METSFolder abilities" do
+    describe "create" do
+      let(:collection) { Collection.new(id: 'ab/cd/ef/abcdefgh') }
+      let(:resource) { METSFolder.new(collection_id: collection.id) }
+      before { allow(subject).to receive(:can?).and_call_original }
+
+      describe "when the user can ingest metadata for the collection" do
+        before { allow(subject).to receive(:can?).with(:ingest_metadata, collection.id) { true } }
+        it { should be_able_to(:create, resource) }
+      end
+      describe "when the user cannot ingest metadata for the collection" do
+        before { allow(subject).to receive(:can?).with(:ingest_metadata, collection.id) { false } }
+        it { should_not be_able_to(:create, resource) }
+      end
+    end
+
+    describe "show" do
+      let(:user) { FactoryGirl.build(:user) }
+      let(:resource) { METSFolder.new(user: user) }
+      describe "when the user is the creator of the METSFolder" do
+        before { allow(auth_context).to receive(:user) { resource.user } }
+        it { should be_able_to(:show, resource) }
+      end
+      describe "when the user is not the creator of the METSFolder" do
+        it { should_not be_able_to(:show, resource) }
+      end
+    end
+
+    describe "procezz" do
+      let(:user) { FactoryGirl.build(:user) }
+      let(:resource) { METSFolder.new(user: user) }
+      describe "when the user is the creator of the METSFolder" do
+        before { allow(auth_context).to receive(:user) { resource.user } }
+        it { should be_able_to(:procezz, resource) }
+      end
+      describe "when the user is not the creator of the METSFolder" do
         it { should_not be_able_to(:procezz, resource) }
       end
     end

@@ -24,7 +24,7 @@ module DulHydra
       # rows
       rows = objects.collect do |obj|
         row = Array.new(cols.size)
-        row[0] = obj.pid
+        row[0] = obj.id
         col_index.keys.each do |term|
           start = cols.index(term)
           values = term_values(obj, term)
@@ -68,9 +68,9 @@ module DulHydra
 
     def term_values(obj, term)
       if term == :format
-        obj.datastreams[datastream_id].format
+        obj.send(datastream_id).format
       else
-        obj.datastreams[datastream_id].send(term)
+        obj.send(datastream_id).send(term)
       end
     end
 

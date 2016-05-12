@@ -1,14 +1,14 @@
 class InspectMETSFolder
 
   attr_accessor :results
-  attr_reader :folder, :collection, :scanner_config
+  attr_reader :mets_folder, :collection, :scanner_config
 
   Results = Struct.new(:file_count, :exclusions, :filesystem, :warnings, :errors)
 
-  def initialize(folder, collection, scanner_config={})
-    @folder = folder
-    @collection = collection
-    @scanner_config = scanner_config
+  def initialize(mets_folder, mets_folder_config = METSFolderConfiguration.new)
+    @mets_folder = mets_folder
+    @collection = ActiveFedora::Base.find(mets_folder.collection_id)
+    @scanner_config = mets_folder_config.scanner_config
     @results = Results.new
   end
 
@@ -20,18 +20,12 @@ class InspectMETSFolder
   private
 
   def inspect_folder
-    validate_folderpath
-    scan_results = ScanFilesystem.new(folder, scanner_config).call
-    raise DulHydra::BatchError, "#{folder} does not appear to be a valid METS folder" unless mets_folder?(scan_results.filesystem)
+    scan_results = ScanFilesystem.new(mets_folder.full_path, scanner_config).call
+    raise DulHydra::BatchError, "#{mets_folder.full_path} does not appear to be a valid METS folder" unless mets_folder?(scan_results.filesystem)
     results.warnings, results.errors = validate_mets_files(scan_results.filesystem)
     results.file_count = scan_results.filesystem.file_count
     results.exclusions = scan_results.exclusions
     results.filesystem = scan_results.filesystem
-  end
-
-  def validate_folderpath
-    raise DulHydra::BatchError, "#{folder} not found or is not a directory" unless Dir.exist?(folder)
-    raise DulHydra::BatchError, "#{folder} is not readable" unless File.readable?(folder)
   end
 
   def mets_folder?(filesystem)

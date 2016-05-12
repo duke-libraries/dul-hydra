@@ -88,18 +88,18 @@ def sample_xml_struct_metadata
       <structMap TYPE="default">
     <div ID="collectiona_efghi01003-images" TYPE="Images">
       <div ID="efghi010030010" ORDER="1">
-        <fptr CONTENTIDS="info:fedora/test:19"/>
+        <fptr CONTENTIDS="test-19"/>
       </div>
       <div ID="efghi010030020" ORDER="2">
-        <fptr CONTENTIDS="info:fedora/test:20"/>
+        <fptr CONTENTIDS="test-20"/>
       </div>
       <div ID="efghi010030030" ORDER="3">
-        <fptr CONTENTIDS="info:fedora/test:21"/>
+        <fptr CONTENTIDS="test-21"/>
       </div>
     </div>
     <div ID="collectiona_efghi01003-documents" TYPE="Documents">
       <div ID="efghi01003" ORDER="1">
-        <fptr CONTENTIDS="info:fedora/test:25"/>
+        <fptr CONTENTIDS="test-25"/>
       </div>
     </div>
       </structMap>

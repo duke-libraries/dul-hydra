@@ -3,7 +3,8 @@ require 'resque/server'
 DulHydra::Application.routes.draw do
 
   root :to => "catalog#index"
-  Blacklight.add_routes(self)
+
+  blacklight_for :catalog
 
   scope 'superuser', as: 'superuser' do
     get 'sign_in', to: 'superuser#create'
@@ -11,10 +12,6 @@ DulHydra::Application.routes.draw do
   end
 
   get 'id/*permanent_id', to: 'permanent_ids#show'
-
-  def pid_constraint
-    /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
-  end
 
   namespace :admin do
     get 'dashboard', to: 'dashboard#show'
@@ -27,83 +24,82 @@ DulHydra::Application.routes.draw do
     end
   end
 
-  def content_routes
-    get 'upload'
-    patch 'upload'
-    get 'versions'
-  end
-
-  def event_routes
-    get 'events'
-    get 'events/:event_id', to: :event
-  end
-
-  def roles_routes
-    get 'roles'
-    patch 'roles'
-  end
-
-  def amd_routes
-    get 'admin_metadata'
+  # Common routes for Ddr::Models::Base descendants
+  def model_routes
+    get   'admin_metadata'
     patch 'admin_metadata'
+
+    get   'events'
+    get   'events/:event_id', to: :event
+
+    get   'roles'
+    patch 'roles'
+
+    get   'versions'
   end
 
-  def repository_routes
-    event_routes
-    roles_routes
-    amd_routes
+  # Common routes for content-bearing objects
+  def content_routes
+    get   'upload'
+    patch 'upload'
   end
 
-  def repository_contraints
-    {id: pid_constraint}
+  # Common routes for publication
+  def publication_routes
+    get 'publish'
+    get 'unpublish'
   end
 
-  def no_repository_routes_for name
-    no_routes = [:index, :destroy]
-    no_routes += [:new, :create] if name == :targets
-  end
-
-  def repository_options name
-    { except: no_repository_routes_for(name),
-      constraints: repository_contraints }
-  end
-
-  def repository_resource name
-    resources name, repository_options(name) do
-      member do
-        repository_routes
-        yield if block_given?
-      end
+  resources :collections, only: [:new, :create, :show, :edit, :update] do
+    member do
+      model_routes
+      publication_routes
+      get 'items'
+      get 'attachments'
+      get 'targets'
+      get 'report'
     end
   end
 
-  def repository_content_resource name
-    repository_resource name do
+  resources :items, only: [:new, :create, :show, :edit, :update] do
+    member do
+      model_routes
+      publication_routes
+      get 'components'
+    end
+  end
+
+  resources :components, only: [:new, :create, :show, :edit, :update] do
+    member do
+      model_routes
+      publication_routes
       content_routes
     end
   end
 
-  repository_resource :collections do
-    get 'items'
-    get 'attachments'
-    get 'targets'
-    get 'report'
+  resources :attachments, only: [:new, :create, :show, :edit, :update] do
+    member do
+      model_routes
+      content_routes
+    end
   end
-  repository_resource :items do
-    get 'components'
+
+  resources :targets, only: [:show, :edit, :update] do
+    member do
+      model_routes
+      content_routes
+    end
   end
-  repository_content_resource :components
-  repository_content_resource :attachments
-  repository_content_resource :targets
-  resources :thumbnail, only: :show, constraints: {id: pid_constraint}
+
+  resources :thumbnail, only: :show
 
   # Downloads
-  get 'download/:id(/:datastream_id)' => 'downloads#show', :constraints => {id: pid_constraint}, as: 'download'
+  get 'download/:id(/:datastream_id)' => 'downloads#show', as: 'download'
 
   resources :export_sets do
     member do
-      get 'archive', as: 'download'
-      patch 'archive'
+      get    'archive', as: 'download'
+      patch  'archive'
       delete 'archive'
     end
   end
@@ -128,6 +124,12 @@ DulHydra::Application.routes.draw do
   end
 
   resources :metadata_files, :only => [:new, :create, :show] do
+    member do
+      get 'procezz'
+    end
+  end
+
+  resources :mets_folders, :only => [:new, :create, :show] do
     member do
       get 'procezz'
     end

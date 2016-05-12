@@ -1,87 +1,115 @@
 require 'spec_helper'
 
-def create_attachment opts={}
-  checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, attached_to_id: attach_to.pid, content: {file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum, checksum_type: checksum_type}, descMetadata: {title: ["New Attachment"]}
-end
-
 describe AttachmentsController, type: :controller, attachments: true do
+
+  let(:attach_to) { FactoryGirl.create(:collection) }
+  let(:file) { fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
 
   it_behaves_like "a repository object controller" do
-    let(:attach_to) { FactoryGirl.create(:collection) }
-    let(:create_object) do
-      Proc.new do
-        controller.current_ability.can(:add_attachment, attach_to)
-        create_attachment
-      end
-    end
-    let(:new_object) do
-      Proc.new do
-        controller.current_ability.can(:add_attachment, attach_to)
-        get :new, attached_to_id: attach_to.pid
-      end
-    end
+    let(:object) { FactoryGirl.create(:attachment) }
   end
 
   describe "#new" do
-    # see shared examples
-    describe "when user cannot add attachments to object" do
-      let(:attach_to) { FactoryGirl.create(:collection) }
-      before { controller.current_ability.cannot(:add_attachment, attach_to) }
-      it "should be unauthorized" do
-        get :new, attached_to_id: attach_to.pid
+    describe "when the user can create an object of this type" do
+      before do
+        attach_to.roles.grant role_type: "Curator", agent: user
+        attach_to.save!
+      end
+      it "renders the new template" do
+        get :new, attached_to_id: attach_to
+        expect(response).to render_template(:new)
+      end
+    end
+    describe "when the user cannot create an object of this type" do
+      it "is unauthorized" do
+        get :new, attached_to_id: attach_to
         expect(response.response_code).to eq(403)
       end
     end
   end
 
   describe "#create" do
-    # see shared examples
-    let(:attach_to) { FactoryGirl.create(:collection) }
-    describe "when user can add attachments to object" do
-      before { controller.current_ability.can(:add_attachment, attach_to) }
-      it "should create a new object" do
-        expect{ create_attachment }.to change{ Attachment.count }.by(1)
+    describe "when the user can add attachments to the object" do
+      before do
+        attach_to.roles.grant role_type: "Curator", agent: user
+        attach_to.save!
       end
-      it "should have content" do
-        create_attachment
+      it "persists a new Attachment" do
+        expect {
+          post :create, attached_to_id: attach_to, content: {file: file},
+               descMetadata: {title: ["New Attachment"]}
+        }.to change{ Attachment.count }.by(1)
+      end
+      it "adds the content" do
+        post :create, attached_to_id: attach_to, content: {file: file},
+             descMetadata: {title: ["New Attachment"]}
         expect(assigns(:current_object)).to have_content
       end
-      it "should correctly set the MIME type" do
-        create_attachment
-        expect(assigns(:current_object).content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+      it "correctly sets the MIME type" do
+        post :create, attached_to_id: attach_to, content: {file: file},
+             descMetadata: {title: ["New Attachment"]}
+        expect(assigns(:current_object).content_type)
+          .to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
       end
-      it "should store the original file name" do
-        create_attachment
+      it "stores the original file name" do
+        post :create, attached_to_id: attach_to, content: {file: file},
+             descMetadata: {title: ["New Attachment"]}
         expect(assigns(:current_object).original_filename).to eq("sample.docx")
       end
-      it "should be attached to the object" do
-        create_attachment
+      it "is attached to the object" do
+        post :create, attached_to_id: attach_to, content: {file: file},
+             descMetadata: {title: ["New Attachment"]}
         expect(assigns(:current_object).attached_to).to eq(attach_to)
       end
-      context "and attached_to object is governed by a collection" do
+      it "doesn't save an empty string metadata value" do
+        post :create, attached_to_id: attach_to, content: {file: file},
+             descMetadata: {title: ["New Attachment"], description: [""]}
+        expect(assigns(:current_object).dc_description).to be_blank
+      end
+      it "grants roles to the creator" do
+        post :create, attached_to_id: attach_to, content: {file: file},
+             descMetadata: {title: ["New Attachment"]}
+        expect(assigns(:current_object).roles.granted?(role_type: "Editor", agent: user.agent, scope: "resource"))
+          .to be true
+      end
+      it "records a creation event" do
+        expect {
+          post :create, attached_to_id: attach_to, content: {file: file},
+               descMetadata: {title: ["New Attachment"]}
+        }.to change { Ddr::Events::CreationEvent.count }.by(1)
+      end
+      it "should redirect after creating the new object" do
+        post :create, attached_to_id: attach_to, content: {file: file},
+             descMetadata: {title: ["New Attachment"]}
+        expect(response).to be_redirect
+      end
+      describe "and attached_to object is governed by a collection" do
         let(:collection) { FactoryGirl.create(:collection) }
         before do
           attach_to.admin_policy = collection
           attach_to.save
         end
         it "should apply the admin policy to the attachment" do
-          create_attachment
+          post :create, attached_to_id: attach_to, content: {file: file},
+               descMetadata: {title: ["New Attachment"]}
           expect(assigns(:current_object).admin_policy).to eq(collection)
         end
       end
       it "should validate the checksum when provided" do
         expect(controller).to receive(:validate_checksum)
-        create_attachment(checksum: "ff01aab0eada29d35bb423c5c73a9f67a22bc1fd", checksum_type: "SHA-1")
+        post :create, attached_to_id: attach_to,
+             content: {file: file,
+                       checksum: "ff01aab0eada29d35bb423c5c73a9f67a22bc1fd",
+                       checksum_type: "SHA-1"},
+             descMetadata: {title: ["New Attachment"]}
       end
     end
     describe "user cannot add attachments to object" do
-      before { controller.current_ability.cannot(:add_attachment, attach_to) }
       it "should be unauthorized" do
-        create_attachment
+        post :create, attached_to_id: attach_to, content: {file: file}
         expect(response.response_code).to eq(403)
       end
     end

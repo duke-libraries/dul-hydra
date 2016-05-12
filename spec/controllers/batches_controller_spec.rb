@@ -18,6 +18,18 @@ describe BatchesController, type: :controller, batch: true do
     end
   end
 
+  describe "#index" do
+    let(:user) { FactoryGirl.create(:user) }
+    let!(:batches) { [ Ddr::Batch::Batch.create(user: user, start: DateTime.now - 7),
+                       Ddr::Batch::Batch.create(user: user),
+                       Ddr::Batch::Batch.create(user: user, start: DateTime.now) ] }
+    before { sign_in user }
+    it "should display the batches in descending order by start time, with non-started batches first" do
+      get(:index)
+      expect(assigns(:batches)).to eq([ batches[1], batches[2], batches[0] ])
+    end
+  end
+
   describe "#destroy" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
     before { sign_in batch.user }
@@ -77,10 +89,10 @@ describe BatchesController, type: :controller, batch: true do
       expect(Resque).to receive(:enqueue).with(Ddr::Batch::BatchProcessorJob, batch.id, batch.user.id)
       get :procezz, :id => batch.id
     end
-    it "should redirect to the batches url" do
+    it "should redirect to the batch url" do
       allow(Resque).to receive(:enqueue).with(Ddr::Batch::BatchProcessorJob, batch.id, batch.user.id)
       get :procezz, :id => batch.id
-      expect(response).to redirect_to(batches_url)
+      expect(response).to redirect_to(batch_url)
     end
   end
 

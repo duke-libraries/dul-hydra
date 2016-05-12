@@ -1,20 +1,17 @@
-# -*- encoding : utf-8 -*-
-require 'blacklight/catalog'
-
 class CatalogController < ApplicationController
 
   include Blacklight::Catalog
+  include Ddr::Models::Catalog
 
   # Adds method from Blacklight::SolrHelper to helper context
   helper_method :get_solr_response_for_doc_id
   helper_method :get_solr_response_for_field_values
 
-  # These before_filters apply the hydra access controls
-  before_filter :enforce_show_permissions, :only => :show
-
   layout 'blacklight'
 
   configure_blacklight do |config|
+
+    config.search_builder_class = SearchBuilder
 
     config.default_solr_params = {
       :qt => 'search',
@@ -51,6 +48,12 @@ class CatalogController < ApplicationController
     # :show may be set to false if you don't want the facet to be drawn in the
     # facet bar
     config.add_facet_field Ddr::Index::Fields::ACTIVE_FEDORA_MODEL.to_s, :label => 'Type'
+    config.add_facet_field Ddr::Index::Fields::ADMIN_SET_FACET.to_s, label: 'Admin Set',
+                                helper_method: 'admin_set_title'
+    config.add_facet_field 'workflow_state_ssi', label: 'Publication Status', query: {
+        published: { label: 'Published', fq: "#{Ddr::Index::Fields::WORKFLOW_STATE}:published" },
+        not_published: { label: 'Not Published', fq: "-#{Ddr::Index::Fields::WORKFLOW_STATE}:published" }
+    }
 
     config.add_facet_field Ddr::Index::Fields::IS_LOCKED.to_s, label: 'Lock Status', query: {
         locked: { label: 'Locked', fq: "#{Ddr::Index::Fields::IS_LOCKED}:true" },
@@ -69,6 +72,7 @@ class CatalogController < ApplicationController
     #   The ordering of the field names is the order of the display
     config.add_index_field Ddr::Index::Fields::ACTIVE_FEDORA_MODEL.to_s, :label => 'Type'
     config.add_index_field Ddr::Index::Fields::PERMANENT_ID.to_s, :label => 'Permanent ID'
+    config.add_index_field Ddr::Index::Fields::PERMANENT_URL.to_s, :label => 'Permanent URL', :helper_method => 'render_permanent_url'
     config.add_index_field 'id', :label => 'Fedora PID'
     config.add_index_field Ddr::Index::Fields::IDENTIFIER_ALL.to_s, :label => 'Identifier'
 
@@ -97,7 +101,7 @@ class CatalogController < ApplicationController
     # since we aren't specifying it otherwise.
     config.add_search_field('all_fields', :label => 'All Fields') do |field|
       field.solr_local_parameters = {
-        :qf => "id #{Ddr::Index::Fields::ACTIVE_FEDORA_MODEL} title_tesim creator_tesim subject_tesim description_tesim identifier_tesim #{Ddr::Index::Fields::PERMANENT_ID}"
+        :qf => "id #{Ddr::Index::Fields::ACTIVE_FEDORA_MODEL} dc_title_tesim dc_creator_tesim dc_subject_tesim dc_description_tesim dc_identifier_tesim #{Ddr::Index::Fields::PERMANENT_ID}"
       }
     end
 
@@ -107,7 +111,7 @@ class CatalogController < ApplicationController
 
     config.add_search_field('title') do |field|
       # solr_parameters hash are sent to Solr as ordinary url query params.
-      field.solr_parameters = { :'spellcheck.dictionary' => 'title' }
+      # field.solr_parameters = { :'spellcheck.dictionary' => 'title' }
 
       # :solr_local_parameters will be sent using Solr LocalParams
       # syntax, as eg {! qf=$title_qf }. This is neccesary to use

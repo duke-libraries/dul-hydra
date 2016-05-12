@@ -1,7 +1,6 @@
 require 'dul_hydra/version'
 
 namespace :dul_hydra do
-
   desc "Print the version string of the app"
   task :version do
     puts DulHydra::VERSION
@@ -49,26 +48,16 @@ namespace :dul_hydra do
   end
 
   namespace :batch do
-    desc "Creates ingest batch from Simple Ingest Format directory"
+    desc "Creates ingest batch from Simple Ingest Format directory: *FOLDER, *BATCH_USER, ADMIN_SET, COLLECTION_ID, CONFIG_FILE"
     task :simple_ingest => :environment do
       raise "Must specify folder path. Ex.: FOLDER=/path/to/simple/ingest/folder" unless ENV['FOLDER']
       raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
       processor_args = { filepath: ENV['FOLDER'] }
-      processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
       processor_args[:batch_user] = ENV['BATCH_USER']
-      processor = DulHydra::Batch::Scripts::ProcessSimpleIngest.new(processor_args)
-      processor.execute
-    end
-    desc "Creates update batch from folder of METS files"
-    task :mets_folder => :environment do
-      raise "Must specify folder path. Ex.: FOLDER=/path/to/METS/folder" unless ENV['FOLDER']
-      raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
-      raise "Must specify collection PID.  Ex: COLLECTION_PID=duke:72" unless ENV['COLLECTION_PID']
-      processor_args = { folder: ENV['FOLDER'] }
-      processor_args[:batch_user] = ENV['BATCH_USER']
-      processor_args[:collection_pid] = ENV['COLLECTION_PID']
-      processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
-      processor = DulHydra::Batch::Scripts::ProcessMETSFolder.new(processor_args)
+      processor_args[:admin_set] = ENV['ADMIN_SET']
+      processor_args[:collection_id] = ENV['COLLECTION_ID']
+      processor_args[:config_file] = ENV['CONFIG_FILE']
+      processor = DulHydra::Scripts::ProcessSimpleIngest.new(processor_args)
       processor.execute
     end
     desc "Converts CSV file to one or more XML files"
@@ -83,25 +72,6 @@ namespace :dul_hydra do
       }
       script = DulHydra::Scripts::CsvToXml.new(opts)
       script.execute
-    end
-    desc "[DEPRECATED] Runs the fixity check routine"
-    task :fixity_check => :environment do
-      warn "[DEPRECATION] The task `dul_hydra:batch:fixity_check` is deprecated and will be removed" \
-           " from DulHydra v5.0. Use `dul_hydra:fixity:check` instead."
-      opts = {
-        :dryrun => ENV['dryrun'] == 'true' ? true : false,
-        :limit => ENV.fetch('limit', 1000).to_i,
-        :period => ENV.fetch('period', '60DAYS'),
-        :report => ENV['report']
-      }
-      mailto = ENV['mailto']
-
-      puts "Running batch fixity check with options #{opts} ..."
-      bfc = DulHydra::Scripts::BatchFixityCheck.new(opts)
-      bfc.execute
-      if bfc.total > 0
-       BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
-      end
     end
     desc "Sets missing thumbnails in collection specified by COLLECTION_PID="
     task :thumbnails => :environment do
@@ -149,10 +119,12 @@ namespace :dul_hydra do
 
     desc "Index all objects in the repository (except fedora-system: objects)."
     task :update_all => :environment do
-      conn = ActiveFedora::RubydoraConnection.new(ActiveFedora.config.credentials).connection
-      conn.search(nil) do |object|
-        next if object.pid.start_with?('fedora-system:')
-        Resque.enqueue(Ddr::Jobs::UpdateIndex, object.pid)
+      # See ActiveFedora::Indexing#reindex_everything
+      descendants = ActiveFedora::Base.descendant_uris(ActiveFedora::Base.id_to_uri(''))
+      descendants.shift # Discard the root uri
+      descendants.each do |uri|
+        id = ActiveFedora::Base.uri_to_id(uri)
+        Resque.enqueue(Ddr::Jobs::UpdateIndex, id)
       end
       puts "All repository objects queued for indexing."
     end
@@ -260,4 +232,36 @@ namespace :dul_hydra do
     end
   end
 
+  namespace :python do
+    desc "Initialize Python virtual environment"
+    task :init => :environment do
+      if Dir.exist? DulHydra.python
+        puts "Python virtual environment already initialized at #{DulHydra.python}."
+      else
+        puts `virtualenv #{DulHydra.python}`
+      end
+    end
+
+    desc "Install a Python package."
+    task :install, [:package] => :environment do |t, args|
+      unless args[:package]
+        puts "Package argument is required."
+        exit(false)
+      end
+      # verify the package exists
+      begin
+        response = Net::HTTP.start('pypi.python.org', use_ssl: true) do |http|
+          http.request_head("/pypi/#{args[:package]}")
+        end
+        response.value # raises exception if not success
+      rescue Exception => e
+        puts e
+        exit(false)
+      end
+      unless Dir.exist? DulHydra.python
+        Rake::Task['dul_hydra:python:init'].invoke
+      end
+      puts `#{DulHydra.python}/bin/pip install #{args[:package]}`
+    end
+  end
 end

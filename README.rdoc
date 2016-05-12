@@ -1,7 +1,6 @@
-== Duke University Libraries Preservation Repository Hydra Head
+== Duke University Libraries Preservation Repository Administrative Hydra Head
 
-This project is designed to meet repository needs of Duke University Libraries.
+This project is designed to faciliate staff administrative access to a Hydra/Fedora repository.
 
 See the LICENSE file in the root directory of the project for copyright and license information.
-
 Licenses for code copied from other projects will be included in source files as required.

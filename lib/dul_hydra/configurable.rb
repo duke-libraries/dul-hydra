@@ -14,6 +14,7 @@ module DulHydra
           :creating_application,
           :valid,
           :well_formed,
+          :message,
           :file_human_size,
           :image_width,
           :image_height,
@@ -57,9 +58,6 @@ module DulHydra
       mattr_accessor :create_menu_models
       self.create_menu_models = []
 
-      # Group authorized to upload metadata files
-      mattr_accessor :metadata_file_creators_group
-
       # Context used in alert message selection
       mattr_accessor :alert_message_context
 
@@ -70,6 +68,14 @@ module DulHydra
       mattr_accessor :fixity_check_period_in_days do
         ENV["FIXITY_CHECK_PERIOD"] || 60
       end
+
+      # Base path for METS folders
+      mattr_accessor :mets_folder_base_path
+
+      mattr_accessor :python do
+        File.join(Rails.root, "python")
+      end
+
     end
 
     module ClassMethods

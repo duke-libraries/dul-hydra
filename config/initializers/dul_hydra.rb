@@ -11,12 +11,16 @@ DulHydra.configure do |config|
     write_headers: true,
     header_converters: :symbol
   }
-  config.metadata_file_creators_group = ENV['METADATA_FILE_CREATORS_GROUP']
   config.create_menu_models = [ "Collection" ]
+  config.mets_folder_base_path = ENV['METS_FOLDER_BASE_PATH']
 end
 
 Blacklight::Configuration.default_values[:http_method] = :post
 
 if ENV["DDR_MODELS_TEMPDIR"]
   Ddr::Models.tempdir = ENV["DDR_MODELS_TEMPDIR"]
+end
+
+if Rails.env.production?
+  Deprecation.default_deprecation_behavior = :silence
 end

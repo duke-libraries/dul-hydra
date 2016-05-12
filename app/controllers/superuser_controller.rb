@@ -10,14 +10,14 @@ class SuperuserController < ApplicationController
   def create
     sign_in(:superuser, current_user)
     session[:manage_menu] ||= []
-    session[:manage_menu] << Queue
-    flash[:alert] = "<strong>Caution!</strong> You are now acting as Superuser.".html_safe
+    session[:manage_menu] << "Queue"
+    flash[:alert] = "Caution! You are now acting as Superuser."
     redirect_to :back
   end
 
   def destroy
     sign_out(:superuser)
-    session[:manage_menu].delete(Queue) if session.key?(:manage_menu)
+    session[:manage_menu].delete("Queue") if session.key?(:manage_menu)
     flash[:success] = "You are no longer acting as Superuser."
     redirect_to root_path
   end

@@ -6,7 +6,7 @@ class BatchesController < ApplicationController
   self.tabs = [:tab_pending_batches, :tab_finished_batches]
 
   def index
-    @batches = @batches.includes(:batch_objects, :user)
+    @batches = @batches.includes(:batch_objects, :user).order('start is not null, start DESC')
     @pending = []
     @finished = []
     @batches.each do |batch|
@@ -36,7 +36,7 @@ class BatchesController < ApplicationController
   def procezz
     Resque.enqueue(Ddr::Batch::BatchProcessorJob, @batch.id, current_user.id)
     flash[:notice] = I18n.t('batch.web.batch_queued', :id => @batch.id)
-    redirect_to batches_url
+    redirect_to batch_url
   end
 
   def validate

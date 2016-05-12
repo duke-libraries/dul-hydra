@@ -4,6 +4,7 @@ class CollectionsController < ApplicationController
   include DulHydra::Controller::HasChildrenBehavior
   include DulHydra::Controller::HasAttachmentsBehavior
   include DulHydra::Controller::HasTargetsBehavior
+  include DulHydra::Controller::PublicationBehavior
 
   before_action :set_desc_metadata, only: :create
   self.tabs += [ :tab_reports, :tab_actions ]
@@ -24,6 +25,7 @@ class CollectionsController < ApplicationController
                 render nothing: true, status: 404
               end
         csv = rep.run
+        csv.delete_empty_columns!
         send_data csv.to_s, type: "text/csv", filename: rep.filename
       end
     end

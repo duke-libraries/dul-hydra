@@ -1,15 +1,15 @@
 source 'http://rubygems.org'
 
-gem 'rails', '~> 4.1.6'
-gem 'hydra-head', '~> 7.2.0'
+gem 'rails', '~> 4.1.13'
+gem 'blacklight', '5.16'
+gem 'hydra-head', '~> 9.5'
 gem 'ddr-alerts', '~> 1.0.0'
-gem 'ddr-batch', '1.0.2'
-gem 'ddr-models', '2.4.10'
-gem 'rubydora', '>= 1.8.1'
+gem 'virtus', '~> 1.0.5'
+gem 'ddr-batch', '2.0.0'
+gem 'ddr-models', '3.0.0'
 gem 'devise'
 gem 'deprecation'
-gem 'virtus', '~> 1.0.5'
-
+gem 'fedora-migrate', github: 'projecthydra-labs/fedora-migrate', ref: '757504b6443bc39fae02882b27e33e1aa9204fdb'
 gem 'log4r'
 
 # Background processing
@@ -24,7 +24,7 @@ gem 'therubyracer', '~> 0.11.3', require: 'v8', group: :production
 gem 'mime-types', '~> 2.6'
 
 # Export sets
-gem 'rubyzip', '< 1.0.0'
+gem 'rubyzip'
 gem 'paperclip', '~> 4.2.0'
 
 # Filesystem representation
@@ -32,7 +32,8 @@ gem 'rubytree'
 
 group :development, :test do
   gem 'sqlite3'
-  gem 'jettywrapper', '~> 1.8'
+  gem 'jettywrapper', '~> 2.0'
+  gem 'rubydora', '1.8.1'
 end
 
 group :test do
@@ -43,13 +44,14 @@ group :test do
   gem 'equivalent-xml'
   gem 'database_cleaner'
   gem 'factory_girl_rails', '~> 4.4'
+  gem 'rdf-isomorphic'
 end
 
 group :production do
   gem 'mysql2'
 end
 
-gem 'sass-rails', '~> 4.0.1'
+gem 'sass-rails', '~> 5.0.4'
 gem 'jquery-rails'
 gem 'uglifier', '~> 1.3.0'
 

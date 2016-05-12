@@ -11,7 +11,7 @@ describe "export_sets/index.html.erb", type: :feature, export_sets: true do
   end
   context "user has bookmarks" do
     let(:object) { FactoryGirl.create(:test_content) }
-    before { user.bookmarks.create(document_id: object.pid) }
+    before { user.bookmarks.create(document_id: object.id) }
     it "should have a New Export Set->Content link" do
       visit export_sets_path
       expect(page).to have_link("Content", href: "#{new_export_set_path}?export_type=content")
@@ -19,7 +19,7 @@ describe "export_sets/index.html.erb", type: :feature, export_sets: true do
   end
   context "user has an existing export set" do
     let(:object) { FactoryGirl.create(:test_content) }
-    let(:export_set) { ExportSet.new(user: user, pids: [object.pid], export_type: ExportSet::Types::CONTENT) }
+    let(:export_set) { ExportSet.new(user: user, pids: [object.id], export_type: ExportSet::Types::CONTENT) }
     before { export_set.create_archive }
     it "should list the export set" do
       visit export_sets_path

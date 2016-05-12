@@ -1,14 +1,10 @@
 require 'ddr-models'
+require 'dul_hydra/version'
 
 module DulHydra
   extend ActiveSupport::Autoload
 
   autoload :BatchError, 'dul_hydra/error'
-  autoload :Configurable
-  autoload :Error
-  autoload :Jobs
-  autoload :Queues
-  autoload :Reports
 
   autoload_under 'ability_definitions' do
     autoload :AliasAbilityDefinitions
@@ -16,6 +12,7 @@ module DulHydra
     autoload :BatchAbilityDefinitions
     autoload :MetadataFileAbilityDefinitions
     autoload :IngestFolderAbilityDefinitions
+    autoload :METSFolderAbilityDefinitions
   end
 
   include DulHydra::Configurable

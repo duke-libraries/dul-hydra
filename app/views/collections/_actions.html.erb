@@ -3,14 +3,32 @@
 <ul class="list-group">
   <li class="list-group-item">
     <%= link_to_if can?(:add_children, current_object) && can?(:create, IngestFolder),
-                   'Folder Ingest',
+                   'DPC Folder Ingest',
                    new_ingest_folder_path(ingest_folder: { collection_pid: current_object })
     %>
   </li>
   <li class="list-group-item">
-    <%= link_to_if can?(:create, MetadataFile),
-                   'Metadata File Upload',
-                   new_metadata_file_path(metadata_file: { collection_pid: current_object })
+    <%= link_to_if can?(:ingest_metadata, current_object),
+        'Metadata File Upload',
+        new_metadata_file_path(metadata_file: { collection_pid: current_object })
+	%>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:ingest_metadata, current_object),
+        'METS Folder Update',
+        new_mets_folder_path(mets_folder: { collection_id: current_object })
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:publish, current_object),
+                   'Publish Collection and Descendants',
+                   publish_collection_path(id: current_object)
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:unpublish, current_object),
+                   'Un-Publish Collection and Descendants',
+                   unpublish_collection_path(id: current_object)
     %>
   </li>
 </ul>

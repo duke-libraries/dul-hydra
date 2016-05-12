@@ -30,7 +30,7 @@ describe "batch_objects/show.html.erb", type: :feature, batch: true do
       expect(page).to have_text(batch_object.batch_object_attributes.first.datastream)
       expect(page).to have_text(batch_object.batch_object_attributes.first.name)
       expect(page).to have_text(batch_object.batch_object_attributes.first.value)
-      expect(page).to have_text(Ddr::Datastreams::CONTENT)
+      expect(page).to have_text(Ddr::Models::File::CONTENT)
     end
   end
 

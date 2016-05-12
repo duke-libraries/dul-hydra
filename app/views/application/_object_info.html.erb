@@ -5,13 +5,16 @@
   </li>
 
   <% if permanent_id = current_object.permanent_id %>
-    <%= object_info_item value: permanent_id, label: "permanent_id.assigned" %> 
+    <%= object_info_item value: permanent_id, label: "permanent_id.assigned" %>
   <% else %>
-    <%= object_info_item label: "permanent_id.not_assigned", status: "warning" %> 
+    <%= object_info_item label: "permanent_id.not_assigned", status: "warning" %>
   <% end %>
 
   <% if current_object.published? %>
     <%= object_info_item label: "published", status: "info" %>
+      <% if permanent_url = current_object.permanent_url %>
+          <%= object_info_item value: link_to(permanent_url, permanent_url), label: "permanent_url", status: "info" %>
+      <% end %>
   <% else %>
     <%= object_info_item label: "not_published", status: "warning" %>
   <% end %>

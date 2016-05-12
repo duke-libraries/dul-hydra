@@ -1,4 +1,3 @@
-# Common behavior for repository object controllers
 module DulHydra
   module Controller
     module RepositoryBehavior
@@ -15,15 +14,19 @@ module DulHydra
         attr_reader :current_object
 
         include Blacklight::Base
+        # REFACTOR Adding :apply_gated_discovery here duplicates Ddr::Models::Catalog
+        self.search_params_logic += [:apply_gated_discovery]
+
         include DulHydra::Controller::TabbedViewBehavior
 
-        self.tabs = [ :tab_descriptive_metadata, :tab_admin_metadata, :tab_roles ]
+        self.tabs = [ :tab_descriptive_metadata, :tab_admin_metadata, :tab_roles, :tab_versions ]
 
         helper_method :current_object
         helper_method :current_document
         helper_method :current_bookmarks
         helper_method :get_solr_response_for_field_values
         helper_method :admin_metadata_fields
+        helper_method :find_models_with_gated_discovery
 
         copy_blacklight_config_from CatalogController
       end
@@ -102,12 +105,36 @@ module DulHydra
         end
       end
 
+      def versions
+        if request.xhr?
+          # For async loading of tab content
+          @tab = tab_versions
+          render "versions", layout: false
+        else
+          redirect_to action: "show", tab: "versions"
+        end
+      end
+
       protected
+
+      def find_models_with_gated_discovery(model, opts={})
+        solr_opts = {
+          q: "#{Ddr::Index::Fields::ACTIVE_FEDORA_MODEL}:\"#{model.name}\"",
+          #fq: gated_discovery_filters.join(" OR "),
+          sort: "#{Ddr::Index::Fields::TITLE} ASC",
+          rows: 9999
+        }
+        solr_opts.merge! opts
+        #solr_response = query_solr(solr_opts)
+        #solr_results = solr_response.docs
+        solr_results = get_search_results(solr_opts)[1]
+        ActiveFedora::SolrService.lazy_reify_solr_results(solr_results, load_from_solr: true)
+      end
 
       # Controls what fields are displayed on the admin metadata tab and edit form
       def admin_metadata_fields
-        [:license, :local_id, :display_format, :ead_id, :aspace_id]
-      end      
+        [:license, :local_id, :display_format, :doi, :ead_id, :aspace_id, :fcrepo3_pid]
+      end
 
       def admin_metadata_params
         params.require(:adminMetadata).tap do |p|
@@ -122,7 +149,7 @@ module DulHydra
       end
 
       def log_current_object
-        logger.debug "CURRENT OBJECT: #{current_object.inspect}"
+        logger.debug "CURRENT OBJECT: #{current_object.model_and_id}"
       end
 
       def dul_hydra_layout
@@ -173,9 +200,10 @@ module DulHydra
                   TabAction.new("edit",
                                 url_for(action: "edit"),
                                 can?(:edit, current_object)),
-                  TabAction.new("download",
-                                download_path(current_object, "descMetadata"),
-                                show_ds_download_link?(current_object.descMetadata))
+                  # TODO fix or remove
+                  # TabAction.new("download",
+                  #               download_path(current_object, "descMetadata"),
+                  #               show_ds_download_link?(current_object.descMetadata))
                 ]
                )
       end
@@ -200,8 +228,14 @@ module DulHydra
                )
       end
 
+      def tab_versions
+        Tab.new("versions",
+                href: url_for(id: current_object, action: "versions")
+               )
+      end
+
       def submitted_roles
-        Ddr::Auth::Roles::DetachedRoleSet.from_json(roles_param)
+        Ddr::Auth::Roles::RoleSet.from_json(roles_param)
       end
 
       def roles_param
@@ -209,7 +243,7 @@ module DulHydra
       end
 
       def notify_event type, args={}
-        args[:pid] ||= current_object.pid
+        args[:pid] ||= current_object.id
         args[:user_key] ||= current_user.user_key
         args.merge! event_params
         Ddr::Notifications.notify_event(type, args)

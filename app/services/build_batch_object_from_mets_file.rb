@@ -16,7 +16,6 @@ class BuildBatchObjectFromMETSFile
 
   def create_update_object
     update_object = Ddr::Batch::UpdateBatchObject.create(batch: batch, pid: mets_file.repo_pid, identifier: mets_file.local_id)
-    add_local_id(update_object) if mets_file.local_id.present?
     if display_format = METSFileDisplayFormat.get(mets_file, display_formats)
       add_display_format(update_object, display_format)
     end
@@ -28,30 +27,15 @@ class BuildBatchObjectFromMETSFile
     update_object
   end
 
-  def add_local_id(update_object)
-    Ddr::Batch::BatchObjectAttribute.create(
-      batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
-      name: 'local_id',
-      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
-    Ddr::Batch::BatchObjectAttribute.create(
-      batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
-      name: 'local_id',
-      value: mets_file.local_id,
-      value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
-      operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD)
-  end
-
   def add_display_format(update_object, display_format)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'display_format',
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'display_format',
       value: display_format,
       value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -61,12 +45,12 @@ class BuildBatchObjectFromMETSFile
   def add_research_help_contact(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'research_help_contact',
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::ADMIN_METADATA,
+      datastream: Ddr::Models::Metadata::ADMIN_METADATA,
       name: 'research_help_contact',
       value: mets_file.header_agent_id,
       value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -79,7 +63,7 @@ class BuildBatchObjectFromMETSFile
     # all existing metadata
     Ddr::Batch::BatchObjectAttribute.create(
       batch_object: update_object,
-      datastream: Ddr::Datastreams::DESC_METADATA,
+      datastream: Ddr::Models::Metadata::DESC_METADATA,
       operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL
       )
     # Now we create the directives to add the attribute values from the METS file
@@ -87,7 +71,7 @@ class BuildBatchObjectFromMETSFile
       attr_name = entry.keys.first
       Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::DESC_METADATA,
+        datastream: Ddr::Models::Metadata::DESC_METADATA,
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
         name: attr_name,
         value: entry[attr_name],
@@ -99,12 +83,12 @@ class BuildBatchObjectFromMETSFile
   def add_ead_id(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        datastream: Ddr::Models::Metadata::ADMIN_METADATA,
         name: 'ead_id',
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        datastream: Ddr::Models::Metadata::ADMIN_METADATA,
         name: 'ead_id',
         value: mets_file.ead_id,
         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -114,12 +98,12 @@ class BuildBatchObjectFromMETSFile
   def add_aspace_id(update_object)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        datastream: Ddr::Models::Metadata::ADMIN_METADATA,
         name: 'aspace_id',
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: update_object,
-        datastream: Ddr::Datastreams::ADMIN_METADATA,
+        datastream: Ddr::Models::Metadata::ADMIN_METADATA,
         name: 'aspace_id',
         value: mets_file.aspace_id,
         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING,
@@ -129,7 +113,7 @@ class BuildBatchObjectFromMETSFile
   def add_struct_metadata(update_object)
     Ddr::Batch::BatchObjectDatastream.create(
       batch_object: update_object,
-      name: Ddr::Datastreams::STRUCT_METADATA,
+      name: Ddr::Models::File::STRUCT_METADATA,
       operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADDUPDATE,
       payload: translate_struct_map(mets_file),
       payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_BYTES)
@@ -147,7 +131,7 @@ class BuildBatchObjectFromMETSFile
   def update_fptr(fptr_node)
     local_id = fptr_node['fileID']
     pid = Ddr::Utils.pid_for_identifier(local_id, model: 'Component')
-    fptr_node['CONTENTIDS'] = "info:fedora/#{pid}"
+    fptr_node['CONTENTIDS'] = pid
     fptr_node.attributes['fileID'].remove
   end
 

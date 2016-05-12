@@ -61,5 +61,4 @@ class InspectSimpleIngest
     !filesystem.tree.each_leaf.any? { |leaf| leaf.node_depth != 2 }
   end
 
-
 end

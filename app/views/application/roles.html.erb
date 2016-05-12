@@ -1,7 +1,4 @@
 <% content_for :head do %>
-  <%= javascript_include_tag "jquery.validate.min.js" %>
-  <%= javascript_include_tag "select2.min.js" %>
-  <%= stylesheet_link_tag "select2.min.css" %>
   <style type="text/css">
     label.error { display: block; color: red; }
   </style>
@@ -51,7 +48,7 @@
 	    <% Ddr::Auth::Roles.role_types.each_with_index do |role_type, i| %>
 	    <div class="radio">
 	      <label>
-		<%= radio_button_tag "role_type", role_type, false, required: true %> 
+		<%= radio_button_tag "role_type", role_type, false, required: true %>
 		<%= role_type %>
 	      </label>
 	      <span class="text-muted">&mdash; <%= role_type.permissions.join(", ") %></span>
@@ -62,23 +59,23 @@
 	    <label for="scope">Scope</label>
 	    <div class="radio">
 	      <label>
-		<%= radio_button_tag "scope", "resource", true, required: true %> 
+		<%= radio_button_tag "scope", "resource", current_object.is_a?(Collection) ? false : true, required: true %>
 		resource
 	      </label>
 	      <span class="text-muted">&mdash; applies to this resource only</span>
 	    </div>
 	    <div class="radio">
 	      <label>
-		<%= radio_button_tag "scope", "policy", false, disabled: !current_object.is_a?(Collection), required: true %> 
+		<%= radio_button_tag "scope", "policy", current_object.is_a?(Collection) ? true : false, disabled: !current_object.is_a?(Collection), required: true %>
 		policy
 	      </label>
 	      <span class="text-muted">
 		<% if current_object.is_a?(Collection) %>
 		&mdash; inherited by resources governed by this collection
 		<% else %>
-		(not applicable)		
+		(not applicable)
 		<% end %>
-	      </span>	      
+	      </span>
 	    </div>
 	  </div>
 	</div>
@@ -110,9 +107,9 @@
       <td>
 	<span class="glyphicon glyphicon-lock"></span>
       </td>
-      <td class="role_type"><%= role.role_type.first %></td>
-      <td class="agent"><%= role.agent.first %></td>
-      <td class="scope"><%= role.scope.first %> (inherited)</td>
+      <td class="role_type"><%= role.role_type %></td>
+      <td class="agent"><%= role.agent %></td>
+      <td class="scope"><%= role.scope %> (inherited)</td>
     </tr>
     <% end %>
   </tbody>
@@ -122,18 +119,19 @@
 <%= form_tag url_for(action: params[:action]), method: "patch", id: "roles-form", role: "form" do %>
   <input type="hidden" name="roles" id="roles-form-field" />
   <%= cancel_button return_to: url_for(action: "show", tab: "roles") %>
-  <input type="reset" value="Reset" id="roles-form-reset" class="btn btn-warning" disabled/>  
+  <input type="reset" value="Reset" id="roles-form-reset" class="btn btn-warning" disabled/>
   <input type="submit" value="Save Changes" id="roles-form-submit" class="btn btn-primary" disabled/>
 <% end %>
 
 <script type="text/javascript">
-  var initial_roles = <%= current_object.roles.to_json.html_safe %>;
+  var initial_role_set = <%= current_object.roles.to_json.html_safe %>;
+  var initial_roles = initial_role_set.roles;
   var role_container = $("#roles-granted tbody.granted");
   var role_alerts = $("#role-alerts");
   var agent_field = $("#grant-role-form select[name='agent']");
 
   function grantedRoles() {
-    return role_container.children(); 
+    return role_container.children();
   }
 
   function cloneRoleTemplate() {
@@ -194,13 +192,14 @@
 
   function resetRoles() {
     initRoles();
-    setRoleAlert("warning", "Granted roles reset.");    
+    setRoleAlert("warning", "Granted roles reset.");
     return true;
   }
 
   function rolesToSubmit() {
     var roles = grantedRoles().map(getRoleHandler).get();
-    return JSON.stringify(roles);
+    var role_set = {"roles": roles};
+    return JSON.stringify(role_set);
   }
 
   function rolesFormSubmitHandler(e) {
@@ -282,8 +281,8 @@
 
   function initNavAwayHook() {
     $(window).on("beforeunload", changesAlertHandler);
-  } 
- 
+  }
+
   $(function() {
     initRoles();
     initRevokeButtons();

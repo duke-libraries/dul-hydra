@@ -10,7 +10,7 @@ class MetadataFile < ActiveRecord::Base
 
   def validate_data
     begin
-      valid_headers = [ :pid, :model, :local_id, :permanent_id ].concat(Ddr::Datastreams::DescriptiveMetadataDatastream.term_names)
+      valid_headers = [ :pid, :model, :local_id, :permanent_id ].concat(Ddr::Models::DescriptiveMetadata.unqualified_names)
       as_csv_table.headers.each do |header|
         if effective_options[:schema_map].present?
           canonical_name = canonical_attribute_name(header)
@@ -61,7 +61,7 @@ class MetadataFile < ActiveRecord::Base
 
   def canonical_attribute_name(attribute_name)
     unless effective_options[:schema_map].present?
-      return attribute_name if Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.include?(attribute_name.to_sym)
+      return attribute_name if Ddr::Models::DescriptiveMetadata.unqualified_names.include?(attribute_name.to_sym)
     else
       @downcased_schema_map ||= MetadataFile.downcase_schema_map_keys(effective_options[:schema_map])
       return @downcased_schema_map[attribute_name.downcase] if @downcased_schema_map.has_key?(attribute_name.downcase)
@@ -86,10 +86,10 @@ class MetadataFile < ActiveRecord::Base
     CSV.foreach(metadata.path, effective_options[:csv]) do |row|
       obj = Ddr::Batch::UpdateBatchObject.new(:batch => @batch)
       obj.model = row.field("model") if row.headers.include?("model")
-      obj.pid = row.field("pid") if row.headers.include?("pid")
+      obj.id = row.field("pid") if row.headers.include?("pid")
       att = Ddr::Batch::BatchObjectAttribute.new(
                 batch_object: obj,
-                datastream: Ddr::Datastreams::DESC_METADATA,
+                datastream: Ddr::Models::Metadata::DESC_METADATA,
                 operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL)
       obj.batch_object_attributes << att
       obj.save
@@ -102,7 +102,7 @@ class MetadataFile < ActiveRecord::Base
             parse_field(row.field(header, idx), header).each do |value|
               att = Ddr::Batch::BatchObjectAttribute.new(
                         batch_object: obj,
-                        datastream: Ddr::Datastreams::DESC_METADATA,
+                        datastream: Ddr::Models::Metadata::DESC_METADATA,
                         name: canonical_attribute_name(header),
                         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                         value: value,
@@ -113,14 +113,14 @@ class MetadataFile < ActiveRecord::Base
           end
         end
       end
-      unless obj.pid.present?
+      unless obj.id.present?
         if obj.identifier.present?
           if collection_pid.present?
             @collection ||= ActiveFedora::Base.find(collection_pid, :cast => true)
           else
             @collection = nil
           end
-          obj.pid = Ddr::Utils.pid_for_identifier(obj.identifier, {model: model(row), collection: @collection})
+          obj.id = Ddr::Utils.pid_for_identifier(obj.identifier, {model: model(row), collection: @collection})
           obj.save
         end
       end
