@@ -5,6 +5,7 @@ en:
   dul_hydra:
     admin_metadata:
       aspace_id: "ArchivesSpace ID"
+      doi: "DOI"
       ead_id: "EAD ID"
       fcrepo3_pid: "Fedora 3 PID"
       local_id: "Local ID"
@@ -20,6 +21,7 @@ en:
       file_size: "File Size (Bytes)"
       creation_time: "File Creation Time"
       modification_time: "File Modification Time"
+      message: Message
     object_info:
       header: "Object Info"
       create_date: Ingested

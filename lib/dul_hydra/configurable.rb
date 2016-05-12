@@ -14,6 +14,7 @@ module DulHydra
           :creating_application,
           :valid,
           :well_formed,
+          :message,
           :file_human_size,
           :image_width,
           :image_height,
@@ -56,9 +57,6 @@ module DulHydra
       # List of models that may appear on a "create" menu (if user has ability)
       mattr_accessor :create_menu_models
       self.create_menu_models = []
-
-      # Group authorized to upload metadata files
-      mattr_accessor :metadata_file_creators_group
 
       # Context used in alert message selection
       mattr_accessor :alert_message_context

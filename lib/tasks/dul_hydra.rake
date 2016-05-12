@@ -48,14 +48,15 @@ namespace :dul_hydra do
   end
 
   namespace :batch do
-    desc "Creates ingest batch from Simple Ingest Format directory: *FOLDER, *BATCH_USER, ADMIN_SET, CONFIG_FILE"
+    desc "Creates ingest batch from Simple Ingest Format directory: *FOLDER, *BATCH_USER, ADMIN_SET, COLLECTION_ID, CONFIG_FILE"
     task :simple_ingest => :environment do
       raise "Must specify folder path. Ex.: FOLDER=/path/to/simple/ingest/folder" unless ENV['FOLDER']
       raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
       processor_args = { filepath: ENV['FOLDER'] }
-      processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
       processor_args[:batch_user] = ENV['BATCH_USER']
-      processor_args[:admin_set] = ENV['ADMIN_SET'] if ENV['ADMIN_SET']
+      processor_args[:admin_set] = ENV['ADMIN_SET']
+      processor_args[:collection_id] = ENV['COLLECTION_ID']
+      processor_args[:config_file] = ENV['CONFIG_FILE']
       processor = DulHydra::Scripts::ProcessSimpleIngest.new(processor_args)
       processor.execute
     end
@@ -186,6 +187,21 @@ namespace :dul_hydra do
   task :characterize_files, [:limit] => :environment do |t, args|
     queued = DulHydra::FileCharacterization.call(args[:limit])
     puts "#{queued} FITS file characterization job(s) submitted for processing."
+  end
+
+  namespace :roles do
+    desc "Grant policy role on collections in admin set"
+    task :grant_policy_role_in_admin_set => :environment do
+      raise "Must specify admin set. Ex.: ADMIN_SET=foo" unless ENV['ADMIN_SET']
+      raise "Must specify role.  Ex.: ROLE=Downloader" unless ENV['ROLE']
+      raise "Must specify agent.  Ex: AGENT=tom@school.edu" unless ENV['AGENT']
+      colls = Collection.where(Ddr::Index::Fields::ADMIN_SET => ENV['ADMIN_SET'])
+      colls.each do |coll|
+        coll.roles.grant role_type: ENV['ROLE'], scope: "policy", agent: ENV['AGENT']
+        coll.save!
+      end
+      puts "#{ENV['AGENT']} granted the #{ENV['ROLE']} role in policy scope on #{colls.count} collection(s)."
+    end
   end
 
   namespace :thumbnail do
