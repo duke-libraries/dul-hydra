@@ -111,7 +111,7 @@ class CatalogController < ApplicationController
 
     config.add_search_field('title') do |field|
       # solr_parameters hash are sent to Solr as ordinary url query params.
-      field.solr_parameters = { :'spellcheck.dictionary' => 'title' }
+      # field.solr_parameters = { :'spellcheck.dictionary' => 'title' }
 
       # :solr_local_parameters will be sent using Solr LocalParams
       # syntax, as eg {! qf=$title_qf }. This is neccesary to use
