@@ -21,8 +21,8 @@ FedoraMigrate::RelsExtDatastreamMover.class_eval do
 
   def missing_object?(statement)
     return false unless DulHydra::Migration::MigratedObjectFinder.find(statement.object).nil?
-    report << "could not migrate relationship #{statement.predicate} because #{statement.object} doesn't exist in Fedora 4"
-    true
+    raise FedoraMigrate::Errors::MigrationError,
+          "could not migrate relationship #{statement.predicate} because #{statement.object} doesn't exist in Fedora 4"
   end
 
 end
