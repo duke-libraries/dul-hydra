@@ -101,7 +101,7 @@ class CatalogController < ApplicationController
     # since we aren't specifying it otherwise.
     config.add_search_field('all_fields', :label => 'All Fields') do |field|
       field.solr_local_parameters = {
-        :qf => "id #{Ddr::Index::Fields::ACTIVE_FEDORA_MODEL} title_tesim creator_tesim subject_tesim description_tesim identifier_tesim #{Ddr::Index::Fields::PERMANENT_ID}"
+        :qf => "id #{Ddr::Index::Fields::ACTIVE_FEDORA_MODEL} dc_title_tesim dc_creator_tesim dc_subject_tesim dc_description_tesim dc_identifier_tesim #{Ddr::Index::Fields::PERMANENT_ID}"
       }
     end
 
