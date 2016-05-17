@@ -56,7 +56,7 @@ namespace :dul_hydra do
       processor_args[:batch_user] = ENV['BATCH_USER']
       processor_args[:admin_set] = ENV['ADMIN_SET']
       processor_args[:collection_id] = ENV['COLLECTION_ID']
-      processor_args[:config_file] = ENV['CONFIG_FILE']
+      processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
       processor = DulHydra::Scripts::ProcessSimpleIngest.new(processor_args)
       processor.execute
     end
