@@ -36,7 +36,7 @@
 	  <div class="form-group">
 	    <label for="agent" style="display: block">User/Group Agent</label>
 	    <select name="agent" style="width: 100%" required>
-	      <option value="" disabled>Select a User or Group ...</option>
+	      <option></option>
 	      <optgroup label="GROUPS">
 		<%= options_for_select all_group_options %>
 	      </optgroup>
@@ -236,6 +236,7 @@
     setRoleAlert("success", "Role granted. You must click the <strong>Save Changes</strong> button to persist the changes.");
     setChanged();
     $(form).trigger("reset");
+    agent_field.val("").trigger("change");
   }
 
   function changesAlertHandler(e) {
