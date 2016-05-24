@@ -48,7 +48,7 @@ class BuildBatchFromFolderIngest
     add_relationships(batch_object, node.parent)
     add_admin_set(batch_object) if admin_set.present? && object_model == 'Collection'
     add_desc_metadata(batch_object, node)
-    add_content_datastream(batch_object, node) if object_model == 'Component'
+    add_content_file(batch_object, node) if object_model == 'Component'
   end
 
   def add_relationships(batch_object, parent_node)
@@ -88,7 +88,7 @@ class BuildBatchFromFolderIngest
   def add_admin_set(batch_object)
     Ddr::Batch::BatchObjectAttribute.create(
         batch_object: batch_object,
-        datastream: Ddr::Models::Metadata::ADMIN_METADATA,
+        metadata: Ddr::Models::Metadata::ADMIN_METADATA,
         name: 'admin_set',
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
         value: admin_set,
@@ -102,7 +102,7 @@ class BuildBatchFromFolderIngest
       Array(value).each do |v|
         Ddr::Batch::BatchObjectAttribute.create(
             batch_object: batch_object,
-            datastream: Ddr::Models::Metadata::DESC_METADATA,
+            metadata: Ddr::Models::Metadata::DESC_METADATA,
             name: key,
             operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
             value: v,
@@ -112,17 +112,17 @@ class BuildBatchFromFolderIngest
     end
   end
 
-  def add_content_datastream(batch_object, node)
+  def add_content_file(batch_object, node)
     full_filepath = Filesystem.path_to_node(node)
     rel_filepath = Filesystem.path_to_node(node, 'relative')
-    Ddr::Batch::BatchObjectDatastream.create(
+    Ddr::Batch::BatchObjectFile.create(
         batch_object: batch_object,
         name: Ddr::Models::File::CONTENT,
-        operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADD,
+        operation: Ddr::Batch::BatchObjectFile::OPERATION_ADD,
         payload: full_filepath,
-        payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
+        payload_type: Ddr::Batch::BatchObjectFile::PAYLOAD_TYPE_FILENAME,
         checksum: checksum_provider.checksum(rel_filepath),
-        checksum_type: Ddr::Datastreams::CHECKSUM_TYPE_SHA1
+        checksum_type: Ddr::Models::File::CHECKSUM_TYPE_SHA1
     )
   end
 

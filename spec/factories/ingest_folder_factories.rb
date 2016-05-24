@@ -3,7 +3,7 @@ FactoryGirl.define do
     model "TestChild"
     base_path "base/path/"
     sub_path "subpath"
-    checksum_type Ddr::Datastreams::CHECKSUM_TYPE_SHA1
+    checksum_type Ddr::Models::File::CHECKSUM_TYPE_SHA1
     collection_pid "test:456"
     add_parents true
     parent_id_length 1

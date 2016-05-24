@@ -44,7 +44,7 @@ describe IngestFoldersController, :type => :controller do
       expect(assigns[:ingest_folder].base_path).to eql("base/path/")
       expect(assigns[:ingest_folder].sub_path).to eql('/subpath/subsubpath/')
       expect(assigns[:ingest_folder].checksum_file).to eql(File.join(IngestFolder.default_checksum_file_location, "subpath-base-sha1.txt"))
-      expect(assigns[:ingest_folder].checksum_type).to eql(Ddr::Datastreams::CHECKSUM_TYPE_SHA1)
+      expect(assigns[:ingest_folder].checksum_type).to eql(Ddr::Models::File::CHECKSUM_TYPE_SHA1)
     end
 
   end

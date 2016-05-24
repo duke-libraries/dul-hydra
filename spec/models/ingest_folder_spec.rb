@@ -8,7 +8,7 @@ shared_examples "an invalid ingest folder" do
 end
 
 shared_examples "a proper set of batch objects" do
-  it "should have the appropriate attributes, datastreams, and relationships" do
+  it "should have the appropriate attributes, files, and relationships" do
     expect(user.batches.count).to eql(1)
     expect(user.batches.first.name).to eql(I18n.t('batch.ingest_folder.batch_name'))
     expect(user.batches.first.description).to eql(ingest_folder.abbreviated_path)
@@ -25,11 +25,11 @@ shared_examples "a proper set of batch objects" do
     expect(atts.fetch('file01').fetch('local_id').value).to eql('file01')
     expect(atts.fetch('T001').fetch('local_id').value).to eql('T001')
     expect(atts.fetch('T002').fetch('local_id').value).to eql('T002')
-    expect(dss.fetch('file01001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01001.tif"))
-    expect(dss.fetch('file01002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01002.tif"))
-    expect(dss.fetch('file01').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "pdf/file01.pdf"))
-    expect(dss.fetch('T001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T001.tiff"))
-    expect(dss.fetch('T002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T002.tiff"))
+    expect(fs.fetch('file01001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01001.tif"))
+    expect(fs.fetch('file01002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "file01002.tif"))
+    expect(fs.fetch('file01').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "pdf/file01.pdf"))
+    expect(fs.fetch('T001').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T001.tiff"))
+    expect(fs.fetch('T002').fetch('content').payload).to eql(File.join(ingest_folder.full_path, "targets/T002.tiff"))
     expect(rels.fetch('f').fetch('parent').object).to eql(ingest_folder.collection_pid)
     expect(rels.fetch('file01001').fetch('parent').object).to eql(objects.fetch('f').id.to_s)
     expect(rels.fetch('file01002').fetch('parent').object).to eql(objects.fetch('f').id.to_s)
@@ -55,9 +55,9 @@ shared_examples "batch objects without an admin policy" do
 end
 
 shared_examples "batch objects without individual permissions" do
-  it "should not have rightsMetadata datastream" do
+  it "should not have rightsMetadata file" do
     user.batches.first.batch_objects.each do |obj|
-      expect { dss.fetch(obj.identifier).fetch('rightsMetadata') }.to raise_error(KeyError)
+      expect { fs.fetch(obj.identifier).fetch('rightsMetadata') }.to raise_error(KeyError)
     end
   end
 end
@@ -182,7 +182,7 @@ describe IngestFolder, type: :model, ingest: true do
     context "procezz" do
       let(:objects) { {} }
       let(:atts) { {} }
-      let(:dss) { {} }
+      let(:fs) { {} }
       let(:rels) { {} }
       let(:parent_model) { Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
       before do
@@ -196,7 +196,7 @@ describe IngestFolder, type: :model, ingest: true do
           collection.admin_policy = collection
           collection.save
           ingest_folder.procezz
-          objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
+          objects, atts, fs, rels = populate_comparison_hashes(user.batches.first.batch_objects)
         end
         it_behaves_like "a proper set of batch objects"
         it_behaves_like "batch objects without individual permissions"
@@ -211,7 +211,7 @@ describe IngestFolder, type: :model, ingest: true do
         context "collection has individual permissions" do
           before do
             ingest_folder.procezz
-            objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
+            objects, atts, fs, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
           it_behaves_like "a proper set of batch objects"
           it_behaves_like "batch objects without individual permissions"
@@ -225,7 +225,7 @@ describe IngestFolder, type: :model, ingest: true do
         context "collection has no individual permissions" do
           before do
             ingest_folder.procezz
-            objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
+            objects, atts, fs, rels = populate_comparison_hashes(user.batches.first.batch_objects)
           end
           it_behaves_like "a proper set of batch objects"
           it_behaves_like "batch objects without individual permissions"

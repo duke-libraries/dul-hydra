@@ -30,13 +30,13 @@ def populate_comparison_hashes(batch_objects)
   batch_objects.each do |obj|
     objects[obj.identifier] = obj
     atts[obj.identifier] = {}
-    dss[obj.identifier] = {}
+    fs[obj.identifier] = {}
     rels[obj.identifier] = {}
     obj.batch_object_attributes.each { |att| atts[obj.identifier][att.name] = att }
-    obj.batch_object_datastreams.each { |ds| dss[obj.identifier][ds.name] = ds }
+    obj.batch_object_files.each { |f| fs[obj.identifier][f.name] = f }
     obj.batch_object_relationships.each { |rel| rels[obj.identifier][rel.name] = rel }
   end
-  [ objects, atts, dss, rels ]
+  [ objects, atts, fs, rels ]
 end
 
 def simple_ingest_configuration

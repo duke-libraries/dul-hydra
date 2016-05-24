@@ -39,10 +39,10 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should clear and re-assign the display format" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_attrs = attrs.where(datastream: Ddr::Models::Metadata::ADMIN_METADATA,
+      clear_attrs = attrs.where(metadata: Ddr::Models::Metadata::ADMIN_METADATA,
                                 operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
                                 name: 'display_format')
-      add_attrs = attrs.where(datastream: Ddr::Models::Metadata::ADMIN_METADATA,
+      add_attrs = attrs.where(metadata: Ddr::Models::Metadata::ADMIN_METADATA,
                               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                               name: 'display_format',
                               value: 'multi_image')
@@ -56,15 +56,15 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should clear and re-assign all descriptive metadata" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_all_attrs = attrs.where(datastream: Ddr::Models::Metadata::DESC_METADATA,
+      clear_all_attrs = attrs.where(metadata: Ddr::Models::Metadata::DESC_METADATA,
                                     operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL)
-      add_attrs = attrs.where(datastream: Ddr::Models::Metadata::DESC_METADATA,
+      add_attrs = attrs.where(metadata: Ddr::Models::Metadata::DESC_METADATA,
                               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD).order('id')
-      add_spatial_1_attrs = attrs.where(datastream: Ddr::Models::Metadata::DESC_METADATA,
+      add_spatial_1_attrs = attrs.where(metadata: Ddr::Models::Metadata::DESC_METADATA,
                                         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                                         name: 'spatial',
                                         value: 'Durham County (NC)')
-      add_spatial_2_attrs = attrs.where(datastream: Ddr::Models::Metadata::DESC_METADATA,
+      add_spatial_2_attrs = attrs.where(metadata: Ddr::Models::Metadata::DESC_METADATA,
                                         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                                         name: 'spatial',
                                         value: 'Durham (NC)')
@@ -80,10 +80,10 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should clear and re-assign the EAD ID" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_attrs = attrs.where(datastream: Ddr::Models::Metadata::ADMIN_METADATA,
+      clear_attrs = attrs.where(metadata: Ddr::Models::Metadata::ADMIN_METADATA,
                                 operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
                                 name: 'ead_id')
-      add_attrs = attrs.where(datastream: Ddr::Models::Metadata::ADMIN_METADATA,
+      add_attrs = attrs.where(metadata: Ddr::Models::Metadata::ADMIN_METADATA,
                               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                               name: 'ead_id',
                               value: 'abcdcollection')
@@ -97,10 +97,10 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     it "should clear and re-assign the ArchivesSpace ID" do
       batch_object = service.call
       attrs = batch_object.batch_object_attributes
-      clear_attrs = attrs.where(datastream: Ddr::Models::Metadata::ADMIN_METADATA,
+      clear_attrs = attrs.where(metadata: Ddr::Models::Metadata::ADMIN_METADATA,
                                 operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR,
                                 name: 'aspace_id')
-      add_attrs = attrs.where(datastream: Ddr::Models::Metadata::ADMIN_METADATA,
+      add_attrs = attrs.where(metadata: Ddr::Models::Metadata::ADMIN_METADATA,
                               operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                               name: 'aspace_id',
                               value: '123456abcdef654321')
@@ -111,13 +111,13 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
   end
 
   context "structural metadata" do
-    it "should populate the structural metadata datastream" do
+    it "should populate the structural metadata file" do
       batch_object = service.call
-      dss = batch_object.batch_object_datastreams
-      add_update_dss = dss.where(name: Ddr::Models::File::STRUCT_METADATA,
-                                 operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADDUPDATE)
-      expect(add_update_dss.size).to eq(1)
-      expect(add_update_dss.first.payload).to be_equivalent_to(sample_xml_struct_metadata)
+      fs = batch_object.batch_object_files
+      add_update_fs = fs.where(name: Ddr::Models::File::STRUCT_METADATA,
+                               operation: Ddr::Batch::BatchObjectFile::OPERATION_ADDUPDATE)
+      expect(add_update_fs.size).to eq(1)
+      expect(add_update_fs.first.payload).to be_equivalent_to(sample_xml_struct_metadata)
     end
   end
 
