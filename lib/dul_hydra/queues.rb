@@ -6,11 +6,11 @@ module DulHydra
 
     class << self
       def start
-        if running?
-          false
-        else
-          system("resque-pool -d -E #{Rails.env}")
-        end
+        stopped? && system("resque-pool -d -E #{Rails.env}")
+      end
+
+      def stopped?
+        !running?
       end
 
       def stop
@@ -37,11 +37,7 @@ module DulHydra
       end
 
       def interrupt(signal)
-        if running?
-          system("pkill -#{signal} -f resque-pool")
-        else
-          false
-        end
+        running? && system("pkill -#{signal} -f resque-pool")
       end
     end
 

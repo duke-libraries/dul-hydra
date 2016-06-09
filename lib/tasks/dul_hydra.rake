@@ -148,25 +148,31 @@ namespace :dul_hydra do
 
     desc "Start the queue pool manager and workers"
     task :start => :environment do
-      if DulHydra::Queues.start
+      if DulHydra::Queues.running?
+        puts "The pool manager is already running."
+      elsif DulHydra::Queues.start
         puts "Starting pool manager and workers."
       else
-        puts "Error attempting to start pool manager and workers (may already be running)."
+        puts "Error attempting to start pool manager and workers."
       end
     end
 
     desc "Stop the pool manager and workers"
     task :stop => :environment do
-      if DulHydra::Queues.stop
+      if DulHydra::Queues.stopped?
+        puts "The pool managed is stopped."
+      elsif DulHydra::Queues.stop
         puts "Shutting down workers and pool manager."
       else
-        puts "Error attempting to shut down workers and pool manager (may not be running)."
+        puts "Error attempting to shut down workers and pool manager."
       end
     end
 
     desc "Restart (stop/start) the pool manager and workers"
     task :restart => :environment do
-      if DulHydra::Queues.restart
+      if DulHydra::Queues.stopped?
+        puts "The pool managed is stopped."
+      elsif DulHydra::Queues.restart
         puts "Restarting pool manager and workers."
       else
         puts "Error attempting to restart pool manager and workers."
@@ -175,7 +181,9 @@ namespace :dul_hydra do
 
     desc "Reload the pool manager config and restart workers"
     task :reload => :environment do
-      if DulHydra::Queues.reload
+      if DulHydra::Queues.stopped?
+        puts "The pool managed is stopped."
+      elsif DulHydra::Queues.reload
         puts "Reloading pool manager config and restarting workers."
       else
         puts "Error attempting to reload pool manager config and restart workers."
