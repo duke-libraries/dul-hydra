@@ -1,5 +1,17 @@
 require 'fedora-migrate'
 
+# Wrap source.content in StringIO object to handle files greater than 2 GB in size.
+# Cf. https://github.com/projecthydra-labs/fedora-migrate/issues/59
+FedoraMigrate::ContentMover.class_eval do
+  def move_content
+    target.content = StringIO.new(source.content)
+    target.original_name = source.label.try(:gsub, /"/, '\"')
+    target.mime_type = source.mimeType
+    save
+    report.error = "Failed checksum" unless valid?
+  end
+end
+
 FedoraMigrate::TargetConstructor.class_eval do
   def build
     target.new
