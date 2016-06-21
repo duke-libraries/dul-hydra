@@ -1,10 +1,9 @@
 require 'ddr-models'
 require 'dul_hydra/version'
+require 'dul_hydra/error'
 
 module DulHydra
   extend ActiveSupport::Autoload
-
-  autoload :BatchError, 'dul_hydra/error'
 
   autoload_under 'ability_definitions' do
     autoload :AliasAbilityDefinitions
@@ -16,5 +15,4 @@ module DulHydra
   end
 
   include DulHydra::Configurable
-
 end

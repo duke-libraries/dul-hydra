@@ -94,7 +94,7 @@ DulHydra::Application.routes.draw do
   resources :thumbnail, only: :show
 
   # Downloads
-  get 'download/:id(/:datastream_id)' => 'downloads#show', as: 'download'
+  get 'download/:id(/:file)' => 'downloads#show', as: 'download'
 
   resources :export_sets do
     member do
