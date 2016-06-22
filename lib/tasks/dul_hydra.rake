@@ -60,6 +60,22 @@ namespace :dul_hydra do
       processor = DulHydra::Scripts::ProcessSimpleIngest.new(processor_args)
       processor.execute
     end
+    desc "Creates update batch from folder of METS files"
+    task :mets_folder => :environment do
+      raise "Must specify folder base path. Ex.: BASE_PATH=/path/to/METS" unless ENV['BASE_PATH']
+      raise "Must specify folder sub-path. Ex.: SUB_PATH=mets_folder" unless ENV['SUB_PATH']
+      raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['USER']
+      raise "Must specify collection ID.  Ex: COLLECTION_ID=ab/cd/ef/gh/abcdefghijkl" unless ENV['COLLECTION_ID']
+      user = User.find_by_username(ENV['BATCH_USER'])
+      raise "Unable to find user #{ENV['BATCH_USER']}" unless user.present?
+      processor_args = { base_path: ENV['BASE_PATH'] }
+      processor_args[:sub_path] = ENV['SUB_PATH']
+      processor_args[:user] = user
+      processor_args[:collection_id] = ENV['COLLECTION_ID']
+      processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
+      processor = DulHydra::Scripts::ProcessMETSFolder.new(processor_args)
+      processor.execute
+    end
     desc "Converts CSV file to one or more XML files"
     task :csv_to_xml => :environment do
       raise "Must specify CSV file.  Ex.: csv=/srv/fedora-working/ingest/COL/cdm/export.csv" unless ENV['csv']
