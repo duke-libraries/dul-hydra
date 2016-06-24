@@ -30,7 +30,7 @@ module DulHydra::Migration
     end
 
     def self.make_report(report, struct_metadata)
-      report.struct_metadata = struct_metadata.to_json
+      report.struct_metadata = truncate(struct_metadata.to_json, length: 65530)
       report.struct_metadata_status = MigrationReport::MIGRATION_SUCCESS
       report.save!
     end
