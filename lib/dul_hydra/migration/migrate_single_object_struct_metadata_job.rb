@@ -1,6 +1,9 @@
+require 'action_view'
+
 module DulHydra::Migration
   class MigrateSingleObjectStructMetadataJob
     extend Ddr::Jobs::Job
+    extend ActionView::Helpers::TextHelper
 
     @queue = :migration
 
@@ -30,7 +33,7 @@ module DulHydra::Migration
     end
 
     def self.make_report(report, struct_metadata)
-      report.struct_metadata = truncate(struct_metadata.to_json, length: 65530)
+      report.struct_metadata = truncate(struct_metadata.to_json, length: 62000)
       report.struct_metadata_status = MigrationReport::MIGRATION_SUCCESS
       report.save!
     end
