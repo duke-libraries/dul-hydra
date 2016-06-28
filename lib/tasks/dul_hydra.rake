@@ -107,8 +107,8 @@ namespace :dul_hydra do
       if ENV["limit"]
         args[:limit] = ENV["limit"].to_i
       end
-      puts "Running fixity check with args #{args.inspect}."
-      DulHydra::Fixity.check(**args)
+      puts "Calling BatchFixityCheck service with args #{args.inspect}."
+      BatchFixityCheck.call(**args)
     end
   end
 

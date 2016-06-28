@@ -5,6 +5,18 @@ require 'dul_hydra/error'
 module DulHydra
   extend ActiveSupport::Autoload
 
+  def self.const_missing(name)
+    if name == :Fixity
+      Deprecation.warn(self, "`DulHydra::Fixity` is deprecated and will be removed in dul-hydra 6.0." \
+                             " Use `BatchFixityCheck` instead. (called from #{caller.first})")
+      ::BatchFixityCheck
+    else
+      super
+    end
+  end
+
+  autoload :Configurable
+
   autoload_under 'ability_definitions' do
     autoload :AliasAbilityDefinitions
     autoload :ExportSetAbilityDefinitions
@@ -14,5 +26,5 @@ module DulHydra
     autoload :METSFolderAbilityDefinitions
   end
 
-  include DulHydra::Configurable
+  include Configurable
 end
