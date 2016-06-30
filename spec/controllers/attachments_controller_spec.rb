@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe AttachmentsController, type: :controller, attachments: true do
+RSpec.describe AttachmentsController, type: :controller, attachments: true do
 
   let(:attach_to) { FactoryGirl.create(:collection) }
   let(:file) { fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') }
