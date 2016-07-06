@@ -36,13 +36,13 @@ module DulHydra
     private
 
     def query
-      Ddr::Index::QueryBuilder.build do |builder|
-        builder
-          .filter(Ddr::Index::Filters::HAS_CONTENT)
-          .absent(Ddr::Index::Fields::TECHMD_FITS_VERSION)
-          .fields("id")
-          .desc(Ddr::Index::Fields::OBJECT_CREATE_DATE)
-          .limit(limit)
+      max = limit
+      Ddr::Index::Query.new do
+        has_content
+        absent :techmd_fits_version
+        fields :id
+        desc :object_create_date
+        limit max
       end
     end
 
