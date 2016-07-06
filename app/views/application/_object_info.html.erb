@@ -19,7 +19,7 @@
     <%= object_info_item label: "not_published", status: "warning" %>
   <% end %>
 
-  <%= object_info_item value: format_date(current_object.create_date), label: "create_date" %>
+  <%= object_info_item value: format_date(current_object.ingest_date), label: "create_date" %>
 
   <%= object_info_item value: format_date(current_object.modified_date), label: "modified_date" %>
 
