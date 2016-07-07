@@ -1,11 +1,14 @@
 language: ruby
 before_install:
-  - sudo apt-get update -qq
-  - gem install bundler
+- sudo apt-get update -qq
+- gem install bundler
 rvm:
-  - 2.1.5
+- 2.1.5
 before_script:
-  - "cp config/log4r.yml.sample config/log4r.yml"
-script: "bundle exec rake dul_hydra:ci:build"
+- cp config/log4r.yml.sample config/log4r.yml
+script: bundle exec rake dul_hydra:ci:build
 jdk:
-  - oraclejdk8
+- oraclejdk8
+notifications:
+  slack:
+    secure: IR/50HR5j8M9AzqlEqZlx2wgYj8sLBYarPYDpmwY+WwthMsZsk9l2gXkp3V0+cQh6LbbRafPKzkaZUOwYmAaQp4iip450bIBQM5r7W3thtd1QMLmWbOSKRWcI5EaSHxyTQK82b8zfCpuk9fZRBNyIKTjFpDbSKmxdBxfmP2tKjE=
