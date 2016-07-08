@@ -27,7 +27,7 @@ describe "batch_objects/show.html.erb", type: :feature, batch: true do
       expect(page).to have_link("#{batch.id} (#{batch.name} - #{batch.description})", :href => batch_path(batch))
       expect(page).to have_text(@admin_policy_pid)
       expect(page).to have_text(@parent_pid)
-      expect(page).to have_text(batch_object.batch_object_attributes.first.datastream)
+      expect(page).to have_text(batch_object.batch_object_attributes.first.metadata)
       expect(page).to have_text(batch_object.batch_object_attributes.first.name)
       expect(page).to have_text(batch_object.batch_object_attributes.first.value)
       expect(page).to have_text(Ddr::Models::File::CONTENT)

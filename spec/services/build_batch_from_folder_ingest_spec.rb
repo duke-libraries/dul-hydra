@@ -54,13 +54,13 @@ RSpec.shared_examples "a successfully built folder ingest batch" do
           name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT)
       expect(parent_relationships.size).to eq(1)
       expect(item_pids.map(&:to_s)).to include(parent_relationships.first.object)
-      # Content datastream
-      content_datastreams = obj.batch_object_datastreams.where(
+      # Content file
+      content_files = obj.batch_object_files.where(
           name: Ddr::Models::File::CONTENT)
-      expect(content_datastreams.size).to eq(1)
-      expect(content_datastreams.first.checksum_type).to eq(Ddr::Datastreams::CHECKSUM_TYPE_SHA1)
-      component_filepaths << content_datastreams.first.payload
-      component_checksums << content_datastreams.first.checksum
+      expect(content_files.size).to eq(1)
+      expect(content_files.first.checksum_type).to eq(Ddr::Models::File::CHECKSUM_TYPE_SHA1)
+      component_filepaths << content_files.first.payload
+      component_checksums << content_files.first.checksum
     end
     expect(component_filepaths).to include('/test/directory/[movie.mp4]/movie.mp4')
     expect(component_filepaths).to include('/test/directory/[file01001.tif]/file01001.tif')

@@ -1,4 +1,16 @@
 GIT
+  remote: git://github.com/duke-libraries/ddr-batch.git
+  revision: c0298770f4714388525083f20942a5d8e64ca298
+  ref: c0298770f4714388525083f20942a5d8e64ca298
+  specs:
+    ddr-batch (2.0.1.post)
+      ddr-models
+      devise (~> 3.4)
+      log4r
+      paperclip (~> 4.2.0)
+      rails (~> 4.1.13)
+
+GIT
   remote: git://github.com/duke-libraries/ddr-models.git
   revision: 66d6510ca8e725c64c103a8196748d1506d77f9b
   ref: 66d6510ca8e725c64c103a8196748d1506d77f9b
@@ -125,12 +137,6 @@ GEM
     ddr-alerts (1.0.0)
       rails (~> 4.1.6)
     ddr-antivirus (2.1.1)
-    ddr-batch (2.0.1)
-      ddr-models
-      devise (~> 3.4)
-      log4r
-      paperclip (~> 4.2.0)
-      rails (~> 4.1.13)
     deprecation (0.2.2)
       activesupport
     descendants_tracker (0.0.4)
@@ -488,7 +494,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (~> 1.0.0)
-  ddr-batch (~> 2.0.0)
+  ddr-batch!
   ddr-models!
   deprecation
   devise

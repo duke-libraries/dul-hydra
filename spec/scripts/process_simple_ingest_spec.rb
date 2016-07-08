@@ -56,9 +56,9 @@ module DulHydra::Scripts
           expect(batch_objects[0].batch_object_attributes.where(name: 'title').first.value).to eq('Item A Title')
           # Component batch object
           expect(batch_objects[1].batch_object_attributes.where(name: 'title').first.value).to eq('Component 1 Title')
-          content_ds = batch_objects[1].batch_object_datastreams.where(name: Ddr::Models::File::CONTENT).first
-          expect(content_ds.payload).to eq(File.join(folder_path, 'data', 'itemA', 'image1.tiff'))
-          expect(content_ds.checksum).to eq('548bd2678027f3acb4d4c5ccedf6f92ca07f74bd')
+          content_file = batch_objects[1].batch_object_files.where(name: Ddr::Models::File::CONTENT).first
+          expect(content_file.payload).to eq(File.join(folder_path, 'data', 'itemA', 'image1.tiff'))
+          expect(content_file.checksum).to eq('548bd2678027f3acb4d4c5ccedf6f92ca07f74bd')
         end
       end
       describe "collection id not provided" do
@@ -81,9 +81,9 @@ module DulHydra::Scripts
           expect(batch_objects[1].batch_object_attributes.where(name: 'title').first.value).to eq('Item A Title')
           # Component batch object
           expect(batch_objects[2].batch_object_attributes.where(name: 'title').first.value).to eq('Component 1 Title')
-          content_ds = batch_objects[2].batch_object_datastreams.where(name: Ddr::Models::File::CONTENT).first
-          expect(content_ds.payload).to eq(File.join(folder_path, 'data', 'itemA', 'image1.tiff'))
-          expect(content_ds.checksum).to eq('548bd2678027f3acb4d4c5ccedf6f92ca07f74bd')
+          content_file = batch_objects[2].batch_object_files.where(name: Ddr::Models::File::CONTENT).first
+          expect(content_file.payload).to eq(File.join(folder_path, 'data', 'itemA', 'image1.tiff'))
+          expect(content_file.checksum).to eq('548bd2678027f3acb4d4c5ccedf6f92ca07f74bd')
         end
       end
     end

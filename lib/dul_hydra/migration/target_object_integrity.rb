@@ -50,11 +50,11 @@ module DulHydra::Migration
     end
 
     def source_checksum(datastream)
-      return datastream.checksum if datastream.checksumType == Ddr::Datastreams::CHECKSUM_TYPE_SHA1
+      return datastream.checksum if datastream.checksumType == Ddr::Models::File::CHECKSUM_TYPE_SHA1
       ActiveSupport::Notifications.instrument('migration_timer',
                                               rept_id: MigrationReport.find_or_create_by(fcrepo3_pid: source.pid).id,
                                               event: MigrationTimer::SHA_1_GENERATION_EVENT) do
-        Ddr::Utils.digest(datastream.content, Ddr::Datastreams::CHECKSUM_TYPE_SHA1)
+        Ddr::Utils.digest(datastream.content, Ddr::Models::File::CHECKSUM_TYPE_SHA1)
       end
     end
 

@@ -194,7 +194,7 @@ class IngestFolder < ActiveRecord::Base
             )
     Ddr::Batch::BatchObjectAttribute.create(
             batch_object: obj,
-            datastream: Ddr::Models::Metadata::ADMIN_METADATA,
+            metadata: Ddr::Models::Metadata::ADMIN_METADATA,
             name: 'local_id',
             operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
             value: parent_loc_id,
@@ -248,18 +248,18 @@ class IngestFolder < ActiveRecord::Base
             )
     Ddr::Batch::BatchObjectAttribute.create(
             batch_object: obj,
-            datastream: Ddr::Models::Metadata::ADMIN_METADATA,
+            metadata: Ddr::Models::Metadata::ADMIN_METADATA,
             name: 'local_id',
             operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
             value: file_identifier,
             value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
             )
-    Ddr::Batch::BatchObjectDatastream.create(
+    Ddr::Batch::BatchObjectFile.create(
             batch_object: obj,
             name: Ddr::Models::File::CONTENT,
-            operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADD,
+            operation: Ddr::Batch::BatchObjectFile::OPERATION_ADD,
             payload: File.join(dirpath, file_entry),
-            payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
+            payload_type: Ddr::Batch::BatchObjectFile::PAYLOAD_TYPE_FILENAME,
             checksum: checksum_file.present? ? file_checksum(File.join(dirpath, file_entry)) : nil,
             checksum_type: checksum_file.present? ? checksum_type : nil
             )

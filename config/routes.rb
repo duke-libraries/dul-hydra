@@ -113,7 +113,7 @@ DulHydra::Application.routes.draw do
   end
 
   resources :batch_objects, :only => :show do
-    resources :batch_object_datastreams, :only => :index
+    resources :batch_object_files, :only => :index
     resources :batch_object_relationships, :only => :index
   end
 

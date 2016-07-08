@@ -29,7 +29,7 @@
 		</div>
 		<div class="form-group">
 			<%= f.label :checksum_type %>
-			<%= f.select :checksum_type, options_for_select(Ddr::Datastreams::CHECKSUM_TYPES, @ingest_folder.checksum_type || IngestFolder.default_checksum_type), class: 'form-control' %>
+			<%= f.select :checksum_type, options_for_select([ Ddr::Models::File::CHECKSUM_TYPE_SHA1 ], @ingest_folder.checksum_type || IngestFolder.default_checksum_type), class: 'form-control' %>
 		</div>
 		<div class="form-group">
 			<%= f.label :parent_id_length %>

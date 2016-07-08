@@ -16,7 +16,7 @@ module DulHydra::Scripts
           thumbnails_script.execute
           item.reload
         end
-        it "should populate the thumbnail datastream from the child thumbnail" do
+        it "should populate the thumbnail file from the child thumbnail" do
           expect(item.attached_files['thumbnail'].checksum.value).to eq(component.attached_files['thumbnail'].checksum.value)
         end
       end
@@ -31,7 +31,7 @@ module DulHydra::Scripts
           thumbnails_script.execute
           item.reload
         end
-        it "should not populate the thumbnail datastream" do
+        it "should not populate the thumbnail file" do
           expect(item.attached_files["thumbnail"]).to_not have_content
         end
       end

@@ -52,7 +52,7 @@
 	<table class='table-bordered'>
 		<thead>
 			<th><%= t('batch.web.column_names.id') %></th>
-			<th><%= t('batch.web.column_names.datastream') %></th>
+			<th><%= t('batch.web.column_names.metadata') %></th>
 			<th><%= t('batch.web.column_names.name') %></th>
 			<th><%= t('batch.web.column_names.operation') %></th>
 			<th><%= t('batch.web.column_names.value') %></th>
@@ -61,7 +61,7 @@
 		<% @batch_object.batch_object_attributes.each do |att| %>
 			<tr>
 				<td><%= att.id %></td>
-				<td><%= att.datastream %></td>
+				<td><%= att.metadata %></td>
 				<td><%= att.name %></td>
 				<td><%= att.operation %></td>
 				<td><%= att.value %></td>
@@ -73,40 +73,40 @@
 	<div>No attributes in this batch object</div>
 <% end %>
 
-<h4>Datastreams</h4>
-<% if @batch_object.batch_object_datastreams.present? %>
-	<% @batch_object.batch_object_datastreams.each do |ds| %>
+<h4>Files</h4>
+<% if @batch_object.batch_object_files.present? %>
+	<% @batch_object.batch_object_files.each do |f| %>
 		<table class='table-bordered'>
 			<tr>
 				<td><%= t('batch.web.column_names.id') %></td>
-				<td><%= ds.id %></td>
+				<td><%= f.id %></td>
 			</tr>
 			<tr>
 				<td><%= t('batch.web.column_names.name') %></td>
-				<td><%= ds.name %></td>
+				<td><%= f.name %></td>
 			</tr>
 			<tr>
 				<td><%= t('batch.web.column_names.operation') %></td>
-				<td><%= ds.operation %></td>
+				<td><%= f.operation %></td>
 			</tr>
 			<tr>
 				<td><%= t('batch.web.column_names.payload') %></td>
-				<td><%= ds.payload %></td>
+				<td><%= f.payload %></td>
 			</tr>
 			<tr>
 				<td><%= t('batch.web.column_names.payload_type') %></td>
-				<td><%= ds.payload_type %></td>
+				<td><%= f.payload_type %></td>
 			</tr>
 			<tr>
 				<td><%= t('batch.web.column_names.checksum') %></td>
-				<td><%= ds.checksum.present? ? ds.checksum : '--' %></td>
+				<td><%= f.checksum.present? ? f.checksum : '--' %></td>
 			</tr>
 			<tr>
 				<td><%= t('batch.web.column_names.checksum_type') %></td>
-				<td><%= ds.checksum_type.present? ? ds.checksum_type : '--' %></td>
+				<td><%= f.checksum_type.present? ? f.checksum_type : '--' %></td>
 			</tr>
 		</table>
 	<% end %>
 <% else %>
-	<div>No datastreams in this batch object</div>
+	<div>No files in this batch object</div>
 <% end %>
