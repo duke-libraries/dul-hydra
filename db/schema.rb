@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160518153824) do
+ActiveRecord::Schema.define(version: 20160708165311) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
@@ -148,6 +148,17 @@ ActiveRecord::Schema.define(version: 20160518153824) do
     t.integer  "parent_id_length"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "job_performances", force: true do |t|
+    t.string   "job"
+    t.string   "queue"
+    t.string   "args"
+    t.datetime "started"
+    t.datetime "finished"
+    t.integer  "duration"
+    t.string   "exception"
+    t.boolean  "success"
   end
 
   create_table "metadata_files", force: true do |t|

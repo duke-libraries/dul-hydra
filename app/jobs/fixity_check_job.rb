@@ -1,5 +1,6 @@
 class FixityCheckJob
   extend Ddr::Jobs::Job
+  extend AbstractJob
 
   @queue = :fixity
 
