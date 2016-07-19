@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160126203842) do
+ActiveRecord::Schema.define(version: 20160719131601) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
@@ -175,12 +175,12 @@ ActiveRecord::Schema.define(version: 20160126203842) do
     t.string   "fcrepo3_pid"
     t.string   "fcrepo4_id"
     t.string   "model"
-    t.string   "object_status",                        default: "NEEDED"
-    t.string   "relationship_status",                  default: "NEEDED"
+    t.string   "object_status",                           default: "NEEDED"
+    t.string   "relationship_status",                     default: "NEEDED"
     t.string   "struct_metadata_status"
     t.text     "object",                 limit: 65535
     t.text     "relationships",          limit: 65535
-    t.text     "struct_metadata",        limit: 65535
+    t.text     "struct_metadata",        limit: 16777215
     t.datetime "created_at"
     t.datetime "updated_at"
   end
