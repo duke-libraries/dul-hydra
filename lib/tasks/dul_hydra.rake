@@ -280,4 +280,17 @@ namespace :dul_hydra do
       puts `#{DulHydra.python}/bin/pip install #{args[:package]}`
     end
   end
+
+  namespace :serialize do
+    desc "Serialize a collection and its contents"
+    task :collection, [:id] => :environment do |t, args|
+      collection_id = args[:id]
+      query = Ddr::Index::Query.new do
+        is_governed_by collection_id
+        fields :id
+        limit 10**6 # https://github.com/duke-libraries/ddr-models/issues/638
+      end
+      query.each_id { |id| Resque.enqueue(DuracloudSerializationJob, id) }
+    end
+  end
 end
