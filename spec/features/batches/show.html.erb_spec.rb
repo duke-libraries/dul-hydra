@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "batches/show.html.erb", :type => :feature do
+describe "batches/queued.html.erb", :type => :feature do
 
   context "batch" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }

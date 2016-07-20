@@ -1,0 +1,32 @@
+<h1>Simple Ingest</h1>
+
+<p class="lead">
+  Simple Ingest Job queued.  An email will be sent to <%= @simple_ingest.user.email %> when it is complete.
+</p>
+
+<div class="row">
+  <div class="col-md-2">
+    Folder Path:
+  </div>
+  <div class="col-md-4">
+    <%= @simple_ingest.folder_path %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    Admin Set:
+  </div>
+  <div class="col-md-4">
+    <%= Ddr::Models::AdminSet.call(@simple_ingest) if @simple_ingest.admin_set.present? %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2">
+    User:
+  </div>
+  <div class="col-md-4">
+    <%= @simple_ingest.user.user_key %>
+  </div>
+</div>

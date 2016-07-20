@@ -11,8 +11,9 @@ DulHydra.configure do |config|
     write_headers: true,
     header_converters: :symbol
   }
-  config.create_menu_models = [ "Collection" ]
+  config.create_menu_models = [ "Collection", "SimpleIngest" ]
   config.mets_folder_base_path = ENV['METS_FOLDER_BASE_PATH']
+  config.simple_ingest_base_path = ENV['SIMPLE_INGEST_BASE_PATH']
 end
 
 Blacklight::Configuration.default_values[:http_method] = :post

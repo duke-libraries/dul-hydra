@@ -72,6 +72,9 @@ module DulHydra
       # Base path for METS folders
       mattr_accessor :mets_folder_base_path
 
+      # Base path for Simple Ingest folders
+      mattr_accessor :simple_ingest_base_path
+
       mattr_accessor :python do
         File.join(Rails.root, "python")
       end

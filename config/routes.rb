@@ -135,6 +135,8 @@ DulHydra::Application.routes.draw do
     end
   end
 
+  resources :simple_ingests, :only => [:new, :create, :show]
+
   get '/help', to: redirect(DulHydra.help_url)
 
 end

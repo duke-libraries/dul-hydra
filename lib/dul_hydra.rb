@@ -24,6 +24,7 @@ module DulHydra
     autoload :MetadataFileAbilityDefinitions
     autoload :IngestFolderAbilityDefinitions
     autoload :METSFolderAbilityDefinitions
+    autoload :SimpleIngestAbilityDefinitions
   end
 
   include Configurable
