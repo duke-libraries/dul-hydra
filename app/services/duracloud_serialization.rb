@@ -9,7 +9,7 @@ class DuracloudSerialization
 
   class_attribute :base_path
 
-  def self.enable!(base_path)
+  def self.enable!(base_path = nil)
     self.base_path = base_path if base_path
     raise "`#{self}.base_path` is not set." unless self.base_path
     ActiveSupport::Notifications.subscribe(EVENT, self)
