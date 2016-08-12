@@ -53,6 +53,10 @@ class CatalogController < ApplicationController
     config.add_facet_field Ddr::Index::Fields::ACTIVE_FEDORA_MODEL.to_s, :label => 'Type'
     config.add_facet_field Ddr::Index::Fields::ADMIN_SET_FACET.to_s, label: 'Admin Set',
                            helper_method: 'admin_set_title'
+    config.add_facet_field Ddr::Index::Fields::WORKFLOW_STATE.to_s, label: 'Publication Status', query: {
+        published: { label: 'Published', fq: "#{Ddr::Index::Fields::WORKFLOW_STATE}:published" },
+        not_published: { label: 'Not Published', fq: "-#{Ddr::Index::Fields::WORKFLOW_STATE}:published" }
+    }
     config.add_facet_field Ddr::Index::Fields::IS_LOCKED.to_s, label: 'Lock Status', query: {
         locked: { label: 'Locked', fq: "#{Ddr::Index::Fields::IS_LOCKED}:true" },
         not_locked: { label: 'Not Locked', fq: "-#{Ddr::Index::Fields::IS_LOCKED}:true" }
