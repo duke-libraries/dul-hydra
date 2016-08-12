@@ -51,7 +51,8 @@ class CatalogController < ApplicationController
     # :show may be set to false if you don't want the facet to be drawn in the
     # facet bar
     config.add_facet_field Ddr::Index::Fields::ACTIVE_FEDORA_MODEL.to_s, :label => 'Type'
-
+    config.add_facet_field Ddr::Index::Fields::ADMIN_SET_FACET.to_s, label: 'Admin Set',
+                           helper_method: 'admin_set_title'
     config.add_facet_field Ddr::Index::Fields::IS_LOCKED.to_s, label: 'Lock Status', query: {
         locked: { label: 'Locked', fq: "#{Ddr::Index::Fields::IS_LOCKED}:true" },
         not_locked: { label: 'Not Locked', fq: "-#{Ddr::Index::Fields::IS_LOCKED}:true" }
