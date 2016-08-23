@@ -52,6 +52,7 @@ DulHydra::Application.routes.draw do
     event_routes
     roles_routes
     amd_routes
+    get 'duracloud'
   end
 
   def repository_contraints
