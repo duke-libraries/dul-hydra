@@ -17,7 +17,7 @@ module DulHydra
         include Blacklight::Base
         include DulHydra::Controller::TabbedViewBehavior
 
-        self.tabs = [ :tab_descriptive_metadata, :tab_admin_metadata, :tab_roles ]
+        self.tabs = [ :tab_descriptive_metadata, :tab_admin_metadata, :tab_roles, :tab_duracloud ]
 
         helper_method :current_object
         helper_method :current_document
@@ -99,6 +99,16 @@ module DulHydra
           else
             flash.now[:error] = "Administrative metadata not updated, as no values were changed.".html_safe
           end
+        end
+      end
+
+      def duracloud
+        if request.xhr?
+          @tab = tab_duracloud
+          @manifest = Duracloud::Fcrepo3ObjectManifest.new(current_object)
+          render "duracloud", layout: false
+        else
+         redirect_to action: "show", tab: "duracloud"
         end
       end
 
@@ -187,6 +197,12 @@ module DulHydra
                                 url_for(action: "roles"),
                                 can?(:grant, current_object)),
                 ]
+               )
+      end
+
+      def tab_duracloud
+        Tab.new("duracloud",
+                href: url_for(id: current_object, action: "duracloud")
                )
       end
 

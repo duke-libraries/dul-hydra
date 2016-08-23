@@ -70,6 +70,10 @@ module DulHydra
       mattr_accessor :fixity_check_period_in_days do
         ENV["FIXITY_CHECK_PERIOD"] || 60
       end
+
+      mattr_accessor :duracloud_space do
+        ENV["DURACLOUD_SPACE"]
+      end
     end
 
     module ClassMethods

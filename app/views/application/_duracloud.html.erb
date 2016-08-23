@@ -1,0 +1,39 @@
+<h3>Object Record (FOXML)</h3>
+
+<table class="table">
+  <tr>
+    <th scope="row">Modified</th>
+    <td><%= format_date current_object.modified_date %></td>
+  </tr>
+  <tr>
+    <th scope="row">Sync Status</th>
+    <td>
+      <span class="glyphicon glyphicon-<%= @manifest.entry_map[:object] ? 'ok text-success' : 'remove text-danger' %>"></span>
+    </td>
+  </tr>
+</table>
+
+<h3>Datastreams</h3>
+
+<table class="table table-striped table-condensed">
+  <thead>
+    <tr>
+      <th scope="col">Datastream.Version</th>
+      <th scope="col">Created</th>
+      <th scope="col">Sync Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% current_object.datastreams.select { |dsid, ds| ds.managed? }.keys.sort.each do |dsid| %>
+      <% current_object.datastreams[dsid].versions.each do |version| %>
+      <tr>
+	<td><%= version.dsVersionID %></td>
+	<td><%= format_date version.createDate %></td>
+	<td>
+	  <span class="glyphicon glyphicon-<%= @manifest.entry_map[:datastreams][version.dsVersionID] ? 'ok text-success' : 'remove text-danger' %>"></span>
+	</td>	  
+      </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

@@ -32,6 +32,9 @@ shared_examples "a repository object router" do
   it "should have an event route" do
     expect(get: "/#{controller}/duke:1/events/1").to route_to(controller: controller, action: "event", id: "duke:1", event_id: "1")
   end
+  it "has a duracloud route" do
+    expect(get: "/#{controller}/duke:1/duracloud").to route_to(controller: controller, action: "duracloud", id: "duke:1")
+  end
 end
 
 shared_examples "a content-bearing object router" do
