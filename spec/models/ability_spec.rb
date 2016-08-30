@@ -134,4 +134,50 @@ describe Ability, type: :model, abilities: true do
     end
   end
 
+  describe "SimpleIngest abilities" do
+    let(:resource) { SimpleIngest.new({ "folder_path" => '/foo', "batch_user" => auth_context.user.user_key }) }
+    before { auth_context.user.save! }
+    describe "create" do
+      before { allow_any_instance_of(described_class).to receive(:can?).and_call_original }
+      describe "collection creating simple ingest" do
+        describe "when the user can create collections" do
+          before { allow_any_instance_of(described_class).to receive(:can?).with(:create, Collection) { true } }
+          it { should be_able_to(:create, resource) }
+        end
+        describe "when the user cannot create collections" do
+          before { allow_any_instance_of(described_class).to receive(:can?).with(:create, Collection) { false } }
+          it { should_not be_able_to(:create, resource) }
+        end
+      end
+      describe "item adding simple ingest" do
+        let(:collection) { FactoryGirl.create(:collection) }
+        let(:resource) { SimpleIngest.new({ "folder_path" => '/foo', "batch_user" => auth_context.user.user_key, "collection_id" => collection.id }) }
+        describe "when the user can add children to the collection" do
+          before { allow(subject).to receive(:can?).with(:add_children, collection.id) { true } }
+          xit { should be_able_to(:create, resource) }
+        end
+        describe "when the user cannot add children to the collection" do
+          before { allow(subject).to receive(:can?).with(:add_children, collection.id) { false } }
+          describe "and the user cannot create collections" do
+            before { allow_any_instance_of(described_class).to receive(:can?).with(:create, Collection) { false } }
+            it { should_not be_able_to(:create, resource) }
+          end
+          describe "and the user can create collections" do
+            before { allow_any_instance_of(described_class).to receive(:can?).with(:create, Collection) { true } }
+            it { should_not be_able_to(:create, resource) }
+          end
+        end
+      end
+    end
+    describe "show" do
+      describe "when the user is the creator of the SimpleIngest" do
+        it { should be_able_to(:show, resource) }
+      end
+      describe "when the user is not the creator of the SimpleIngest" do
+        before { resource.user = FactoryGirl.build(:user) }
+        it { should_not be_able_to(:show, resource) }
+      end
+    end
+  end
+
 end

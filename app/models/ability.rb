@@ -6,6 +6,7 @@ class Ability < Ddr::Auth::Ability
                                 DulHydra::MetadataFileAbilityDefinitions,
                                 DulHydra::IngestFolderAbilityDefinitions,
                                 DulHydra::METSFolderAbilityDefinitions,
+                                DulHydra::SimpleIngestAbilityDefinitions,
                               ]
 
 end
