@@ -22,6 +22,18 @@ namespace :dul_hydra do
     end
   end
 
+  desc "Destroy object listed in file, one PID per line, and their descendants"
+  task :destroy_objects, [:infile] => :environment do |t, args|
+    pids = File.readlines(args[:infile]).map(&:chomp)
+    print "#{pids.length} objects and their descendants will be destroyed! Proceed? [y/N] "
+    if STDIN.gets.strip == 'y'
+      puts "Destroying objects!"
+      DestroyObjectsAndDescendants.call(pids)
+    else
+      puts "Task aborted."
+    end
+  end
+
   namespace :config do
     desc "Copy sample config files"
     task :samples do
