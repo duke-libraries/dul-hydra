@@ -61,13 +61,13 @@ class SimpleIngest
 
   def build_batch(filesystem)
     batch_builder = BuildBatchFromFolderIngest.new(
-        user,
-        filesystem,
-        ModelSimpleIngestContent,
-        SimpleIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata]),
-        SimpleIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
-        "Simple Ingest",
-        filesystem.root.name)
+        user: user,
+        filesystem: filesystem,
+        content_modeler: ModelSimpleIngestContent,
+        metadata_provider: SimpleIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata]),
+        checksum_provider: SimpleIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
+        batch_name: "Simple Ingest",
+        batch_description: filesystem.root.name)
     batch = batch_builder.call
   end
 

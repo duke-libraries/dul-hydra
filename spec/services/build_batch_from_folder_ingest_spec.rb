@@ -24,6 +24,10 @@ RSpec.shared_examples "a successfully built folder ingest batch" do
       expect(collections.first.id).to be_present
       expect(collections.first.batch_object_attributes.where(name: 'title').first.value).to eq('Collection Title')
       expect(collections.first.batch_object_attributes.where(name: 'admin_set').first.value).to eq('abc')
+      expect(collections.first.batch_object_roles.size).to eq(1)
+      expect(collections.first.batch_object_roles[0].agent).to eq(user.user_key)
+      expect(collections.first.batch_object_roles[0].role_type).to eq(Ddr::Auth::Roles::RoleTypes::CURATOR.title)
+      expect(collections.first.batch_object_roles[0].role_scope).to eq(Ddr::Auth::Roles::POLICY_SCOPE)
     end
 
     # Item expectations

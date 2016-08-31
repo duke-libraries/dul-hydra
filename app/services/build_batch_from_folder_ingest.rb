@@ -47,6 +47,7 @@ class BuildBatchFromFolderIngest
     batch_object = Ddr::Batch::IngestBatchObject.create(batch: batch, model: object_model, pid: pid)
     add_relationships(batch_object, node.parent)
     add_admin_set(batch_object) if admin_set.present? && object_model == 'Collection'
+    add_role(batch_object) if object_model == 'Collection'
     add_metadata(batch_object, node)
     add_content_datastream(batch_object, node) if object_model == 'Component'
   end
@@ -91,6 +92,16 @@ class BuildBatchFromFolderIngest
         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
         value: admin_set,
         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
+    )
+  end
+
+  def add_role(batch_object)
+    Ddr::Batch::BatchObjectRole.create(
+        batch_object: batch_object,
+        operation: Ddr::Batch::BatchObjectRole::OPERATION_ADD,
+        agent: user.user_key,
+        role_type: Ddr::Auth::Roles::CURATOR.title,
+        role_scope: Ddr::Auth::Roles::POLICY_SCOPE
     )
   end
 
