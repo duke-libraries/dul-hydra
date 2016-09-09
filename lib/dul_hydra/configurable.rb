@@ -82,6 +82,18 @@ module DulHydra
       mattr_accessor :duracloud_content_path do
         File.join(Rails.root, "contrib", "duracloud", "content")
       end
+      
+      mattr_accessor :user_editable_admin_metadata_fields do
+        [ :local_id,
+          :admin_set,
+          :display_format,
+          :research_help_contact,
+          :depositor,
+          :doi,
+          :license,
+          :ead_id,
+          :aspace_id ]
+      end
     end
 
     module ClassMethods
