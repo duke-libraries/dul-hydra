@@ -6,16 +6,14 @@
 		<th><%= t('activerecord.attributes.metadata_file.metadata') %></th>
 		<th><%= t('activerecord.attributes.metadata_file.profile') %></th>
 		<th><%= t('activerecord.attributes.metadata_file.rows') %></th>
-		<th><%= t('activerecord.attributes.metadata_file.collection_pid') %></th>	
 	</tr>
 
 	<tr>
 		<td><%= @metadata_file.metadata_file_name %></td>
 		<td><%= metadata_file_profile_name(@metadata_file.profile) %></td>
 		<td><%= metadata_file_rows(@metadata_file) %></td>
-		<td><%= object_display_title(@metadata_file.collection_pid) %></td>
 	</tr>
-	
+
 </table>
 
 <table class="table table-bordered table-striped">

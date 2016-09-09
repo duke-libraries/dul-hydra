@@ -10,19 +10,12 @@ class MetadataFile < ActiveRecord::Base
 
   def validate_data
     begin
-      valid_headers = [ :pid, :model, :local_id, :permanent_id ].concat(Ddr::Datastreams::DescriptiveMetadataDatastream.term_names)
-      as_csv_table.headers.each do |header|
-        if effective_options[:schema_map].present?
-          canonical_name = canonical_attribute_name(header)
-          if canonical_name.present?
-            unless valid_headers.include?(canonical_name.to_sym)
-              errors.add(:metadata, "#{I18n.t('batch.metadata_file.error.mapped_attribute_name')}: #{header} => #{canonical_name}")
-            end
-          end
-        else
-          unless valid_headers.include?(header.to_sym)
-            errors.add(:metadata, "#{I18n.t('batch.metadata_file.error.attribute_name')}: #{header}")
-          end
+      as_csv_table.headers.each_with_index do |header, idx|
+        unless valid_headers.include?(header.to_sym)
+          errors.add(:metadata, "#{I18n.t('batch.metadata_file.error.attribute_name')}: #{header}")
+        end
+        if controlled_value_headers.include?(header.to_sym)
+          validate_controlled_values(header, idx)
         end
       end
     rescue CSV::MalformedCSVError => e
@@ -55,26 +48,45 @@ class MetadataFile < ActiveRecord::Base
     { :csv => csv, :parse => parse, :schema_map => profile_options[:schema_map] }
   end
 
-  def self.downcase_schema_map_keys(schema_map)
-    Hash[schema_map.map { |k, v| [k.downcase, v] } ]
-  end
-
-  def canonical_attribute_name(attribute_name)
-    unless effective_options[:schema_map].present?
-      return attribute_name if Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.include?(attribute_name.to_sym)
-    else
-      @downcased_schema_map ||= MetadataFile.downcase_schema_map_keys(effective_options[:schema_map])
-      return @downcased_schema_map[attribute_name.downcase] if @downcased_schema_map.has_key?(attribute_name.downcase)
+  def validate_controlled_values(header, idx)
+    valid_values = case header.to_sym
+                     when :admin_set
+                       Ddr::Models::AdminSet.keys
+                     when :research_help_contact
+                       Ddr::Models::Contact.keys
+                     when :license
+                       Ddr::Models::License.keys
+                   end
+    as_csv_table.by_col.values_at(idx).each do |value|
+      unless value.first.nil? || valid_values.include?(value.first)
+        errors.add(:metadata, "#{I18n.t('batch.metadata_file.error.attribute_value')}: #{header} -> #{value.first}")
+      end
     end
-    return nil
   end
 
-  def headers
+  def valid_headers
+    [ :pid, :model, :permanent_id ].concat(user_editable_fields)
+  end
 
+  def user_editable_fields
+    Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.concat(DulHydra.user_editable_admin_metadata_fields)
+  end
+
+  def controlled_value_headers
+    [ :admin_set, :research_help_contact, :license ]
   end
 
   def model(row)
     row.headers.include?("model") ? row.field("model") : effective_options[:parse][:model]
+  end
+
+  def datastream(header)
+    case
+      when Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.include?(header.to_sym)
+        Ddr::Datastreams::DESC_METADATA
+      when DulHydra.user_editable_admin_metadata_fields.include?(header.to_sym)
+        Ddr::Datastreams::ADMIN_METADATA
+    end
   end
 
   def procezz
@@ -83,27 +95,35 @@ class MetadataFile < ActiveRecord::Base
                 :name => I18n.t('batch.metadata_file.batch_name'),
                 :description => metadata_file_name
                 )
+    # Create batch object for each row in file
     CSV.foreach(metadata.path, effective_options[:csv]) do |row|
       obj = Ddr::Batch::UpdateBatchObject.new(:batch => @batch)
-      obj.model = row.field("model") if row.headers.include?("model")
       obj.pid = row.field("pid") if row.headers.include?("pid")
-      att = Ddr::Batch::BatchObjectAttribute.new(
-                batch_object: obj,
-                datastream: Ddr::Datastreams::DESC_METADATA,
-                operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR_ALL)
-      obj.batch_object_attributes << att
+      obj.model = row.field("model") if row.headers.include?("model")
+      obj.identifier = row.field("local_id") if row.headers.include?("local_id")
       obj.save
+
+      # Create CLEAR operation for each editable field in file
+      editable_headers = row.headers.select { |hdr| user_editable_fields.include?(hdr.to_sym) }
+      editable_headers.uniq.each do |header|
+        att = Ddr::Batch::BatchObjectAttribute.new(
+                  batch_object: obj,
+                  datastream: datastream(header),
+                  name: header,
+                  operation: Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR
+                  )
+        obj.batch_object_attributes << att
+      end
+
+      # Create ADD operation for each editable field in file
       row.headers.each_with_index do |header, idx|
-        if effective_options[:parse][:include_empty_fields] || !row.field(header, idx).blank?
-          if header.eql?(effective_options[:parse][:local_identifier])
-            obj.update_attributes(:identifier => row.field(header, idx)) unless obj.identifier.present?
-          end
-          if canonical_attribute_name(header).present?
-            parse_field(row.field(header, idx), header).each do |value|
+        if !row.field(header, idx).blank?
+          parse_field(row.field(header, idx), header).each do |value|
+            if editable_headers.include?(header)
               att = Ddr::Batch::BatchObjectAttribute.new(
                         batch_object: obj,
-                        datastream: Ddr::Datastreams::DESC_METADATA,
-                        name: canonical_attribute_name(header),
+                        datastream: datastream(header),
+                        name: header,
                         operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
                         value: value,
                         value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
@@ -113,6 +133,10 @@ class MetadataFile < ActiveRecord::Base
           end
         end
       end
+
+      # Legacy code that needs to be revisited
+      # Is this part still needed and, if it is, should it be changed?
+      # E.g., if we keep it, should it remain as is or be driven off local_id instead
       unless obj.pid.present?
         if obj.identifier.present?
           if collection_pid.present?
@@ -125,6 +149,8 @@ class MetadataFile < ActiveRecord::Base
         end
       end
     end
+
+    # Mark batch as ready for processing
     @batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
   end
 
@@ -141,7 +167,7 @@ class MetadataFile < ActiveRecord::Base
   end
 
   def as_csv_table
-    CSV.read(metadata.path, effective_options[:csv])
+    @csv_table ||= CSV.read(metadata.path, effective_options[:csv])
   end
 
 end

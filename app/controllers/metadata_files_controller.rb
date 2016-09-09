@@ -1,6 +1,6 @@
 class MetadataFilesController < ApplicationController
 
-  before_filter :new_metadata_file, :only => [ :new, :create ]
+  before_filter :new_metadata_file, :only => [ :create ]
 
 	load_and_authorize_resource
 
@@ -36,7 +36,7 @@ class MetadataFilesController < ApplicationController
 	private
 
   def metadata_file_params
-    params.require(:metadata_file).permit(:collection_pid, :metadata, :profile)
+    params.require(:metadata_file).permit(:metadata, :profile)
   end
 
 end
