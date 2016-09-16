@@ -13,4 +13,16 @@
                    new_metadata_file_path(metadata_file: { collection_pid: current_object })
     %>
   </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:export, current_object),
+	'Export Descriptive & Administrative Metadata',
+	export_collection_path(current_object)
+	%>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:export, current_object),
+	'Export Technical Metadata',
+	export_collection_path(id: current_object, format: "csv", type: "techmd")
+	%>
+  </li>
 </ul>

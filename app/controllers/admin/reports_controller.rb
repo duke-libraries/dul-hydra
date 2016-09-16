@@ -4,15 +4,17 @@ module Admin
     respond_to :csv
 
     def show
-      report = DulHydra::Reports::Report.new
       filename = "Duke_Digital_Repository"
       case params.require(:type)
       when "techmd"
-        report.filters << DulHydra::Reports::HasContentFilter
-        report.columns += DulHydra::Reports::Columns::TechnicalMetadata
-        filename += "__TECHMD"
+        query = Ddr::Index::Query.new do
+          has_content
+          fields :id, Ddr::Index::Fields.techmd
+        end
+        render csv: query.csv, filename: filename
+      else
+        render nothing: true, status: 404
       end
-      render csv: report, filename: filename
     end
 
   end

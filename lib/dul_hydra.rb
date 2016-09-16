@@ -8,7 +8,6 @@ module DulHydra
   autoload :Error
   autoload :Jobs
   autoload :Queues
-  autoload :Reports
 
   autoload_under 'ability_definitions' do
     autoload :AliasAbilityDefinitions

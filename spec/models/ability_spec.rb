@@ -18,9 +18,6 @@ describe Ability, type: :model, abilities: true do
     it "should alias actions to :update" do
       expect(subject.aliased_actions[:update]).to include(:admin_metadata)
     end
-    it "should alias actions to :audit" do
-      expect(subject.aliased_actions[:audit]).to include(:report)
-    end
   end
 
   describe "ExportSet abilities" do
