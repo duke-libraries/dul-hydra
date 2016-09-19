@@ -1,0 +1,65 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "select2.min.js" %>
+  <%= stylesheet_link_tag "select2.min.css" %>
+  <script type="text/javascript">
+    $(function() {
+      $('.metadata-field-selector').select2({
+        placeholder: "Select fields or leave empty to export all fields"
+      });
+    });
+  </script>
+<% end %>
+
+<h2>Export Descriptive &amp; Administrative Metadata</h2>
+
+<%= form_tag "#{export_collection_path(current_object)}.csv", method: "post" do %>
+<input type="hidden" name="type" value="descmd"/>
+<div class="form-group">
+  <label for="dmd_fields[]">Descriptive Metadata Fields</label>
+  <select name="dmd_fields[]" class="metadata-field-selector form-control" multiple="true">
+    <%= options_from_collection_for_select Ddr::Index::Fields.descmd, :base, :label %>
+  </select>
+</div>
+
+<div class="form-group">
+  <label for="amd_fields[]">Administrative Metadata Fields</label>
+  <select name="amd_fields[]" class="metadata-field-selector form-control" multiple="true">
+    <option value="permanent_id" selected="selected">Permanent ID</option>
+    <% amd_fields = DulHydra.user_editable_admin_metadata_fields.map { |f| Ddr::Index::Fields.get(f) } %>
+    <%= options_from_collection_for_select amd_fields, :base, :label %>
+  </select>
+</div>
+
+<div class="form-group">
+  <p><strong>Include Object Types</strong></p>
+  <% ["Collection", "Item", "Component"].each do |model| %>
+  <div class="checkbox">
+    <label>
+      <%= check_box_tag "models[]", model, true %> <%= model %>
+    </label>
+  </div>
+  <% end %>
+</div>
+
+<div class="form-group">
+  <p><strong>CSV Style</strong></p>
+  <label class="radio-inline">
+    <%= radio_button_tag "csv_style", "comma", true %> Comma-separated
+  </label>
+  <label class="radio-inline">
+    <%= radio_button_tag "csv_style", "tab" %> Tab-separated
+  </label>
+</div>
+
+<div class="form-group">
+  <p><strong>Other Options</strong></p>
+  <div class="checkbox">
+    <label>
+      <%= check_box_tag "remove_empty_columns", 1, true %> Remove empty columns
+    </label>
+  </div>
+</div>
+
+<button type="submit" class="btn btn-primary">Export</button>
+
+<% end %>
