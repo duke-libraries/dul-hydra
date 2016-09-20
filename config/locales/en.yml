@@ -185,6 +185,7 @@ en:
               forbidden: "%{path} is not permitted for folder ingest"
           checksum_missing: "Unable to find checksum for %{entry}"
           create_batch: Create Ingest Batch
+          creating_batch: Creating Ingest Batch ...
           excluded_files: Excluded Files
           folder: Folder
           not_readable: "%{path} does not exist or is not readable"
@@ -199,6 +200,7 @@ en:
           batch_name: Metadata Update File
           create_batch: Create Update Batch
           fields: Fields
+          submitted: Creating Update Batch ...
           upload_file: Upload File
           uploaded_file: Uploaded File
           error:
