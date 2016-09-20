@@ -32,7 +32,7 @@ class CollectionsController < ApplicationController
   protected
 
   def export_metadata
-    dmd_fields = Ddr::Index::Fields.descmd
+    dmd_fields = Ddr::Index::Fields.descmd.dup
     unless params["dmd_fields"].blank?
       dmd_fields.select! { |f| params["dmd_fields"].include?(f.base) }
     end
