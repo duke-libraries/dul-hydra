@@ -5,7 +5,6 @@
 
   $(create_button).click(function() {
     $(".flash_messages").html('<div class="alert alert-info">Creating archive ... please wait.</div>');
-    $(create_button).button('loading');
     $.ajax({
       type: "PATCH",
       url: archive_url,

@@ -2,8 +2,3 @@
   <%= cancel_button class: "pull-right form-action-cancel" %>
   <%= f.submit class: "btn btn-primary form-action-submit", "data-loading-text" => "Submitted ..." %>
 </div>
-<script type="text/javascript">
-  $('.form-action-submit').closest('form').submit(function () {
-    $(this).find('.form-action-submit').button('loading');
-  });
-</script>
