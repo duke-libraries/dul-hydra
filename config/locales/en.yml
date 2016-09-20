@@ -2,7 +2,7 @@ en:
   ddr:
     errors:
       multiple_object_matches: "%{criteria} retrieved multiple repository objects"
-  dul_hydra:        
+  dul_hydra:
     admin_metadata:
       local_id: "Local ID"
       ead_id: "EAD ID"
@@ -127,11 +127,11 @@ en:
         license: 'Copyright / license statement inherited by objects governed by this Admin Policy'
       messages:
         updated: 'Admin Policy updated'
-        changed: "Policy successfully changed." 
+        changed: "Policy successfully changed."
       page_titles:
         edit: 'Editing Admin Policy'
     tabs:
-      tech_metadata: 
+      tech_metadata:
         label: "Tech Metadata"
         actions:
           download: "Download File"
@@ -204,7 +204,7 @@ en:
           error:
               parse_error: Error parsing the file
               attribute_name: Invalid attribute name
-              mapped_attribute_name: Attribute mapped to invalid name
+              attribute_value: Invalid attribute value
       manifest:
           validation_failed: "Did not process manifest due to manifest validation errors"
           validation_skipped: "Skipped validation"

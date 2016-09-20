@@ -51,14 +51,4 @@ describe "metadata_files/show.html.erb", :type => :feature, :metadata_file => tr
     it_behaves_like "metadata file show page"
   end
 
-  context "tab-delimited mapped schema" do
-    let(:metadata_file) { FactoryGirl.create(:metadata_file_mapped_tab) }
-    let(:headers_text) {
-      [ [ 'Identifier-LocalID', 'Title', 'Description', 'Subject-Topic', 'Subject-Keyword', 'Submission-Date', 'Arranger' ],
-        [ '', '', '', 'multi', 'multi', '', ''],
-        [ '', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ] ]
-    }
-    it_behaves_like "metadata file show page"
-  end
-
 end

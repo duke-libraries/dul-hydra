@@ -74,12 +74,10 @@ module DulHydra
       mattr_accessor :duracloud_space do
         ENV["DURACLOUD_SPACE"]
       end
-      
+
       mattr_accessor :user_editable_admin_metadata_fields do
         [ :local_id,
-          :admin_set,
           :display_format,
-          :research_help_contact,
           :depositor,
           :doi,
           :license,

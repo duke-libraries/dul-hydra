@@ -12,7 +12,7 @@ DulHydra.configure do |config|
     header_converters: :symbol
   }
   config.metadata_file_creators_group = ENV['METADATA_FILE_CREATORS_GROUP']
-  config.create_menu_models = [ "Collection" ]
+  config.create_menu_models = [ "Collection", "MetadataFile" ]
 end
 
 Blacklight::Configuration.default_values[:http_method] = :post
