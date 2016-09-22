@@ -14,13 +14,31 @@
 
 <%= form_tag "#{export_collection_path(current_object)}.csv", method: "post" do %>
 <input type="hidden" name="type" value="descmd"/>
+<% if current_object.admin_set && can?(:export, Ddr::Models::AdminSet) %>
+<div class="form-group">
+  <p><strong>Scope</strong></p>
+  <div class="radio">
+    <label>
+      <%= radio_button_tag "scope", "collection", true %>
+      This collection only
+    </label>
+  </div>
+  <div class="radio">
+    <label>
+      <%= radio_button_tag "scope", "admin_set", false %>
+      All collections in the <em><%= Ddr::Models::AdminSet.call(current_object).title %></em> admin set
+    </label>
+  </div>
+</div>
+<% else %>
+<input type="hidden" name="scope" value="collection"/>
+<% end %>
 <div class="form-group">
   <label for="dmd_fields[]">Descriptive Metadata Fields</label>
   <select name="dmd_fields[]" class="metadata-field-selector form-control" multiple="true">
     <%= options_from_collection_for_select Ddr::Index::Fields.descmd, :base, :label %>
   </select>
 </div>
-
 <div class="form-group">
   <label for="amd_fields[]">Administrative Metadata Fields</label>
   <select name="amd_fields[]" class="metadata-field-selector form-control" multiple="true">
@@ -29,7 +47,6 @@
     <%= options_from_collection_for_select amd_fields, :base, :label %>
   </select>
 </div>
-
 <div class="form-group">
   <p><strong>Include Object Types</strong></p>
   <% ["Collection", "Item", "Component"].each do |model| %>
@@ -59,7 +76,5 @@
     </label>
   </div>
 </div>
-
-<button type="submit" class="btn btn-primary">Export</button>
-
+<button type="submit" class="btn btn-primary" data-loading-text="Exporting ...">Export</button>
 <% end %>
