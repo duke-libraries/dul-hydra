@@ -32,6 +32,7 @@ class CollectionsController < ApplicationController
   protected
 
   def export_metadata
+    scope = params.require(:scope)
     dmd_fields = Ddr::Index::Fields.descmd.dup
     unless params["dmd_fields"].blank?
       dmd_fields.select! { |f| params["dmd_fields"].include?(f.base) }
@@ -39,8 +40,13 @@ class CollectionsController < ApplicationController
     amd_fields = params["amd_fields"].map { |f| Ddr::Index::Fields.get(f) }
     all_fields = [:id, :active_fedora_model] + amd_fields + dmd_fields.sort
     models = params.require("models")
-    query = Ddr::Index::Query.build(current_object) do |coll|
-      is_governed_by coll
+    query = Ddr::Index::Query.build(current_object, scope) do |coll, scope|
+      case scope
+      when "collection"
+        is_governed_by coll
+      when "admin_set"
+        join from: :internal_uri, to: :is_governed_by, where: { admin_set: coll.admin_set }
+      end
       model *models
       fields *all_fields
     end
