@@ -40,17 +40,23 @@ class CollectionsController < ApplicationController
     amd_fields = params["amd_fields"].map { |f| Ddr::Index::Fields.get(f) }
     all_fields = [:id, :active_fedora_model] + amd_fields + dmd_fields.sort
     models = params.require("models")
-    query = Ddr::Index::Query.build(current_object, scope) do |coll, scope|
+    query = Ddr::Index::Query.build(current_object) do |coll|
       case scope
       when "collection"
         is_governed_by coll
       when "admin_set"
+        field :is_governed_by
         join from: :internal_uri, to: :is_governed_by, where: { admin_set: coll.admin_set }
       end
       model *models
       fields *all_fields
     end
-    filename = current_object.pid.sub(/:/, '-')
+    filename = case scope
+               when "collection"
+                 current_object.pid.sub(/:/, '-')
+               when "admin_set"
+                 current_object.admin_set
+               end
     csv = query.csv
     csv.delete_empty_columns! if params[:remove_empty_columns]
     render csv: csv, filename: filename
