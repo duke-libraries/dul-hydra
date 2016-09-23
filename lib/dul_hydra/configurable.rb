@@ -84,6 +84,10 @@ module DulHydra
           :ead_id,
           :aspace_id ]
       end
+
+      # Base path for Simple Ingest folders
+      mattr_accessor :simple_ingest_base_path
+
     end
 
     module ClassMethods

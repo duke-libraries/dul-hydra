@@ -2,7 +2,7 @@ module DulHydra::Batch::Scripts
 
   class ProcessSimpleIngest
 
-    attr_reader :batch_user, :configuration, :filepath
+    attr_reader :batch_user, :configuration, :filepath, :admin_set, :collection_id
 
     CHECKSUM_FILE = 'manifest-sha1.txt'
     METADATA_FILE = 'metadata.txt'
@@ -12,6 +12,7 @@ module DulHydra::Batch::Scripts
     def initialize(args=DEFAULT_ARGUMENTS)
       @batch_user = User.find_by_user_key(args.fetch(:batch_user))
       raise DulHydra::BatchError, "Unable to find user #{args.fetch(:batch_user)}" unless @batch_user.present?
+      verify_collection_id if @collection_id = args[:collection_id]
       @configuration = load_configuration(args.fetch(:config_file, DEFAULT_CONFIG_FILE))
       @filepath = args.fetch(:filepath)
     end
@@ -30,6 +31,14 @@ module DulHydra::Batch::Scripts
 
     private
 
+    def verify_collection_id
+      begin
+        Collection.find(collection_id)
+      rescue ActiveFedora::ObjectNotFoundError
+        raise DulHydra::BatchError, "Unable to find collection #{collection_id}"
+      end
+    end
+
     def load_configuration(config_file)
       YAML::load(File.read(config_file)).symbolize_keys
     end
@@ -41,8 +50,15 @@ module DulHydra::Batch::Scripts
       unless results.exclusions.empty?
         puts "Excluding #{results.exclusions.join(', ')}"
       end
-      puts "Content models #{results.content_model_stats}"
+      puts "Content models #{model_stats(results.content_model_stats)}"
       results
+    end
+
+    def model_stats(content_model_stats)
+      if collection_id
+        content_model_stats.except!(:collections)
+      end
+      content_model_stats
     end
 
     def prompt_user
@@ -70,13 +86,16 @@ module DulHydra::Batch::Scripts
 
     def build_batch(filesystem)
       batch_builder = BuildBatchFromFolderIngest.new(
-                          batch_user,
-                          filesystem,
-                          ModelSimpleIngestContent,
-                          SimpleIngestMetadata.new(File.join(filepath, 'data', METADATA_FILE), configuration[:metadata]),
-                          SimpleIngestChecksum.new(File.join(filepath, CHECKSUM_FILE)),
-                          "Simple Ingest",
-                          filesystem.root.name)
+                          user: batch_user,
+                          filesystem: filesystem,
+                          content_modeler: ModelSimpleIngestContent,
+                          metadata_provider: SimpleIngestMetadata.new(File.join(filepath, 'data', METADATA_FILE),
+                                                                      configuration[:metadata]),
+                          checksum_provider: SimpleIngestChecksum.new(File.join(filepath, CHECKSUM_FILE)),
+                          admin_set: admin_set,
+                          collection_repo_id: collection_id,
+                          batch_name: "Simple Ingest",
+                          batch_description: filesystem.root.name)
       batch = batch_builder.call
     end
 
