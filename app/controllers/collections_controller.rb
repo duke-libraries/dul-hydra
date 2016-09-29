@@ -32,6 +32,7 @@ class CollectionsController < ApplicationController
   protected
 
   def export_metadata
+    scope = params.require(:scope)
     dmd_fields = Ddr::Index::Fields.descmd.dup
     unless params["dmd_fields"].blank?
       dmd_fields.select! { |f| params["dmd_fields"].include?(f.base) }
@@ -40,11 +41,22 @@ class CollectionsController < ApplicationController
     all_fields = [:id, :active_fedora_model] + amd_fields + dmd_fields.sort
     models = params.require("models")
     query = Ddr::Index::Query.build(current_object) do |coll|
-      is_governed_by coll
+      case scope
+      when "collection"
+        is_governed_by coll
+      when "admin_set"
+        field :is_governed_by
+        join from: :internal_uri, to: :is_governed_by, where: { admin_set: coll.admin_set }
+      end
       model *models
       fields *all_fields
     end
-    filename = current_object.pid.sub(/:/, '-')
+    filename = case scope
+               when "collection"
+                 current_object.pid.sub(/:/, '-')
+               when "admin_set"
+                 current_object.admin_set
+               end
     csv = query.csv
     csv.delete_empty_columns! if params[:remove_empty_columns]
     render csv: csv, filename: filename
