@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150729205548) do
+ActiveRecord::Schema.define(version: 20160817180639) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
@@ -42,6 +42,16 @@ ActiveRecord::Schema.define(version: 20150729205548) do
     t.string   "operation"
     t.string   "object"
     t.string   "object_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "batch_object_roles", force: true do |t|
+    t.integer  "batch_object_id"
+    t.string   "operation"
+    t.string   "agent"
+    t.string   "role_type"
+    t.string   "role_scope"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

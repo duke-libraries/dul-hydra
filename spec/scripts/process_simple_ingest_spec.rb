@@ -80,6 +80,10 @@ module DulHydra::Batch::Scripts
           expect(batch_objects.size).to eq(3)
           # Collection batch object
           expect(batch_objects[0].batch_object_attributes.where(name: 'title').first.value).to eq('Collection Title')
+          expect(batch_objects[0].batch_object_roles.size).to eq(1)
+          expect(batch_objects[0].batch_object_roles[0].agent).to eq(batch_user.user_key)
+          expect(batch_objects[0].batch_object_roles[0].role_type).to eq(Ddr::Auth::Roles::RoleTypes::CURATOR.title)
+          expect(batch_objects[0].batch_object_roles[0].role_scope).to eq(Ddr::Auth::Roles::POLICY_SCOPE)
           # Item batch object
           expect(batch_objects[1].batch_object_attributes.where(name: 'title').first.value).to eq('Item A Title')
           # Component batch object
