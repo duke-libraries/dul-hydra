@@ -14,7 +14,7 @@ class ReindexCollectionContents
 
   def self.trigger(event)
     payload = event.payload
-    id, changes, created = payload.values_at(:pid, :changes, :created)
+    id, changes = payload.values_at(:pid, :changes)
     changed = changes.keys
     call(id) if (changed & TRIGGER_ON_CHANGED).present?
   end
