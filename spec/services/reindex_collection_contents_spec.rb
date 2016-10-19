@@ -25,7 +25,7 @@ RSpec.describe ReindexCollectionContents do
   describe ".call" do
     describe "error conditions" do
       specify {
-        expect { described_class.call("foo") }.to raise_error(ActiveFedora::ObjectNotFoundError)
+        expect { described_class.call("foo:1") }.to raise_error(ActiveFedora::ObjectNotFoundError)
       }
       specify {
         expect { described_class.call(nil) }.to raise_error(TypeError)
