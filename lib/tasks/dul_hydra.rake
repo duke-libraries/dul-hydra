@@ -168,6 +168,12 @@ namespace :dul_hydra do
       end
       puts "All repository objects queued for indexing."
     end
+
+    desc "Re-index the contents of a collection"
+    task :collection_contents, [:pid] => :environment do |t, args|
+      ReindexCollectionContents.call(args[:pid])
+      puts "Collection contents have been queued for re-indexing."
+    end
   end
 
   namespace :validate do
