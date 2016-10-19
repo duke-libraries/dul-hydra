@@ -94,4 +94,47 @@ describe CollectionsController, type: :controller, collections: true do
     end
   end
 
+  describe "#publish" do
+    let(:collection) { FactoryGirl.create(:collection, :has_item) }
+    describe "when the user can publish the collection" do
+      before do
+        collection.roles.grant role_type: "Curator", agent: user
+        collection.save!
+      end
+      it "publishes the collection and its descendants" do
+        get :publish, id: collection
+        expect(flash[:success]).to be_present
+        expect(response).to redirect_to(collection_url)
+      end
+    end
+    describe "when the user cannot publish the collection" do
+      it "is unauthorized" do
+        get :publish, id: collection
+        expect(response.response_code).to eq 403
+      end
+    end
+  end
+
+  describe "#unpublish" do
+    let(:collection) { FactoryGirl.create(:collection, :has_item) }
+    before { collection.publish! }
+    describe "when the user can un-publish the collection" do
+      before do
+        collection.roles.grant role_type: "Curator", agent: user
+        collection.save!
+      end
+      it "unpublishes the collection and its descendants" do
+        get :unpublish, id: collection
+        expect(flash[:success]).to be_present
+        expect(response).to redirect_to(collection_url)
+      end
+    end
+    describe "when the user cannot unpublish the collection" do
+      it "is unauthorized" do
+        get :unpublish, id: collection
+        expect(response.response_code).to eq 403
+      end
+    end
+  end
+
 end

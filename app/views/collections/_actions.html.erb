@@ -25,4 +25,16 @@
 	export_collection_path(id: current_object, format: "csv", type: "techmd")
 	%>
   </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:publish, current_object),
+                   'Publish Collection and Descendants',
+                   publish_collection_path(id: current_object)
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:unpublish, current_object),
+                   'Un-Publish Collection and Descendants',
+                   unpublish_collection_path(id: current_object)
+    %>
+  </li>
 </ul>
