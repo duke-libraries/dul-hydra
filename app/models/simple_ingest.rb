@@ -17,24 +17,9 @@ class SimpleIngest
     folder.validate :data_directory_must_exist
     folder.validate :checksum_file_must_exist
     folder.validate :metadata_file_must_exist
+    folder.validate :validate_metadata_file
   end
   validate :collection_must_exist, if: 'collection_id.present?'
-  # folder path exists, is a directory, and is readable
-  # folder path contains a data directory that is readable
-  # folder contains sha-1 checksum file
-  # data directory contains a metadata.txt file
-  # process_simple_ingest
-  # - throws DulHydra::BatchError if user cannot be found
-  # - throws DulHydra::BatchError if unable to find collection
-  # inspect_simple_ingest
-  # - throws DulHydra::BatchError if scanned filesystem tree leaves not exactly two deep
-  # - throws DulHydra::BatchError unless Dir.exist?(data-path)
-  # - throws DulHydra::BatchError unless File.readable?(data-path)
-  # model_simple_ingest_content
-  # - throws DulHydra::BatchError if encounters node depth > 2
-  # - throws DulHydra::BatchError if node depth is 2 and node has children
-  # simple_ingest_metadata
-  # - throws ArgumentError if invalid_headers
 
   def initialize(args)
     @admin_set = args['admin_set']
@@ -49,8 +34,7 @@ class SimpleIngest
   def process
     processing_errors = []
     begin
-      inspection_results = InspectSimpleIngest.new(folder_path, configuration[:scanner]).call
-      build_batch(inspection_results.filesystem)
+      build_batch
     rescue DulHydra::BatchError => e
       processing_errors << e.message
     end
@@ -59,12 +43,12 @@ class SimpleIngest
     results
   end
 
-  def build_batch(filesystem)
+  def build_batch
     batch_builder = BuildBatchFromFolderIngest.new(
         user: user,
         filesystem: filesystem,
         content_modeler: ModelSimpleIngestContent,
-        metadata_provider: SimpleIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata]),
+        metadata_provider: metadata_provider,
         checksum_provider: SimpleIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
         batch_name: "Simple Ingest",
         batch_description: filesystem.root.name)
@@ -101,6 +85,11 @@ class SimpleIngest
     end
   end
 
+  def validate_metadata_file
+    misses = metadata_provider.locators.select { |locator| !filesystem_node_paths.include?(locator) }
+    misses.each { |miss| errors.add(:metadata_file, "Metadata line for locator '#{miss}' will not be used")}
+  end
+
   def load_configuration
     YAML::load(File.read(config_file)).symbolize_keys
   end
@@ -115,6 +104,22 @@ class SimpleIngest
 
   def metadata_path
     @metadata_path ||= File.join(data_path, METADATA_FILE)
+  end
+
+  def metadata_provider
+    @metadata_provider ||= SimpleIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata])
+  end
+
+  def inspection_results
+    @inspection_results ||= InspectSimpleIngest.new(folder_path, configuration[:scanner]).call
+  end
+
+  def filesystem
+    @filesystem ||= inspection_results.filesystem
+  end
+
+  def filesystem_node_paths
+    @filesystem_node_paths ||= filesystem.each.map { |node| Filesystem.node_locator(node) }
   end
 
 end

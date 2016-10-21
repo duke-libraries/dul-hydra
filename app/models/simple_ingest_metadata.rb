@@ -23,6 +23,10 @@ class SimpleIngestMetadata
     metadata
   end
 
+  def locators
+    metadata_grid.keys
+  end
+
   private
 
   def add_field_to_metadata(metadata, heading, field_contents)
