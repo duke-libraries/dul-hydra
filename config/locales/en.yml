@@ -8,17 +8,19 @@ en:
       ead_id: "EAD ID"
       aspace_id: "ArchivesSpace ID"
     techmd:
+      creating_application: "Creating Application"
+      creation_time: "File Creation Time"
       file_human_size: "File Size"
-      pronom_identifier: "PRONOM Identifier"
+      file_size: "File Size (Bytes)"
       format_label: "Format Label"
       format_version: "Format Version"
+      icc_profile_name: "ICC Profile Name"
+      icc_profile_version: "ICC Profile Version"
       media_type: "Media Type"
-      creating_application: "Creating Application"
+      modification_time: "File Modification Time"
+      pronom_identifier: "PRONOM Identifier"
       valid: "Valid"
       well_formed: "Well-formed"
-      file_size: "File Size (Bytes)"
-      creation_time: "File Creation Time"
-      modification_time: "File Modification Time"
     object_info:
       header: "Object Info"
       create_date: Ingested
@@ -40,6 +42,8 @@ en:
       new_menu: "Folder Ingest"
     metadata_file:
       new_menu: "Metadata File Upload"
+    simple_ingest:
+      new_menu: "Simple Ingest"
     help:
         label: "Help"
     contact:

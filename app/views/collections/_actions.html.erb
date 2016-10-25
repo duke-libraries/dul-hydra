@@ -8,6 +8,12 @@
     %>
   </li>
   <li class="list-group-item">
+    <%= link_to_if can?(:add_children, current_object),
+                   'Simple Ingest',
+                   new_simple_ingest_path(simple_ingest: { collection_id: current_object, admin_set: current_object.admin_set })
+    %>
+  </li>
+  <li class="list-group-item">
     <%= link_to_if can?(:export, current_object),
 	'Export Descriptive & Administrative Metadata',
 	export_collection_path(current_object)
@@ -18,5 +24,17 @@
 	'Export Technical Metadata',
 	export_collection_path(id: current_object, format: "csv", type: "techmd")
 	%>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:publish, current_object),
+                   'Publish Collection and Descendants',
+                   publish_collection_path(id: current_object)
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:unpublish, current_object),
+                   'Un-Publish Collection and Descendants',
+                   unpublish_collection_path(id: current_object)
+    %>
   </li>
 </ul>

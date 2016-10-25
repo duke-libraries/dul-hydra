@@ -18,31 +18,14 @@ module DulHydra
           :image_width,
           :image_height,
           :color_space,
+          :icc_profile_name,
+          :icc_profile_version,
           :creation_time,
           :modification_time,
           :checksum_digest,
           :checksum_value,
         ]
       end
-
-      mattr_accessor :techmd_report_fields do
-        [ Ddr::Index::Fields::TECHMD_FORMAT_LABEL,
-          Ddr::Index::Fields::TECHMD_FORMAT_VERSION,
-          Ddr::Index::Fields::TECHMD_MEDIA_TYPE,
-          Ddr::Index::Fields::TECHMD_PRONOM_IDENTIFIER,
-          Ddr::Index::Fields::TECHMD_CREATING_APPLICATION,
-          Ddr::Index::Fields::TECHMD_VALID,
-          Ddr::Index::Fields::TECHMD_WELL_FORMED,
-          Ddr::Index::Fields::TECHMD_FILE_SIZE,
-          Ddr::Index::Fields::TECHMD_CREATION_TIME,
-          Ddr::Index::Fields::TECHMD_MODIFICATION_TIME,
-        ]
-      end
-
-      # Columns in the CSV report generated for a collection
-      # Each column represents a *method* of a SolrDocument
-      # See DulHydra::SolrDocument
-      mattr_accessor :collection_report_fields
 
       # Contact email address
       mattr_accessor :contact_email
@@ -84,6 +67,10 @@ module DulHydra
           :ead_id,
           :aspace_id ]
       end
+
+      # Base path for Simple Ingest folders
+      mattr_accessor :simple_ingest_base_path
+
     end
 
     module ClassMethods

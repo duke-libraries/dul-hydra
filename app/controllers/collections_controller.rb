@@ -4,6 +4,7 @@ class CollectionsController < ApplicationController
   include DulHydra::Controller::HasChildrenBehavior
   include DulHydra::Controller::HasAttachmentsBehavior
   include DulHydra::Controller::HasTargetsBehavior
+  include DulHydra::Controller::PublicationBehavior
 
   before_action :set_desc_metadata, only: :create
   self.tabs += [ :tab_actions ]

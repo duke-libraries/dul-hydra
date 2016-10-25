@@ -38,6 +38,11 @@ DulHydra::Application.routes.draw do
     get 'events/:event_id', to: :event
   end
 
+  def publication_routes
+    get 'publish'
+    get 'unpublish'
+  end
+
   def roles_routes
     get 'roles'
     patch 'roles'
@@ -85,6 +90,7 @@ DulHydra::Application.routes.draw do
   end
 
   repository_resource :collections do
+    publication_routes
     get 'items'
     get 'attachments'
     get 'targets'
@@ -92,9 +98,12 @@ DulHydra::Application.routes.draw do
     post 'export'
   end
   repository_resource :items do
+    publication_routes
     get 'components'
   end
-  repository_content_resource :components
+  repository_content_resource :components do
+    publication_routes
+  end
   repository_content_resource :attachments
   repository_content_resource :targets
   resources :thumbnail, only: :show, constraints: {id: pid_constraint}
@@ -134,6 +143,8 @@ DulHydra::Application.routes.draw do
       get 'procezz'
     end
   end
+
+  resources :simple_ingests, :only => [:new, :create, :show]
 
   get '/help', to: redirect(DulHydra.help_url)
 

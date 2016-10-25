@@ -24,31 +24,74 @@ module DulHydra::Batch::Scripts
           expect { ProcessSimpleIngest.new({ batch_user: 'noone@nowhere.net' }) }.to raise_error(/Unable to find user/)
         end
       end
+      context "non-existent collection specified" do
+        before do
+          allow(User).to receive(:find_by_user_key) { double }
+        end
+        it "should raise a collection not found error" do
+          expect { ProcessSimpleIngest.new({ batch_user: 'a@b.c', collection_id: 'test:12345' }) }.to \
+                             raise_error(/Unable to find collection/)
+        end
+      end
     end
 
     describe "#execute" do
       let(:folder_path) { Rails.root.join('spec/fixtures/batch_ingest/simple_ingest/example') }
       let(:batch_user) {  FactoryGirl.create(:user) }
-      let(:processor) { described_class.new({ batch_user: batch_user.user_key, filepath: folder_path }) }
-      before { allow(processor).to receive(:get_user_choice) { 'p' } }
-      it "should output the filesystem scan results" do
-        expect { processor.execute }.to output(/Content models {:collections=>1, :items=>1, :components=>1}/).to_stdout
+
+      describe "collection id provided" do
+        let(:collection) { FactoryGirl.create(:collection) }
+        let(:processor) do
+          described_class.new({ batch_user: batch_user.user_key, filepath: folder_path, collection_id: collection.id })
+        end
+        before { allow(processor).to receive(:get_user_choice) { 'p' } }
+        it "should output the filesystem scan results" do
+          expect { processor.execute }.to output(/Content models {:items=>1, :components=>1}/).to_stdout
+        end
+        it "should produce the appropriate batch" do
+          processor.execute
+          batch = Ddr::Batch::Batch.last
+          expect(batch.user).to eq(batch_user)
+          batch_objects = batch.batch_objects
+          expect(batch_objects.size).to eq(2)
+          # Item batch object
+          expect(batch_objects[0].batch_object_attributes.where(name: 'title').first.value).to eq('Item A Title')
+          # Component batch object
+          expect(batch_objects[1].batch_object_attributes.where(name: 'title').first.value).to eq('Component 1 Title')
+          content_ds = batch_objects[1].batch_object_datastreams.where(name: Ddr::Datastreams::CONTENT).first
+          expect(content_ds.payload).to eq(File.join(folder_path, 'data', 'itemA', 'image1.tiff'))
+          expect(content_ds.checksum).to eq('548bd2678027f3acb4d4c5ccedf6f92ca07f74bd')
+        end
       end
-      it "should produce the appropriate batch" do
-        processor.execute
-        batch = Ddr::Batch::Batch.last
-        expect(batch.user).to eq(batch_user)
-        batch_objects = batch.batch_objects
-        expect(batch_objects.size).to eq(3)
-        # Collection batch object
-        expect(batch_objects[0].batch_object_attributes.where(name: 'title').first.value).to eq('Collection Title')
-        # Item batch object
-        expect(batch_objects[1].batch_object_attributes.where(name: 'title').first.value).to eq('Item A Title')
-        # Component batch object
-        expect(batch_objects[2].batch_object_attributes.where(name: 'title').first.value).to eq('Component 1 Title')
-        content_ds = batch_objects[2].batch_object_datastreams.where(name: Ddr::Datastreams::CONTENT).first
-        expect(content_ds.payload).to eq(File.join(folder_path, 'data', 'itemA', 'image1.tiff'))
-        expect(content_ds.checksum).to eq('548bd2678027f3acb4d4c5ccedf6f92ca07f74bd')
+
+      describe "collection id not provided" do
+        let(:processor) do
+          described_class.new({ batch_user: batch_user.user_key, filepath: folder_path })
+        end
+        before { allow(processor).to receive(:get_user_choice) { 'p' } }
+        it "should output the filesystem scan results" do
+          expect { processor.execute }.to output(/Content models {:collections=>1, :items=>1, :components=>1}/).to_stdout
+        end
+        it "should produce the appropriate batch" do
+          processor.execute
+          batch = Ddr::Batch::Batch.last
+          expect(batch.user).to eq(batch_user)
+          batch_objects = batch.batch_objects
+          expect(batch_objects.size).to eq(3)
+          # Collection batch object
+          expect(batch_objects[0].batch_object_attributes.where(name: 'title').first.value).to eq('Collection Title')
+          expect(batch_objects[0].batch_object_roles.size).to eq(1)
+          expect(batch_objects[0].batch_object_roles[0].agent).to eq(batch_user.user_key)
+          expect(batch_objects[0].batch_object_roles[0].role_type).to eq(Ddr::Auth::Roles::RoleTypes::CURATOR.title)
+          expect(batch_objects[0].batch_object_roles[0].role_scope).to eq(Ddr::Auth::Roles::POLICY_SCOPE)
+          # Item batch object
+          expect(batch_objects[1].batch_object_attributes.where(name: 'title').first.value).to eq('Item A Title')
+          # Component batch object
+          expect(batch_objects[2].batch_object_attributes.where(name: 'title').first.value).to eq('Component 1 Title')
+          content_ds = batch_objects[2].batch_object_datastreams.where(name: Ddr::Datastreams::CONTENT).first
+          expect(content_ds.payload).to eq(File.join(folder_path, 'data', 'itemA', 'image1.tiff'))
+          expect(content_ds.checksum).to eq('548bd2678027f3acb4d4c5ccedf6f92ca07f74bd')
+        end
       end
     end
 

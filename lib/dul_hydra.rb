@@ -15,6 +15,7 @@ module DulHydra
     autoload :BatchAbilityDefinitions
     autoload :MetadataFileAbilityDefinitions
     autoload :IngestFolderAbilityDefinitions
+    autoload :SimpleIngestAbilityDefinitions
   end
 
   include DulHydra::Configurable
