@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160817180639) do
+ActiveRecord::Schema.define(version: 20161026143035) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
@@ -123,10 +123,12 @@ ActiveRecord::Schema.define(version: 20160817180639) do
     t.text     "detail"
     t.text     "exception",       limit: 65535
     t.string   "user_key"
+    t.string   "permanent_id"
   end
 
   add_index "events", ["event_date_time"], name: "index_events_on_event_date_time"
   add_index "events", ["outcome"], name: "index_events_on_outcome"
+  add_index "events", ["permanent_id"], name: "index_events_on_permanent_id"
   add_index "events", ["pid"], name: "index_events_on_pid"
   add_index "events", ["type"], name: "index_events_on_type"
 
