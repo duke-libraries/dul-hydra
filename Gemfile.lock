@@ -97,7 +97,7 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
-    ddr-models (2.5.0)
+    ddr-models (2.5.1)
       active-fedora (~> 7.0)
       activeresource
       cancancan (~> 1.12)
@@ -277,7 +277,7 @@ GEM
       activesupport (= 4.1.13)
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
-    rake (10.4.2)
+    rake (11.3.0)
     rdf (1.1.14)
       link_header (~> 0.0, >= 0.0.8)
     rdf-aggregate-repo (1.1.0)
@@ -458,7 +458,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (~> 1.0.0)
   ddr-batch (= 1.1.0)
-  ddr-models (= 2.5.0)
+  ddr-models (= 2.5.1)
   deprecation
   devise
   equivalent-xml
