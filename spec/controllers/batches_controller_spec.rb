@@ -4,16 +4,16 @@ describe BatchesController, type: :controller, batch: true do
 
   shared_examples "a delete-able batch" do
     it "should delete the batch and redirect to the index page" do
+      expect(Resque).to receive(:enqueue).with(Ddr::Batch::BatchDeletionJob, batch.id)
       delete :destroy, :id => batch
-      expect{ Ddr::Batch::Batch.find(batch.id) }.to raise_error(ActiveRecord::RecordNotFound)
       expect(subject).to redirect_to(batches_path)
     end
   end
 
   shared_examples "a non-delete-able batch" do
     it "should not delete the batch and redirect to the index page" do
+      expect(Resque).not_to receive(:enqueue).with(Ddr::Batch::BatchDeletionJob, batch.id)
       delete :destroy, :id => batch
-      expect(Ddr::Batch::Batch.find(batch.id)).to eql(batch)
       expect(subject).to redirect_to(batches_path)
     end
   end
@@ -63,6 +63,20 @@ describe BatchesController, type: :controller, batch: true do
       context "batch is restartable" do
         before do
           batch.status = Ddr::Batch::Batch::STATUS_RESTARTABLE
+          batch.save!
+        end
+        it_behaves_like "a non-delete-able batch"
+      end
+      context "batch is queued for deletion" do
+        before do
+          batch.status = Ddr::Batch::Batch::STATUS_QUEUED_FOR_DELETION
+          batch.save!
+        end
+        it_behaves_like "a non-delete-able batch"
+      end
+      context "batch is deleting" do
+        before do
+          batch.status = Ddr::Batch::Batch::STATUS_DELETING
           batch.save!
         end
         it_behaves_like "a non-delete-able batch"
