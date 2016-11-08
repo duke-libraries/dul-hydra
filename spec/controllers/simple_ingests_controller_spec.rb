@@ -19,6 +19,7 @@ RSpec.describe SimpleIngestsController, type: :controller do
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(checksum_path) { true }
       allow(File).to receive(:exist?).with(metadata_path) { true }
+      allow_any_instance_of(SimpleIngest).to receive(:validate_metadata_file) { nil }
     end
 
     describe "when the user can create SimpleIngest" do

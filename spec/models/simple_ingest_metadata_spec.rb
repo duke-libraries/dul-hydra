@@ -38,7 +38,7 @@ describe SimpleIngestMetadata, type: :model, batch: true, simple_ingest: true do
     let(:sim) { described_class.new(metadata_filepath, metadata_profile) }
     let(:expected_metadata) do
       {
-        '' => { "identifier" => [ "test" ],
+        nil => { "identifier" => [ "test" ],
                           "title" => [ "Top Title" ],
                           "description" => [ "Top Description" ],
                           "creator" => [ "Spade, Sam" ] },
@@ -61,6 +61,14 @@ describe SimpleIngestMetadata, type: :model, batch: true, simple_ingest: true do
       expect(sim.metadata('foo')).to eql(expected_metadata[ 'foo' ])
       expect(sim.metadata('foo/bar.doc')).to eql(expected_metadata[ 'foo/bar.doc' ])
       expect(sim.metadata('foo/not.doc')).to be_empty
+    end
+  end
+
+  describe "locators" do
+    let(:metadata_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'simple_ingest', 'metadata.txt') }
+    let(:sim) { described_class.new(metadata_filepath, metadata_profile) }
+    it "should return the locators" do
+      expect(sim.locators).to match_array([ nil, 'foo', 'foo/bar.doc' ])
     end
   end
 
