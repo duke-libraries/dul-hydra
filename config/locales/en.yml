@@ -250,7 +250,7 @@ en:
           no_batch_runs: "No runs found for this batch."
           no_batch_objects: "No objects in this batch."
           batch_queued: "Batch %{id} queued for processing."
-          batch_deleted: "Batch %{id} deleted."
+          batch_deleting: "Batch %{id} queued for deletion."
           batch_not_deletable: "Cannot delete %{status} batch %{id}."
           batch_deletion_confirmation: "You are about to delete batch %{batch_id}. Continue?"
           headings:
