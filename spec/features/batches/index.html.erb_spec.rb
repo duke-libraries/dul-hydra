@@ -5,16 +5,13 @@ describe "batches/index.html.erb", :type => :feature do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
     let(:other_user) { FactoryGirl.create(:user) }
     context "pending batches" do
-      let(:tab_id) { '#tab_pending_batches' }
       context "user has no pending batches" do
         before do
           login_as other_user
           visit batches_path
         end
         it "should display an appropriate message" do
-          within tab_id do
-            expect(page).to have_text(I18n.t('batch.web.no_batches', :type => I18n.t('dul_hydra.tabs.pending_batches.label')))
-          end
+          expect(page).to have_text(I18n.t('batch.web.no_batches', :type => I18n.t('dul_hydra.tabs.pending_batches.label')))
         end
       end
       context "user has some pending batches" do
@@ -23,9 +20,7 @@ describe "batches/index.html.erb", :type => :feature do
           visit batches_path
         end
         it "should list the batch on the pending tab" do
-          within tab_id do
-            expect(page).to have_link(batch.id, :href => batch_path(batch))
-          end
+          expect(page).to have_link(batch.id, :href => batch_path(batch))
         end
       end
       context "new batch" do
@@ -35,9 +30,7 @@ describe "batches/index.html.erb", :type => :feature do
             visit batches_path
           end
           it "should not have a link to process the batch" do
-            within tab_id do
-              expect(page).to_not have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
-            end
+            expect(page).to_not have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
           end
         end
       end
@@ -50,9 +43,7 @@ describe "batches/index.html.erb", :type => :feature do
             visit batches_path
           end
           it "should have a link to process the batch" do
-            within tab_id do
-              expect(page).to have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
-            end
+            expect(page).to have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
           end
         end
       end
@@ -65,9 +56,7 @@ describe "batches/index.html.erb", :type => :feature do
             visit batches_path
           end
           it "should have a link to process the batch" do
-            within tab_id do
-              expect(page).to have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
-            end
+            expect(page).to have_link(I18n.t('batch.web.action_names.procezz'), :href => procezz_batch_path(batch))
           end
         end
         context "validated and invalid" do
@@ -77,24 +66,19 @@ describe "batches/index.html.erb", :type => :feature do
             visit batches_path
           end
           it "should have a link to retry the batch" do
-            within tab_id do
-              expect(page).to have_link(I18n.t('batch.web.action_names.retry'), :href => procezz_batch_path(batch))
-            end
+            expect(page).to have_link(I18n.t('batch.web.action_names.retry'), :href => procezz_batch_path(batch))
           end
         end
       end
     end
     context "finished batches" do
-      let(:tab_id) { '#tab_finished_batches' }
       context "user has no finished batches" do
         before do
           login_as other_user
           visit batches_path
         end
         it "should display an appropriate message" do
-          within tab_id do
-            expect(page).to have_text(I18n.t('batch.web.no_batches', :type => I18n.t('dul_hydra.tabs.finished_batches.label')))
-          end
+          expect(page).to have_text(I18n.t('batch.web.no_batches', :type => I18n.t('dul_hydra.tabs.finished_batches.label')))
         end
       end
       context "user has some finished batches" do
@@ -105,9 +89,7 @@ describe "batches/index.html.erb", :type => :feature do
           visit batches_path
         end
         it "should list the batch on the already run tab" do
-          within tab_id do
-            expect(page).to have_link(batch.id, :href => batch_path(batch))
-          end
+          expect(page).to have_link(batch.id, :href => batch_path(batch))
         end
       end
     end

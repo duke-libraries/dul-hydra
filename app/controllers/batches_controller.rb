@@ -2,20 +2,8 @@ class BatchesController < ApplicationController
 
   load_and_authorize_resource :class => Ddr::Batch::Batch
 
-  include DulHydra::Controller::TabbedViewBehavior
-  self.tabs = [:tab_pending_batches, :tab_finished_batches]
-
   def index
-    @batches = @batches.includes(:batch_objects, :user)
-    @pending = []
-    @finished = []
-    @batches.each do |batch|
-      if batch.finished?
-        @finished << batch
-      else
-        @pending << batch
-      end
-    end
+    @batches = @batches.includes(:batch_objects, :user).order('id DESC').page(params[:page]).per(DulHydra.batches_per_page)
   end
 
   def show
@@ -36,7 +24,7 @@ class BatchesController < ApplicationController
   def procezz
     Resque.enqueue(Ddr::Batch::BatchProcessorJob, @batch.id, current_user.id)
     flash[:notice] = I18n.t('batch.web.batch_queued', :id => @batch.id)
-    redirect_to batches_url
+    redirect_to batch_url
   end
 
   def validate
@@ -54,16 +42,6 @@ class BatchesController < ApplicationController
       # render :show
       redirect_to batch_url(@batch.id)
     end
-  end
-
-  protected
-
-  def tab_pending_batches
-    Tab.new("pending_batches")
-  end
-
-  def tab_finished_batches
-    Tab.new("finished_batches")
   end
 
 end
