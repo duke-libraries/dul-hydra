@@ -15,9 +15,9 @@ module AbstractJob
   end
 
   def send_email(email:, subject:, message:)
-    mail = JobMailer.basic(to: email,
-                           subject: subject,
-                           message: message)
+    JobMailer.basic(to: email,
+                    subject: subject,
+                    message: message).deliver
   end
 
 end
