@@ -7,6 +7,7 @@ en:
       local_id: "Local ID"
       ead_id: "EAD ID"
       aspace_id: "ArchivesSpace ID"
+      doi: "DOI"
     techmd:
       creating_application: "Creating Application"
       creation_time: "File Creation Time"
