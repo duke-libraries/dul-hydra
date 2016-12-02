@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161026143035) do
+ActiveRecord::Schema.define(version: 20161130190436) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
@@ -34,6 +34,14 @@ ActiveRecord::Schema.define(version: 20161026143035) do
     t.datetime "updated_at"
     t.string   "checksum"
     t.string   "checksum_type"
+  end
+
+  create_table "batch_object_messages", force: true do |t|
+    t.integer  "batch_object_id"
+    t.integer  "level",                         default: 0
+    t.text     "message",         limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "batch_object_relationships", force: true do |t|
@@ -66,6 +74,9 @@ ActiveRecord::Schema.define(version: 20161026143035) do
     t.datetime "updated_at"
     t.string   "type"
     t.boolean  "verified",   default: false
+    t.boolean  "handled",    default: false
+    t.boolean  "processed",  default: false
+    t.boolean  "validated",  default: false
   end
 
   add_index "batch_objects", ["verified"], name: "index_batch_objects_on_verified"

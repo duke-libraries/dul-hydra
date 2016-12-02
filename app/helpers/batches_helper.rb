@@ -23,7 +23,7 @@ module BatchesHelper
     when nil
       "NEW"
     when Ddr::Batch::Batch::STATUS_PROCESSING
-      "#{batch.status}&nbsp;#{batch.completed_count}/#{batch.batch_objects.count}<br /><em>#{est_time_to_complete(batch)}</em>".html_safe
+      "#{batch.status}&nbsp;#{batch.handled_count}/#{batch.batch_objects.count}<br /><em>#{est_time_to_complete(batch)}</em>".html_safe
     else
       batch.status
     end
