@@ -1,9 +1,11 @@
 class BatchesController < ApplicationController
 
   load_and_authorize_resource :class => Ddr::Batch::Batch
+  # skip_authorize_resource only: [:index, :show]
 
   def index
-    @batches = @batches.includes(:batch_objects, :user).order('id DESC').page(params[:page]).per(DulHydra.batches_per_page)
+    # @batches = @batches.includes(:batch_objects, :user).order('id DESC').page(params[:page]).per(DulHydra.batches_per_page)
+    @batches = @batches.order('id DESC').page(params[:page]).per(DulHydra.batches_per_page)
   end
 
   def show
