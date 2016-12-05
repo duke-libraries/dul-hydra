@@ -7,7 +7,7 @@
     <table class="table table-bordered table-striped table-condensed">
       <thead>
         <tr>
-          <th scope="col"></th>
+          <th scope="col">&nbsp;</th>
           <th scope="col">ID</th>
           <th scope="col">Action</th>
           <th scope="col">Status</th>
@@ -18,9 +18,7 @@
           <th scope="col">Start</th>
           <th scope="col">Outcome</th>
           <th scope="col">Log</th>
-          <% if acting_as_superuser? %>
-              <th scope="col">User</th>
-          <% end %>
+          <th scope="col">User</th>
         </tr>
       </thead>
       <tbody>
@@ -37,9 +35,7 @@
             <td><%= b.start.nil? ? '--' : b.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %></td>
             <td><%= b.outcome.nil? ? '--' : b.outcome %></td>
             <td><%= b.logfile_file_name.nil? ? '--' : link_to(I18n.t('batch.web.column_names.log'), b.logfile.url) %></td>
-            <% if acting_as_superuser? %>
-                <td><%= b.user.nil? ? '--' : b.user.user_key %></td>
-            <% end %>
+            <td><%= b.user.nil? ? '--' : b.user.user_key %></td>
           </tr>
         <% end %>
       </tbody>

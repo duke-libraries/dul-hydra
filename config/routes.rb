@@ -124,7 +124,6 @@ DulHydra::Application.routes.draw do
       get 'procezz'
       get 'validate'
     end
-    resources :batch_objects, :only => :index
   end
 
   resources :batch_objects, :only => :show do

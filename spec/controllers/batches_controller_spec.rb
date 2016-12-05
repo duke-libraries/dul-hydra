@@ -18,6 +18,30 @@ describe BatchesController, type: :controller, batch: true do
     end
   end
 
+  describe "#index" do
+    let!(:my_batch) { FactoryGirl.create(:batch) }
+    let(:user) { FactoryGirl.create(:user) }
+    before {
+      sign_in user
+    }
+    it "lists my batch for others users" do
+      get :index
+      expect(assigns(:batches).size).to eq(1)
+    end
+  end
+
+  describe "#show" do
+    let(:my_batch) { FactoryGirl.create(:batch) }
+    let(:user) { FactoryGirl.create(:user) }
+    before {
+      sign_in user
+    }
+    it "renders my batch for other users" do
+      get :show, id: my_batch
+      expect(response.response_code).to eq(200)
+    end
+  end
+
   describe "#destroy" do
     let(:batch) { FactoryGirl.create(:batch_with_basic_ingest_batch_objects) }
     before { sign_in batch.user }
