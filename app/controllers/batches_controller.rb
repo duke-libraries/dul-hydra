@@ -4,6 +4,12 @@ class BatchesController < ApplicationController
 
   def index
     @batches = @batches.includes(:batch_objects, :user).order('id DESC').page(params[:page]).per(DulHydra.batches_per_page)
+    if params[:filter] == "current_user"
+      @batches = @batches.where(user: current_user)
+      render 'my_batches'
+    else
+      render 'index'
+    end
   end
 
   def show

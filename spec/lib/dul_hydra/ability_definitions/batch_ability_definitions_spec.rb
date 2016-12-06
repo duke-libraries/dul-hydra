@@ -14,7 +14,8 @@ module DulHydra
         it { is_expected.to be_able_to(:manage, batch) }
       end
       describe "when the user is not the creator of the batch" do
-        it { is_expected.to_not be_able_to(:manage, batch) }
+        it { is_expected.to_not be_able_to(:destroy, batch) }
+        it { is_expected.to_not be_able_to(:procezz, batch) }
         it { is_expected.to be_able_to(:read, batch) }
       end
     end

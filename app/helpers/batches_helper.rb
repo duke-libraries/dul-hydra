@@ -1,6 +1,7 @@
 module BatchesHelper
 
   def batch_action(batch)
+    return "--" unless can?(:procezz, batch)
     case batch.status
     when Ddr::Batch::Batch::STATUS_READY
       # Temporarily remove the functionality requiring a separate validation step before processing
