@@ -126,6 +126,8 @@ DulHydra::Application.routes.draw do
     end
   end
 
+  get 'my_batches' => 'batches#index', filter: 'current_user'
+
   resources :batch_objects, :only => :show do
     resources :batch_object_datastreams, :only => :index
     resources :batch_object_relationships, :only => :index

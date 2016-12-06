@@ -28,6 +28,12 @@ describe BatchesController, type: :controller, batch: true do
       get :index
       expect(assigns(:batches).size).to eq(1)
     end
+    describe "my batches" do
+      it "doesn't list my batch for other users" do
+        get :index, filter: "current_user"
+        expect(assigns(:batches).size).to eq(0)
+      end
+    end
   end
 
   describe "#show" do

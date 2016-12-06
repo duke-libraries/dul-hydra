@@ -1,2 +1,5 @@
-<h3><%= I18n.t('batch.web.page_titles.batches') %></h3>
+<h2><%= I18n.t('batch.web.page_titles.batches') %></h2>
+<p>
+  [ <%= link_to "Show Only My Batches", my_batches_path %> ]
+</p>
 <%= render partial: 'batches' %>
