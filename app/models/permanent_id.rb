@@ -145,10 +145,7 @@ class PermanentId
                   end
     object.reload
     object.permanent_id = identifier.id
-    unless object.save(validate: false)
-      raise AssignmentFailed,
-            "Assignment of permanent id \"#{identifier.id}\" to object \"#{object.id}\" failed."
-    end
+    object.save(validate: false)
   end
 
 end

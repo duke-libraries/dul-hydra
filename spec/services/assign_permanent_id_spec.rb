@@ -1,12 +1,12 @@
 RSpec.describe AssignPermanentId do
 
   let(:obj) { FactoryGirl.create(:item) }
-  let(:id) { PermanentId.new("foo") }
+  let(:id) { PermanentId.identifier_class.new("foo") }
 
   before do
     allow(obj).to receive(:reload) { nil }
     allow(obj).to receive(:save) { nil }
-    allow(PermanentId).to receive(:mint) { id }
+    allow(PermanentId.identifier_class).to receive(:mint) { id }
     allow(id).to receive(:save) { nil }
   end
 
@@ -32,9 +32,8 @@ RSpec.describe AssignPermanentId do
   end
 
   describe "when passed an object" do
-    let(:object_or_id) { obj }
     specify {
-      described_class.call(object_or_id)
+      described_class.call(obj)
       expect(obj.permanent_id).to eq("foo")
     }
   end
