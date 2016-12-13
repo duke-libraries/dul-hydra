@@ -278,4 +278,19 @@ namespace :dul_hydra do
     end
   end
 
+  namespace :permanent_id do
+    desc "Assign permanent IDs to objects which do not have one"
+    task :assign, [:limit] => :environment do |t, args|
+      rows = args[:limit] || 100
+      query = Ddr::Index::Query.build(rows.to_i) do |r|
+        absent :permanent_id
+        limit r
+      end
+      query.each_id do |repo_id|
+        Resque.enqueue(AssignPermanentIdJob, repo_id)
+      end
+      puts "Queued #{query.count} permanent ID assignment jobs."
+    end
+  end
+
 end
