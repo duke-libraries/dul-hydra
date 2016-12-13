@@ -19,8 +19,8 @@ class PermanentId
 
   self.identifier_class = Ezid::Identifier
   self.identifier_class.defaults = {
-    profile: "dc",
-    export:  "no",
+    profile: DEFAULT_PROFILE,
+    export:  DEFAULT_EXPORT,
     status:  DEFAULT_STATUS,
   }
 
