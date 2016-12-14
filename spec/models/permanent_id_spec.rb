@@ -1,8 +1,8 @@
 RSpec.describe PermanentId do
 
-  describe "assigment" do
+  describe "auto assigment" do
     let(:obj) { FactoryGirl.create(:item) }
-    describe "when auto assign is enabled" do
+    describe "when enabled" do
       let!(:id) { described_class.identifier_class.new("foo") }
       before do
         allow(id).to receive(:save) { nil }
@@ -15,16 +15,35 @@ RSpec.describe PermanentId do
         obj.save!
       end
       it "assigns a permanent id to the object" do
-        expect(obj.reload.permanent_id).to eq("foo")
+        obj.reload
+        expect(obj.permanent_id).to eq("foo")
+        expect(obj.permanent_url).to eq("https://idn.duke.edu/foo")
       end
     end
-    describe "when auto assign is disabled" do
+    describe "when disabled" do
       before do
         allow(DulHydra).to receive(:auto_assign_permanent_id) { false }
       end
       it "does not assign a permanent id to the object" do
         expect(obj.reload.permanent_id).to be_nil
       end
+    end
+  end
+
+  describe "assignment" do
+    let(:obj) { FactoryGirl.create(:item) }
+    let!(:id) { described_class.identifier_class.new("foo") }
+    before do
+      allow(id).to receive(:save) { nil }
+      allow(described_class.identifier_class).to receive(:mint) { id }
+      allow(described_class.identifier_class).to receive(:find).with("foo") { id }
+    end
+    after do
+      obj.permanent_id = nil
+      obj.save!
+    end
+    it "creates an update event" do
+      expect { described_class.assign!(obj) }.to change(Ddr::Events::UpdateEvent, :count).to(1)
     end
   end
 

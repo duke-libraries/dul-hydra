@@ -14,3 +14,5 @@ ActiveSupport::Notifications.subscribe(/workflow/) do |*args|
   event = ActiveSupport::Notifications::Event.new(*args)
   PermanentId.update!(event.payload[:pid])
 end
+
+ActiveSupport::Notifications.subscribe("assign.permanent_id", Ddr::Events::UpdateEvent)

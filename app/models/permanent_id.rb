@@ -9,11 +9,12 @@ class PermanentId
   class IdentifierNotAssigned < Error; end
   class IdentifierNotFound < Error; end
 
-  DEFAULT_STATUS   = Ezid::Status::RESERVED
-  DEFAULT_EXPORT   = "no"
-  DEFAULT_PROFILE  = "dc"
-  DEFAULT_TARGET   = "https://repository.duke.edu/id/%s"
-  FCREPO3_PID      = "fcrepo3.pid".freeze
+  PERMANENT_URL_BASE = "https://idn.duke.edu/".freeze
+  DEFAULT_STATUS     = Ezid::Status::RESERVED
+  DEFAULT_EXPORT     = "no".freeze
+  DEFAULT_PROFILE    = "dc".freeze
+  DEFAULT_TARGET     = "https://repository.duke.edu/id/%s"
+  FCREPO3_PID        = "fcrepo3.pid".freeze
 
   class_attribute :identifier_class
 
@@ -61,7 +62,18 @@ class PermanentId
   def assign!(id = nil)
     ActiveSupport::Notifications.instrument("assign.permanent_id", pid: object.id) do |payload|
       assign(id)
-      payload.merge(status: status, target: target, permanent_id: identifier.id)
+      software = [ "dul-hydra {DulHydra::VERSION}", Ezid::Client.version ].join("; ")
+      detail = <<-EOS
+Permanent ID:  #{object.permanent_id}
+Permanent URL: #{object.permanent_url}
+
+EZID Metadata:
+#{identifier.metadata}
+      EOS
+      payload.merge!(summary: "Permanent ID assignment",
+                     detail: detail,
+                     software: software,
+                     permanent_id: identifier.id)
     end
   end
 
@@ -72,7 +84,7 @@ class PermanentId
   def update!
     ActiveSupport::Notifications.instrument("update.permanent_id", pid: object.id) do |payload|
       update
-      payload.merge(status: status, permanent_id: identifier.id)
+      payload.merge!(permanent_id: identifier.id)
     end
   end
 
@@ -81,6 +93,10 @@ class PermanentId
       @identifier = find_identifier(object.permanent_id)
     end
     @identifier
+  end
+
+  def set_permanent_url
+    object.permanent_url = PERMANENT_URL_BASE + identifier.id
   end
 
   # @raise [Ezid::Error] on EZID client or server error
@@ -172,6 +188,7 @@ class PermanentId
                   end
     object.reload
     object.permanent_id = identifier.id
+    object.permanent_url = PERMANENT_URL_BASE + identifier.id
     object.save(validate: false)
     set_metadata!
   end
