@@ -47,7 +47,7 @@ module DulHydra
       mattr_accessor :alert_message_context
 
       mattr_accessor :fixity_check_limit do
-        ENV["FIXITY_CHECK_LIMIT"] || 10**5
+        ENV["FIXITY_CHECK_LIMIT"] || 10**4
       end
 
       mattr_accessor :fixity_check_period_in_days do
@@ -80,6 +80,9 @@ module DulHydra
         false
       end
 
+      mattr_accessor :auto_update_permanent_id do
+        false
+      end
     end
 
     module ClassMethods

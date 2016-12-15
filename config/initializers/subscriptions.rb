@@ -3,28 +3,9 @@ ActiveSupport::Notifications.subscribe("save.collection") do |*args|
   ReindexCollectionContents.trigger(event)
 end
 
-ActiveSupport::Notifications.subscribe(/^create\.\w+/) do |*args|
-  if DulHydra.auto_assign_permanent_id
-    event = ActiveSupport::Notifications::Event.new(*args)
-    PermanentId.assign!(event.payload[:pid])
-  end
-end
-
-ActiveSupport::Notifications.subscribe(/workflow/) do |*args|
-  event = ActiveSupport::Notifications::Event.new(*args)
-  PermanentId.update!(event.payload[:pid])
-end
+ActiveSupport::Notifications.subscribe(/^create\.\w+/, PermanentId)
+ActiveSupport::Notifications.subscribe(/^deaccession\.\w+/, PermanentId)
+ActiveSupport::Notifications.subscribe(/^destroy\.\w+/, PermanentId)
+ActiveSupport::Notifications.subscribe(/workflow/, PermanentId)
 
 ActiveSupport::Notifications.subscribe("assign.permanent_id", Ddr::Events::UpdateEvent)
-
-ActiveSupport::Notifications.subscribe(/^deaccession\.\w+/) do |*args|
-  event = ActiveSupport::Notifications::Event.new(*args)
-  pid, ark, reason = event.payload.values_at(:pid, :permanent_id, :reason)
-  PermanentId.deaccession!(pid, ark, reason) if ark
-end
-
-ActiveSupport::Notifications.subscribe(/^destroy\.\w+/) do |*args|
-  event = ActiveSupport::Notifications::Event.new(*args)
-  pid, ark, reason = event.payload.values_at(:pid, :permanent_id, :reason)
-  PermanentId.delete!(pid, ark, reason) if ark
-end

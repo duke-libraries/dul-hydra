@@ -29,6 +29,26 @@ class PermanentId
 
   self.identifier_repo_id_field = FCREPO3_PID
 
+  # ActiveSupport::Notifications event handler
+  def self.call(*args)
+    event = ActiveSupport::Notifications::Event.new(*args)
+    repo_id, identifier_id, reason = event.payload.values_at(:pid, :permanent_id, :reason)
+    case event.name
+    when /^create/
+      PermanentId.assign!(repo_id) if DulHydra.auto_assign_permanent_id
+    when /workflow/
+      PermanentId.update!(repo_id) if DulHydra.auto_update_permanent_id
+    when /^deaccession/
+      if DulHydra.auto_update_permanent_id && identifier_id
+        PermanentId.deaccession!(repo_id, identifier_id, reason)
+      end
+    when /^destroy/
+      if DulHydra.auto_update_permanent_id && identifier_id
+        PermanentId.delete!(repo_id, identifier_id, reason)
+      end
+    end
+  end
+
   def self.deaccession!(repo_object_or_id, identifier_or_id, reason = nil)
     new(repo_object_or_id, identifier_or_id).deaccession!(reason)
   end

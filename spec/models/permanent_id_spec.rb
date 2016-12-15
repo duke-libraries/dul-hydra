@@ -47,87 +47,147 @@ RSpec.describe PermanentId do
     end
   end
 
-  describe "updating" do
+  describe "auto updating" do
     let(:obj) { Item.create(pid: "test:1") }
     let!(:id) { described_class.identifier_class.new("foo") }
     before do
       allow(described_class.identifier_class).to receive(:find).with("foo") { id }
     end
-    describe "when the object workflow state changes" do
-      describe "and the object has a permanent id" do
-        before do
-          allow(id).to receive(:save) { nil }
-          obj.permanent_id = "foo"
+    describe "when enabled" do
+      before do
+        allow(DulHydra).to receive(:auto_update_permanent_id) { true }
+      end
+      describe "when the object workflow state changes" do
+        describe "and the object has a permanent id" do
+          before do
+            allow(id).to receive(:save) { nil }
+            obj.permanent_id = "foo"
+          end
+          after do
+            obj.permanent_id = nil
+            obj.save!
+          end
+          it "updates the permanent id" do
+            expect { obj.publish! }.to change(id, :status).to("public")
+          end
         end
-        after do
-          obj.permanent_id = nil
-          obj.save!
-        end
-        it "updates the permanent id" do
-          expect { obj.publish! }.to change(id, :status).to("public")
+        describe "and the object does not have a permanent id" do
+          it "does not update the permanent id" do
+            expect { obj.publish! }.not_to change(id, :status)
+          end
         end
       end
-      describe "and the object does not have a permanent id" do
+      describe "when the object workflow state does not change" do
         it "does not update the permanent id" do
-          expect { obj.publish! }.not_to change(id, :status)
+          expect { obj.save! }.not_to change(id, :status)
         end
       end
     end
-    describe "when the object workflow state does not change" do
-      it "does not update the permanent id" do
-        expect { obj.save! }.not_to change(id, :status)
+    describe "when disabled" do
+      before do
+        allow(DulHydra).to receive(:auto_update_permanent_id) { false }
+      end
+      describe "when the object workflow state changes" do
+        describe "and the object has a permanent id" do
+          before do
+            allow(id).to receive(:save) { nil }
+            obj.permanent_id = "foo"
+          end
+          after do
+            obj.permanent_id = nil
+            obj.save!
+          end
+          it "does not update the permanent id" do
+            expect { obj.publish! }.not_to change(id, :status)
+          end
+        end
+        describe "and the object does not have a permanent id" do
+          it "does not update the permanent id" do
+            expect { obj.publish! }.not_to change(id, :status)
+          end
+        end
       end
     end
   end
 
-  describe "deleting / marking unavailable" do
-    describe "when an object has a permanent id" do
-      let(:obj) { Item.create(pid: "test:1", permanent_id: "foo") }
-      let!(:id) { described_class.identifier_class.new("foo") }
+  describe "auto deleting / marking unavailable" do
+    describe "when enabled" do
       before do
-        allow(id).to receive(:save) { nil }
-        allow(described_class.identifier_class).to receive(:find).with("foo") { id }
+        allow(DulHydra).to receive(:auto_update_permanent_id) { true }
       end
-      describe "and it's deacessioned" do
-        specify {
-          expect(described_class).to receive(:deaccession!).with("test:1", "foo", nil) { nil }
-          obj.deaccession
-        }
+      describe "when an object has a permanent id" do
+        let(:obj) { Item.create(pid: "test:1", permanent_id: "foo") }
+        let!(:id) { described_class.identifier_class.new("foo") }
+        before do
+          allow(id).to receive(:save) { nil }
+          allow(described_class.identifier_class).to receive(:find).with("foo") { id }
+        end
+        describe "and it's deacessioned" do
+          specify {
+            expect(described_class).to receive(:deaccession!).with("test:1", "foo", nil) { nil }
+            obj.deaccession
+          }
+        end
+        describe "and it's deleted" do
+          specify {
+            expect(described_class).not_to receive(:delete!)
+            expect(described_class).not_to receive(:deaccession!)
+            obj.send(:delete)
+          }
+        end
+        describe "and it's destroyed" do
+          specify {
+            expect(described_class).to receive(:delete!).with("test:1", "foo", nil) { nil }
+            obj.destroy
+          }
+        end
       end
-      describe "and it's deleted" do
-        specify {
-          expect(described_class).not_to receive(:delete!)
-          expect(described_class).not_to receive(:deaccession!)
-          obj.send(:delete)
-        }
-      end
-      describe "and it's destroyed" do
-        specify {
-          expect(described_class).to receive(:delete!).with("test:1", "foo", nil) { nil }
-          obj.destroy
-        }
+      describe "when an object does not have a permanent id" do
+        let(:obj) { FactoryGirl.create(:item) }
+        describe "and it's deacessioned" do
+          specify {
+            expect(described_class).not_to receive(:deaccession!)
+            obj.deaccession
+          }
+        end
+        describe "and it's deleted" do
+          specify {
+            expect(described_class).not_to receive(:deaccession!)
+            expect(described_class).not_to receive(:delete!)
+            obj.send(:delete)
+          }
+        end
+        describe "and it's destroyed" do
+          specify {
+            expect(described_class).not_to receive(:delete!)
+            obj.destroy
+          }
+        end
       end
     end
-    describe "when an object does not have a permanent id" do
-      let(:obj) { FactoryGirl.create(:item) }
-      describe "and it's deacessioned" do
-        specify {
-          expect(described_class).not_to receive(:deaccession!)
-          obj.deaccession
-        }
+    describe "when disabled" do
+      before do
+        allow(DulHydra).to receive(:auto_update_permanent_id) { false }
       end
-      describe "and it's deleted" do
-        specify {
-          expect(described_class).not_to receive(:deaccession!)
-          expect(described_class).not_to receive(:delete!)
-          obj.send(:delete)
-        }
-      end
-      describe "and it's destroyed" do
-        specify {
-          expect(described_class).not_to receive(:delete!)
-          obj.destroy
-        }
+      describe "when an object has a permanent id" do
+        let(:obj) { Item.create(pid: "test:1", permanent_id: "foo") }
+        let!(:id) { described_class.identifier_class.new("foo") }
+        before do
+          allow(id).to receive(:save) { nil }
+          allow(described_class.identifier_class).to receive(:find).with("foo") { id }
+        end
+        describe "and it's deacessioned" do
+          specify {
+            expect(described_class).not_to receive(:deaccession!)
+            obj.deaccession
+          }
+        end
+        describe "and it's destroyed" do
+          specify {
+            expect(described_class).not_to receive(:delete!)
+            obj.destroy
+          }
+        end
       end
     end
   end
@@ -228,6 +288,7 @@ RSpec.describe PermanentId do
       subject { described_class.new("test:1", "foo") }
       before do
         allow(described_class.identifier_class).to receive(:find).with("foo") { id }
+        allow(id).to receive(:save) { nil }
       end
       specify {
         expect(id).to receive(:delete)
@@ -236,8 +297,7 @@ RSpec.describe PermanentId do
       describe " when the identifier is not reserved" do
         before { id.public! }
         specify {
-          expect(id).to receive(:unavailable!).with("deaccessioned")
-          subject.deaccession!
+          expect { subject.deaccession! }.to change(id, :status).to("unavailable | deaccessioned")
         }
       end
       describe "when the identifier is associated with another repo id" do
@@ -259,10 +319,12 @@ RSpec.describe PermanentId do
         subject.delete!
       }
       describe " when the identifier is not reserved" do
-        before { id.public! }
+        before do
+          allow(id).to receive(:save) { nil }
+          id.public!
+        end
         specify {
-          expect(id).to receive(:unavailable!).with("deleted")
-          subject.delete!
+          expect { subject.delete! }.to change(id, :status).to("unavailable | deleted")
         }
       end
       describe "when the identifier is associated with another repo id" do
