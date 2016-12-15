@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: git://github.com/duke-libraries/ddr-models.git
-  revision: 3ade455fbcb709bdc3f1172a29018fba41f0caac
-  ref: 3ade455fbcb709bdc3f1172a29018fba41f0caac
+  revision: e7264ef4f0a73ffeecc6614b0b7fd09e906700aa
+  ref: e7264ef4f0a73ffeecc6614b0b7fd09e906700aa
   specs:
     ddr-models (2.6.0.pre)
       active-fedora (~> 7.0)
@@ -28,7 +28,7 @@ GIT
       hydra-validations (~> 0.5)
       net-ldap (~> 0.11)
       omniauth-shibboleth (~> 1.2.0)
-      rails (~> 4.1.6)
+      rails (~> 4.1)
       rdf-vocab (~> 0.8)
       resque (~> 1.25)
       virtus (~> 1.0.5)

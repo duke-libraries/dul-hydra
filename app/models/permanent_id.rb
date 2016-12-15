@@ -4,7 +4,7 @@ class PermanentId
 
   class Error < DulHydra::Error; end
   class AssignmentFailed < Error; end
-  class ObjectNotPersisted < Error; end
+  class RepoObjectNotPersisted < Error; end
   class AlreadyAssigned < AssignmentFailed; end
   class IdentifierNotAssigned < Error; end
   class IdentifierNotFound < Error; end
@@ -15,8 +15,10 @@ class PermanentId
   DEFAULT_PROFILE    = "dc".freeze
   DEFAULT_TARGET     = "https://repository.duke.edu/id/%s"
   FCREPO3_PID        = "fcrepo3.pid".freeze
+  DELETED            = "deleted".freeze
+  DEACCESSIONED      = "deaccessioned".freeze
 
-  class_attribute :identifier_class
+  class_attribute :identifier_class, :identifier_repo_id_field
 
   self.identifier_class = Ezid::Identifier
   self.identifier_class.defaults = {
@@ -25,47 +27,66 @@ class PermanentId
     status:  DEFAULT_STATUS,
   }
 
-  def self.update!(object_or_id)
-    perm_id = new(object_or_id)
+  self.identifier_repo_id_field = FCREPO3_PID
+
+  def self.deaccession!(repo_object_or_id, identifier_or_id, reason = nil)
+    new(repo_object_or_id, identifier_or_id).deaccession!(reason)
+  end
+
+  def self.delete!(repo_object_or_id, identifier_or_id, reason = nil)
+    new(repo_object_or_id, identifier_or_id).delete!(reason)
+  end
+
+  def self.update!(repo_object_or_id)
+    perm_id = new(repo_object_or_id)
     perm_id.update! if perm_id.assigned?
   end
 
-  # @return [PermanentId] the permanent id assigned to the object
-  def self.assign!(object_or_id, ark = nil)
-    new(object_or_id).assign!(ark)
+  def self.assign!(repo_object_or_id, identifier_or_id = nil)
+    new(repo_object_or_id, identifier_or_id).assign!
   end
 
-  # @return [PermanentId] the permanent id previously assigned to the object,
-  #   or nil, if not assigned.
-  def self.assigned(object_or_id)
-    perm_id = new(object_or_id)
+  def self.assigned(repo_object_or_id)
+    perm_id = new(repo_object_or_id)
     perm_id.assigned? ? perm_id : nil
   end
 
-  attr_reader :object
+  def initialize(repo_object_or_id, identifier_or_id = nil)
+    case repo_object_or_id
+    when ActiveFedora::Base
+      raise RepoObjectNotPersisted, "Repository object must be persisted." if repo_object_or_id.new_record?
+      @repo_object = repo_object_or_id
+    when String, nil
+      @repo_id = repo_object_or_id
+    else
+      raise TypeError, "#{repo_object_or_id.class} is not expected as the first argument."
+    end
 
-  def initialize(object_or_id)
-    object = case object_or_id
-             when ActiveFedora::Base
-               if object_or_id.new_record?
-                 raise ObjectNotPersisted, "Object must be persisted."
-               end
-               object_or_id
-             when String
-               ActiveFedora::Base.find(object_or_id)
-             else
-               raise TypeError, "#{object_or_id.class} is not expected."
-             end
-    @object = object
+    case identifier_or_id
+    when identifier_class
+      @identifier = identifier_or_id
+    when String, nil
+      @identifier_id = identifier_or_id
+    else
+      raise TypeError, "#{identifier_or_id.class} is not expected as the second argument."
+    end
+  end
+
+  def repo_object
+    @repo_object ||= ActiveFedora::Base.find(repo_id)
+  end
+
+  def repo_id
+    @repo_id ||= @repo_object && @repo_object.id
   end
 
   def assign!(id = nil)
-    ActiveSupport::Notifications.instrument("assign.permanent_id", pid: object.id) do |payload|
+    ActiveSupport::Notifications.instrument("assign.permanent_id", pid: repo_object.id) do |payload|
       assign(id)
       software = [ "dul-hydra {DulHydra::VERSION}", Ezid::Client.version ].join("; ")
       detail = <<-EOS
-Permanent ID:  #{object.permanent_id}
-Permanent URL: #{object.permanent_url}
+Permanent ID:  #{repo_object.permanent_id}
+Permanent URL: #{repo_object.permanent_url}
 
 EZID Metadata:
 #{identifier.metadata}
@@ -78,28 +99,43 @@ EZID Metadata:
   end
 
   def assigned?
-    object.permanent_id
+    repo_object.permanent_id
   end
 
   def update!
-    ActiveSupport::Notifications.instrument("update.permanent_id", pid: object.id) do |payload|
+    ActiveSupport::Notifications.instrument("update.permanent_id", pid: repo_object.id) do |payload|
       update
       payload.merge!(permanent_id: identifier.id)
     end
   end
 
+  def deaccession!(reason = nil)
+    delete_or_make_unavailable(reason || DEACCESSIONED)
+  end
+
+  def delete!(reason = nil)
+    delete_or_make_unavailable(reason || DELETED)
+  end
+
   def identifier
-    if @identifier.nil? && assigned?
-      @identifier = find_identifier(object.permanent_id)
+    if @identifier.nil?
+      if identifier_id
+        @identifier = find_identifier(identifier_id)
+      elsif assigned?
+        @identifier = find_identifier(repo_object.permanent_id)
+      end
     end
     @identifier
   end
 
-  def set_permanent_url
-    object.permanent_url = PERMANENT_URL_BASE + identifier.id
+  def identifier_id
+    @identifier_id ||= @identifier && @identifier.id
   end
 
-  # @raise [Ezid::Error] on EZID client or server error
+  def set_permanent_url
+    repo_object.permanent_url = PERMANENT_URL_BASE + identifier.id
+  end
+
   def set_metadata!
     set_metadata
     save
@@ -109,30 +145,26 @@ EZID Metadata:
   def set_metadata
     set_target
     set_status
-    set_repo_id
+    set_identifier_repo_id
   end
 
   def set_target
     self.target = DEFAULT_TARGET % id
   end
 
-  def set_repo_id
-    self.repo_id = object.id
+  def set_identifier_repo_id
+    self.identifier_repo_id = repo_object.id
   end
 
-  def repo_id=(val)
-    if repo_id
-      raise Error, "Identifier repository id already set to \"#{repo_id}\"; cannot change."
+  def identifier_repo_id=(val)
+    if identifier_repo_id
+      raise Error, "Identifier repository id already set to \"#{identifier_repo_id}\"; cannot change."
     end
-    self[repo_id_field] = val
+    self[identifier_repo_id_field] = val
   end
 
-  def repo_id
-    self[repo_id_field]
-  end
-
-  def repo_id_field
-    FCREPO3_PID
+  def identifier_repo_id
+    self[identifier_repo_id_field]
   end
 
   def set_status!
@@ -140,9 +172,9 @@ EZID Metadata:
   end
 
   def set_status
-    if object.published? && !public?
+    if repo_object.published? && !public?
       public!
-    elsif object.unpublished? && public?
+    elsif repo_object.unpublished? && public?
       unavailable!("not published")
     end
   end
@@ -168,7 +200,7 @@ EZID Metadata:
   def update
     if !assigned?
       raise IdentifierNotAssigned,
-            "Cannot update identifier for object \"#{object.id}\"; not assigned."
+            "Cannot update identifier for repository object \"#{repo_object.id}\"; not assigned."
     end
     set_status!
   end
@@ -176,7 +208,7 @@ EZID Metadata:
   def assign(id = nil)
     if assigned?
       raise AlreadyAssigned,
-            "Object \"#{object.id}\" has already been assigned permanent id \"#{object.permanent_id}\"."
+            "Repository object \"#{repo_object.id}\" has already been assigned permanent id \"#{repo_object.permanent_id}\"."
     end
     @identifier = case id
                   when identifier_class
@@ -186,11 +218,22 @@ EZID Metadata:
                   when nil
                     mint_identifier
                   end
-    object.reload
-    object.permanent_id = identifier.id
-    object.permanent_url = PERMANENT_URL_BASE + identifier.id
-    object.save(validate: false)
+    repo_object.reload
+    repo_object.permanent_id = identifier.id
+    repo_object.permanent_url = PERMANENT_URL_BASE + identifier.id
+    repo_object.save(validate: false)
     set_metadata!
+  end
+
+  def delete_or_make_unavailable(reason)
+    if repo_id && identifier_repo_id && ( identifier_repo_id != repo_id )
+      raise Error, "Identifier \"#{identifier_id}\" is assigned to a different repository object \"#{repo_id}\"."
+    end
+    if reserved?
+      delete
+    else
+      unavailable!(reason) && save
+    end
   end
 
 end

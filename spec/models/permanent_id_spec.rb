@@ -80,19 +80,69 @@ RSpec.describe PermanentId do
     end
   end
 
+  describe "deleting / marking unavailable" do
+    describe "when an object has a permanent id" do
+      let(:obj) { Item.create(pid: "test:1", permanent_id: "foo") }
+      let!(:id) { described_class.identifier_class.new("foo") }
+      before do
+        allow(id).to receive(:save) { nil }
+        allow(described_class.identifier_class).to receive(:find).with("foo") { id }
+      end
+      describe "and it's deacessioned" do
+        specify {
+          expect(described_class).to receive(:deaccession!).with("test:1", "foo", nil) { nil }
+          obj.deaccession
+        }
+      end
+      describe "and it's deleted" do
+        specify {
+          expect(described_class).not_to receive(:delete!)
+          expect(described_class).not_to receive(:deaccession!)
+          obj.send(:delete)
+        }
+      end
+      describe "and it's destroyed" do
+        specify {
+          expect(described_class).to receive(:delete!).with("test:1", "foo", nil) { nil }
+          obj.destroy
+        }
+      end
+    end
+    describe "when an object does not have a permanent id" do
+      let(:obj) { FactoryGirl.create(:item) }
+      describe "and it's deacessioned" do
+        specify {
+          expect(described_class).not_to receive(:deaccession!)
+          obj.deaccession
+        }
+      end
+      describe "and it's deleted" do
+        specify {
+          expect(described_class).not_to receive(:deaccession!)
+          expect(described_class).not_to receive(:delete!)
+          obj.send(:delete)
+        }
+      end
+      describe "and it's destroyed" do
+        specify {
+          expect(described_class).not_to receive(:delete!)
+          obj.destroy
+        }
+      end
+    end
+  end
+
   describe "constructor" do
     describe "when the object is new" do
       let(:obj) { FactoryGirl.build(:item) }
       it "raises an error" do
-        expect { described_class.new(obj) }.to raise_error(PermanentId::ObjectNotPersisted)
+        expect { described_class.new(obj) }.to raise_error(PermanentId::RepoObjectNotPersisted)
       end
     end
-    describe "when passed an object id" do
+    describe "when passed a repo object id" do
       let(:obj) { FactoryGirl.create(:item) }
       subject { described_class.new(obj.id) }
-      it "sets the object" do
-        expect(subject.object).to eq(obj)
-      end
+      its(:repo_id) { is_expected.to eq(obj.id) }
     end
   end
 
@@ -154,7 +204,7 @@ RSpec.describe PermanentId do
       end
     end
 
-    describe ".update!" do
+    describe "#update!" do
       describe "when the object has not been assigned a permanent id" do
         it "raises an error" do
           expect { subject.update! }.to raise_error(PermanentId::IdentifierNotAssigned)
@@ -173,6 +223,56 @@ RSpec.describe PermanentId do
       end
     end
 
+    describe "#deaccession!" do
+      let!(:id) { described_class.identifier_class.new("foo") }
+      subject { described_class.new("test:1", "foo") }
+      before do
+        allow(described_class.identifier_class).to receive(:find).with("foo") { id }
+      end
+      specify {
+        expect(id).to receive(:delete)
+        subject.deaccession!
+      }
+      describe " when the identifier is not reserved" do
+        before { id.public! }
+        specify {
+          expect(id).to receive(:unavailable!).with("deaccessioned")
+          subject.deaccession!
+        }
+      end
+      describe "when the identifier is associated with another repo id" do
+        before { subject.identifier_repo_id = "test:2" }
+        specify {
+          expect { subject.deaccession! }.to raise_error(PermanentId::Error)
+        }
+      end
+    end
+
+    describe "#delete!" do
+      let!(:id) { described_class.identifier_class.new("foo") }
+      subject { described_class.new("test:1", "foo") }
+      before do
+        allow(described_class.identifier_class).to receive(:find).with("foo") { id }
+      end
+      specify {
+        expect(id).to receive(:delete)
+        subject.delete!
+      }
+      describe " when the identifier is not reserved" do
+        before { id.public! }
+        specify {
+          expect(id).to receive(:unavailable!).with("deleted")
+          subject.delete!
+        }
+      end
+      describe "when the identifier is associated with another repo id" do
+        before { subject.identifier_repo_id = "test:2" }
+        specify {
+          expect { subject.delete! }.to raise_error(PermanentId::Error)
+        }
+      end
+    end
+
     describe "identifier metadata" do
       let(:obj) { Item.create(pid: "test:1") }
       let!(:id) { described_class.identifier_class.new("foo") }
@@ -180,28 +280,28 @@ RSpec.describe PermanentId do
       before do
         allow(subject).to receive(:identifier) { id }
       end
-      describe "#repo_id" do
+      describe "#identifier_repo_id" do
         before do
           allow(id).to receive(:[]).with("fcrepo3.pid") { "test:1" }
         end
-        its(:repo_id) { is_expected.to eq("test:1") }
+        its(:identifier_repo_id) { is_expected.to eq("test:1") }
       end
-      describe "#repo_id=" do
+      describe "#identifier_repo_id=" do
         specify {
-          subject.repo_id = "test:1"
+          subject.identifier_repo_id = "test:1"
           expect(id["fcrepo3.pid"]).to eq("test:1")
         }
         describe "when a value was previously assigned" do
-          before { subject.repo_id = "test:1" }
+          before { subject.identifier_repo_id = "test:1" }
           specify {
-            expect { subject.repo_id = "test:2" }.to raise_error(PermanentId::Error)
+            expect { subject.identifier_repo_id = "test:2" }.to raise_error(PermanentId::Error)
           }
         end
       end
-      describe "#set_repo_id" do
+      describe "#set_identifier_repo_id" do
         specify {
-          subject.set_repo_id
-          expect(subject.repo_id).to eq("test:1")
+          subject.set_identifier_repo_id
+          expect(subject.identifier_repo_id).to eq("test:1")
         }
       end
       describe "#set_target" do
