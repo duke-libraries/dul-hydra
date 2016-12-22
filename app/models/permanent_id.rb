@@ -103,7 +103,7 @@ class PermanentId
   def assign!(id = nil)
     ActiveSupport::Notifications.instrument("assign.permanent_id", pid: repo_object.id) do |payload|
       assign(id)
-      software = [ "dul-hydra {DulHydra::VERSION}", Ezid::Client.version ].join("; ")
+      software = [ "dul-hydra #{DulHydra::VERSION}", Ezid::Client.version ].join("; ")
       detail = <<-EOS
 Permanent ID:  #{repo_object.permanent_id}
 Permanent URL: #{repo_object.permanent_url}
