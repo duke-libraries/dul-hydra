@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Filesystem, type: :model, batch: true, simple_ingest: true do
+RSpec.describe Filesystem, type: :model, batch: true, standard_ingest: true do
 
   let(:filesystem) { Filesystem.new }
 

@@ -86,8 +86,8 @@ describe Ability, type: :model, abilities: true do
     end
   end
 
-  describe "SimpleIngest abilities" do
-    let(:resource) { SimpleIngest.new({ "folder_path" => '/foo', "batch_user" => auth_context.user.user_key }) }
+  describe "StandardIngest abilities" do
+    let(:resource) { StandardIngest.new({"folder_path" => '/foo', "batch_user" => auth_context.user.user_key }) }
     before { auth_context.user.save! }
     describe "create" do
       before { allow_any_instance_of(described_class).to receive(:can?).and_call_original }
@@ -101,10 +101,10 @@ describe Ability, type: :model, abilities: true do
       end
     end
     describe "show" do
-      describe "when the user is the creator of the SimpleIngest" do
+      describe "when the user is the creator of the StandardIngest" do
         it { should be_able_to(:show, resource) }
       end
-      describe "when the user is not the creator of the SimpleIngest" do
+      describe "when the user is not the creator of the StandardIngest" do
         before { resource.user = FactoryGirl.build(:user) }
         it { should_not be_able_to(:show, resource) }
       end

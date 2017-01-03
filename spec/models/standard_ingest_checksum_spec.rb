@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-RSpec.describe SimpleIngestChecksum, type: :model, batch: true, simple_ingest: true do
+RSpec.describe StandardIngestChecksum, type: :model, batch: true, standard_ingest: true do
 
-  let(:checksum_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'simple_ingest', 'manifest-sha1.txt') }
-  let(:sic) { SimpleIngestChecksum.new(checksum_filepath) }
+  let(:checksum_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'standard_ingest', 'manifest-sha1.txt') }
+  let(:sic) { StandardIngestChecksum.new(checksum_filepath) }
 
   describe "checksum" do
     it "should provide the recorded checksum" do

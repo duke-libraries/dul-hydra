@@ -1,4 +1,4 @@
-class SimpleIngestMetadata
+class StandardIngestMetadata
 
   attr_reader :metadata_filepath, :metadata_profile
 
