@@ -39,7 +39,7 @@ def populate_comparison_hashes(batch_objects)
   [ objects, atts, dss, rels ]
 end
 
-def simple_ingest_configuration
+def standard_ingest_configuration
   {
     scanner: {
       exclude: [ '.DS_Store', 'Thumbs.db' ]
@@ -75,7 +75,7 @@ def sample_filesystem
   root_node
 end
 
-def filesystem_simple_ingest
+def filesystem_standard_ingest
   root_node = Tree::TreeNode.new('/test/directory')
   itemY_node = Tree::TreeNode.new('[movie.mp4]')
   itemY_node << Tree::TreeNode.new('movie.mp4')

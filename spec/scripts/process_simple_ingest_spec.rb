@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module DulHydra::Batch::Scripts
 
-  RSpec.describe ProcessSimpleIngest, type: :script, batch: true, simple_ingest: true do
+  RSpec.describe ProcessStandardIngest, type: :script, batch: true, standard_ingest: true do
 
     let(:config_hash) do
       { scanner: { exclude: [".DS_Store", "Thumbs.db", "metadata.txt"] },
@@ -21,7 +21,7 @@ module DulHydra::Batch::Scripts
     describe "#initialize" do
       context "non-existent user" do
         it "should raise a user not found error" do
-          expect { ProcessSimpleIngest.new({ batch_user: 'noone@nowhere.net' }) }.to raise_error(/Unable to find user/)
+          expect { ProcessStandardIngest.new({ batch_user: 'noone@nowhere.net' }) }.to raise_error(/Unable to find user/)
         end
       end
       context "non-existent collection specified" do
@@ -29,14 +29,14 @@ module DulHydra::Batch::Scripts
           allow(User).to receive(:find_by_user_key) { double }
         end
         it "should raise a collection not found error" do
-          expect { ProcessSimpleIngest.new({ batch_user: 'a@b.c', collection_id: 'test:12345' }) }.to \
+          expect { ProcessStandardIngest.new({ batch_user: 'a@b.c', collection_id: 'test:12345' }) }.to \
                              raise_error(/Unable to find collection/)
         end
       end
     end
 
     describe "#execute" do
-      let(:folder_path) { Rails.root.join('spec/fixtures/batch_ingest/simple_ingest/example') }
+      let(:folder_path) { Rails.root.join('spec/fixtures/batch_ingest/standard_ingest/example') }
       let(:batch_user) {  FactoryGirl.create(:user) }
 
       describe "collection id provided" do

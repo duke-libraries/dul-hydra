@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SimpleIngestMetadata, type: :model, batch: true, simple_ingest: true do
+describe StandardIngestMetadata, type: :model, batch: true, standard_ingest: true do
 
   let(:metadata_profile) do
     { csv: {
@@ -19,13 +19,13 @@ describe SimpleIngestMetadata, type: :model, batch: true, simple_ingest: true do
   describe "initialization" do
     context "header validation" do
       context "no invalid headers" do
-        let(:metadata_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'simple_ingest', 'metadata.txt') }
+        let(:metadata_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'standard_ingest', 'metadata.txt') }
         it "should not raise an exception" do
           expect { described_class.new(metadata_filepath, metadata_profile) }.to_not raise_error
         end
       end
       context "invalid headers" do
-        let(:metadata_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'simple_ingest', 'bad-headers-metadata.txt') }
+        let(:metadata_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'standard_ingest', 'bad-headers-metadata.txt') }
         it "should raise an exception" do
           expect { described_class.new(metadata_filepath, metadata_profile) }.to raise_error(ArgumentError, /bad, alsoBad/)
         end
@@ -34,7 +34,7 @@ describe SimpleIngestMetadata, type: :model, batch: true, simple_ingest: true do
   end
 
   describe "metadata" do
-    let(:metadata_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'simple_ingest', 'metadata.txt') }
+    let(:metadata_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'standard_ingest', 'metadata.txt') }
     let(:sim) { described_class.new(metadata_filepath, metadata_profile) }
     let(:expected_metadata) do
       {
@@ -65,7 +65,7 @@ describe SimpleIngestMetadata, type: :model, batch: true, simple_ingest: true do
   end
 
   describe "locators" do
-    let(:metadata_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'simple_ingest', 'metadata.txt') }
+    let(:metadata_filepath) { Rails.root.join('spec', 'fixtures', 'batch_ingest', 'standard_ingest', 'metadata.txt') }
     let(:sim) { described_class.new(metadata_filepath, metadata_profile) }
     it "should return the locators" do
       expect(sim.locators).to match_array([ nil, 'foo', 'foo/bar.doc' ])

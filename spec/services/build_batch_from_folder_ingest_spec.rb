@@ -81,18 +81,18 @@ RSpec.shared_examples "a successfully built folder ingest batch" do
   end
 end
 
-RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_ingest: true do
+RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard_ingest: true do
 
   let(:user) { FactoryGirl.create(:user) }
   let(:batch_name) { "Test Ingest Batch" }
   let(:batch_description) { "Testing ingest batch building" }
   let(:filesystem) { Filesystem.new }
 
-  context 'simple ingest' do
+  context 'standard ingest' do
 
-    let(:content_modeler) { ModelSimpleIngestContent }
-    let(:metadata_provider) { double("SimpleIngestMetadata") }
-    let(:checksum_provider) { double("SimpleIngestChecksum") }
+    let(:content_modeler) { ModelStandardIngestContent }
+    let(:metadata_provider) { double("standardIngestMetadata") }
+    let(:checksum_provider) { double("StandardIngestChecksum") }
     let(:admin_set) { "abc" }
 
     let(:batch_objects) { batch.batch_objects }
@@ -101,7 +101,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, simple_i
     let(:components) { batch_objects.where(model: 'Component') }
 
     before do
-      filesystem.tree = filesystem_simple_ingest
+      filesystem.tree = filesystem_standard_ingest
       allow(metadata_provider).to receive(:metadata) { { } }
       allow(metadata_provider).to receive(:metadata).with(nil) { { title: 'Collection Title' } }
       allow(metadata_provider).to receive(:metadata).with('[movie.mp4]') { { title: 'Title 1' } }

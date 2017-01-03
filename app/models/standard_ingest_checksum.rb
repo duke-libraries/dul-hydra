@@ -1,4 +1,4 @@
-class SimpleIngestChecksum
+class StandardIngestChecksum
 
   attr_reader :checksum_filepath
 
