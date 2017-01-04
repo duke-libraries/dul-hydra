@@ -75,14 +75,6 @@ module DulHydra
       mattr_accessor :batches_per_page do
         ENV["BATCHES_PER_PAGE"] || 10
       end
-
-      mattr_accessor :auto_assign_permanent_id do
-        false
-      end
-
-      mattr_accessor :auto_update_permanent_id do
-        false
-      end
     end
 
     module ClassMethods
