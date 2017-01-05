@@ -19,22 +19,6 @@ class SimpleIngest
     folder.validate :metadata_file_must_exist
   end
   validate :collection_must_exist, if: 'collection_id.present?'
-  # folder path exists, is a directory, and is readable
-  # folder path contains a data directory that is readable
-  # folder contains sha-1 checksum file
-  # data directory contains a metadata.txt file
-  # process_simple_ingest
-  # - throws DulHydra::BatchError if user cannot be found
-  # - throws DulHydra::BatchError if unable to find collection
-  # inspect_simple_ingest
-  # - throws DulHydra::BatchError if scanned filesystem tree leaves not exactly two deep
-  # - throws DulHydra::BatchError unless Dir.exist?(data-path)
-  # - throws DulHydra::BatchError unless File.readable?(data-path)
-  # model_simple_ingest_content
-  # - throws DulHydra::BatchError if encounters node depth > 2
-  # - throws DulHydra::BatchError if node depth is 2 and node has children
-  # simple_ingest_metadata
-  # - throws ArgumentError if invalid_headers
 
   def initialize(args)
     @admin_set = args['admin_set']
@@ -60,14 +44,18 @@ class SimpleIngest
   end
 
   def build_batch(filesystem)
-    batch_builder = BuildBatchFromFolderIngest.new(
+    builder_args = {
         user: user,
         filesystem: filesystem,
         content_modeler: ModelSimpleIngestContent,
         metadata_provider: SimpleIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata]),
         checksum_provider: SimpleIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
         batch_name: "Simple Ingest",
-        batch_description: filesystem.root.name)
+        batch_description: filesystem.root.name
+    }
+    builder_args.merge!(admin_set: admin_set) if admin_set
+    builder_args.merge!(collection_repo_id: collection_id) if collection_id
+    batch_builder = BuildBatchFromFolderIngest.new(builder_args)
     batch = batch_builder.call
   end
 
