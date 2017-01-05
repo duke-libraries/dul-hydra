@@ -44,14 +44,18 @@ class StandardIngest
   end
 
   def build_batch
-    batch_builder = BuildBatchFromFolderIngest.new(
+    builder_args = {
         user: user,
         filesystem: filesystem,
         content_modeler: ModelStandardIngestContent,
-        metadata_provider: metadata_provider,
+        metadata_provider: StandardIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata]),
         checksum_provider: StandardIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
         batch_name: "Standard Ingest",
-        batch_description: filesystem.root.name)
+        batch_description: filesystem.root.name
+    }
+    builder_args.merge!(admin_set: admin_set) if admin_set
+    builder_args.merge!(collection_repo_id: collection_id) if collection_id
+    batch_builder = BuildBatchFromFolderIngest.new(builder_args)
     batch = batch_builder.call
   end
 
