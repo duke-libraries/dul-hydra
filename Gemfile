@@ -1,10 +1,11 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
+ruby '2.3.1'
 
-gem 'rails', '~> 4.1.6'
+gem 'rails', '4.2.7'
 gem 'hydra-head', '~> 7.2.0'
-gem 'ddr-alerts', '~> 1.0.0'
-gem 'ddr-batch', '1.2.0.rc1'
-gem 'ddr-models', '2.6.0.rc1'
+gem 'ddr-alerts', git: 'https://github.com/duke-libraries/ddr-alerts', ref: '01408a82f13292b655b3c561688cf824cbd14549'
+gem 'ddr-batch', git: 'https://github.com/duke-libraries/ddr-batch', ref: '557268bc77aa8d3aeb72959f02705b157017c50a'
+gem 'ddr-models', git: 'https://github.com/duke-libraries/ddr-models', ref: 'e0ed623a3722ca9583f2531f97dd5f20c126293d'
 gem 'rubydora', '>= 1.8.1'
 gem 'devise'
 gem 'deprecation'
@@ -30,6 +31,11 @@ gem 'paperclip', '~> 4.2.0'
 # Filesystem representation
 gem 'rubytree'
 
+# Rails 4.2+
+gem 'responders', '~> 2.0'
+
+gem 'web-console', '~> 2.0', group: :development
+
 group :development, :test do
   gem 'sqlite3'
   gem 'jettywrapper', '~> 1.8'
@@ -38,7 +44,7 @@ end
 group :test do
   gem 'orderly'
   gem 'capybara', '~> 2.0'
-  gem 'rspec-rails', '~> 3.0.0'
+  gem 'rspec-rails', '~> 3.0'
   gem 'rspec-its'
   gem 'equivalent-xml'
   gem 'database_cleaner'
@@ -49,21 +55,7 @@ group :production do
   gem 'mysql2'
 end
 
-gem 'sass-rails', '~> 4.0.1'
+gem 'sass-rails'
 gem 'jquery-rails'
 gem 'uglifier', '~> 1.3.0'
-
-# To use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.0.0'
-
-# To use Jbuilder templates for JSON
-# gem 'jbuilder'
-
-# Use unicorn as the app server
-# gem 'unicorn'
-
-# Deploy with Capistrano
-# gem 'capistrano'
-
-# To use debugger
-# gem 'debugger'
+gem 'sprockets-rails', '>= 2.1.4'
