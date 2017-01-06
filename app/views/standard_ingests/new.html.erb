@@ -35,10 +35,7 @@
           <%= f.select :folder_path, standard_ingest_folder_options_for_select, { include_blank: "Select Standard Ingest Folder" }, { class: "form-control" } %>
         </div>
         <div class="form-group">
-          <% if @standard_ingest.collection_id.present? %>
-              <%= f.hidden_field :admin_set %>
-              <%= admin_set_title(@standard_ingest.admin_set) %>
-          <% else %>
+          <% unless @standard_ingest.collection_id.present? %>
               <%= f.label :admin_set, "Admin Set" %>
               <%= f.select :admin_set, options_from_collection_for_select(Ddr::Models::AdminSet.all, :code, :title), { include_blank: "N/A" }, { class: "form-control" } %>
           <% end %>
