@@ -31,10 +31,10 @@ gem 'paperclip', '~> 4.2.0'
 # Filesystem representation
 gem 'rubytree'
 
-# Rails 4.2+
+# Rails 4.2
 gem 'responders', '~> 2.0'
-
 gem 'web-console', '~> 2.0', group: :development
+gem 'sprockets-rails', '>= 2.1.4'
 
 group :development, :test do
   gem 'sqlite3'
@@ -58,4 +58,3 @@ end
 gem 'sass-rails'
 gem 'jquery-rails'
 gem 'uglifier', '~> 1.3.0'
-gem 'sprockets-rails', '>= 2.1.4'
