@@ -35,7 +35,7 @@ DulHydra::Application.routes.draw do
 
   def event_routes
     get 'events'
-    get 'events/:event_id', to: :event
+    get 'events/:event_id', action: :event
   end
 
   def publication_routes
