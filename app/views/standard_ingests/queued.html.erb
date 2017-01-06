@@ -22,14 +22,16 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="col-md-2">
-    Admin Set:
+<% unless @standard_ingest.collection_id.present? %>
+  <div class="row">
+    <div class="col-md-2">
+      Admin Set:
+    </div>
+    <div class="col-md-4">
+      <%= admin_set_title(@standard_ingest.admin_set) %>
+    </div>
   </div>
-  <div class="col-md-4">
-    <%= admin_set_title(@standard_ingest.admin_set) %>
-  </div>
-</div>
+<% end %>
 
 <div class="row">
   <div class="col-md-2">
