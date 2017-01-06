@@ -1,15 +1,15 @@
 GIT
-  remote: git://github.com/duke-libraries/ddr-alerts.git
-  revision: a5840f86d808e4789011cc3d054ac7322b5f23ee
-  ref: a5840f86d808e4789011cc3d054ac7322b5f23ee
+  remote: https://github.com/duke-libraries/ddr-alerts
+  revision: 01408a82f13292b655b3c561688cf824cbd14549
+  ref: 01408a82f13292b655b3c561688cf824cbd14549
   specs:
     ddr-alerts (0.3.0.post)
-      rails (~> 4.1)
+      rails (~> 4.2)
 
 GIT
-  remote: git://github.com/duke-libraries/ddr-batch.git
-  revision: 6da06a1a14451d6e360db7f15ada23123dc4452c
-  ref: 6da06a1a14451d6e360db7f15ada23123dc4452c
+  remote: https://github.com/duke-libraries/ddr-batch
+  revision: 557268bc77aa8d3aeb72959f02705b157017c50a
+  ref: 557268bc77aa8d3aeb72959f02705b157017c50a
   specs:
     ddr-batch (1.2.post)
       ddr-models (~> 2.5)
@@ -19,9 +19,9 @@ GIT
       rails (~> 4.1)
 
 GIT
-  remote: git://github.com/duke-libraries/ddr-models.git
-  revision: cc9ccc5af8b82f56f9c58e0786ac16623b119970
-  ref: cc9ccc5af8b82f56f9c58e0786ac16623b119970
+  remote: https://github.com/duke-libraries/ddr-models
+  revision: e0ed623a3722ca9583f2531f97dd5f20c126293d
+  ref: e0ed623a3722ca9583f2531f97dd5f20c126293d
   specs:
     ddr-models (2.6.post)
       active-fedora (~> 7.0)
