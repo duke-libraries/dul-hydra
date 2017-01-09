@@ -14,13 +14,15 @@ describe AttachmentsController, type: :controller, attachments: true do
     let(:attach_to) { FactoryGirl.create(:collection) }
     let(:create_object) do
       Proc.new do
-        controller.current_ability.can(:add_attachment, attach_to)
+        attach_to.roles.grant type: "Contributor", agent: user
+        attach_to.save!
         create_attachment
       end
     end
     let(:new_object) do
       Proc.new do
-        controller.current_ability.can(:add_attachment, attach_to)
+        attach_to.roles.grant type: "Contributor", agent: user
+        attach_to.save!
         get :new, attached_to_id: attach_to.pid
       end
     end
@@ -30,7 +32,6 @@ describe AttachmentsController, type: :controller, attachments: true do
     # see shared examples
     describe "when user cannot add attachments to object" do
       let(:attach_to) { FactoryGirl.create(:collection) }
-      before { controller.current_ability.cannot(:add_attachment, attach_to) }
       it "should be unauthorized" do
         get :new, attached_to_id: attach_to.pid
         expect(response.response_code).to eq(403)
@@ -42,7 +43,10 @@ describe AttachmentsController, type: :controller, attachments: true do
     # see shared examples
     let(:attach_to) { FactoryGirl.create(:collection) }
     describe "when user can add attachments to object" do
-      before { controller.current_ability.can(:add_attachment, attach_to) }
+      before do
+        attach_to.roles.grant type: "Contributor", agent: user
+        attach_to.save!
+      end
       it "should create a new object" do
         expect{ create_attachment }.to change{ Attachment.count }.by(1)
       end
@@ -79,7 +83,6 @@ describe AttachmentsController, type: :controller, attachments: true do
       end
     end
     describe "user cannot add attachments to object" do
-      before { controller.current_ability.cannot(:add_attachment, attach_to) }
       it "should be unauthorized" do
         create_attachment
         expect(response.response_code).to eq(403)

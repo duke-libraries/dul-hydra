@@ -76,13 +76,15 @@ shared_examples "a repository object controller" do
   describe "#edit" do
     let(:object) { FactoryGirl.create(object_symbol) }
     context "when the user can edit the object" do
-      before { controller.current_ability.can(:edit, object) }
+      before do
+        object.roles.grant type: "Editor", agent: user
+        object.save!
+      end
       it "should render the edit template" do
         expect(get :edit, id: object).to render_template 'edit'
       end
     end
     context "when the user cannot edit the object" do
-      before { controller.current_ability.cannot(:edit, object) }
       it "should be unauthorized" do
         get :edit, id: object
         expect(response.response_code).to eq(403)
@@ -93,7 +95,10 @@ shared_examples "a repository object controller" do
   describe "#update" do
     let(:object) { FactoryGirl.create(object_symbol) }
     context "when the user can edit" do
-      before { controller.current_ability.can(:update, object) }
+      before do
+        object.roles.grant type: "Editor", agent: user
+        object.save!
+      end
       it "should redirect to the descriptive metadata tab of the show page" do
         update_metadata
         expect(response).to redirect_to(action: "show", id: object, tab: "descriptive_metadata")
@@ -114,7 +119,6 @@ shared_examples "a repository object controller" do
       end
     end
     context "when the user cannot edit" do
-      before { controller.current_ability.cannot(:update, object) }
       it "should be unauthorized" do
         update_metadata
         expect(response.response_code).to eq(403)
@@ -125,13 +129,15 @@ shared_examples "a repository object controller" do
   describe "#show" do
     let(:object) { FactoryGirl.create(object_symbol) }
     context "when the user can read the object" do
-      before { controller.current_ability.can(:read, object) }
+      before do
+        object.roles.grant type: "Viewer", agent: user
+        object.save!
+      end
       it "should render the show template" do
         expect(get :show, id: object).to render_template(:show)
       end
     end
     context "when the user cannot read the object" do
-      before { controller.current_ability.cannot(:read, object) }
       it "should be unauthorized" do
         get :show, id: object
         expect(response.response_code).to eq(403)
@@ -142,13 +148,15 @@ shared_examples "a repository object controller" do
   describe "#roles" do
     let(:object) { FactoryGirl.create(object_symbol) }
     context "when the user can grant roles" do
-      before { controller.current_ability.can(:grant, object) }
+      before do
+        object.roles.grant type: "Curator", agent: user
+        object.save!
+      end
       it "should render the roles template" do
         expect(get :roles, id: object).to render_template(:roles)
       end
     end
     context "when the user cannot grant roles" do
-      before { controller.current_ability.cannot(:grant, object) }
       it "should be unauthorized" do
         get :roles, id: object
         expect(response.response_code).to eq(403)
@@ -160,13 +168,15 @@ shared_examples "a repository object controller" do
     let(:object) { FactoryGirl.create(object_symbol) }
     describe "GET" do
       context "when the user can update admin metadata" do
-        before { controller.current_ability.can(:admin_metadata, object) }
+        before do
+          object.roles.grant type: "Editor", agent: user
+          object.save!
+        end
         it "should render the admin_metadata template" do
           expect(get :admin_metadata, id: object).to render_template(:admin_metadata)
         end
       end
       context "when the user cannot update admin metadata" do
-        before { controller.current_ability.cannot(:admin_metadata, object) }
         it "should be unauthorized" do
           get :admin_metadata, id: object
           expect(response.response_code).to eq(403)
@@ -175,7 +185,10 @@ shared_examples "a repository object controller" do
     end
     describe "PATCH" do
       context "when the user can update admin metadata" do
-        before { controller.current_ability.can(:admin_metadata, object) }
+        before do
+          object.roles.grant type: "Editor", agent: user
+          object.save!
+        end
         it "should redirect to the admin metadata tab of the show page" do
           update_admin_metadata
           expect(response).to redirect_to(action: "show", id: object, tab: "admin_metadata")
@@ -196,7 +209,6 @@ shared_examples "a repository object controller" do
         end
       end
       context "when the user cannot update admin metadata" do
-        before { controller.current_ability.cannot(:admin_metadata, object) }
         it "should be unauthorized" do
           update_admin_metadata
           expect(response.response_code).to eq(403)
