@@ -15,13 +15,15 @@ describe ComponentsController, type: :controller, components: true do
     let(:item) { FactoryGirl.create(:item) }
     let(:create_object) do
       Proc.new do
-        controller.current_ability.can(:add_children, item)
+        item.roles.grant type: "Contributor", agent: user
+        item.save!
         create_component
       end
     end
     let(:new_object) do
       Proc.new do
-        controller.current_ability.can(:add_children, item)
+        item.roles.grant type: "Contributor", agent: user
+        item.save!
         get :new, parent_id: item.pid
       end
     end
@@ -31,14 +33,16 @@ describe ComponentsController, type: :controller, components: true do
     # see shared examples
     let(:item) { FactoryGirl.create(:item) }
     context "and user cannot add children to item" do
-      # before { item.save! }
       it "should be unauthorized" do
         get :new, parent_id: item.pid
         expect(response.response_code).to eq(403)
       end
     end
     context "and user can add children to item" do
-      before { controller.current_ability.can(:add_children, item) }
+      before do
+        item.roles.grant type: "Contributor", agent: user
+        item.save!
+      end
       it "should be authorized" do
         get :new, parent_id: item.pid
         expect(response.response_code).to eq(200)
@@ -49,7 +53,10 @@ describe ComponentsController, type: :controller, components: true do
   describe "#create" do
     let(:item) { FactoryGirl.create(:item) }
     context "when the user can add children to the item" do
-      before { controller.current_ability.can(:add_children, item) }
+      before do
+        item.roles.grant type: "Contributor", agent: user
+        item.save!
+      end
       it "should create a new object" do
         expect{ create_component }.to change{ Component.count }.by(1)
       end
@@ -91,7 +98,6 @@ describe ComponentsController, type: :controller, components: true do
       end
     end
     context "when the user cannot add children to the item" do
-      before { controller.current_ability.cannot(:add_children, item) }
       it "should be unauthorized" do
         create_component
         expect(response.response_code).to eq(403)
