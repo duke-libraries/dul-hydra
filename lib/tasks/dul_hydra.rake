@@ -96,25 +96,6 @@ namespace :dul_hydra do
       script = DulHydra::Scripts::CsvToXml.new(opts)
       script.execute
     end
-    desc "[DEPRECATED] Runs the fixity check routine"
-    task :fixity_check => :environment do
-      warn "[DEPRECATION] The task `dul_hydra:batch:fixity_check` is deprecated and will be removed" \
-           " from DulHydra v5.0. Use `dul_hydra:fixity:check` instead."
-      opts = {
-        :dryrun => ENV['dryrun'] == 'true' ? true : false,
-        :limit => ENV.fetch('limit', 1000).to_i,
-        :period => ENV.fetch('period', '60DAYS'),
-        :report => ENV['report']
-      }
-      mailto = ENV['mailto']
-
-      puts "Running batch fixity check with options #{opts} ..."
-      bfc = DulHydra::Scripts::BatchFixityCheck.new(opts)
-      bfc.execute
-      if bfc.total > 0
-       BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
-      end
-    end
     desc "Sets missing thumbnails in collection specified by COLLECTION_PID="
     task :thumbnails => :environment do
       raise "Must specify collection pid.  Ex: COLLECTION_PID=duke:72" unless ENV['COLLECTION_PID']

@@ -46,7 +46,7 @@ module DulHydra
     end
 
     def self.enqueue(pid)
-      Resque.enqueue(DulHydra::Jobs::FixityCheck, pid)
+      Resque.enqueue(Ddr::Jobs::FixityCheck, pid)
     end
 
   end
