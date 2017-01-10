@@ -105,7 +105,7 @@ namespace :dul_hydra do
   end
 
   namespace :fixity do
-    desc "Run fixity check routine"
+    desc "Run batch fixity check routine"
     task :check => :environment do
       args = {}
       if ENV["before_days"]
@@ -115,7 +115,7 @@ namespace :dul_hydra do
         args[:limit] = ENV["limit"].to_i
       end
       puts "Running fixity check with args #{args.inspect}."
-      DulHydra::Fixity.check(**args)
+      BatchFixityCheck.call(**args)
     end
   end
 

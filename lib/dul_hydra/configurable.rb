@@ -83,6 +83,11 @@ module DulHydra
       mattr_accessor :auto_update_permanent_id do
         false
       end
+
+      # Home directory for FITS
+      mattr_accessor :fits_home do
+        ENV["FITS_HOME"]
+      end
     end
 
     module ClassMethods
