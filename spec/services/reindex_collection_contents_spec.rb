@@ -57,10 +57,10 @@ RSpec.describe ReindexCollectionContents do
       }
       it "reindexes the contents" do
         items.each do |item|
-          expect(Resque).to receive(:enqueue).with(Ddr::Jobs::UpdateIndex, item.pid)
+          expect(Resque).to receive(:enqueue).with(UpdateIndexJob, item.pid)
         end
         components.each do |component|
-          expect(Resque).to receive(:enqueue).with(Ddr::Jobs::UpdateIndex, component.pid)
+          expect(Resque).to receive(:enqueue).with(UpdateIndexJob, component.pid)
         end
         described_class.call(collection.pid)
       end

@@ -16,6 +16,8 @@ RSpec.describe SimpleIngestJob, type: :job do
     allow_any_instance_of(SimpleIngest).to receive(:build_batch) { nil }
   end
 
+  it_behaves_like "an abstract job"
+
   describe "success" do
     let(:expected_msg) { "Simple Ingest processing for folder #{folder_path} has completed." }
     it "should generate an appropriate email" do

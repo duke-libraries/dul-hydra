@@ -1,7 +1,9 @@
 RSpec.describe UpdateIndexJob do
 
-  it "should use the :index queue" do
-    expect(described_class.queue).to eq(:index)
+  it_behaves_like "an abstract job"
+
+  it "uses the :index queue" do
+    expect(described_class.queue_name).to eq(:index)
   end
 
   describe ".perform" do
@@ -9,7 +11,7 @@ RSpec.describe UpdateIndexJob do
     before do
       allow(ActiveFedora::Base).to receive(:find).with("test:1") { obj }
     end
-    it "should call `update_index` on the object" do
+    it "calls `update_index` on the object" do
       expect(obj).to receive(:update_index)
       described_class.perform("test:1")
     end

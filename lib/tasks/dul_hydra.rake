@@ -135,7 +135,7 @@ namespace :dul_hydra do
     desc "Re-index all currently indexed objects"
     task :reindex_all => :environment do
       Ddr::Index.pids.each do |pid|
-        Resque.enqueue(Ddr::Jobs::UpdateIndex, pid)
+        Resque.enqueue(UpdateIndexJob, pid)
       end
       puts "All indexed object queued for re-indexing."
     end
@@ -145,7 +145,7 @@ namespace :dul_hydra do
       conn = ActiveFedora::RubydoraConnection.new(ActiveFedora.config.credentials).connection
       conn.search(nil) do |object|
         next if object.pid.start_with?('fedora-system:')
-        Resque.enqueue(Ddr::Jobs::UpdateIndex, object.pid)
+        Resque.enqueue(UpdateIndexJob, object.pid)
       end
       puts "All repository objects queued for indexing."
     end

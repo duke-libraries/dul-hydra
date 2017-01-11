@@ -12,24 +12,15 @@ module AbstractJob
   # @note Assumes that the object_id is the first argument of the .perform method.
   def queued_object_ids(args={})
     args[:type] = self
-    __queue__.jobs(args).map { |job| job["args"].first }
+    job_queue.jobs(args).map { |job| job["args"].first }
   end
 
-  protected
-
-  def method_missing(name, *args, &block)
-    if name == :queue
-      # If .queue method not defined, do the right thing
-      Resque.queue_from_class(self)
-    else
-      super
-    end
+  def job_queue
+    @job_queue ||= JobQueue.new(queue_name)
   end
 
-  private
-
-  def __queue__
-    Queue.new(queue)
+  def queue_name
+    @queue || Resque.queue_from_class(self)
   end
 
 end

@@ -1,6 +1,6 @@
 require "resque"
 
-class Queue
+class JobQueue
 
   attr_reader :name
 

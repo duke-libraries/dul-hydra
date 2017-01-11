@@ -1,7 +1,9 @@
 RSpec.describe FixityCheckJob do
 
-  it "should use the :fixity queue" do
-    expect(described_class.queue).to eq(:fixity)
+  it_behaves_like "an abstract job"
+
+  it "uses the :fixity queue" do
+    expect(described_class.queue_name).to eq(:fixity)
   end
 
   describe ".perform" do
