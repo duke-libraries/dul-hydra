@@ -1,5 +1,4 @@
 class SimpleIngestJob
-  extend Ddr::Jobs::Job
   extend AbstractJob
 
   @queue = :simple_ingest

@@ -5,7 +5,7 @@ class ReindexQueryResult
   end
 
   def self.reindex(id)
-    Resque.enqueue(Ddr::Jobs::UpdateIndex, id)
+    Resque.enqueue(UpdateIndexJob, id)
   end
 
 end
