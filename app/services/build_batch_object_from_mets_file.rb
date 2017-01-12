@@ -136,19 +136,22 @@ class BuildBatchObjectFromMETSFile
   end
 
   def translate_struct_map(mets_file)
-    mets_file.struct_metadata_fptr_nodes.each do |fptr_node|
-      update_fptr(fptr_node)
+    mets_file.struct_metadata_fptr_nodes.each do |ptr_node|
+      update_ptr(ptr_node)
     end
-    structure = Ddr::Models::Structure.new(Ddr::Models::Structure.template)
-    mets_file.struct_metadata.each { |node| structure.structMap_node('default').add_child(node) }
+    structure = Ddr::Models::Structure.new(Ddr::Models::Structure.xml_template)
+    structure.root.add_child(mets_file.struct_map.to_xml)
     structure.to_xml
   end
 
-  def update_fptr(fptr_node)
-    local_id = fptr_node['fileID']
+  def update_ptr(ptr_node)
+    local_id = ptr_node['fileID']
     pid = Ddr::Utils.pid_for_identifier(local_id, model: 'Component')
-    fptr_node['CONTENTIDS'] = "info:fedora/#{pid}"
-    fptr_node.attributes['fileID'].remove
+    permanent_id = SolrDocument.find(pid).permanent_id
+    ptr_node.name = 'mptr'
+    ptr_node['LOCTYPE'] = 'ARK'
+    ptr_node['xlink:href'] = permanent_id
+    ptr_node.attributes['fileID'].remove
   end
 
 end
