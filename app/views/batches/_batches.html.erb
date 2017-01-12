@@ -1,45 +1,48 @@
-<% unless batches.empty? %>
-<%= content_tag :table, :class => 'table table-bordered table-striped table-condensed' do %>
-        <%= content_tag :thead do %>
-                <%= content_tag :tr do %>
-						<%= content_tag :th, '', :scope => 'col' %>
-                        <%= content_tag :th, t('batch.web.column_names.id'), :scope => 'col' %>
-                        <%= content_tag :th, t('batch.web.column_names.action'), :scope => 'col' %>
-                        <%= content_tag :th, t('batch.web.column_names.status'), :scope => 'col' %>
-                        <%= content_tag :th, t('batch.web.column_names.name'), :scope => 'col' %>
-                        <%= content_tag :th, t('batch.web.column_names.description'), :scope => 'col' %>
-						<%= content_tag :th, t('batch.web.column_names.creation_date'), :scope => 'col'%>
-                        <%= content_tag :th, t('batch.web.column_names.objects'), :scope => 'col' %>
-                        <%= content_tag :th, t('batch.web.column_names.start'), :scope => 'col' %>
-                        <%= content_tag :th, t('batch.web.column_names.outcome'), :scope => 'col' %>
-                        <%= content_tag :th, t('batch.web.column_names.log'), :scope => 'col' %>
-						<% if acting_as_superuser? %>
-							<%= content_tag :th, t('batch.web.column_names.user'), :scope => 'col' %>
-						<% end %>
-                <% end %>
-
+<% unless @batches.empty? %>
+    <div id="paginate">
+      <div class="page_links">
+        <%= render 'batches/paginate_compact' %>
+      </div>
+    </div>
+    <table class="table table-bordered table-striped table-condensed">
+      <thead>
+        <tr>
+          <th scope="col">&nbsp;</th>
+          <th scope="col">ID</th>
+          <th scope="col">Action</th>
+          <th scope="col">Status</th>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">Created</th>
+          <th scope="col">Objects</th>
+          <th scope="col">Start</th>
+          <th scope="col">Outcome</th>
+          <th scope="col">Log</th>
+          <th scope="col">User</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @batches.each do |b| %>
+          <tr>
+            <td><%= render_batch_delete_link(b) %></td>
+            <td><%= link_to(b.id, batch_path(b)) %></td>
+            <td><%= batch_action(b) %></td>
+            <td><%= batch_status_message(b) %></td>
+            <td><%= b.name %></td>
+            <td><%= b.description %></td>
+            <td><%= b.created_at.getlocal.strftime("%Y-%m-%d %H:%M:%S") %></td>
+            <td><%= b.batch_objects.size %></td>
+            <td><%= b.start.nil? ? '--' : b.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %></td>
+            <td><%= b.outcome.nil? ? '--' : b.outcome %></td>
+            <td><%= b.logfile_file_name.nil? ? '--' : link_to(I18n.t('batch.web.column_names.log'), b.logfile.url) %></td>
+            <td><%= b.user.nil? ? '--' : b.user.user_key %></td>
+          </tr>
         <% end %>
-        <%= content_tag :tbody do %>
-                <% batches.each do |b| %>
-                        <%= content_tag :tr do %>
-								<%= content_tag :td, render_batch_delete_link(b) %>
-                                <%= content_tag :td, link_to(b.id, batch_path(b)) %>
-                                <%= content_tag :td, batch_action(b) %>
-                                <%= content_tag :td, batch_status_message(b) %>
-                                <%= content_tag :td, b.name %>
-                                <%= content_tag :td, b.description %>
-								<%= content_tag :td, b.created_at.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
-                                <%= content_tag :td, b.batch_objects.size %>
-                                <%= content_tag :td, b.start.nil? ? '--' : b.start.getlocal.strftime("%Y-%m-%d %H:%M:%S") %>
-                                <%= content_tag :td, b.outcome.nil? ? '--' : b.outcome %>
-                                <%= content_tag :td, b.logfile_file_name.nil? ? '--' : link_to(I18n.t('batch.web.column_names.log'), b.logfile.url) %>
-								<% if acting_as_superuser? %>
-									<%= content_tag :td, b.user.nil? ? '--' : b.user.user_key %>
-								<% end %>
-                        <% end %>
-                <% end %>
-        <% end %>
-<% end %>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <%= paginate @batches, :outer_window => 2, :theme => 'blacklight' %>
+    </div>
 <% else %>
-        <%= content_tag :p, I18n.t('batch.web.no_batches', :type => type) %>
+    <p><%= I18n.t('batch.web.no_batches') %></p>
 <% end %>

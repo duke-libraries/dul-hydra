@@ -61,14 +61,14 @@ namespace :dul_hydra do
   end
 
   namespace :batch do
-    desc "Creates ingest batch from Simple Ingest Format directory"
-    task :simple_ingest => :environment do
-      raise "Must specify folder path. Ex.: FOLDER=/path/to/simple/ingest/folder" unless ENV['FOLDER']
+    desc "Creates ingest batch from Standard Ingest Format directory"
+    task :standard_ingest => :environment do
+      raise "Must specify folder path. Ex.: FOLDER=/path/to/standard/ingest/folder" unless ENV['FOLDER']
       raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
       processor_args = { filepath: ENV['FOLDER'] }
       processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
       processor_args[:batch_user] = ENV['BATCH_USER']
-      processor = DulHydra::Batch::Scripts::ProcessSimpleIngest.new(processor_args)
+      processor = DulHydra::Batch::Scripts::ProcessStandardIngest.new(processor_args)
       processor.execute
     end
     desc "Creates update batch from folder of METS files"
@@ -275,6 +275,21 @@ namespace :dul_hydra do
           puts "ERROR: Thumbnail not updated."
         end
       end
+    end
+  end
+
+  namespace :permanent_id do
+    desc "Assign permanent IDs to objects which do not have one"
+    task :assign, [:limit] => :environment do |t, args|
+      rows = args[:limit] || 100
+      query = Ddr::Index::Query.build(rows.to_i) do |r|
+        absent :permanent_id
+        limit r
+      end
+      query.each_id do |repo_id|
+        Resque.enqueue(AssignPermanentIdJob, repo_id)
+      end
+      puts "Queued #{query.count} permanent ID assignment jobs."
     end
   end
 

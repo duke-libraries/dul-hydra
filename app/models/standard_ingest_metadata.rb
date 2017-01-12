@@ -1,4 +1,4 @@
-class SimpleIngestMetadata
+class StandardIngestMetadata
 
   attr_reader :metadata_filepath, :metadata_profile
 
@@ -21,6 +21,10 @@ class SimpleIngestMetadata
       end
     end
     metadata
+  end
+
+  def locators
+    metadata_grid.keys
   end
 
   private

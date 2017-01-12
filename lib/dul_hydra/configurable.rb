@@ -47,7 +47,7 @@ module DulHydra
       mattr_accessor :alert_message_context
 
       mattr_accessor :fixity_check_limit do
-        ENV["FIXITY_CHECK_LIMIT"] || 10**5
+        ENV["FIXITY_CHECK_LIMIT"] || 10**4
       end
 
       mattr_accessor :fixity_check_period_in_days do
@@ -68,9 +68,13 @@ module DulHydra
           :aspace_id ]
       end
 
-      # Base path for Simple Ingest folders
-      mattr_accessor :simple_ingest_base_path
+      # Base path for Standard Ingest folders
+      mattr_accessor :standard_ingest_base_path
 
+      # Entries per page on batches index display
+      mattr_accessor :batches_per_page do
+        ENV["BATCHES_PER_PAGE"] || 10
+      end
     end
 
     module ClassMethods

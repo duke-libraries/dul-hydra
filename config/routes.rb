@@ -124,8 +124,9 @@ DulHydra::Application.routes.draw do
       get 'procezz'
       get 'validate'
     end
-    resources :batch_objects, :only => :index
   end
+
+  get 'my_batches' => 'batches#index', filter: 'current_user'
 
   resources :batch_objects, :only => :show do
     resources :batch_object_datastreams, :only => :index
@@ -144,7 +145,7 @@ DulHydra::Application.routes.draw do
     end
   end
 
-  resources :simple_ingests, :only => [:new, :create, :show]
+  resources :standard_ingests, :only => [:new, :create, :show]
 
   get '/help', to: redirect(DulHydra.help_url)
 

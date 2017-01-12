@@ -3,11 +3,11 @@ require 'support/ingest_folder_helper'
 
 shared_examples "a properly modeled filesystem node" do
   it "should determine the proper content model" do
-    expect(ModelSimpleIngestContent.new(node).call).to eq(proper_model)
+    expect(ModelStandardIngestContent.new(node).call).to eq(proper_model)
   end
 end
 
-RSpec.describe ModelSimpleIngestContent, type: :service, batch: true, simple_ingest: true do
+RSpec.describe ModelStandardIngestContent, type: :service, batch: true, standard_ingest: true do
 
   let(:root_node) { Tree::TreeNode.new('/test/directory') }
   let(:nodeA) { Tree::TreeNode.new('A') }
@@ -45,13 +45,13 @@ RSpec.describe ModelSimpleIngestContent, type: :service, batch: true, simple_ing
   context "childed node in childed node in root node" do
     let(:node) { nodeE }
     it "should raise a deepest node has children error" do
-      expect { ModelSimpleIngestContent.new(node).call }.to raise_error(DulHydra::BatchError, /Deepest .* has children/)
+      expect { ModelStandardIngestContent.new(node).call }.to raise_error(DulHydra::BatchError, /Deepest .* has children/)
     end
   end
   context "third-level node" do
     let(:node) { nodeF }
     it "should raise a node too deep exception" do
-      expect { ModelSimpleIngestContent.new(node).call }.to raise_error(DulHydra::BatchError, /too deep/)
+      expect { ModelStandardIngestContent.new(node).call }.to raise_error(DulHydra::BatchError, /too deep/)
     end
   end
 

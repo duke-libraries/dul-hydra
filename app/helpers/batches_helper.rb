@@ -1,6 +1,7 @@
 module BatchesHelper
 
   def batch_action(batch)
+    return "--" unless can?(:procezz, batch)
     case batch.status
     when Ddr::Batch::Batch::STATUS_READY
       # Temporarily remove the functionality requiring a separate validation step before processing
@@ -22,8 +23,8 @@ module BatchesHelper
     case batch.status
     when nil
       "NEW"
-    when Ddr::Batch::Batch::STATUS_PROCESSING
-      "#{batch.status}&nbsp;#{batch.completed_count}/#{batch.batch_objects.count}<br /><em>#{est_time_to_complete(batch)}</em>".html_safe
+    when Ddr::Batch::Batch::STATUS_RUNNING
+      "#{batch.status}&nbsp;#{batch.handled_count}/#{batch.batch_objects.count}<br /><em>#{est_time_to_complete(batch)}</em>".html_safe
     else
       batch.status
     end
@@ -81,8 +82,7 @@ module BatchesHelper
     end
 
     def render_batch_delete_link(batch)
-      case batch.status
-      when nil, Ddr::Batch::Batch::STATUS_READY, Ddr::Batch::Batch::STATUS_VALIDATED, Ddr::Batch::Batch::STATUS_INVALID
+      if can?(:destroy, batch) && [nil, Ddr::Batch::Batch::STATUS_READY, Ddr::Batch::Batch::STATUS_VALIDATED, Ddr::Batch::Batch::STATUS_INVALID].include?(batch.status)
         link_to content_tag(:span, "", :class => "glyphicon glyphicon-trash"), {:action => 'destroy', :id => batch}, :method => 'delete', :id => "batch_delete_#{batch.id}", :data => { :confirm => "#{t('batch.web.batch_deletion_confirmation', batch_id: batch.id)}" }
       end
     end

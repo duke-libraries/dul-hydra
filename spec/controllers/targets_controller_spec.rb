@@ -7,17 +7,20 @@ describe TargetsController, type: :controller, targets: true do
   before { sign_in user }
 
   describe "#show" do
-    let(:object) { FactoryGirl.create(:target) }
+    let(:obj) { FactoryGirl.create(:target) }
     context "when the user can read the object" do
-      before { controller.current_ability.can(:read, object) }
-      it "should render the show template" do
-        expect(get :show, id: object).to render_template(:show)
+      before do
+        obj.roles.grant type: "Editor", agent: user
+        obj.save!
+      end
+      it "is authorized" do
+        get :show, id: obj.id
+        expect(response.response_code).to eq(200)
       end
     end
     context "when the user cannot read the object" do
-      before { controller.current_ability.cannot(:read, object) }
-      it "should be unauthorized" do
-        get :show, id: object
+      it "is unauthorized" do
+        get :show, id: obj.id
         expect(response.response_code).to eq(403)
       end
     end

@@ -1,4 +1,4 @@
-class InspectSimpleIngest
+class InspectStandardIngest
 
   attr_accessor :results
   attr_reader :scanner_config, :filepath, :datapath
@@ -26,7 +26,7 @@ class InspectSimpleIngest
   def inspect_filesystem
     validate_datapath
     scan_results = ScanFilesystem.new(datapath, scanner_config).call
-    raise DulHydra::BatchError, "#{datapath} is not a valid simple ingest directory" unless simple_ingest_filesystem?(scan_results.filesystem)
+    raise DulHydra::BatchError, "#{datapath} is not a valid standard ingest directory" unless standard_ingest_filesystem?(scan_results.filesystem)
     results.file_count = scan_results.filesystem.file_count
     results.exclusions = scan_results.exclusions
     results.content_model_stats = content_model_stats(scan_results.filesystem)
@@ -45,7 +45,7 @@ class InspectSimpleIngest
   def content_model_stats(filesystem)
     collections = items = components = 0
     filesystem.each do |n|
-      case ModelSimpleIngestContent.new(n).call
+      case ModelStandardIngestContent.new(n).call
       when 'Collection'
         collections += 1
       when 'Item'
@@ -57,7 +57,7 @@ class InspectSimpleIngest
     { collections: collections, items: items, components: components }
   end
 
-  def simple_ingest_filesystem?(filesystem)
+  def standard_ingest_filesystem?(filesystem)
     !filesystem.tree.each_leaf.any? { |leaf| leaf.node_depth != 2 }
   end
 

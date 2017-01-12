@@ -13,6 +13,8 @@ require 'database_cleaner'
 require "ddr/auth/test_helpers"
 require "resque"
 
+Deprecation.default_deprecation_behavior = :silence
+
 Resque.inline = true
 
 DatabaseCleaner.strategy = :truncation

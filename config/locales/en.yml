@@ -7,6 +7,7 @@ en:
       local_id: "Local ID"
       ead_id: "EAD ID"
       aspace_id: "ArchivesSpace ID"
+      doi: "DOI"
     techmd:
       creating_application: "Creating Application"
       creation_time: "File Creation Time"
@@ -42,8 +43,8 @@ en:
       new_menu: "Folder Ingest"
     metadata_file:
       new_menu: "Metadata File Upload"
-    simple_ingest:
-      new_menu: "Simple Ingest"
+    standard_ingest:
+      new_menu: "Standard Ingest"
     help:
         label: "Help"
     contact:
@@ -246,18 +247,19 @@ en:
               invalid_key: "Invalid key in manifest object %{identifier}: %{key}"
               invalid_subkey: "Invalid subkey in manifest object %{identifier}: %{key} - %{subkey}"
       web:
-          no_batches: "No %{type} batches found for your user account."
+          no_batches: "No batches found."
           no_batch_runs: "No runs found for this batch."
           no_batch_objects: "No objects in this batch."
           batch_queued: "Batch %{id} queued for processing."
-          batch_deleted: "Batch %{id} deleted."
+          batch_deleting: "Batch %{id} queued for deletion."
           batch_not_deletable: "Cannot delete %{status} batch %{id}."
           batch_deletion_confirmation: "You are about to delete batch %{batch_id}. Continue?"
           headings:
               object_validation_errors: "Batch Object Validation Errors"
           page_titles:
               batch: "Batch %{id}"
-              batches: "Batches"
+              batches: "All Batches"
+              my_batches: "My Batches"
               batch_runs: "Batch Runs"
               batch_object: "Batch Object %{id}"
               batch_objects: "Objects in Batch"

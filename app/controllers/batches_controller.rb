@@ -2,19 +2,13 @@ class BatchesController < ApplicationController
 
   load_and_authorize_resource :class => Ddr::Batch::Batch
 
-  include DulHydra::Controller::TabbedViewBehavior
-  self.tabs = [:tab_pending_batches, :tab_finished_batches]
-
   def index
-    @batches = @batches.includes(:batch_objects, :user)
-    @pending = []
-    @finished = []
-    @batches.each do |batch|
-      if batch.finished?
-        @finished << batch
-      else
-        @pending << batch
-      end
+    @batches = @batches.includes(:batch_objects, :user).order('id DESC').page(params[:page]).per(DulHydra.batches_per_page)
+    if params[:filter] == "current_user"
+      @batches = @batches.where(user: current_user)
+      render 'my_batches'
+    else
+      render 'index'
     end
   end
 
@@ -25,8 +19,8 @@ class BatchesController < ApplicationController
   def destroy
     case @batch.status
     when nil, Ddr::Batch::Batch::STATUS_READY, Ddr::Batch::Batch::STATUS_VALIDATED, Ddr::Batch::Batch::STATUS_INVALID
-      @batch.destroy
-      flash[:notice] = I18n.t('batch.web.batch_deleted', :id => @batch.id)
+      Resque.enqueue(Ddr::Batch::BatchDeletionJob, @batch.id)
+      flash[:notice] = I18n.t('batch.web.batch_deleting', :id => @batch.id)
     else
       flash[:notice] = I18n.t('batch.web.batch_not_deletable', :id => @batch.id, :status => @batch.status)
     end
@@ -36,7 +30,7 @@ class BatchesController < ApplicationController
   def procezz
     Resque.enqueue(Ddr::Batch::BatchProcessorJob, @batch.id, current_user.id)
     flash[:notice] = I18n.t('batch.web.batch_queued', :id => @batch.id)
-    redirect_to batches_url
+    redirect_to batch_url
   end
 
   def validate
@@ -54,16 +48,6 @@ class BatchesController < ApplicationController
       # render :show
       redirect_to batch_url(@batch.id)
     end
-  end
-
-  protected
-
-  def tab_pending_batches
-    Tab.new("pending_batches")
-  end
-
-  def tab_finished_batches
-    Tab.new("finished_batches")
   end
 
 end
