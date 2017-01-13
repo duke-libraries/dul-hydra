@@ -9,8 +9,8 @@
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:add_children, current_object),
-                   'Simple Ingest',
-                   new_simple_ingest_path(simple_ingest: { collection_id: current_object, admin_set: current_object.admin_set })
+                   'Standard Ingest',
+                   new_standard_ingest_path(standard_ingest: {collection_id: current_object, admin_set: current_object.admin_set })
     %>
   </li>
   <li class="list-group-item">

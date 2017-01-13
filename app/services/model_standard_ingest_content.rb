@@ -1,4 +1,4 @@
-class ModelSimpleIngestContent
+class ModelStandardIngestContent
 
   attr_reader :node
 
@@ -7,7 +7,7 @@ class ModelSimpleIngestContent
   end
 
   def call
-    raise DulHydra::BatchError, "Node #{node.name} too deep for simple ingest" if node.node_depth > 2
+    raise DulHydra::BatchError, "Node #{node.name} too deep for standard ingest" if node.node_depth > 2
     raise DulHydra::BatchError, "Deepest permitted node #{node.name} has children" if node.node_depth == 2 && node.has_children?
     case
     when node.is_root?

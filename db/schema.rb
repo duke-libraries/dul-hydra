@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161130190436) do
+ActiveRecord::Schema.define(version: 20161222203500) do
 
   create_table "batch_object_attributes", force: true do |t|
     t.integer  "batch_object_id"
@@ -91,8 +91,6 @@ ActiveRecord::Schema.define(version: 20161130190436) do
     t.datetime "start"
     t.datetime "stop"
     t.string   "outcome"
-    t.integer  "failure",               default: 0
-    t.integer  "success",               default: 0
     t.string   "version"
     t.string   "logfile_file_name"
     t.string   "logfile_content_type"

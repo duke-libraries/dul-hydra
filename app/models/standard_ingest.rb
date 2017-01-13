@@ -1,4 +1,4 @@
-class SimpleIngest
+class StandardIngest
   include ActiveModel::Model
 
   attr_reader :admin_set, :collection_id, :config_file, :configuration, :folder_path
@@ -8,7 +8,7 @@ class SimpleIngest
 
   CHECKSUM_FILE = 'manifest-sha1.txt'
   DATA_DIRECTORY = 'data'
-  DEFAULT_CONFIG_FILE = Rails.root.join('config', 'simple_ingest.yml')
+  DEFAULT_CONFIG_FILE = Rails.root.join('config', 'standard_ingest.yml')
   METADATA_FILE = 'metadata.txt'
 
   validates_presence_of(:folder_path, :user)
@@ -44,14 +44,18 @@ class SimpleIngest
   end
 
   def build_batch
-    batch_builder = BuildBatchFromFolderIngest.new(
+    builder_args = {
         user: user,
         filesystem: filesystem,
-        content_modeler: ModelSimpleIngestContent,
-        metadata_provider: metadata_provider,
-        checksum_provider: SimpleIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
-        batch_name: "Simple Ingest",
-        batch_description: filesystem.root.name)
+        content_modeler: ModelStandardIngestContent,
+        metadata_provider: StandardIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata]),
+        checksum_provider: StandardIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
+        batch_name: "Standard Ingest",
+        batch_description: filesystem.root.name
+    }
+    builder_args.merge!(admin_set: admin_set) if admin_set
+    builder_args.merge!(collection_repo_id: collection_id) if collection_id
+    batch_builder = BuildBatchFromFolderIngest.new(builder_args)
     batch = batch_builder.call
   end
 
@@ -107,11 +111,11 @@ class SimpleIngest
   end
 
   def metadata_provider
-    @metadata_provider ||= SimpleIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata])
+    @metadata_provider ||= StandardIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata])
   end
 
   def inspection_results
-    @inspection_results ||= InspectSimpleIngest.new(folder_path, configuration[:scanner]).call
+    @inspection_results ||= InspectStandardIngest.new(folder_path, configuration[:scanner]).call
   end
 
   def filesystem

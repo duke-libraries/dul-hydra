@@ -1,12 +1,12 @@
 module DulHydra::Batch::Scripts
 
-  class ProcessSimpleIngest
+  class ProcessStandardIngest
 
     attr_reader :batch_user, :configuration, :filepath, :admin_set, :collection_id
 
     CHECKSUM_FILE = 'manifest-sha1.txt'
     METADATA_FILE = 'metadata.txt'
-    DEFAULT_CONFIG_FILE = Rails.root.join('config', 'simple_ingest.yml')
+    DEFAULT_CONFIG_FILE = Rails.root.join('config', 'standard_ingest.yml')
     DEFAULT_ARGUMENTS = { config_file: DEFAULT_CONFIG_FILE }
 
     def initialize(args=DEFAULT_ARGUMENTS)
@@ -44,7 +44,7 @@ module DulHydra::Batch::Scripts
     end
 
     def inspect_filepath
-      results = InspectSimpleIngest.new(filepath, configuration[:scanner]).call
+      results = InspectStandardIngest.new(filepath, configuration[:scanner]).call
       puts "Inspected #{results.filesystem.root.name}"
       puts "Found #{results.file_count} files"
       unless results.exclusions.empty?
@@ -88,13 +88,13 @@ module DulHydra::Batch::Scripts
       batch_builder = BuildBatchFromFolderIngest.new(
                           user: batch_user,
                           filesystem: filesystem,
-                          content_modeler: ModelSimpleIngestContent,
-                          metadata_provider: SimpleIngestMetadata.new(File.join(filepath, 'data', METADATA_FILE),
-                                                                      configuration[:metadata]),
-                          checksum_provider: SimpleIngestChecksum.new(File.join(filepath, CHECKSUM_FILE)),
+                          content_modeler: ModelStandardIngestContent,
+                          metadata_provider: StandardIngestMetadata.new(File.join(filepath, 'data', METADATA_FILE),
+                                                                        configuration[:metadata]),
+                          checksum_provider: StandardIngestChecksum.new(File.join(filepath, CHECKSUM_FILE)),
                           admin_set: admin_set,
                           collection_repo_id: collection_id,
-                          batch_name: "Simple Ingest",
+                          batch_name: "Standard Ingest",
                           batch_description: filesystem.root.name)
       batch = batch_builder.call
     end

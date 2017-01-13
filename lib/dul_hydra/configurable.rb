@@ -68,8 +68,8 @@ module DulHydra
           :aspace_id ]
       end
 
-      # Base path for Simple Ingest folders
-      mattr_accessor :simple_ingest_base_path
+      # Base path for Standard Ingest folders
+      mattr_accessor :standard_ingest_base_path
 
       # Entries per page on batches index display
       mattr_accessor :batches_per_page do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe ScanFilesystem, type: :service, batch: true, simple_ingest: true do
+RSpec.describe ScanFilesystem, type: :service, batch: true, standard_ingest: true do
 
   let(:filepath) { '/test/directory' }
 
