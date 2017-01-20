@@ -55,9 +55,6 @@ shared_examples "a repository object controller" do
         expect_any_instance_of(object_class).to receive(:grant_roles_to_creator).with(user)
         create_object.call
       end
-      it "should record a creation event" do
-        expect{ create_object.call }.to change { Ddr::Events::CreationEvent.count }.by(1)
-      end
       it "should redirect after creating the new object" do
         expect(controller).to receive(:after_create_redirect).and_call_original
         create_object.call
