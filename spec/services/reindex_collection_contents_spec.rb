@@ -7,7 +7,7 @@ RSpec.describe ReindexCollectionContents do
       }
       describe "when a tracked attribute changed" do
         it "calls the service" do
-          expect(described_class).to receive(:call).with(@collection.pid)
+          expect(described_class).to receive(:call)
           @collection.title = [ "Title Changed" ]
           @collection.save!
         end

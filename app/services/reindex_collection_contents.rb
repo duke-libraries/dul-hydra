@@ -2,7 +2,11 @@ class ReindexCollectionContents
 
   TRIGGER_ON_CHANGED = %w( admin_set title )
 
-  def self.call(collection_or_id)
+  def self.call(*args)
+    if args.size > 1
+      return handle_notification(*args)
+    end
+    collection_or_id = args.first
     validate! collection_or_id
     query = Ddr::Index::Query.build(collection_or_id) do |collection|
       is_governed_by collection
@@ -12,11 +16,12 @@ class ReindexCollectionContents
     ReindexQueryResult.call(query)
   end
 
-  def self.trigger(event)
-    payload = event.payload
-    id, changes = payload.values_at(:pid, :changes)
-    changed = changes.keys
-    call(id) if (changed & TRIGGER_ON_CHANGED).present?
+  def self.handle_notification(*args)
+    event = ActiveSupport::Notifications::Event.new(*args)
+    attributes_changed = event.payload[:attributes_changed].keys
+    if (attributes_changed & TRIGGER_ON_CHANGED).present?
+      call event.payload[:pid]
+    end
   end
 
   def self.validate!(collection_or_id)

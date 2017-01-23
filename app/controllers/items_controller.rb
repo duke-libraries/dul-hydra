@@ -24,8 +24,7 @@ class ItemsController < ApplicationController
       child.copy_admin_policy_or_roles_from(current_object)
       # upload the file
       child.upload child_params[:file]
-      if child.save
-        notify_event :creation, pid: child.pid
+      if child.save(user: current_user)
         # verify checksum if provided
         if child_params[:checksum].present?
           begin

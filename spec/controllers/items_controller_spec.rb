@@ -87,7 +87,7 @@ describe ItemsController, type: :controller, items: true do
           expect(assigns(:current_object).children.first).to have_thumbnail
         end
         it "should create events" do
-          expect{ create_item_and_component }.to change{ Ddr::Events::CreationEvent.count }.by(2)
+          expect{ create_item_and_component }.to change{ Ddr::Events::IngestionEvent.count }.by(2)
         end
         it "should validate the checksum if provided" do
           expect_any_instance_of(Component).to receive(:validate_checksum!)
