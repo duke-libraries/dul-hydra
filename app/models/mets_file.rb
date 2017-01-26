@@ -97,7 +97,8 @@ class METSFile
   end
 
   def clean_namespace(source)
-    source.gsub(%q[xmlns:dcterms="http://purl.org/dc/terms"], %q[xmlns:dcterms="http://purl.org/dc/terms/"])
+    src = source.gsub(%q[xmlns:dcterms="http://purl.org/dc/terms"], %q[xmlns:dcterms="http://purl.org/dc/terms/"])
+    src.gsub(%q[xmlns:xlink="http://www.w3.org/TR/xlink/"], %q[xmlns:xlink="http://www.w3.org/1999/xlink"])
   end
 
   def id_attr
