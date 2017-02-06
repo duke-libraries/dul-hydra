@@ -61,6 +61,14 @@ namespace :dul_hydra do
   end
 
   namespace :batch do
+    desc "Adds intermediate files to existing Components"
+    task :intermediate_files => :environment do
+      raise "Must specify folder path to intermediate files. Ex.: FOLDER=/path/to/files" unless ENV["FOLDER"]
+      raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
+      processor_args = { filepath: ENV['FOLDER'], batch_user: ENV['BATCH_USER'] }
+      processor = DulHydra::Batch::Scripts::AddIntermediateFiles.new(processor_args)
+      processor.execute
+    end
     desc "Creates ingest batch from Standard Ingest Format directory"
     task :standard_ingest => :environment do
       raise "Must specify folder path. Ex.: FOLDER=/path/to/standard/ingest/folder" unless ENV['FOLDER']
