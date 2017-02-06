@@ -13,6 +13,7 @@ end
 shared_examples "a successful metadata file processing" do
   it "should create a batch with an appropriate UpdateBatchObject" do
     expect(@batch.status).to eq(Ddr::Batch::Batch::STATUS_READY)
+    expect(@batch.batch_objects.count).to eq(1)
     expect(@batch_object).to be_a(Ddr::Batch::UpdateBatchObject)
     expect(@attributes.size).to eq(20)
     # Attribute 'clear' entries
