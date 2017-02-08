@@ -16,6 +16,22 @@ RSpec.describe AddIntermediateFile, type: :service do
       component.reload
       expect(component.datastreams[Ddr::Datastreams::INTERMEDIATE_FILE].size).to_not be_nil
     end
+    describe 'checksum' do
+      describe 'no checksum provided' do
+        it 'does not validate a checksum' do
+          expect(component.datastreams[Ddr::Datastreams::INTERMEDIATE_FILE]).to_not receive(:validate_checksum!)
+          subject.process
+        end
+      end
+      describe 'checksum provided' do
+        subject { described_class.new(user: user, filepath: filepath, intermediate_file: intermediate_file,
+                                      checksum: 'abcdef') }
+        it 'validates the checksum' do
+          expect_any_instance_of(ActiveFedora::Datastream).to receive(:validate_checksum!) { nil }
+          subject.process
+        end
+      end
+    end
   end
 
   describe 'no matching component' do
