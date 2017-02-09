@@ -5,7 +5,7 @@ class FixityCheckJob
 
   def self.perform(id)
     obj = ActiveFedora::Base.find(id)
-    obj.fixity_check
+    FixityCheck.call(obj)
   end
 
 end
