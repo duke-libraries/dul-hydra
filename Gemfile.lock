@@ -20,8 +20,8 @@ GIT
 
 GIT
   remote: https://github.com/duke-libraries/ddr-models
-  revision: 36e73e8e2863750df978fa5b3399035b57573922
-  ref: 36e73e8e2863750df978fa5b3399035b57573922
+  revision: 69f549b9e84e3807749c8e3ac57e83ee44e740e6
+  ref: 69f549b9e84e3807749c8e3ac57e83ee44e740e6
   specs:
     ddr-models (2.7.0.pre)
       active-fedora (~> 7.0)
@@ -288,7 +288,7 @@ GEM
       activesupport
       nokogiri (>= 1.4.2)
       solrizer (~> 3.3)
-    omniauth (1.4.0)
+    omniauth (1.4.1)
       hashie (>= 1.2, < 4)
       rack (>= 1.0, < 3)
     omniauth-shibboleth (1.2.1)
