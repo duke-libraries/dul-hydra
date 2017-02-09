@@ -1,11 +1,12 @@
 class AddIntermediateFile
 
-  attr_reader :user, :filepath, :intermediate_file
+  attr_reader :user, :filepath, :intermediate_file, :checksum
 
-  def initialize(user:, filepath:, intermediate_file:)
-    @user = user
-    @filepath = filepath
-    @intermediate_file = intermediate_file
+  def initialize(args)
+    @user = args.with_indifferent_access.fetch(:user)
+    @filepath = args.with_indifferent_access.fetch(:filepath)
+    @intermediate_file = args.with_indifferent_access.fetch(:intermediate_file)
+    @checksum = args.with_indifferent_access.fetch(:checksum, nil)
   end
 
   def process
@@ -13,6 +14,10 @@ class AddIntermediateFile
     component = find_matching_component(base_name)
     component.add_file(File.join(filepath, intermediate_file), Ddr::Datastreams::INTERMEDIATE_FILE)
     component.save!(user: user)
+    if checksum.present?
+      component.reload
+      component.datastreams[Ddr::Datastreams::INTERMEDIATE_FILE].validate_checksum!(checksum)
+    end
   end
 
   def find_matching_component(local_id)
