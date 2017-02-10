@@ -16,8 +16,8 @@ class StandardIngest
     folder.validate :folder_directory_must_exist
     folder.validate :data_directory_must_exist
     folder.validate :checksum_file_must_exist
-    folder.validate :metadata_file_must_exist
-    folder.validate :validate_metadata_file
+    folder.validate :metadata_file_must_exist, unless: 'collection_id.present?'
+    folder.validate :validate_metadata_file, if: 'File.exist?(metadata_path)'
   end
   validate :collection_must_exist, if: 'collection_id.present?'
 
@@ -48,11 +48,13 @@ class StandardIngest
         user: user,
         filesystem: filesystem,
         content_modeler: ModelStandardIngestContent,
-        metadata_provider: StandardIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata]),
         checksum_provider: StandardIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
         batch_name: "Standard Ingest",
         batch_description: filesystem.root.name
     }
+    if File.exist?(metadata_path)
+      builder_args.merge!(metadata_provider: StandardIngestMetadata.new(metadata_path, configuration[:metadata]))
+    end
     builder_args.merge!(admin_set: admin_set) if admin_set
     builder_args.merge!(collection_repo_id: collection_id) if collection_id
     batch_builder = BuildBatchFromFolderIngest.new(builder_args)

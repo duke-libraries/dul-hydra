@@ -4,7 +4,7 @@ class BuildBatchFromFolderIngest
               :batch_name, :batch_description
   attr_accessor :batch, :collection_repo_id
 
-  def initialize(user:, filesystem:, content_modeler:, metadata_provider:, checksum_provider:, admin_set: nil,
+  def initialize(user:, filesystem:, content_modeler:, metadata_provider: nil, checksum_provider:, admin_set: nil,
                  collection_repo_id: nil, batch_name: nil, batch_description:nil)
     @user = user
     @filesystem = filesystem
@@ -48,7 +48,7 @@ class BuildBatchFromFolderIngest
     add_relationships(batch_object, node.parent)
     add_admin_set(batch_object) if admin_set.present? && object_model == 'Collection'
     add_role(batch_object) if object_model == 'Collection'
-    add_metadata(batch_object, node)
+    add_metadata(batch_object, node) if metadata_provider
     add_content_datastream(batch_object, node) if object_model == 'Component'
   end
 
