@@ -18,22 +18,43 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
       allow(Dir).to receive(:exist?).with(folder_path) { true }
       allow(Dir).to receive(:exist?).with(subject.data_path) { true }
       allow(File).to receive(:exist?).with(subject.checksum_path) { true }
-      allow(File).to receive(:exist?).with(subject.metadata_path) { true }
       allow(subject).to receive(:metadata_provider) { standard_ingest_metadata }
       allow(subject).to receive(:filesystem_node_paths) { fs_node_paths }
     end
     describe 'metadata file' do
-      describe 'valid locators' do
-        before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths } }
-        it "should be valid" do
-          expect(subject).to be_valid
+      describe 'present' do
+        before { allow(File).to receive(:exist?).with(subject.metadata_path) { true } }
+        describe 'valid locators' do
+          before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths } }
+          it "should be valid" do
+            expect(subject).to be_valid
+          end
+        end
+        describe 'invalid locators' do
+          before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths + [ 'bar' ] } }
+          it "should not be valid" do
+            expect(subject).not_to be_valid
+            expect(subject.errors.messages).to include({ metadata_file: [ "Metadata line for locator 'bar' will not be used" ] })
+          end
         end
       end
-      describe 'invalid locators' do
-        before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths + [ 'bar' ] } }
-        it "should not be valid" do
-          expect(subject).not_to be_valid
-          expect(subject.errors.messages).to include({ metadata_file: [ "Metadata line for locator 'bar' will not be used" ] })
+      describe 'not present' do
+        before { allow(File).to receive(:exist?).with(subject.metadata_path) { false } }
+        describe 'collection creating ingest' do
+          it "should not be valid" do
+            expect(subject).to_not be_valid
+            expect(subject.errors.messages).to include({ folder_path: [ "#{subject.metadata_path} does not exist" ] })
+          end
+        end
+        describe 'item adding ingest' do
+          let(:collection_repo_id) { 'test:1' }
+          let(:standard_ingest_args) { { 'batch_user' => user.user_key,
+                                         'folder_path' => folder_path,
+                                         'collection_id' => collection_repo_id } }
+          before { allow(Collection).to receive(:exists?).with(collection_repo_id) { true } }
+          it "should be valid" do
+            expect(subject).to be_valid
+          end
         end
       end
     end
@@ -48,6 +69,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
     before do
       allow(StandardIngestMetadata).to receive(:new) { standard_ingest_metadata }
       allow(StandardIngestChecksum).to receive(:new) { standard_ingest_checksum }
+      allow(File).to receive(:exist?).with(subject.metadata_path) { true }
       allow(subject).to receive(:filesystem) { filesystem }
     end
 
