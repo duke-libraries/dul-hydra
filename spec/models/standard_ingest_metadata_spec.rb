@@ -39,22 +39,27 @@ describe StandardIngestMetadata, type: :model, batch: true, standard_ingest: tru
     let(:expected_metadata) do
       {
         nil => { "identifier" => [ "test" ],
-                          "title" => [ "Top Title" ],
-                          "description" => [ "Top Description" ],
-                          "creator" => [ "Spade, Sam" ] },
+                 "title" => [ "Top Title" ],
+                 "description" => [ "Top Description" ],
+                 "creator" => [ "Spade, Sam" ],
+                 "local_id" => [ "spade" ],
+                 "setting" => [ "Europe" ] },
         'foo' => { "identifier" => [ "test123" ],
-                            "title" => [ "My Title" ],
-                            "description" => [ "Description" ],
-                            "subject" => [ "Alpha", "Beta" ],
-                            "dateSubmitted" => [ "2014-02-03" ],
-                            "creator" => [ "Jane Smith" ] },
+                   "title" => [ "My Title" ],
+                   "description" => [ "Description" ],
+                   "subject" => [ "Alpha", "Beta" ],
+                   "dateSubmitted" => [ "2014-02-03" ],
+                   "creator" => [ "Jane Smith" ],
+                   "local_id" => [ "spade001" ],
+                   "setting" => [ "Great Britain" ] },
         'foo/bar.doc' => { "identifier" => [ "test12345" ],
-                                  "title" => [ "Updated Title" ],
-                                  "description" => [ "This is some description; this is \"some more\" description." ],
-                                  "subject" => [ "Alpha", "Beta", "Gamma", "Delta", "Epsilon" ],
-                                  "contributor" => [ "Jane Doe" ],
-                                  "dateSubmitted" => [ "2010-01-22" ],
-                                  "creator" => [ "John Doe" ] }
+                           "title" => [ "Updated Title" ],
+                           "description" => [ "This is some description; this is \"some more\" description." ],
+                           "subject" => [ "Alpha", "Beta", "Gamma", "Delta", "Epsilon" ],
+                           "contributor" => [ "Jane Doe" ],
+                           "dateSubmitted" => [ "2010-01-22" ],
+                           "creator" => [ "John Doe" ],
+                           "local_id" => [ "spade001001" ] }
       }
     end
     it "should return the correct metadata for a locator" do
