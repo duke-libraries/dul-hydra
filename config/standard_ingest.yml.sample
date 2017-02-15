@@ -3,6 +3,7 @@
         - .DS_Store
         - Thumbs.db
         - metadata.txt
+    :targets: dpc_targets
 :metadata:
     :csv:
         :encoding: UTF-8

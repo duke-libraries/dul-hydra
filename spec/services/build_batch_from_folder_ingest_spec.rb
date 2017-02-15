@@ -78,6 +78,27 @@ RSpec.shared_examples "a successfully built folder ingest batch" do
     expect(component_checksums).to include('d72880438ba42224b9dd185e4e8c1b60e6ddf61d977d0b99aed72bb9f964657b')
     expect(component_checksums).to include('a2b872e2a3958a1ec7de3afcfd017d323c0a43dcebf0e607ab31acde4799aa8f')
     expect(component_checksums).to include('dd60f671e6f31c75f11643e98384f71864ee654c6afb9d26cdc6a7c458741d47')
+
+    # Target expectations
+    expect(targets.count).to eq(1)
+    target_filepaths = []
+    target_checksums = []
+    targets.each do |obj|
+      # Collection relationship
+      collection_relationships = obj.batch_object_relationships.where(
+          name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_COLLECTION)
+      expect(collection_relationships.size).to eq(1)
+      expect(collection_relationships.first.object).to eq(coll_id)
+      # Content datastream
+      content_datastreams = obj.batch_object_datastreams.where(
+          name: Ddr::Datastreams::CONTENT)
+      expect(content_datastreams.size).to eq(1)
+      expect(content_datastreams.first.checksum_type).to eq(Ddr::Datastreams::CHECKSUM_TYPE_SHA1)
+      target_filepaths << content_datastreams.first.payload
+      target_checksums << content_datastreams.first.checksum
+    end
+    expect(target_filepaths).to include('/test/directory/dpc_targets/T001.tif')
+    expect(target_checksums).to include('7cc5abd7ed8c1c907d86bba5e6e18ed6c6ec995c')
   end
 end
 
@@ -90,6 +111,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
 
   context 'standard ingest' do
 
+    let(:targets_name) { "dpc_targets" }
     let(:content_modeler) { ModelStandardIngestContent }
     let(:metadata_provider) { double("standardIngestMetadata") }
     let(:checksum_provider) { double("StandardIngestChecksum") }
@@ -99,6 +121,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
     let(:collections) { batch_objects.where(model: 'Collection') }
     let(:items) { batch_objects.where(model: 'Item') }
     let(:components) { batch_objects.where(model: 'Component') }
+    let(:targets) { batch_objects.where(model: 'Target') }
 
     before do
       filesystem.tree = filesystem_standard_ingest
@@ -114,13 +137,14 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
       allow(checksum_provider).to receive(:checksum).with('itemA/track01.wav') { 'd72880438ba42224b9dd185e4e8c1b60e6ddf61d977d0b99aed72bb9f964657b' }
       allow(checksum_provider).to receive(:checksum).with('itemB/file02.pdf') { 'a2b872e2a3958a1ec7de3afcfd017d323c0a43dcebf0e607ab31acde4799aa8f' }
       allow(checksum_provider).to receive(:checksum).with('itemB/track02.wav') { 'dd60f671e6f31c75f11643e98384f71864ee654c6afb9d26cdc6a7c458741d47' }
+      allow(checksum_provider).to receive(:checksum).with('dpc_targets/T001.tif') { '7cc5abd7ed8c1c907d86bba5e6e18ed6c6ec995c' }
     end
 
     context 'collection repository ID not provided' do
-      let(:batch_builder) { described_class.new(user: user, filesystem: filesystem, content_modeler: content_modeler,
-                                                metadata_provider: metadata_provider, checksum_provider: checksum_provider,
-                                                admin_set: admin_set, batch_name: batch_name,
-                                                batch_description: batch_description) }
+      let(:batch_builder) { described_class.new(user: user, filesystem: filesystem, targets_name: targets_name,
+                                                content_modeler: content_modeler, metadata_provider: metadata_provider,
+                                                checksum_provider: checksum_provider, admin_set: admin_set,
+                                                batch_name: batch_name, batch_description: batch_description) }
       it_behaves_like "a successfully built folder ingest batch" do
         let(:batch) { batch_builder.call }
         let(:coll_count) { 1 }
@@ -130,10 +154,11 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
 
     context 'collection repository ID provided' do
       let(:collection_id) { 'test:abcd' }
-      let(:batch_builder) { described_class.new(user: user, filesystem: filesystem, content_modeler: content_modeler,
-                                                metadata_provider: metadata_provider, checksum_provider: checksum_provider,
-                                                admin_set: admin_set, collection_repo_id: collection_id,
-                                                batch_name: batch_name, batch_description: batch_description) }
+      let(:batch_builder) { described_class.new(user: user, filesystem: filesystem, targets_name: targets_name,
+                                                content_modeler: content_modeler, metadata_provider: metadata_provider,
+                                                checksum_provider: checksum_provider, admin_set: admin_set,
+                                                collection_repo_id: collection_id, batch_name: batch_name,
+                                                batch_description: batch_description) }
       before do
         allow_any_instance_of(Ddr::Batch::Batch).to receive(:found_pids) { { collection_id => 'Collection' } }
       end
