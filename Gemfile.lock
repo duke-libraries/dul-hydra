@@ -96,7 +96,7 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1.13)
-    ddr-models (2.6.0)
+    ddr-models (2.6.1)
       active-fedora (~> 7.0)
       activeresource
       cancancan (~> 1.12)
@@ -239,7 +239,7 @@ GEM
       activesupport
       nokogiri (>= 1.4.2)
       solrizer (~> 3.3)
-    omniauth (1.3.1)
+    omniauth (1.4.2)
       hashie (>= 1.2, < 4)
       rack (>= 1.0, < 3)
     omniauth-shibboleth (1.2.1)
@@ -457,7 +457,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (~> 1.0.0)
   ddr-batch (= 1.2.0)
-  ddr-models (= 2.6.0)
+  ddr-models (= 2.6.1)
   deprecation
   devise
   equivalent-xml
