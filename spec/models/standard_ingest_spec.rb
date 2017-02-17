@@ -34,7 +34,8 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
           before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths + [ 'bar' ] } }
           it "should not be valid" do
             expect(subject).not_to be_valid
-            expect(subject.errors.messages).to include({ metadata_file: [ "Metadata line for locator 'bar' will not be used" ] })
+            expect(subject.errors.messages).to include(
+                 { metadata_file: [ I18n.t('dul_hydra.standard_ingest.validation.missing_folder_file', miss: 'bar') ] })
           end
         end
       end
