@@ -1,13 +1,14 @@
 class BuildBatchFromFolderIngest
 
-  attr_reader :user, :filesystem, :content_modeler, :metadata_provider, :checksum_provider, :admin_set,
+  attr_reader :user, :filesystem, :targets_name, :content_modeler, :metadata_provider, :checksum_provider, :admin_set,
               :batch_name, :batch_description
   attr_accessor :batch, :collection_repo_id
 
-  def initialize(user:, filesystem:, content_modeler:, metadata_provider: nil, checksum_provider:, admin_set: nil,
-                 collection_repo_id: nil, batch_name: nil, batch_description:nil)
+  def initialize(user:, filesystem:, targets_name: nil, content_modeler:, metadata_provider: nil, checksum_provider:,
+                 admin_set: nil, collection_repo_id: nil, batch_name: nil, batch_description: nil)
     @user = user
     @filesystem = filesystem
+    @targets_name = targets_name
     @content_modeler = content_modeler
     @metadata_provider = metadata_provider
     @checksum_provider = checksum_provider
@@ -33,11 +34,13 @@ class BuildBatchFromFolderIngest
   def traverse_filesystem
     filesystem.each do |node|
       node.content ||= {}
-      object_model = content_modeler.new(node).call
+      object_model = content_modeler.new(node, targets_name).call
       if object_model == 'Collection' && collection_repo_id.present?
         node.content[:pid] = collection_repo_id
       end
-      create_object(node, object_model) unless node.content[:pid].present?
+      if object_model
+        create_object(node, object_model) unless node.content[:pid].present?
+      end
     end
   end
 
@@ -49,7 +52,7 @@ class BuildBatchFromFolderIngest
     add_admin_set(batch_object) if admin_set.present? && object_model == 'Collection'
     add_role(batch_object) if object_model == 'Collection'
     add_metadata(batch_object, node) if metadata_provider
-    add_content_datastream(batch_object, node) if object_model == 'Component'
+    add_content_datastream(batch_object, node) if [ 'Component', 'Target' ].include?(object_model)
   end
 
   def assign_pid(node)
@@ -61,6 +64,8 @@ class BuildBatchFromFolderIngest
     add_admin_policy_relationship(batch_object)
     if [ 'Item', 'Component' ].include?(batch_object.model)
       add_parent_relationship(batch_object, parent_node.content[:pid])
+    elsif batch_object.model == 'Target'
+      add_collection_relationship(batch_object)
     end
   end
 
@@ -80,6 +85,16 @@ class BuildBatchFromFolderIngest
         name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT,
         operation: Ddr::Batch::BatchObjectRelationship::OPERATION_ADD,
         object: parent_id,
+        object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID
+    )
+  end
+
+  def add_collection_relationship(batch_object)
+    Ddr::Batch::BatchObjectRelationship.create(
+        batch_object: batch_object,
+        name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_COLLECTION,
+        operation: Ddr::Batch::BatchObjectRelationship::OPERATION_ADD,
+        object: collection_repo_id,
         object_type: Ddr::Batch::BatchObjectRelationship::OBJECT_TYPE_PID
     )
   end

@@ -1,9 +1,10 @@
 class ModelStandardIngestContent
 
-  attr_reader :node
+  attr_reader :node, :targets_name
 
-  def initialize(node)
+  def initialize(node, targets_name=nil)
     @node = node
+    @targets_name = targets_name
   end
 
   def call
@@ -12,10 +13,20 @@ class ModelStandardIngestContent
     case
     when node.is_root?
       'Collection'
-    when node.node_depth == 1
-      'Item'
-    when node.node_depth == 2
-      'Component'
+      when node.node_depth == 1
+        case
+          when node.name == targets_name
+            nil
+          else
+            'Item'
+        end
+      when node.node_depth == 2
+        case
+          when node.parent.name == targets_name
+            'Target'
+          else
+            'Component'
+        end
     end
   end
 

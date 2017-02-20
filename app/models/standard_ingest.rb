@@ -47,6 +47,7 @@ class StandardIngest
     builder_args = {
         user: user,
         filesystem: filesystem,
+        targets_name: configuration[:scanner][:targets],
         content_modeler: ModelStandardIngestContent,
         checksum_provider: StandardIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
         batch_name: "Standard Ingest",

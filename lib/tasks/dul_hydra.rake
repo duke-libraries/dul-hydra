@@ -74,11 +74,13 @@ namespace :dul_hydra do
     task :standard_ingest => :environment do
       raise "Must specify folder path. Ex.: FOLDER=/path/to/standard/ingest/folder" unless ENV['FOLDER']
       raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
-      processor_args = { filepath: ENV['FOLDER'] }
-      processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
-      processor_args[:batch_user] = ENV['BATCH_USER']
-      processor = DulHydra::Batch::Scripts::ProcessStandardIngest.new(processor_args)
-      processor.execute
+      raise "Cannot specify both ADMIN_SET and COLLECTION_PID" if ENV['ADMIN_SET'] && ENV['COLLECTION_PID']
+      job_args = { folder_path: ENV['FOLDER'] }
+      job_args[:batch_user] = ENV['BATCH_USER']
+      job_args[:admin_set] = ENV['ADMIN_SET'] if ENV['ADMIN_SET']
+      job_args[:collection_id] = ENV['COLLECTION_PID'] if ENV['COLLECTION_PID']
+      job_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
+      Resque.enqueue(StandardIngestJob, job_args)
     end
     desc "Creates update batch from folder of METS files"
     task :mets_folder => :environment do
