@@ -94,7 +94,10 @@ class StandardIngest
 
   def validate_metadata_file
     misses = metadata_provider.locators.select { |locator| !filesystem_node_paths.include?(locator) }
-    misses.each { |miss| errors.add(:metadata_file, "Metadata line for locator '#{miss}' will not be used")}
+    misses.each { |miss| errors.add(:metadata_file,
+                                    I18n.t('dul_hydra.standard_ingest.validation.missing_folder_file', miss: miss)) }
+  rescue ArgumentError => e
+    errors.add(:metadata_file, e.message)
   end
 
   def load_configuration

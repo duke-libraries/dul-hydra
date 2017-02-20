@@ -45,6 +45,8 @@ en:
       new_menu: "Metadata File Upload"
     standard_ingest:
       new_menu: "Standard Ingest"
+      validation:
+        missing_folder_file: "Cannot find folder/file that matches '%{miss}' path"
     help:
         label: "Help"
     contact:
