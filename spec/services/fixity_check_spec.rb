@@ -4,7 +4,9 @@ RSpec.describe FixityCheck do
     class TestFixityCheck < Ddr::Models::Base
       include Ddr::Models::HasContent
       include Ddr::Models::Describable
-      has_file_datastream name: "e_content", control_group: "E"
+      has_file_datastream name: "e_content",
+                          control_group: "E",
+                          type: Ddr::Datastreams::ExternalFileDatastream
     end
   end
 
@@ -39,7 +41,7 @@ RSpec.describe FixityCheck do
   }
 
   specify {
-    allow(FileDigest).to receive(:sha1).with(obj.e_content.dsLocation) { "a6ae0d815c1a2aef551b45fe34a35ceea1828a4e" }
+    allow(FileDigest).to receive(:generate_sha1).with(obj.e_content.file_path) { "a6ae0d815c1a2aef551b45fe34a35ceea1828a4e" }
     event = described_class.call(obj)
     expect(event).to be_failure
     expect(event.detail).to match /^e_content: false$/
