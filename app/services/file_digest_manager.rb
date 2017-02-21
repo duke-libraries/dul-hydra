@@ -6,7 +6,8 @@ class FileDigestManager
     case event.name
     when Ddr::Datastreams::SAVE
       if profile && profile["dsControlGroup"] == "E"
-        add_or_update(repo_id, file_id, profile["dsLocation"])
+        file_path = Ddr::Utils.path_from_uri(profile["dsLocation"])
+        add_or_update(repo_id, file_id, file_path)
       end
     when Ddr::Datastreams::DELETE
       delete(repo_id, file_id)
@@ -19,8 +20,8 @@ class FileDigestManager
 
   def self.add_or_update(repo_id, file_id, file_path)
     file_digest = FileDigest.find_or_initialize_by(repo_id: repo_id, file_id: file_id)
-    file_digest.sha1 = FileDigest.sha1(file_path)
-    if file_digest.sha1_changed?
+    file_digest.set_digests(file_path)
+    if file_digest.digests_changed?
       file_digest.save
     else
       false
