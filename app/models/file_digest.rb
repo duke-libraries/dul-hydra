@@ -2,33 +2,16 @@ require 'digest'
 
 class FileDigest < ActiveRecord::Base
 
-  class_attribute :algorithms
-  self.algorithms = %w( md5 sha1 ).freeze
+  validates_presence_of :repo_id, :file_id, :sha1
 
-  module Algorithms
-    FileDigest.algorithms.each do |algo|
-      define_method "generate_#{algo}" do |file_path|
-        algo_class = Digest.const_get(algo.upcase)
-        algo_class.file(file_path).hexdigest
-      end
-    end
+  def self.generate_sha1(path)
+    Digest::SHA1.file(path).hexdigest
   end
 
-  extend Algorithms
-  include Algorithms
+  delegate :generate_sha1, to: :class
 
-  validates_presence_of :repo_id, :file_id
-
-  def set_digests(file_path)
-    algorithms.each { |algo| set_digest(algo, file_path) }
-  end
-
-  def set_digest(algorithm, file_path)
-    write_attribute algorithm, send("generate_#{algorithm}", file_path)
-  end
-
-  def digests_changed?
-    (changed & algorithms).any?
+  def set_digest(path)
+    self.sha1 = generate_sha1(path)
   end
 
 end
