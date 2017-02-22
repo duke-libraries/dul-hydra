@@ -1,37 +1,24 @@
 RSpec.describe FileDigestManager do
 
-  before(:all) do
-    class TestFileDigestManager < Ddr::Models::Base
-      include Ddr::Models::HasContent
-      include Ddr::Models::Describable
-      has_file_datastream name: "e_content", control_group: "E"
-    end
-  end
-
-  after(:all) do
-    Object.send(:remove_const, :TestFileDigestManager)
-  end
-
   before(:each) do
     file = fixture_file_upload('sample.pdf')
     obj.descMetadata.title = [ "Title" ]
-    obj.e_content.dsLocation = Ddr::Utils.path_to_uri(file.path)
+    obj.content.dsLocation = Ddr::Utils.path_to_uri(file.path)
     obj.save!
   end
 
-  let(:obj) { TestFileDigestManager.new(pid: 'testfdm:1') }
+  let(:obj) { Component.new(pid: 'testfdm:1') }
 
   it "creates a file digest for external files" do
-    file_digest = FileDigest.find_by_repo_id_and_file_id!('testfdm:1', 'e_content')
+    file_digest = FileDigest.find_by_repo_id_and_file_id!('testfdm:1', 'content')
     expect(file_digest.sha1).to eq "a6ae0d815c1a2aef551b45fe34a35ceea1828a4d"
-    expect(file_digest.md5).to eq "4f3f9c99a9f2720b77870371ff21ea9f"
   end
 
   it "updates the file digest for an external file" do
     new_file = fixture_file_upload('sample.docx')
-    file_digest = FileDigest.find_by_repo_id_and_file_id!('testfdm:1', 'e_content')
+    file_digest = FileDigest.find_by_repo_id_and_file_id!('testfdm:1', 'content')
     expect {
-      obj.e_content.dsLocation = Ddr::Utils.path_to_uri(new_file.path)
+      obj.content.dsLocation = Ddr::Utils.path_to_uri(new_file.path)
       obj.save!
       file_digest.reload
     }.to change(file_digest, :sha1).to("ff01aab0eada29d35bb423c5c73a9f67a22bc1fd")
@@ -47,8 +34,8 @@ RSpec.describe FileDigestManager do
   end
 
   it "deletes the file digest when the datastream is deleted" do
-    obj.e_content.delete
-    expect(FileDigest.where(repo_id: obj.id)).to be_empty
+    obj.content.delete
+    expect(FileDigest.where(repo_id: obj.id, file_id: 'content')).to be_empty
   end
 
 end
