@@ -49,7 +49,9 @@ class BuildBatchFromFolderIngest
     self.collection_repo_id = pid if object_model == 'Collection'
     batch_object = Ddr::Batch::IngestBatchObject.create(batch: batch, model: object_model, pid: pid)
     add_relationships(batch_object, node.parent)
-    add_admin_set(batch_object) if admin_set.present? && object_model == 'Collection'
+    if admin_set.present? && object_model == 'Collection'
+      add_attribute(batch_object, Ddr::Datastreams::ADMIN_METADATA, 'admin_set', admin_set)
+    end
     add_role(batch_object) if object_model == 'Collection'
     add_metadata(batch_object, node) if metadata_provider
     add_content_datastream(batch_object, node) if [ 'Component', 'Target' ].include?(object_model)
@@ -99,17 +101,6 @@ class BuildBatchFromFolderIngest
     )
   end
 
-  def add_admin_set(batch_object)
-    Ddr::Batch::BatchObjectAttribute.create(
-        batch_object: batch_object,
-        datastream: Ddr::Datastreams::ADMIN_METADATA,
-        name: 'admin_set',
-        operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
-        value: admin_set,
-        value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
-    )
-  end
-
   def add_role(batch_object)
     Ddr::Batch::BatchObjectRole.create(
         batch_object: batch_object,
@@ -123,17 +114,23 @@ class BuildBatchFromFolderIngest
   def add_metadata(batch_object, node)
     locator = Filesystem.node_locator(node)
     metadata_provider.metadata(locator).each do |key, value|
+      ds = Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.include?(key) ?
+                                                    Ddr::Datastreams::DESC_METADATA : Ddr::Datastreams::ADMIN_METADATA
       Array(value).each do |v|
-        Ddr::Batch::BatchObjectAttribute.create(
-              batch_object: batch_object,
-              datastream: Ddr::Datastreams::DESC_METADATA,
-              name: key,
-              operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
-              value: v,
-              value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
-        )
+        add_attribute(batch_object, ds, key, value)
       end
     end
+  end
+
+  def add_attribute(batch_object, datastream, term, value)
+    Ddr::Batch::BatchObjectAttribute.create(
+        batch_object: batch_object,
+        datastream: datastream,
+        name: term,
+        operation: Ddr::Batch::BatchObjectAttribute::OPERATION_ADD,
+        value: value,
+        value_type: Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING
+    )
   end
 
   def add_content_datastream(batch_object, node)

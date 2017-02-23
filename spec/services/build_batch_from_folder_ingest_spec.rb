@@ -24,6 +24,7 @@ RSpec.shared_examples "a successfully built folder ingest batch" do
       expect(collections.first.id).to be_present
       expect(collections.first.batch_object_attributes.where(name: 'title').first.value).to eq('Collection Title')
       expect(collections.first.batch_object_attributes.where(name: 'admin_set').first.value).to eq('abc')
+      expect(collections.first.batch_object_attributes.where(name: 'local_id').first.value).to eq('collect')
       expect(collections.first.batch_object_roles.size).to eq(1)
       expect(collections.first.batch_object_roles[0].agent).to eq(user.user_key)
       expect(collections.first.batch_object_roles[0].role_type).to eq(Ddr::Auth::Roles::RoleTypes::CURATOR.title)
@@ -126,7 +127,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
     before do
       filesystem.tree = filesystem_standard_ingest
       allow(metadata_provider).to receive(:metadata) { { } }
-      allow(metadata_provider).to receive(:metadata).with(nil) { { title: 'Collection Title' } }
+      allow(metadata_provider).to receive(:metadata).with(nil) { { title: 'Collection Title', local_id: 'collect' } }
       allow(metadata_provider).to receive(:metadata).with('[movie.mp4]') { { title: 'Title 1' } }
       allow(metadata_provider).to receive(:metadata).with('[file01001.tif]') { { title: 'Title 2' } }
       allow(metadata_provider).to receive(:metadata).with('itemA') { { title: 'Title 3' } }
