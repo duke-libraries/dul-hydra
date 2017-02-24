@@ -7,3 +7,6 @@ end
 ActiveSupport::Notifications.subscribe(Ddr::Datastreams::SAVE, FileDigestManager)
 ActiveSupport::Notifications.subscribe(Ddr::Datastreams::DELETE, FileDigestManager)
 ActiveSupport::Notifications.subscribe(Ddr::Models::Base::DELETE, FileDigestManager)
+
+ActiveSupport::Notifications.subscribe(Ddr::Models::Base::DELETE, DeletedObject)
+ActiveSupport::Notifications.subscribe(Ddr::Datastreams::DELETE, DeletedDatastream)

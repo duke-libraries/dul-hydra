@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170222193520) do
+ActiveRecord::Schema.define(version: 20170222201328) do
 
   create_table "batch_object_attributes", force: :cascade do |t|
     t.integer  "batch_object_id"
@@ -117,6 +117,19 @@ ActiveRecord::Schema.define(version: 20170222193520) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "deleted_files", force: :cascade do |t|
+    t.string   "repo_id"
+    t.string   "file_id"
+    t.string   "version_id"
+    t.string   "source"
+    t.string   "path"
+    t.datetime "last_modified"
+  end
+
+  add_index "deleted_files", ["last_modified"], name: "index_deleted_files_on_last_modified"
+  add_index "deleted_files", ["repo_id", "file_id", "version_id"], name: "index_deleted_files_on_repo_id_and_file_id_and_version_id"
+  add_index "deleted_files", ["source"], name: "index_deleted_files_on_source"
 
   create_table "events", force: :cascade do |t|
     t.datetime "event_date_time"
