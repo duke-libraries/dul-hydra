@@ -41,7 +41,7 @@ class InspectStandardIngest
   def content_model_stats(filesystem)
     collections = items = components = targets = 0
     filesystem.each do |n|
-      case ModelStandardIngestContent.new(n, scanner_config[:targets]).call
+      case ModelStandardIngestContent.new(n, scanner_config[:intermediate_files], scanner_config[:targets]).call
         when 'Collection'
           collections += 1
         when 'Item'

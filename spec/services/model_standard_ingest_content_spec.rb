@@ -3,13 +3,14 @@ require 'support/ingest_folder_helper'
 
 shared_examples "a properly modeled filesystem node" do
   it "should determine the proper content model" do
-    expect(ModelStandardIngestContent.new(node, targets_name).call).to eq(proper_model)
+    expect(ModelStandardIngestContent.new(node, intermediates_name, targets_name).call).to eq(proper_model)
   end
 end
 
 RSpec.describe ModelStandardIngestContent, type: :service, batch: true, standard_ingest: true do
 
   let(:targets_name) { 'dpc_targets' }
+  let(:intermediates_name) { 'intermediate_files' }
   let(:root_node) { Tree::TreeNode.new('/test/directory') }
   let(:nodeA) { Tree::TreeNode.new('A') }
   let(:nodeB) { Tree::TreeNode.new('B') }
@@ -19,19 +20,22 @@ RSpec.describe ModelStandardIngestContent, type: :service, batch: true, standard
   let(:nodeF) { Tree::TreeNode.new('F') }
   let(:nodeTargets) { Tree::TreeNode.new(targets_name) }
   let(:nodeTarget) { Tree::TreeNode.new('T') }
+  let(:nodeIntermediates) { Tree::TreeNode.new(intermediates_name) }
+  let(:nodeIntermediate) { Tree::TreeNode.new('I') }
 
   before do
     root_node << nodeA
     root_node << nodeB << nodeC
     root_node << nodeD << nodeE << nodeF
     root_node << nodeTargets << nodeTarget
+    root_node << nodeIntermediates << nodeIntermediate
   end
   context "root node" do
     let(:node) { root_node }
     let(:proper_model) { 'Collection' }
     it_should_behave_like "a properly modeled filesystem node"
   end
-  context "non-targets" do
+  context "non-targets and non-intermediates" do
     context "childless node in root node" do
       let(:node) { nodeA }
       let(:proper_model) { 'Item' }
@@ -57,6 +61,18 @@ RSpec.describe ModelStandardIngestContent, type: :service, batch: true, standard
     context "childless node in childed node in root node" do
       let(:node) { nodeTarget }
       let(:proper_model) { 'Target' }
+      it_should_behave_like "a properly modeled filesystem node"
+    end
+  end
+  context "intermediate files" do
+    context "childed node in root node" do
+      let(:node) { nodeIntermediates }
+      let(:proper_model) { nil }
+      it_should_behave_like "a properly modeled filesystem node"
+    end
+    context "childless node in childed node in root node" do
+      let(:node) { nodeIntermediate }
+      let(:proper_model) { nil }
       it_should_behave_like "a properly modeled filesystem node"
     end
   end

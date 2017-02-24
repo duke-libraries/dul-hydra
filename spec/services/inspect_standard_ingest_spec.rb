@@ -43,7 +43,7 @@ RSpec.describe InspectStandardIngest, type: :service, batch: true, standard_inge
   describe "filesystem" do
     context "valid for standard ingest" do
       it "should report the number of files" do
-        expect(inspect_standard_ingest.call.file_count).to eq(7)
+        expect(inspect_standard_ingest.call.file_count).to eq(8)
       end
       it "should report the excluded files/folders" do
         expect(inspect_standard_ingest.call.exclusions).to eq([])
