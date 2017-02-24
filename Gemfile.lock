@@ -20,8 +20,8 @@ GIT
 
 GIT
   remote: https://github.com/duke-libraries/ddr-models
-  revision: 8cb4f088f05e9a0d636b01f9a1657c2411c5573a
-  ref: 8cb4f088f05e9a0d636b01f9a1657c2411c5573a
+  revision: 77451e1c456cbd97082ab7b6eb6584f4dab49db9
+  ref: 77451e1c456cbd97082ab7b6eb6584f4dab49db9
   specs:
     ddr-models (2.7.0.pre)
       active-fedora (>= 7.3.1, < 8)
@@ -276,7 +276,7 @@ GEM
     nest (1.1.2)
       redis
     net-http-persistent (2.9.4)
-    net-ldap (0.15.0)
+    net-ldap (0.16.0)
     netrc (0.11.0)
     nokogiri (1.7.0.1)
       mini_portile2 (~> 2.1.0)
