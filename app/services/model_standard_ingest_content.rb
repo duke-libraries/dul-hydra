@@ -1,9 +1,10 @@
 class ModelStandardIngestContent
 
-  attr_reader :node, :targets_name
+  attr_reader :node, :intermediate_files_name, :targets_name
 
-  def initialize(node, targets_name=nil)
+  def initialize(node, intermediate_files_name=nil, targets_name=nil)
     @node = node
+    @intermediate_files_name = intermediate_files_name
     @targets_name = targets_name
   end
 
@@ -15,13 +16,15 @@ class ModelStandardIngestContent
       'Collection'
       when node.node_depth == 1
         case
-          when node.name == targets_name
+          when [ intermediate_files_name, targets_name ].include?(node.name)
             nil
           else
             'Item'
         end
       when node.node_depth == 2
         case
+          when node.parent.name == intermediate_files_name
+            nil
           when node.parent.name == targets_name
             'Target'
           else

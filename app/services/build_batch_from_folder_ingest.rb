@@ -1,13 +1,15 @@
 class BuildBatchFromFolderIngest
 
-  attr_reader :user, :filesystem, :targets_name, :content_modeler, :metadata_provider, :checksum_provider, :admin_set,
-              :batch_name, :batch_description
+  attr_reader :user, :filesystem, :intermediate_files_name, :targets_name, :content_modeler, :metadata_provider,
+              :checksum_provider, :admin_set, :batch_name, :batch_description
   attr_accessor :batch, :collection_repo_id
 
-  def initialize(user:, filesystem:, targets_name: nil, content_modeler:, metadata_provider: nil, checksum_provider:,
-                 admin_set: nil, collection_repo_id: nil, batch_name: nil, batch_description: nil)
+  def initialize(user:, filesystem:, intermediate_files_name: nil, targets_name: nil, content_modeler:,
+                 metadata_provider: nil, checksum_provider:, admin_set: nil, collection_repo_id: nil, batch_name: nil,
+                 batch_description: nil)
     @user = user
     @filesystem = filesystem
+    @intermediate_files_name = intermediate_files_name
     @targets_name = targets_name
     @content_modeler = content_modeler
     @metadata_provider = metadata_provider
@@ -34,7 +36,7 @@ class BuildBatchFromFolderIngest
   def traverse_filesystem
     filesystem.each do |node|
       node.content ||= {}
-      object_model = content_modeler.new(node, targets_name).call
+      object_model = content_modeler.new(node, intermediate_files_name, targets_name).call
       if object_model == 'Collection' && collection_repo_id.present?
         node.content[:pid] = collection_repo_id
       end
@@ -55,6 +57,9 @@ class BuildBatchFromFolderIngest
     add_role(batch_object) if object_model == 'Collection'
     add_metadata(batch_object, node) if metadata_provider
     add_content_datastream(batch_object, node) if [ 'Component', 'Target' ].include?(object_model)
+    if object_model == 'Component' && intermediate_node = intermediate_file(node)
+          add_intermediate_file_datastream(batch_object, intermediate_node)
+    end
   end
 
   def assign_pid(node)
@@ -147,4 +152,24 @@ class BuildBatchFromFolderIngest
     batch_object.batch_object_datastreams << ds
   end
 
+  def add_intermediate_file_datastream(batch_object, node)
+    full_filepath = Filesystem.path_to_node(node)
+    rel_filepath = Filesystem.path_to_node(node, 'relative')
+    ds = Ddr::Batch::BatchObjectDatastream.create(
+        name: Ddr::Datastreams::INTERMEDIATE_FILE,
+        operation: Ddr::Batch::BatchObjectDatastream::OPERATION_ADD,
+        payload: full_filepath,
+        payload_type: Ddr::Batch::BatchObjectDatastream::PAYLOAD_TYPE_FILENAME,
+        checksum: checksum_provider.checksum(rel_filepath),
+        checksum_type: Ddr::Datastreams::CHECKSUM_TYPE_SHA1
+    )
+    batch_object.batch_object_datastreams << ds
+  end
+
+  def intermediate_file(node)
+    if intermediate_files_name.present?
+      @intermediates ||= filesystem.root[intermediate_files_name]
+      @intermediates.children.select { |chld| File.basename(chld.name, '.*') == File.basename(node.name, '.*') }.first
+    end
+  end
 end

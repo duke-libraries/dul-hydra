@@ -66,6 +66,15 @@ RSpec.shared_examples "a successfully built folder ingest batch" do
       expect(content_datastreams.first.checksum_type).to eq(Ddr::Datastreams::CHECKSUM_TYPE_SHA1)
       component_filepaths << content_datastreams.first.payload
       component_checksums << content_datastreams.first.checksum
+      intermediate_file_datastreams = obj.batch_object_datastreams.where(
+          name: Ddr::Datastreams::INTERMEDIATE_FILE)
+      if File.basename(content_datastreams.first.payload) == 'file01001.tif'
+        expect(intermediate_file_datastreams.size).to eq(1)
+        expect(intermediate_file_datastreams.first.payload).to eq('/test/directory/intermediate_files/file01001.jpg')
+        expect(intermediate_file_datastreams.first.checksum).to eq('a6ae0d815c1a2aef551b45fe34a35ceea1828a4d')
+      else
+        expect(intermediate_file_datastreams.size).to eq(0)
+      end
     end
     expect(component_filepaths).to include('/test/directory/[movie.mp4]/movie.mp4')
     expect(component_filepaths).to include('/test/directory/[file01001.tif]/file01001.tif')
@@ -100,6 +109,7 @@ RSpec.shared_examples "a successfully built folder ingest batch" do
     end
     expect(target_filepaths).to include('/test/directory/dpc_targets/T001.tif')
     expect(target_checksums).to include('7cc5abd7ed8c1c907d86bba5e6e18ed6c6ec995c')
+
   end
 end
 
@@ -112,6 +122,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
 
   context 'standard ingest' do
 
+    let(:intermediate_files_name) { "intermediate_files" }
     let(:targets_name) { "dpc_targets" }
     let(:content_modeler) { ModelStandardIngestContent }
     let(:metadata_provider) { double("standardIngestMetadata") }
@@ -139,10 +150,13 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
       allow(checksum_provider).to receive(:checksum).with('itemB/file02.pdf') { 'a2b872e2a3958a1ec7de3afcfd017d323c0a43dcebf0e607ab31acde4799aa8f' }
       allow(checksum_provider).to receive(:checksum).with('itemB/track02.wav') { 'dd60f671e6f31c75f11643e98384f71864ee654c6afb9d26cdc6a7c458741d47' }
       allow(checksum_provider).to receive(:checksum).with('dpc_targets/T001.tif') { '7cc5abd7ed8c1c907d86bba5e6e18ed6c6ec995c' }
+      allow(checksum_provider).to receive(:checksum).with('intermediate_files/file01001.jpg') { 'a6ae0d815c1a2aef551b45fe34a35ceea1828a4d' }
     end
 
     context 'collection repository ID not provided' do
-      let(:batch_builder) { described_class.new(user: user, filesystem: filesystem, targets_name: targets_name,
+      let(:batch_builder) { described_class.new(user: user, filesystem: filesystem,
+                                                intermediate_files_name: intermediate_files_name,
+                                                targets_name: targets_name,
                                                 content_modeler: content_modeler, metadata_provider: metadata_provider,
                                                 checksum_provider: checksum_provider, admin_set: admin_set,
                                                 batch_name: batch_name, batch_description: batch_description) }
@@ -155,7 +169,8 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
 
     context 'collection repository ID provided' do
       let(:collection_id) { 'test:abcd' }
-      let(:batch_builder) { described_class.new(user: user, filesystem: filesystem, targets_name: targets_name,
+      let(:batch_builder) { described_class.new(user: user, filesystem: filesystem, intermediate_files_name: intermediate_files_name,
+                                                targets_name: targets_name,
                                                 content_modeler: content_modeler, metadata_provider: metadata_provider,
                                                 checksum_provider: checksum_provider, admin_set: admin_set,
                                                 collection_repo_id: collection_id, batch_name: batch_name,

@@ -4,6 +4,7 @@
         - Thumbs.db
         - metadata.txt
     :targets: dpc_targets
+    :intermediate_files: intermediate_files
 :metadata:
     :csv:
         :encoding: UTF-8

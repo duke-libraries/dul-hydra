@@ -43,7 +43,8 @@ def standard_ingest_configuration
   {
     scanner: {
       exclude: [ '.DS_Store', 'Thumbs.db' ],
-      targets: 'dpc_targets'
+      targets: 'dpc_targets',
+      intermediate_files: 'intermediate_files'
     },
     metadata: {
       filename: 'ddr-ingest-metadata.txt',
@@ -95,6 +96,9 @@ def filesystem_standard_ingest
   target_node = Tree::TreeNode.new('dpc_targets')
   target_node << Tree::TreeNode.new('T001.tif')
   root_node << target_node
+  intermediates_nodes = Tree::TreeNode.new('intermediate_files')
+  intermediates_nodes << Tree::TreeNode.new('file01001.jpg')
+  root_node << intermediates_nodes
   root_node
 end
 
