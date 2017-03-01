@@ -7,11 +7,12 @@ gem 'hydra-head', '7.2.2'
 gem 'blacklight', '5.19.2'
 gem 'ddr-alerts', '~> 1.0.0'
 gem 'ddr-batch', '1.2.0'
-gem 'ddr-models', '2.6.1'
+gem 'ddr-models', '2.6.2'
 gem 'rubydora', '>= 1.9.1'
 gem 'devise'
 gem 'deprecation'
 gem 'virtus', '~> 1.0.5'
+gem 'ezid-client', '~> 1.7'
 
 gem 'log4r'
 
