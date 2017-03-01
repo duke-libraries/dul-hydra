@@ -64,3 +64,5 @@ RSpec.configure do |config|
   # Redirect all output to file
   # config.output = File.open(File.join(Rails.root, 'log', 'rspec_output.txt'), 'w')
 end
+
+DulHydra.host_name = 'localhost'
