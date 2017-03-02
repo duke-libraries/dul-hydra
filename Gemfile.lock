@@ -171,8 +171,8 @@ GEM
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (2.7.0)
-    ezid-client (1.4.3)
-      hashie
+    ezid-client (1.7.0)
+      hashie (~> 3.4, >= 3.4.3)
     factory_girl (4.8.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.8.0)
@@ -532,6 +532,7 @@ DEPENDENCIES
   deprecation
   devise
   equivalent-xml
+  ezid-client (~> 1.7)
   factory_girl_rails
   hydra-head (= 7.2.2)
   jettywrapper (~> 1.8)

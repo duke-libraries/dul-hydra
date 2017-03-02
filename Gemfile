@@ -14,6 +14,7 @@ gem 'rubydora', '>= 1.9.1'
 gem 'devise'
 gem 'deprecation'
 gem 'virtus', '~> 1.0.5'
+gem 'ezid-client', '~> 1.7'
 
 gem 'log4r'
 
