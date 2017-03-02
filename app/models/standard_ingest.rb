@@ -4,7 +4,10 @@ class StandardIngest
   attr_reader :admin_set, :collection_id, :config_file, :configuration, :folder_path
   attr_accessor :results, :user
 
-  Results = Struct.new(:errors, :inspection_results)
+  # Lifecycle events
+  FINISHED = 'finished.standard_ingest'
+
+  Results = Struct.new(:batch, :errors, :inspection_results)
 
   CHECKSUM_FILE = 'manifest-sha1.txt'
   DATA_DIRECTORY = 'data'
@@ -34,7 +37,7 @@ class StandardIngest
   def process
     processing_errors = []
     begin
-      build_batch
+      results.batch = build_batch
     rescue DulHydra::BatchError => e
       processing_errors << e.message
     end
@@ -59,7 +62,7 @@ class StandardIngest
     builder_args.merge!(admin_set: admin_set) if admin_set
     builder_args.merge!(collection_repo_id: collection_id) if collection_id
     batch_builder = BuildBatchFromFolderIngest.new(builder_args)
-    batch = batch_builder.call
+    batch_builder.call
   end
 
   def collection_must_exist

@@ -88,6 +88,11 @@ module DulHydra
       mattr_accessor :fits_home do
         ENV["FITS_HOME"]
       end
+
+      # Host name for use in non-web-request situations
+      mattr_accessor :host_name do
+        ENV["HOST_NAME"]
+      end
     end
 
     module ClassMethods
