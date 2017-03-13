@@ -10,6 +10,7 @@ class CollectionsController < ApplicationController
   before_action :set_desc_metadata, only: :create
   self.tabs += [ :tab_actions ]
   respond_to :csv
+  skip_authorize_resource only: :aspace
 
   def items
     get_children
@@ -24,10 +25,29 @@ class CollectionsController < ApplicationController
           export_metadata
         when "techmd"
           export_techmd
+        when "aspace"
+          export_aspace
         else
           render nothing: true, status: 404
         end
       end
+    end
+  end
+
+  def aspace
+    @aspace_authorized = ArchivesSpace::CreateDigitalObjects.authorized?(current_user.aspace_username)
+    if !@aspace_authorized
+      flash.now[:error] = "You are not authorized to execute this operation in ArchivesSpace. Contact the ArchivesSpace administrator."
+    end
+    @submitted = ( request.method == 'POST' )
+    if @submitted && @aspace_authorized
+      options = {
+        publish: !!params[:publish],
+        filename: params.require(:filename) + ".csv",
+        notify: params.require(:notify),
+        user: current_user.aspace_username,
+      }
+      ArchivesSpace::CreateDigitalObjectsJob.perform_later(current_object.id, options)
     end
   end
 
@@ -71,6 +91,13 @@ class CollectionsController < ApplicationController
       fields :id, :local_id, Ddr::Index::Fields.techmd
     end
     filename = current_object.pid.sub(/:/, '-')
+    render csv: query.csv, filename: filename
+  end
+
+  def export_aspace
+    safe_title = current_object.id.sub(/\W/, "_")
+    filename = "#{safe_title}_aspace_do_info"
+    query = ArchivesSpace::ExportDigitalObjectInfo.call(current_object.id)
     render csv: query.csv, filename: filename
   end
 

@@ -96,6 +96,8 @@ DulHydra::Application.routes.draw do
     get 'targets'
     get 'export'
     post 'export'
+    get 'aspace'
+    post 'aspace'
   end
   repository_resource :items do
     publication_routes

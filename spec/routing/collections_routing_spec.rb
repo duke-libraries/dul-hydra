@@ -18,4 +18,8 @@ describe "collections router", type: :routing, collections: true do
     expect(post: "/collections/duke:1/export.csv", type: "techmd").to route_to(controller: "collections", action: "export", id: "duke:1", format: "csv")
     expect(get: "/collections/duke:1/export").to route_to(controller: "collections", action: "export", id: "duke:1")
   end
+  it "has an aspace route" do
+    expect(get: "/collections/duke:1/aspace").to route_to(controller: "collections", action: "aspace", id: "duke:1")
+    expect(post: "/collections/duke:1/aspace").to route_to(controller: "collections", action: "aspace", id: "duke:1")
+  end
 end

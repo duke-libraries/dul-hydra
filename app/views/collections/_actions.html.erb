@@ -21,6 +21,17 @@
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:export, current_object),
+	"Export Digital Object info for ArchivesSpace",
+	export_collection_path(id: current_object, format: "csv", type: "aspace")
+	%>
+  </li>
+  <li class="list-group-item">
+    <%= link_to "Create Digital Objects in ArchivesSpace",
+	aspace_collection_path(current_object)
+	%>
+  </li>  
+  <li class="list-group-item">
+    <%= link_to_if can?(:export, current_object),
 	'Export Technical Metadata',
 	export_collection_path(id: current_object, format: "csv", type: "techmd")
 	%>
