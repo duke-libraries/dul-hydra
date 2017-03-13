@@ -62,6 +62,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
   end
 
   describe "#build_batch" do
+    let(:intermediate_files_name) { 'intermediate_files' }
     let(:targets_name) { 'dpc_targets' }
     let(:standard_ingest_metadata) { double(StandardIngestMetadata) }
     let(:standard_ingest_checksum) { double(StandardIngestChecksum) }
@@ -81,6 +82,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                      'batch_user' => user.user_key } }
       let(:batch_builder_args) { { user: user,
                                    filesystem: filesystem,
+                                   intermediate_files_name: intermediate_files_name,
                                    targets_name: targets_name,
                                    content_modeler: ModelStandardIngestContent,
                                    metadata_provider: standard_ingest_metadata,
@@ -105,6 +107,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                      'batch_user' => user.user_key } }
       let(:batch_builder_args) { { user: user,
                                    filesystem: filesystem,
+                                   intermediate_files_name: intermediate_files_name,
                                    targets_name: targets_name,
                                    content_modeler: ModelStandardIngestContent,
                                    metadata_provider: standard_ingest_metadata,
