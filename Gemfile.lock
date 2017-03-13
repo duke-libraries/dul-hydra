@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/duke-libraries/ddr-batch
-  revision: 0d72e6830e8824d1d03cfeea4a076df0a58b6be3
-  ref: 0d72e6830e8824d1d03cfeea4a076df0a58b6be3
+  revision: 3ce47c803cac4f23a248845f5923143b24c9e541
+  ref: 3ce47c803cac4f23a248845f5923143b24c9e541
   specs:
     ddr-batch (1.3.0.pre)
       ddr-models (~> 2.6)
@@ -20,8 +20,8 @@ GIT
 
 GIT
   remote: https://github.com/duke-libraries/ddr-models
-  revision: 77451e1c456cbd97082ab7b6eb6584f4dab49db9
-  ref: 77451e1c456cbd97082ab7b6eb6584f4dab49db9
+  revision: 768e3d84d0ab9ca2d4cd64771780ba2e537f3545
+  ref: 768e3d84d0ab9ca2d4cd64771780ba2e537f3545
   specs:
     ddr-models (2.7.0.pre)
       active-fedora (>= 7.3.1, < 8)
@@ -30,7 +30,7 @@ GIT
       ddr-antivirus (~> 2.1.1)
       devise (~> 3.4)
       edtf (~> 3.0)
-      ezid-client (~> 1.4.2)
+      ezid-client (~> 1.6)
       grouper-rest-client
       hashie (~> 3.4, < 3.4.4)
       hydra-core (~> 7.2)
@@ -164,7 +164,7 @@ GEM
     ebnf (1.0.0)
       rdf (~> 1.1)
       sxp (~> 0.1, >= 0.1.3)
-    edtf (3.0.1)
+    edtf (3.0.2)
       activesupport (>= 3.0, < 6.0)
     equalizer (0.0.11)
     equivalent-xml (0.6.0)
