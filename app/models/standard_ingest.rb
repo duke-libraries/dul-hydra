@@ -50,6 +50,7 @@ class StandardIngest
     builder_args = {
         user: user,
         filesystem: filesystem,
+        intermediate_files_name: configuration[:scanner][:intermediate_files],
         targets_name: configuration[:scanner][:targets],
         content_modeler: ModelStandardIngestContent,
         checksum_provider: StandardIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
