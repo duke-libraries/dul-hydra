@@ -65,7 +65,9 @@ module DulHydra
           :doi,
           :license,
           :ead_id,
-          :aspace_id ]
+          :aspace_id,
+          :rights_note,
+        ]
       end
 
       # Base path for Standard Ingest folders
