@@ -1,0 +1,6 @@
+<% current_object.rights_note.each_with_index do |value, i| %>
+  <%= render partial: "admin_metadata_form/rights_note_value", locals: {value: value, num: i+1} %>
+<% end %>
+
+<%= render partial: "admin_metadata_form/rights_note_value", locals: {value: nil, num: "new"} %>
+

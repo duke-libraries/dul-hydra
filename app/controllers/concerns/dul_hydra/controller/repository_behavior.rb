@@ -82,15 +82,10 @@ module DulHydra
 
       def admin_metadata
         if request.patch?
-          current_object.attributes = admin_metadata_params
-          changes = current_object.changes
-          if changes.present?
-            if save_current_object(summary: "Administrative metadata updated")
-              flash[:success] = "Administrative metadata successfully updated."
-              redirect_to(action: "show", tab: "admin_metadata") and return
-            end
-          else
-            flash.now[:error] = "Administrative metadata not updated, as no values were changed.".html_safe
+          set_admin_metadata
+          if save_current_object(summary: "Administrative metadata updated")
+            flash[:success] = "Administrative metadata successfully updated."
+            redirect_to(action: "show", tab: "admin_metadata") and return
           end
         end
       end
@@ -109,7 +104,7 @@ module DulHydra
 
       # Controls what fields are displayed on the admin metadata tab and edit form
       def admin_metadata_fields
-        [:license, :local_id, :display_format, :ead_id, :aspace_id, :doi]
+        [:license, :local_id, :display_format, :ead_id, :aspace_id, :doi, :rights_note]
       end
 
       def admin_metadata_params
@@ -117,6 +112,12 @@ module DulHydra
           p.select  { |k, v| v == "" }.each { |k, v| p[k] = nil }
           p.reject! { |k, v| current_object.send(k) == v }
           p.permit!
+        end
+      end
+
+      def set_admin_metadata
+        params.require(:adminMetadata).each do |term, value|
+          current_object.adminMetadata.set_values(term, value)
         end
       end
 

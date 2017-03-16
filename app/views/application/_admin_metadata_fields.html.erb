@@ -1,8 +1,20 @@
 <table class="table">
   <% admin_metadata_fields.each do |field| %>
   <tr>
-    <th scope="row"><%= t("dul_hydra.admin_metadata.#{field}", default: field.to_s.titleize) %></th>    
-    <td><%= render_admin_metadata_field field %></td>
+    <th scope="row">
+      <%= t("dul_hydra.admin_metadata.#{field}", default: field.to_s.titleize) %>
+    </th>
+    <td>      
+      <% if field == :rights_note %>
+        <% if current_object.rights_note.present? %>
+          <%= simple_format current_object.rights_note.join("\n") %>
+	<% else %>
+	  &nbsp;  
+	<% end %>
+      <% else %>
+        <%= render_admin_metadata_field field %>
+      <% end %>
+    </td>
   <tr>
   <% end %>
 </table>
