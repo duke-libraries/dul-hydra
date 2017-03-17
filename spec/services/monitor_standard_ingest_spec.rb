@@ -8,6 +8,7 @@ RSpec.describe MonitorStandardIngest, type: :service do
   let(:job_params) { { "batch_user" => user_key, "folder_path" => folder_path } }
   let(:collection_batch_object) { double('Ddr::Batch::BatchObject', model: 'Collection', pid: collection_pid) }
   let(:collection_title) { 'Test Collection' }
+  let(:collection_title_attribute) { Ddr::Batch::BatchObjectAttribute.new(name: 'title', value: collection_title) }
   let(:collection_pid) { 'test:1' }
   let(:collection) { double('Collection', pid: collection_pid, title: [ collection_title ]) }
   let(:notification) { [ StandardIngest::FINISHED, Time.now, Time.now, 'abcdef', payload ] }
@@ -64,14 +65,36 @@ RSpec.describe MonitorStandardIngest, type: :service do
     end
     describe "collection ID not present" do
       let(:collection_count) { 1 }
-      it "should generate an appropriate email" do
-        expect(JobMailer).to receive(:basic).with(to: user_email,
-                                                  subject: "COMPLETED - Standard Ingest Job - #{collection_title}",
-                                                  message: expected_msg).and_call_original
-        described_class.call(*notification)
+      describe "collection title attribute present" do
+        before do
+          allow(collection_batch_object)
+              .to receive_message_chain(:batch_object_attributes, :where) { [ collection_title_attribute ] }
+        end
+        it "should generate an appropriate email" do
+          expect(JobMailer).to receive(:basic).with(to: user_email,
+                                                    subject: "COMPLETED - Standard Ingest Job - #{collection_title}",
+                                                    message: expected_msg).and_call_original
+          described_class.call(*notification)
+        end
+        it "should send an email" do
+          expect { described_class.call(*notification) }.to change { ActionMailer::Base.deliveries.count }.by(1)
+        end
       end
-      it "should send an email" do
-        expect { described_class.call(*notification) }.to change { ActionMailer::Base.deliveries.count }.by(1)
+      describe "collection title attribute not present" do
+        let(:collection_title) { nil }
+        before do
+          allow(collection_batch_object)
+              .to receive_message_chain(:batch_object_attributes, :where) { [ ] }
+        end
+        it "should generate an appropriate email" do
+          expect(JobMailer).to receive(:basic).with(to: user_email,
+                                                    subject: "COMPLETED - Standard Ingest Job - #{collection_title}",
+                                                    message: expected_msg).and_call_original
+          described_class.call(*notification)
+        end
+        it "should send an email" do
+          expect { described_class.call(*notification) }.to change { ActionMailer::Base.deliveries.count }.by(1)
+        end
       end
     end
   end

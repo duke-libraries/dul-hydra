@@ -54,12 +54,13 @@ class MonitorStandardIngest
     end
 
     def collection_title(collection_id, batch)
-      if collection_id
+      if collection_id.present?
         Collection.find(collection_id).title.first
       else
         if batch
-          coll_id = batch.batch_objects.where(model: 'Collection').first.pid
-          Collection.find(coll_id).title.first
+          batch_object = batch.batch_objects.where(model: 'Collection').first
+          titles = batch_object.batch_object_attributes.where(name: 'title')
+          titles.empty? ? nil : titles.first.value
         end
       end
     end
