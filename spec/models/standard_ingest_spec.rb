@@ -67,6 +67,12 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
     let(:standard_ingest_metadata) { double(StandardIngestMetadata) }
     let(:standard_ingest_checksum) { double(StandardIngestChecksum) }
     let(:filesystem) { filesystem_standard_ingest }
+    let(:config) { {:scanner=>{:exclude=>[".DS_Store", "Thumbs.db", "metadata.txt"], :targets=>"dpc_targets",
+                               :intermediate_files=>"intermediate_files"},
+                    :metadata=>{:csv=>{:encoding=>"UTF-8", :headers=>true, :col_sep=>"\t"},
+                                :parse=>{:repeating_fields_separator=>";",
+                                         :repeatable_fields=>["contributor", "coverage", "creator", "extent",
+                                                              "identifier", "rightsHolder", "subject", "temporal"]}}} }
     let(:admin_set) { 'dvs' }
 
     before do
@@ -74,6 +80,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
       allow(StandardIngestChecksum).to receive(:new) { standard_ingest_checksum }
       allow(File).to receive(:exist?).with(subject.metadata_path) { true }
       allow(subject).to receive(:filesystem) { filesystem }
+      allow(subject).to receive(:configuration) { config }
     end
 
     describe "collection creating standard ingest" do
