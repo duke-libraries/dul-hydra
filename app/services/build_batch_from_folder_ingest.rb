@@ -119,10 +119,10 @@ class BuildBatchFromFolderIngest
   def add_metadata(batch_object, node)
     locator = Filesystem.node_locator(node)
     metadata_provider.metadata(locator).each do |key, value|
-      ds = Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.include?(key) ?
+      ds = Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.include?(key.to_sym) ?
                                                     Ddr::Datastreams::DESC_METADATA : Ddr::Datastreams::ADMIN_METADATA
       Array(value).each do |v|
-        add_attribute(batch_object, ds, key, value)
+        add_attribute(batch_object, ds, key, v)
       end
     end
   end
