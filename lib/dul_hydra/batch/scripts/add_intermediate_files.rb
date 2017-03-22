@@ -16,9 +16,13 @@ module DulHydra::Batch::Scripts
 
     def execute
       entries = Dir.entries(filepath).select { |entry| INTERMEDIATE_EXTENSIONS.include?(File.extname(entry).downcase) }
-      entries.each do |entry|
-        Resque.enqueue(AddIntermediateFileJob, user: user.user_key, filepath: filepath, intermediate_file: entry,
-                       checksum: file_checksum(File.join(filepath, entry)))
+       entries.each do |entry|
+        Resque.enqueue(AddIntermediateFileJob,
+                       user: user.user_key,
+                       filepath: filepath,
+                       intermediate_file: entry,
+                       checksum: checksums ? file_checksum(File.join(filepath, entry)) : nil
+                      )
       end
     end
 
