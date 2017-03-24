@@ -3,7 +3,7 @@ ruby '2.3.1'
 
 gem 'rails', '4.2.7'
 
-gem 'ddr-alerts', git: 'https://github.com/duke-libraries/ddr-alerts', ref: '01408a82f13292b655b3c561688cf824cbd14549'
+gem 'ddr-alerts', '1.1.0.rc1'
 gem 'ddr-batch', '1.3.0.rc1'
 gem 'ddr-models', '2.7.0.rc1'
 
