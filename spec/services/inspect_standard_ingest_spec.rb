@@ -5,14 +5,13 @@ RSpec.describe InspectStandardIngest, type: :service, batch: true, standard_inge
 
   let(:filepath) { "/foo/bar" }
   let(:datapath) { File.join(filepath, 'data') }
-  let(:inspect_standard_ingest) { InspectStandardIngest.new(filepath, {}) }
+  let(:inspect_standard_ingest) { InspectStandardIngest.new(filepath, standard_ingest_configuration[:scanner]) }
   let(:filesystem) { Filesystem.new }
   let(:scan_results) { ScanFilesystem::Results.new(filesystem, []) }
 
   before do
     allow(Dir).to receive(:exist?) { true }
     allow(File).to receive(:readable?).with(datapath) { true }
-    allow(inspect_standard_ingest).to receive(:load_configuration) { standard_ingest_configuration }
     allow_any_instance_of(ScanFilesystem).to receive(:call) { scan_results }
     filesystem.tree = filesystem_standard_ingest
   end
@@ -44,7 +43,7 @@ RSpec.describe InspectStandardIngest, type: :service, batch: true, standard_inge
   describe "filesystem" do
     context "valid for standard ingest" do
       it "should report the number of files" do
-        expect(inspect_standard_ingest.call.file_count).to eq(6)
+        expect(inspect_standard_ingest.call.file_count).to eq(8)
       end
       it "should report the excluded files/folders" do
         expect(inspect_standard_ingest.call.exclusions).to eq([])
@@ -54,6 +53,7 @@ RSpec.describe InspectStandardIngest, type: :service, batch: true, standard_inge
         expect(stats).to include(collections: 1)
         expect(stats).to include(items: 4)
         expect(stats).to include(components: 6)
+        expect(stats).to include(targets: 1)
       end
       it "should report the filesystem object" do
         expect(inspect_standard_ingest.call.filesystem).to be_a(Filesystem)

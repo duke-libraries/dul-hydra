@@ -1,7 +1,4 @@
-require 'spec_helper'
-require 'support/shared_examples_for_repository_controllers'
-
-describe TargetsController, type: :controller, targets: true do
+RSpec.describe TargetsController, type: :controller, targets: true do
 
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
@@ -10,17 +7,17 @@ describe TargetsController, type: :controller, targets: true do
     let(:obj) { FactoryGirl.create(:target) }
     context "when the user can read the object" do
       before do
-        obj.roles.grant type: "Editor", agent: user
+        obj.roles.grant type: "Viewer", agent: user
         obj.save!
       end
       it "is authorized" do
-        get :show, id: obj.id
+        get :show, id: obj
         expect(response.response_code).to eq(200)
       end
     end
     context "when the user cannot read the object" do
       it "is unauthorized" do
-        get :show, id: obj.id
+        get :show, id: obj
         expect(response.response_code).to eq(403)
       end
     end

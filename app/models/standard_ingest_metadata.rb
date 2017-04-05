@@ -3,7 +3,8 @@ class StandardIngestMetadata
   attr_reader :metadata_filepath, :metadata_profile
 
   # Used in accommodation of case and spacing errors in column headings
-  NORMALIZED_TERMS = Ddr::Vocab::Vocabulary.term_names(RDF::DC).map(&:downcase).map(&:to_s)
+  TERMS = Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.concat(DulHydra.user_editable_admin_metadata_fields)
+  NORMALIZED_TERMS = TERMS.map(&:downcase).map(&:to_s)
 
   def initialize(metadata_filepath, metadata_profile)
     @metadata_filepath = metadata_filepath
@@ -90,9 +91,11 @@ class StandardIngestMetadata
 
   # Accommodate case and spacing errors in column headings
   CSV::HeaderConverters[:canonicalize] = lambda{ |h|
-    NORMALIZED_TERMS.index(h.downcase.gsub(/\s+/, "")) ?
-      Ddr::Vocab::Vocabulary.term_names(RDF::DC)[NORMALIZED_TERMS.index(h.downcase.gsub(/\s+/, ""))].to_s :
+    if idx = NORMALIZED_TERMS.index(h.downcase.gsub(/\s+/, ""))
+      TERMS[idx].to_s
+    else
       h
+    end
   }
 
 end

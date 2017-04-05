@@ -18,37 +18,69 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
       allow(Dir).to receive(:exist?).with(folder_path) { true }
       allow(Dir).to receive(:exist?).with(subject.data_path) { true }
       allow(File).to receive(:exist?).with(subject.checksum_path) { true }
-      allow(File).to receive(:exist?).with(subject.metadata_path) { true }
       allow(subject).to receive(:metadata_provider) { standard_ingest_metadata }
       allow(subject).to receive(:filesystem_node_paths) { fs_node_paths }
     end
     describe 'metadata file' do
-      describe 'valid locators' do
-        before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths } }
-        it "should be valid" do
-          expect(subject).to be_valid
+      describe 'present' do
+        before { allow(File).to receive(:exist?).with(subject.metadata_path) { true } }
+        describe 'valid locators' do
+          before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths } }
+          it "should be valid" do
+            expect(subject).to be_valid
+          end
+        end
+        describe 'invalid locators' do
+          before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths + [ 'bar' ] } }
+          it "should not be valid" do
+            expect(subject).not_to be_valid
+            expect(subject.errors.messages).to include(
+                 { metadata_file: [ I18n.t('dul_hydra.standard_ingest.validation.missing_folder_file', miss: 'bar') ] })
+          end
         end
       end
-      describe 'invalid locators' do
-        before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths + [ 'bar' ] } }
-        it "should not be valid" do
-          expect(subject).not_to be_valid
-          expect(subject.errors.messages).to include({ metadata_file: [ "Metadata line for locator 'bar' will not be used" ] })
+      describe 'not present' do
+        before { allow(File).to receive(:exist?).with(subject.metadata_path) { false } }
+        describe 'collection creating ingest' do
+          it "should not be valid" do
+            expect(subject).to_not be_valid
+            expect(subject.errors.messages).to include({ folder_path: [ "#{subject.metadata_path} does not exist" ] })
+          end
+        end
+        describe 'item adding ingest' do
+          let(:collection_repo_id) { 'test:1' }
+          let(:standard_ingest_args) { { 'batch_user' => user.user_key,
+                                         'folder_path' => folder_path,
+                                         'collection_id' => collection_repo_id } }
+          before { allow(Collection).to receive(:exists?).with(collection_repo_id) { true } }
+          it "should be valid" do
+            expect(subject).to be_valid
+          end
         end
       end
     end
   end
 
   describe "#build_batch" do
+    let(:intermediate_files_name) { 'intermediate_files' }
+    let(:targets_name) { 'dpc_targets' }
     let(:standard_ingest_metadata) { double(StandardIngestMetadata) }
     let(:standard_ingest_checksum) { double(StandardIngestChecksum) }
     let(:filesystem) { filesystem_standard_ingest }
+    let(:config) { {:scanner=>{:exclude=>[".DS_Store", "Thumbs.db", "metadata.txt"], :targets=>"dpc_targets",
+                               :intermediate_files=>"intermediate_files"},
+                    :metadata=>{:csv=>{:encoding=>"UTF-8", :headers=>true, :col_sep=>"\t"},
+                                :parse=>{:repeating_fields_separator=>";",
+                                         :repeatable_fields=>["contributor", "coverage", "creator", "extent",
+                                                              "identifier", "rightsHolder", "subject", "temporal"]}}} }
     let(:admin_set) { 'dvs' }
 
     before do
       allow(StandardIngestMetadata).to receive(:new) { standard_ingest_metadata }
       allow(StandardIngestChecksum).to receive(:new) { standard_ingest_checksum }
+      allow(File).to receive(:exist?).with(subject.metadata_path) { true }
       allow(subject).to receive(:filesystem) { filesystem }
+      allow(subject).to receive(:configuration) { config }
     end
 
     describe "collection creating standard ingest" do
@@ -57,6 +89,8 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                      'batch_user' => user.user_key } }
       let(:batch_builder_args) { { user: user,
                                    filesystem: filesystem,
+                                   intermediate_files_name: intermediate_files_name,
+                                   targets_name: targets_name,
                                    content_modeler: ModelStandardIngestContent,
                                    metadata_provider: standard_ingest_metadata,
                                    checksum_provider: standard_ingest_checksum,
@@ -80,6 +114,8 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                      'batch_user' => user.user_key } }
       let(:batch_builder_args) { { user: user,
                                    filesystem: filesystem,
+                                   intermediate_files_name: intermediate_files_name,
+                                   targets_name: targets_name,
                                    content_modeler: ModelStandardIngestContent,
                                    metadata_provider: standard_ingest_metadata,
                                    checksum_provider: standard_ingest_checksum,

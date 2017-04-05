@@ -1,14 +1,16 @@
 source 'https://rubygems.org'
-ruby '2.1.5'
+ruby '2.3.1'
 
-gem 'rake', '~> 11.3.0'
-gem 'rails', '4.1.16'
+gem 'rails', '4.2.7'
+
+gem 'ddr-alerts', '1.1.0'
+gem 'ddr-batch', '1.3.0'
+gem 'ddr-models', '2.7.0'
+
 gem 'hydra-head', '7.2.2'
 gem 'blacklight', '5.19.2'
-gem 'ddr-alerts', '~> 1.0.0'
-gem 'ddr-batch', '1.2.0'
-gem 'ddr-models', '2.6.2'
 gem 'rubydora', '>= 1.9.1'
+
 gem 'devise'
 gem 'deprecation'
 gem 'virtus', '~> 1.0.5'
@@ -34,6 +36,11 @@ gem 'paperclip', '~> 4.2'
 # Filesystem representation
 gem 'rubytree'
 
+# Rails 4.2
+gem 'responders', '~> 2.0'
+gem 'web-console', '~> 2.0', group: :development
+gem 'sprockets-rails', '>= 2.1.4'
+
 group :development, :test do
   gem 'sqlite3'
   gem 'jettywrapper', '~> 1.8'
@@ -50,7 +57,7 @@ group :test do
 end
 
 group :production do
-  gem 'mysql2', '~> 0.3.21'
+  gem 'mysql2', '~> 0.4.5'
 end
 
 gem 'sass-rails'

@@ -1,1 +1,2 @@
 548bd2678027f3acb4d4c5ccedf6f92ca07f74bd data/itemA/image1.tiff
+7cc5abd7ed8c1c907d86bba5e6e18ed6c6ec995c data/dpc_targets/target.png

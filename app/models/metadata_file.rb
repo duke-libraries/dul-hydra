@@ -97,6 +97,7 @@ class MetadataFile < ActiveRecord::Base
                 )
     # Create batch object for each row in file
     CSV.foreach(metadata.path, effective_options[:csv]) do |row|
+      next if row.fields.compact.empty?    # skip empty rows
       obj = Ddr::Batch::UpdateBatchObject.new(:batch => @batch)
       obj.pid = row.field("pid") if row.headers.include?("pid")
       obj.model = row.field("model") if row.headers.include?("model")

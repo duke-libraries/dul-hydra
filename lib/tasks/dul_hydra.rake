@@ -61,15 +61,26 @@ namespace :dul_hydra do
   end
 
   namespace :batch do
+    desc "Adds intermediate files to existing Components"
+    task :intermediate_files => :environment do
+      raise "Must specify folder path to intermediate files. Ex.: FOLDER=/path/to/files" unless ENV["FOLDER"]
+      raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
+      processor_args = { filepath: ENV['FOLDER'], batch_user: ENV['BATCH_USER'] }
+      processor_args[:checksum_file] = ENV['CHECKSUM_FILE'] if ENV['CHECKSUM_FILE']
+      processor = DulHydra::Batch::Scripts::AddIntermediateFiles.new(processor_args)
+      processor.execute
+    end
     desc "Creates ingest batch from Standard Ingest Format directory"
     task :standard_ingest => :environment do
       raise "Must specify folder path. Ex.: FOLDER=/path/to/standard/ingest/folder" unless ENV['FOLDER']
       raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
-      processor_args = { filepath: ENV['FOLDER'] }
-      processor_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
-      processor_args[:batch_user] = ENV['BATCH_USER']
-      processor = DulHydra::Batch::Scripts::ProcessStandardIngest.new(processor_args)
-      processor.execute
+      raise "Cannot specify both ADMIN_SET and COLLECTION_PID" if ENV['ADMIN_SET'] && ENV['COLLECTION_PID']
+      job_args = { folder_path: ENV['FOLDER'] }
+      job_args[:batch_user] = ENV['BATCH_USER']
+      job_args[:admin_set] = ENV['ADMIN_SET'] if ENV['ADMIN_SET']
+      job_args[:collection_id] = ENV['COLLECTION_PID'] if ENV['COLLECTION_PID']
+      job_args[:config_file] = ENV['CONFIG_FILE'] if ENV['CONFIG_FILE']
+      Resque.enqueue(StandardIngestJob, job_args)
     end
     desc "Creates update batch from folder of METS files"
     task :mets_folder => :environment do
@@ -96,25 +107,6 @@ namespace :dul_hydra do
       script = DulHydra::Scripts::CsvToXml.new(opts)
       script.execute
     end
-    desc "[DEPRECATED] Runs the fixity check routine"
-    task :fixity_check => :environment do
-      warn "[DEPRECATION] The task `dul_hydra:batch:fixity_check` is deprecated and will be removed" \
-           " from DulHydra v5.0. Use `dul_hydra:fixity:check` instead."
-      opts = {
-        :dryrun => ENV['dryrun'] == 'true' ? true : false,
-        :limit => ENV.fetch('limit', 1000).to_i,
-        :period => ENV.fetch('period', '60DAYS'),
-        :report => ENV['report']
-      }
-      mailto = ENV['mailto']
-
-      puts "Running batch fixity check with options #{opts} ..."
-      bfc = DulHydra::Scripts::BatchFixityCheck.new(opts)
-      bfc.execute
-      if bfc.total > 0
-       BatchFixityCheckMailer.send_notification(bfc, mailto).deliver!
-      end
-    end
     desc "Sets missing thumbnails in collection specified by COLLECTION_PID="
     task :thumbnails => :environment do
       raise "Must specify collection pid.  Ex: COLLECTION_PID=duke:72" unless ENV['COLLECTION_PID']
@@ -124,7 +116,7 @@ namespace :dul_hydra do
   end
 
   namespace :fixity do
-    desc "Run fixity check routine"
+    desc "Run batch fixity check routine"
     task :check => :environment do
       args = {}
       if ENV["before_days"]
@@ -134,7 +126,7 @@ namespace :dul_hydra do
         args[:limit] = ENV["limit"].to_i
       end
       puts "Running fixity check with args #{args.inspect}."
-      DulHydra::Fixity.check(**args)
+      BatchFixityCheck.call(**args)
     end
   end
 
@@ -154,7 +146,7 @@ namespace :dul_hydra do
     desc "Re-index all currently indexed objects"
     task :reindex_all => :environment do
       Ddr::Index.pids.each do |pid|
-        Resque.enqueue(Ddr::Jobs::UpdateIndex, pid)
+        Resque.enqueue(UpdateIndexJob, pid)
       end
       puts "All indexed object queued for re-indexing."
     end
@@ -164,7 +156,7 @@ namespace :dul_hydra do
       conn = ActiveFedora::RubydoraConnection.new(ActiveFedora.config.credentials).connection
       conn.search(nil) do |object|
         next if object.pid.start_with?('fedora-system:')
-        Resque.enqueue(Ddr::Jobs::UpdateIndex, object.pid)
+        Resque.enqueue(UpdateIndexJob, object.pid)
       end
       puts "All repository objects queued for indexing."
     end

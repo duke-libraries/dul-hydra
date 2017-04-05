@@ -27,14 +27,14 @@ describe CollectionsController, type: :controller, collections: true do
         collection.roles.grant type: "Viewer", agent: user
         collection.save!
       end
-      it "should render the items" do
+      it "renders the items" do
         get :items, id: collection
         expect(response).to be_successful
         expect(response).to render_template(:items)
       end
     end
     context "when the user cannot read the collection" do
-      it "should be unauthorized" do
+      it "is unauthorized" do
         get :items, id: collection
         expect(response.response_code).to eq 403
       end
@@ -46,7 +46,7 @@ describe CollectionsController, type: :controller, collections: true do
     let(:attachment) { FactoryGirl.create(:attachment) }
     before do
       attachment.attached_to = collection
-      attachment.save
+      attachment.save!
     end
     context "when the user can read the collection" do
       before do

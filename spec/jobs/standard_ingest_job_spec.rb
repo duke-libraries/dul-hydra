@@ -3,29 +3,97 @@ require 'spec_helper'
 RSpec.describe StandardIngestJob, type: :job do
 
   let(:user_key) { 'joe@test.edu' }
-  let(:user_email) { 'joe.test@test.edu' }
   let(:folder_path) { '/foo/bar/baz' }
-  let(:filesystem) { Filesystem.new }
-  let(:inspection_results) { InspectStandardIngest::Results.new(filesystem: filesystem) }
-  let(:job_params) { { "admin_set" => nil, "batch_user" => user_key, "collection_id" => nil, "config_file" => nil, "folder_path" => folder_path } }
+  let(:collection_pid) { 'test:1' }
+  let(:batch) { double('Ddr::Batch::Batch', id: 5) }
+  let(:item_count) { 7 }
+  let(:component_count) { 10 }
+  let(:target_count) { 2 }
+  let(:job_params) { { "batch_user" => user_key, "folder_path" => folder_path } }
 
   before do
-    allow(User).to receive(:find_by_user_key).with(user_key) { double(email: user_email) }
-    allow_any_instance_of(InspectStandardIngest).to receive(:inspect_filesystem) { inspection_results }
-    allow_any_instance_of(StandardIngest).to receive(:filesystem) { filesystem }
-    allow_any_instance_of(StandardIngest).to receive(:build_batch) { nil }
+    allow_any_instance_of(InspectStandardIngest).to receive(:call) { inspection_results }
   end
 
-  describe "success" do
-    let(:expected_msg) { "Standard Ingest processing for folder #{folder_path} has completed." }
-    it "should generate an appropriate email" do
-      expect(JobMailer).to receive(:basic).with(to: user_email,
-                                                subject: "COMPLETED - Standard Ingest Job - #{folder_path}",
-                                                message: expected_msg).and_call_original
-      described_class.perform(job_params)
+  it_behaves_like "an abstract job"
+
+  describe "finished" do
+    describe "success" do
+      let(:file_count) { 13 }
+      let(:model_stats) { { collections: collection_count, items: item_count,
+                            components: component_count, targets: target_count } }
+      let(:inspection_results) do
+        InspectStandardIngest::Results.new(file_count, [ 'metadata.txt' ], model_stats, Filesystem.new)
+      end
+      before do
+        allow_any_instance_of(StandardIngest).to receive(:build_batch) { batch }
+      end
+      describe "collection ID present" do
+        let(:collection_count) { 0 }
+        before { job_params.merge!({ "collection_id" => collection_pid }) }
+        it "should publish the appropriate notification" do
+          expect(ActiveSupport::Notifications).to receive(:instrument).with(StandardIngest::FINISHED,
+                                                                            user_key: user_key,
+                                                                            folder_path: folder_path,
+                                                                            collection_id: collection_pid,
+                                                                            file_count: file_count,
+                                                                            model_stats: model_stats,
+                                                                            errors: [],
+                                                                            batch_id: batch.id)
+          described_class.perform(job_params)
+        end
+      end
+      describe "collection ID not present" do
+        let(:collection_count) { 1 }
+        it "should publish the appropriate notification" do
+          expect(ActiveSupport::Notifications).to receive(:instrument).with(StandardIngest::FINISHED,
+                                                                            user_key: user_key,
+                                                                            folder_path: folder_path,
+                                                                            collection_id: nil,
+                                                                            file_count: file_count,
+                                                                            model_stats: model_stats,
+                                                                            errors: [],
+                                                                            batch_id: batch.id)
+          described_class.perform(job_params)
+        end
+      end
     end
-    it "should send an email" do
-      expect { described_class.perform(job_params) }.to change { ActionMailer::Base.deliveries.count }.by(1)
+    describe "errors" do
+      let(:error_message) { 'Error' }
+      let(:error) { DulHydra::BatchError.new(error_message) }
+      let(:inspection_results) do
+        InspectStandardIngest::Results.new
+      end
+      before do
+        allow_any_instance_of(StandardIngest).to receive(:build_batch) { raise error }
+      end
+      describe "collection ID present" do
+        before { job_params.merge!({ "collection_id" => collection_pid }) }
+        it "should publish the appropriate notification" do
+          expect(ActiveSupport::Notifications).to receive(:instrument).with(StandardIngest::FINISHED,
+                                                                            user_key: user_key,
+                                                                            folder_path: folder_path,
+                                                                            collection_id: collection_pid,
+                                                                            file_count: nil,
+                                                                            model_stats: nil,
+                                                                            errors: [ error_message ],
+                                                                            batch_id: nil)
+          described_class.perform(job_params)
+        end
+      end
+      describe "collection ID not present" do
+        it "should publish the appropriate notification" do
+          expect(ActiveSupport::Notifications).to receive(:instrument).with(StandardIngest::FINISHED,
+                                                                            user_key: user_key,
+                                                                            folder_path: folder_path,
+                                                                            collection_id: nil,
+                                                                            file_count: nil,
+                                                                            model_stats: nil,
+                                                                            errors: [ error_message ],
+                                                                            batch_id: nil)
+          described_class.perform(job_params)
+        end
+      end
     end
   end
 

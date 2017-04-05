@@ -16,6 +16,10 @@ RSpec.describe BuildBatchObjectFromMETSFile, type: :service, batch: true, mets_f
     allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030020', model: 'Component') { 'test:20' }
     allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi010030030', model: 'Component') { 'test:21' }
     allow(Ddr::Utils).to receive(:pid_for_identifier).with('efghi01003', model: 'Component') { 'test:25' }
+    allow(SolrDocument).to receive(:find).with('test:19') { double(permanent_id: 'ark:/99999/fk4ab3') }
+    allow(SolrDocument).to receive(:find).with('test:20') { double(permanent_id: 'ark:/99999/fk4cd9') }
+    allow(SolrDocument).to receive(:find).with('test:21') { double(permanent_id: 'ark:/99999/fk4edf') }
+    allow(SolrDocument).to receive(:find).with('test:25') { double(permanent_id: 'ark:/99999/fk4aaa') }
   end
 
   context "batch object" do

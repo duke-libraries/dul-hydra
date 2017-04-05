@@ -86,7 +86,7 @@ describe ComponentsController, type: :controller, components: true do
         create_component
       end
       it "should create an event" do
-        expect{ create_component }.to change{ Ddr::Events::CreationEvent.count }.by(1)
+        expect{ create_component }.to change{ Ddr::Events::IngestionEvent.count }.by(1)
       end
       it "should redirect to the component edit page" do
         create_component

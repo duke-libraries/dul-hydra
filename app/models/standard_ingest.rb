@@ -4,7 +4,10 @@ class StandardIngest
   attr_reader :admin_set, :collection_id, :config_file, :configuration, :folder_path
   attr_accessor :results, :user
 
-  Results = Struct.new(:errors, :inspection_results)
+  # Lifecycle events
+  FINISHED = 'finished.standard_ingest'
+
+  Results = Struct.new(:batch, :errors, :inspection_results)
 
   CHECKSUM_FILE = 'manifest-sha1.txt'
   DATA_DIRECTORY = 'data'
@@ -16,8 +19,8 @@ class StandardIngest
     folder.validate :folder_directory_must_exist
     folder.validate :data_directory_must_exist
     folder.validate :checksum_file_must_exist
-    folder.validate :metadata_file_must_exist
-    folder.validate :validate_metadata_file
+    folder.validate :metadata_file_must_exist, unless: 'collection_id.present?'
+    folder.validate :validate_metadata_file, if: 'File.exist?(metadata_path)'
   end
   validate :collection_must_exist, if: 'collection_id.present?'
 
@@ -34,7 +37,7 @@ class StandardIngest
   def process
     processing_errors = []
     begin
-      build_batch
+      results.batch = build_batch
     rescue DulHydra::BatchError => e
       processing_errors << e.message
     end
@@ -47,16 +50,20 @@ class StandardIngest
     builder_args = {
         user: user,
         filesystem: filesystem,
+        intermediate_files_name: configuration[:scanner][:intermediate_files],
+        targets_name: configuration[:scanner][:targets],
         content_modeler: ModelStandardIngestContent,
-        metadata_provider: StandardIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata]),
         checksum_provider: StandardIngestChecksum.new(File.join(folder_path, CHECKSUM_FILE)),
         batch_name: "Standard Ingest",
         batch_description: filesystem.root.name
     }
+    if File.exist?(metadata_path)
+      builder_args.merge!(metadata_provider: StandardIngestMetadata.new(metadata_path, configuration[:metadata]))
+    end
     builder_args.merge!(admin_set: admin_set) if admin_set
     builder_args.merge!(collection_repo_id: collection_id) if collection_id
     batch_builder = BuildBatchFromFolderIngest.new(builder_args)
-    batch = batch_builder.call
+    batch_builder.call
   end
 
   def collection_must_exist
@@ -91,7 +98,10 @@ class StandardIngest
 
   def validate_metadata_file
     misses = metadata_provider.locators.select { |locator| !filesystem_node_paths.include?(locator) }
-    misses.each { |miss| errors.add(:metadata_file, "Metadata line for locator '#{miss}' will not be used")}
+    misses.each { |miss| errors.add(:metadata_file,
+                                    I18n.t('dul_hydra.standard_ingest.validation.missing_folder_file', miss: miss)) }
+  rescue ArgumentError => e
+    errors.add(:metadata_file, e.message)
   end
 
   def load_configuration

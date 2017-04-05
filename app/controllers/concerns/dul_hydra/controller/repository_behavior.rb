@@ -33,8 +33,7 @@ module DulHydra
 
       def create
         current_object.grant_roles_to_creator(current_user)
-        if current_object.save
-          notify_creation
+        if save_current_object
           flash[:success] = after_create_success_message
           after_create_success
           redirect_to after_create_redirect
@@ -55,8 +54,7 @@ module DulHydra
         rescue ActionController::ParameterMissing
           current_object.errors.add(:base, t('dul_hydra.tabs.descriptive_metadata.errors.empty_form_submission'))
         end
-        if current_object.errors.empty? && current_object.save
-          notify_update(summary: "Descriptive metadata updated")
+        if current_object.errors.empty? && save_current_object(summary: "Descriptive metadata updated")
           flash[:success] = "Descriptive metadata updated."
           redirect_to action: "show", tab: "descriptive_metadata"
         else
@@ -67,8 +65,7 @@ module DulHydra
       def roles
         if request.patch?
           current_object.roles.replace *submitted_roles
-          if current_object.save
-            notify_update(summary: "Roles updated")
+          if save_current_object(summary: "Roles updated")
             flash[:success] = "Roles successfully updated"
             redirect_to(action: "show", tab: "roles") and return
           end
@@ -85,19 +82,10 @@ module DulHydra
 
       def admin_metadata
         if request.patch?
-          current_object.attributes = admin_metadata_params
-          changes = current_object.changes
-          if changes.present?
-            if current_object.save
-              notify_update(
-                summary: "Administrative metadata updated",
-                detail: "Changed attributes:\n\n#{changes}"
-              )
-              flash[:success] = "Administrative metadata successfully updated."
-              redirect_to(action: "show", tab: "admin_metadata") and return
-            end
-          else
-            flash.now[:error] = "Administrative metadata not updated, as no values were changed.".html_safe
+          set_admin_metadata
+          if save_current_object(summary: "Administrative metadata updated")
+            flash[:success] = "Administrative metadata successfully updated."
+            redirect_to(action: "show", tab: "admin_metadata") and return
           end
         end
       end
@@ -116,7 +104,7 @@ module DulHydra
 
       # Controls what fields are displayed on the admin metadata tab and edit form
       def admin_metadata_fields
-        [:license, :local_id, :display_format, :ead_id, :aspace_id, :doi]
+        [:license, :local_id, :display_format, :ead_id, :aspace_id, :doi, :rights_note]
       end
 
       def admin_metadata_params
@@ -124,6 +112,12 @@ module DulHydra
           p.select  { |k, v| v == "" }.each { |k, v| p[k] = nil }
           p.reject! { |k, v| current_object.send(k) == v }
           p.permit!
+        end
+      end
+
+      def set_admin_metadata
+        params.require(:adminMetadata).each do |term, value|
+          current_object.adminMetadata.set_values(term, value)
         end
       end
 
@@ -154,10 +148,6 @@ module DulHydra
 
       def after_create_success
         # no-op -- override to add behavior after save and before redirect
-      end
-
-      def notify_creation
-        notify_event :creation
       end
 
       def after_create_success_message
@@ -224,19 +214,16 @@ module DulHydra
         params.require :roles
       end
 
-      def notify_event type, args={}
-        args[:pid] ||= current_object.pid
-        args[:user_key] ||= current_user.user_key
-        args.merge! event_params
-        Ddr::Notifications.notify_event(type, args)
+      def save_current_object(options={})
+        current_object.save(save_options(options))
       end
 
-      def notify_update args={}
-        notify_event :update, args
+      def save_options(extra={})
+        default_save_options.merge(extra)
       end
 
-      def event_params
-        params.permit(:comment)
+      def default_save_options
+        { user: current_user, comment: params[:comment] }
       end
 
     end

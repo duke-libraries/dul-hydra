@@ -10,14 +10,7 @@ module DulHydra
       protected
 
       def tab_structural_metadata
-        Tab.new("structural_metadata",
-                actions: [
-                  TabAction.new("struct_map_xml",
-                                download_path(current_object, "structMetadata"),
-                                show_ds_download_link?(current_object.structMetadata)
-                               ),
-                ]
-               )
+        Tab.new("structural_metadata")
       end
 
     end

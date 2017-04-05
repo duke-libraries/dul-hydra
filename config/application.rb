@@ -65,6 +65,8 @@ module DulHydra
 
     config.colorize_logging = false
 
+    config.active_record.raise_in_transactional_callbacks = true
+
     # assign log4r's logger as Rails' logger
     log4r_config = YAML.load_file(File.join(File.dirname(__FILE__),"log4r.yml"))
     YamlConfigurator.decode_yaml(log4r_config['log4r_config'])

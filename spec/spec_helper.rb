@@ -19,12 +19,6 @@ Resque.inline = true
 
 DatabaseCleaner.strategy = :truncation
 
-# XXX Hack to bypass file characterization
-# See https://github.com/duke-libraries/ddr-models/issues/315
-Ddr::Jobs::FitsFileCharacterization.class_eval do
-  def self.perform(pid); end
-end
-
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
@@ -59,19 +53,10 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.clean
     ActiveFedora::Base.destroy_all
-    Ddr::Models.configure do |config|
-      config.external_file_store = Dir.mktmpdir
-      config.multires_image_external_file_store = Dir.mktmpdir
-      config.external_file_subpath_pattern = "--"
-    end
+    Ddr::Datastreams::ExternalFileDatastream.file_store = Dir.mktmpdir
   end
   config.after(:suite) do
-    if Ddr::Models.external_file_store && Dir.exist?(Ddr::Models.external_file_store)
-      FileUtils.remove_entry_secure(Ddr::Models.external_file_store)
-    end
-    if Ddr::Models.multires_image_external_file_store && Dir.exist?(Ddr::Models.multires_image_external_file_store)
-      FileUtils.remove_entry_secure(Ddr::Models.multires_image_external_file_store)
-    end
+    FileUtils.rm_rf Ddr::Datastreams::ExternalFileDatastream.file_store
   end
   config.after(:each) { ActiveFedora::Base.destroy_all }
   config.after(:each, type: :feature) { Warden.test_reset! }
@@ -79,3 +64,5 @@ RSpec.configure do |config|
   # Redirect all output to file
   # config.output = File.open(File.join(Rails.root, 'log', 'rspec_output.txt'), 'w')
 end
+
+DulHydra.host_name = 'localhost'

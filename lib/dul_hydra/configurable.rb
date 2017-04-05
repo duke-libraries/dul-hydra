@@ -65,7 +65,9 @@ module DulHydra
           :doi,
           :license,
           :ead_id,
-          :aspace_id ]
+          :aspace_id,
+          :rights_note,
+        ]
       end
 
       # Base path for Standard Ingest folders
@@ -74,6 +76,24 @@ module DulHydra
       # Entries per page on batches index display
       mattr_accessor :batches_per_page do
         ENV["BATCHES_PER_PAGE"] || 10
+      end
+
+      mattr_accessor :auto_assign_permanent_id do
+        false
+      end
+
+      mattr_accessor :auto_update_permanent_id do
+        false
+      end
+
+      # Home directory for FITS
+      mattr_accessor :fits_home do
+        ENV["FITS_HOME"]
+      end
+
+      # Host name for use in non-web-request situations
+      mattr_accessor :host_name do
+        ENV["HOST_NAME"]
       end
     end
 
