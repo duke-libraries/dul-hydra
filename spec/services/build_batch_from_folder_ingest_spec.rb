@@ -186,6 +186,32 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
       end
     end
 
+    describe 'intermediate file folder configured but not present' do
+      let(:batch_builder) { described_class.new(user: user, filesystem: filesystem,
+                                                intermediate_files_name: intermediate_files_name,
+                                                targets_name: targets_name,
+                                                content_modeler: content_modeler, metadata_provider: metadata_provider,
+                                                checksum_provider: checksum_provider, admin_set: admin_set,
+                                                batch_name: batch_name, batch_description: batch_description) }
+      before do
+        filesystem.tree = filesystem_standard_ingest_without_reserved_folders
+        allow(metadata_provider).to receive(:metadata) { { } }
+        allow(metadata_provider).to receive(:metadata).with(nil) { { title: 'Collection Title', local_id: 'collect' } }
+        allow(metadata_provider).to receive(:metadata).with('[movie.mp4]') { { title: 'Title 1' } }
+        allow(metadata_provider).to receive(:metadata).with('[file01001.tif]') { { title: 'Title 2' } }
+        allow(metadata_provider).to receive(:metadata).with('itemA') { { title: 'Title 3' } }
+        allow(metadata_provider).to receive(:metadata).with('itemB') { { title: 'Title 4' } }
+        allow(checksum_provider).to receive(:checksum).with('[movie.mp4]/movie.mp4') { '4f7bf7c679ab58da75c021279ae08b59e609801fe3ee8401d7cdb4d0ea3c4697' }
+        allow(checksum_provider).to receive(:checksum).with('[file01001.tif]/file01001.tif') { '6cba6e3bcefc0454c1ec15ef44b0798e1de7d0d7a776ea341ecf16ea1ea2e162' }
+        allow(checksum_provider).to receive(:checksum).with('itemA/file01.pdf') { 'e20e0a30eee4e29eea5e1ef6eed422cd33174810a433e688c503a4b805b9c6fa' }
+        allow(checksum_provider).to receive(:checksum).with('itemA/track01.wav') { 'd72880438ba42224b9dd185e4e8c1b60e6ddf61d977d0b99aed72bb9f964657b' }
+        allow(checksum_provider).to receive(:checksum).with('itemB/file02.pdf') { 'a2b872e2a3958a1ec7de3afcfd017d323c0a43dcebf0e607ab31acde4799aa8f' }
+        allow(checksum_provider).to receive(:checksum).with('itemB/track02.wav') { 'dd60f671e6f31c75f11643e98384f71864ee654c6afb9d26cdc6a7c458741d47' }
+      end
+      it 'does not throw an exception' do
+        expect { batch_builder.call }.to_not raise_error
+      end
+    end
   end
 
 end

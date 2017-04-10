@@ -102,6 +102,25 @@ def filesystem_standard_ingest
   root_node
 end
 
+def filesystem_standard_ingest_without_reserved_folders
+  root_node = Tree::TreeNode.new('/test/directory')
+  itemY_node = Tree::TreeNode.new('[movie.mp4]')
+  itemY_node << Tree::TreeNode.new('movie.mp4')
+  root_node << itemY_node
+  itemZ_node = Tree::TreeNode.new('[file01001.tif]')
+  itemZ_node << Tree::TreeNode.new('file01001.tif')
+  root_node << itemZ_node
+  itemA_node = Tree::TreeNode.new('itemA')
+  itemA_node << Tree::TreeNode.new('file01.pdf')
+  itemA_node << Tree::TreeNode.new('track01.wav')
+  root_node << itemA_node
+  itemB_node = Tree::TreeNode.new('itemB')
+  itemB_node << Tree::TreeNode.new('file02.pdf')
+  itemB_node << Tree::TreeNode.new('track02.wav')
+  root_node << itemB_node
+  root_node
+end
+
 def filesystem_three_deep
   root_node = Tree::TreeNode.new('/test/directory')
   itemA_node = Tree::TreeNode.new('itemA')
