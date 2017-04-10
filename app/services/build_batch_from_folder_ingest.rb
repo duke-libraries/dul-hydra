@@ -169,7 +169,9 @@ class BuildBatchFromFolderIngest
   def intermediate_file(node)
     if intermediate_files_name.present?
       @intermediates ||= filesystem.root[intermediate_files_name]
-      @intermediates.children.select { |chld| File.basename(chld.name, '.*') == File.basename(node.name, '.*') }.first
+      if @intermediates
+        @intermediates.children.select { |chld| File.basename(chld.name, '.*') == File.basename(node.name, '.*') }.first
+      end
     end
   end
 end
