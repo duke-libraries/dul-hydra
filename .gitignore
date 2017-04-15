@@ -29,6 +29,9 @@
 # SimpleCov / Coveralls
 /coverage
 
+# Secret token
+/config/initializers/secret_token.rb
+
 # Pre-compiled assets
 /public/assets
 
