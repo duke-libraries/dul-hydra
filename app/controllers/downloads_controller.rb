@@ -2,6 +2,22 @@ class DownloadsController < ApplicationController
 
   include Hydra::Controller::DownloadBehavior
 
+  def send_content
+    datastream.external? ? send_external_content : super
+  end
+
+  def send_external_content
+    if request.head?
+      head :ok,
+           content_length: datastream.file_size,
+           content_type: datastream.mimeType
+    else
+      send_file datastream.file_path,
+                type: datastream.mimeType,
+                filename: datastream_name
+    end
+  end
+
   def load_asset
     # XXX Loading instance from solr doesn't work with customized datastream_name (below).
     @asset = ActiveFedora::Base.find(params[asset_param_key])
