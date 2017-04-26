@@ -39,7 +39,7 @@ gem 'rubytree'
 # Rails 4.2
 gem 'responders', '~> 2.0'
 gem 'web-console', '~> 2.0', group: :development
-gem 'sprockets-rails', '>= 2.1.4'
+gem 'sprockets-rails', '2.3.3'
 
 group :development, :test do
   gem 'sqlite3'

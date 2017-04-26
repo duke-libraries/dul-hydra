@@ -1,0 +1,9 @@
+<h2>Create Digital Objects in ArchivesSpace</h2>
+
+<% if @aspace_authorized %>
+  <% if @submitted %>
+    <%= render 'aspace_submitted' %>
+  <% else %>
+    <%= render 'aspace_form' %>
+  <% end %>
+<% end %>
