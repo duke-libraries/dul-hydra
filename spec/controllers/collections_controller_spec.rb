@@ -1,9 +1,8 @@
-require 'spec_helper'
 require 'support/collections_controller_spec_helper'
 require 'support/shared_examples_for_repository_controllers'
 
 def create_collection
-  post :create, descMetadata: {title: ["New Collection"]}
+  post :create, descMetadata: {title: ["New Collection"]}, admin_set: "foo"
 end
 
 def new_collection

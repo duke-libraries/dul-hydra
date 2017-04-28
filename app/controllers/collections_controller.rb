@@ -105,6 +105,10 @@ class CollectionsController < ApplicationController
     super + [:admin_set, :research_help_contact]
   end
 
+  def create_params
+    params.permit(:admin_set, :title)
+  end
+
   def tab_actions
     Tab.new("actions")
   end
