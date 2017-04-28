@@ -113,14 +113,6 @@ DulHydra::Application.routes.draw do
   # Downloads
   get 'download/:id(/:datastream_id)' => 'downloads#show', :constraints => {id: pid_constraint}, as: 'download'
 
-  resources :export_sets do
-    member do
-      get 'archive', as: 'download'
-      patch 'archive'
-      delete 'archive'
-    end
-  end
-
   resources :batches, :only => [:index, :show, :destroy] do
     member do
       get 'procezz'
