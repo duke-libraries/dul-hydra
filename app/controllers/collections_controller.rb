@@ -39,15 +39,19 @@ class CollectionsController < ApplicationController
     if !@aspace_authorized
       flash.now[:error] = "You are not authorized to execute this operation in ArchivesSpace. Contact the ArchivesSpace administrator."
     end
-    @submitted = ( request.method == 'POST' )
-    if @submitted && @aspace_authorized
-      options = {
-        publish: !!params[:publish],
-        filename: params.require(:filename) + ".csv",
-        notify: params.require(:notify),
-        user: current_user.aspace_username,
-      }
-      ArchivesSpace::CreateDigitalObjectsJob.perform_later(current_object.id, options)
+    @submitted = request.post?
+    if @submitted
+      if @aspace_authorized
+        options = {
+          publish: !!params[:publish],
+          filename: params.require(:filename) + ".csv",
+          notify: params.require(:notify),
+          user: current_user.aspace_username,
+        }
+        ArchivesSpace::CreateDigitalObjectsJob.perform_later(current_object.id, options)
+      end
+    else
+      @filename = "aspace_dos_created_from_#{current_object.safe_id}"
     end
   end
 

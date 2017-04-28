@@ -31,9 +31,10 @@ module ArchivesSpace
       "document"    => "text-service",
     }
 
-    CSV_IN_HEADERS = %w( aspace_id permanent_id permanent_url title display_format )
+    CSV_IN_HEADERS = %w( pid aspace_id permanent_id permanent_url title display_format )
 
     CSV_OUT_HEADERS = [
+      :repo_id,
       :ref_id,
       :digital_object_id,
       :digital_object_title,
@@ -85,7 +86,7 @@ module ArchivesSpace
             outcome, published, archival_object_uri, digital_object_uri,
             digital_object_id, file_uri, digital_object_title, use_statement = nil
 
-            ref_id = row["aspace_id"]
+            repo_id, ref_id = row.values_at("pid", "aspace_id")
 
             # Find AO
             params = URI.encode_www_form("ref_id[]"=>ref_id)
@@ -142,6 +143,7 @@ module ArchivesSpace
             end # if archival_object
 
             csv_out << {
+              repo_id: repo_id,
               ref_id: ref_id,
               digital_object_id: digital_object_id,
               digital_object_title: digital_object_title,
