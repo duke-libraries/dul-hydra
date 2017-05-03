@@ -1,3 +1,3 @@
 module DulHydra
-  VERSION = "4.6.6"
+  VERSION = "4.6.7"
 end
