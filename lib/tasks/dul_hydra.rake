@@ -70,6 +70,15 @@ namespace :dul_hydra do
       processor = DulHydra::Batch::Scripts::AddIntermediateFiles.new(processor_args)
       processor.execute
     end
+    desc "Adds streamable media files to existing Components"
+    task :streamable_media_files => :environment do
+      raise "Must specify folder path to streamable media files. Ex.: FOLDER=/path/to/files" unless ENV["FOLDER"]
+      raise "Must specify batch user.  Ex.: BATCH_USER=tom@school.edu" unless ENV['BATCH_USER']
+      processor_args = { filepath: ENV['FOLDER'], batch_user: ENV['BATCH_USER'] }
+      processor_args[:checksum_file] = ENV['CHECKSUM_FILE'] if ENV['CHECKSUM_FILE']
+      processor = DulHydra::Batch::Scripts::AddStreamableMediaFiles.new(processor_args)
+      processor.execute
+    end
     desc "Creates ingest batch from Standard Ingest Format directory"
     task :standard_ingest => :environment do
       raise "Must specify folder path. Ex.: FOLDER=/path/to/standard/ingest/folder" unless ENV['FOLDER']
