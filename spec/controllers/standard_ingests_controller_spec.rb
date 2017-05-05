@@ -25,6 +25,7 @@ RSpec.describe StandardIngestsController, type: :controller do
     describe "when the user can create StandardIngest" do
       before {
         controller.current_ability.can(:create, StandardIngest)
+        allow_any_instance_of(StandardIngest).to receive(:inspection_results) { nil }
       }
       it "enqueues the job and renders the 'queued' view" do
         expect(Resque).to receive(:enqueue).with(StandardIngestJob, job_params)
