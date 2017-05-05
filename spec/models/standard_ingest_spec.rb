@@ -22,6 +22,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
       allow(subject).to receive(:filesystem_node_paths) { fs_node_paths }
     end
     describe 'metadata file' do
+      before { allow(subject).to receive(:inspection_results) { nil } }
       describe 'present' do
         before { allow(File).to receive(:exist?).with(subject.metadata_path) { true } }
         describe 'valid locators' do
@@ -57,6 +58,17 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
             expect(subject).to be_valid
           end
         end
+      end
+    end
+    describe 'invalid standard ingest folder' do
+      let(:error_message) { "#{File.join(folder_path, 'data')} is not a valid standard ingest directory" }
+      before do
+        allow(File).to receive(:exist?).with(subject.metadata_path) { false }
+        allow(subject).to receive(:inspection_results).and_raise(DulHydra::BatchError, error_message)
+      end
+      it "should not be valid" do
+        expect(subject).to_not be_valid
+        expect(subject.errors.messages[:folder_path]).to include(error_message)
       end
     end
   end
