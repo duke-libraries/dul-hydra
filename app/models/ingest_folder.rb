@@ -103,6 +103,7 @@ class IngestFolder < ActiveRecord::Base
     @target_count = 0
     @excluded_files = []
     scan_files(full_path, false)
+    errors.add(:base, I18n.t('batch.ingest_folder.no_ingestable_files', path: sub_path)) if @file_count == 0
     return ScanResults.new(@total_count, @file_count, @parent_count, @target_count, @excluded_files)
   end
 
@@ -120,7 +121,14 @@ class IngestFolder < ActiveRecord::Base
     @parent_hash = {} if add_parents
     @checksum_hash = checksums if checksum_file.present?
     scan_files(full_path, true)
-    @batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
+    if @batch.batch_objects.count == 0
+      @batch.destroy
+      message = I18n.t('batch.ingest_folder.no_batch_created', reason: "No ingestable objects")
+    else
+      @batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
+      message = I18n.t('batch.ingest_folder.batch_created', batch_id: @batch.id)
+    end
+    message
   end
 
   def file_checksum(file_entry)
