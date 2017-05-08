@@ -20,13 +20,6 @@
       </li>
       <li class="divider"></li>
     <% end %>
-    <% if acting_as_superuser? %>
-    <li>
-      <%= link_to admin_dashboard_path do %>
-        <span class="glyphicon glyphicon-dashboard"></span> Dashboard
-      <% end %>
-    </li>
-    <% end %>
     <li>
       <%= link_to bookmarks_path do %>
         <span class="glyphicon glyphicon-bookmark"></span> Bookmarks
