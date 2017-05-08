@@ -164,6 +164,7 @@ en:
               rows: Rows (excludes header row)
   batch:
       ingest_folder:
+          batch_created: "Batch %{batch_id} created"
           batch_name: Folder Ingest
           base_path:
               forbidden: "%{path} is not permitted for folder ingest"
@@ -172,6 +173,8 @@ en:
           creating_batch: Creating Ingest Batch ...
           excluded_files: Excluded Files
           folder: Folder
+          no_batch_created: "No batch was created: %{reason}"
+          no_ingestable_files: "%{path} does not contain any ingestable files"
           not_readable: "%{path} does not exist or is not readable"
           objects_to_ingest: Objects to be Ingested
           scan_folder: Scan Folder

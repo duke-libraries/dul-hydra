@@ -34,7 +34,8 @@ class IngestFoldersController < ApplicationController
   end
 
   def procezz
-    @ingest_folder.procezz
+    msg = @ingest_folder.procezz
+    flash[:notice] = msg
     redirect_to :controller => :batches, :action => :index
   end
 

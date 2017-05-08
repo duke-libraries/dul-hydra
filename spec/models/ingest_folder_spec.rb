@@ -46,22 +46,6 @@ shared_examples "a proper set of batch objects" do
   end
 end
 
-shared_examples "batch objects without an admin policy" do
-  it "should not have admin_policy relationship" do
-    user.batches.first.batch_objects.each do |obj|
-      expect { rels.fetch(obj.identifier).fetch('admin_policy') }.to raise_error(KeyError)
-    end
-  end
-end
-
-shared_examples "batch objects without individual permissions" do
-  it "should not have rightsMetadata datastream" do
-    user.batches.first.batch_objects.each do |obj|
-      expect { dss.fetch(obj.identifier).fetch('rightsMetadata') }.to raise_error(KeyError)
-    end
-  end
-end
-
 describe IngestFolder, type: :model, ingest: true do
 
   let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user) }
@@ -173,9 +157,17 @@ describe IngestFolder, type: :model, ingest: true do
           allow_any_instance_of(IngestFolder).to receive(:checksums).and_return({})
           ingest_folder.scan
         end
-        it "should have mising checksum warnings" do
+        it "should have missing checksum warnings" do
           expect(ingest_folder.errors.size).to eql(7)
           expect(ingest_folder.errors.messages[:base]).to include(I18n.t('batch.ingest_folder.checksum_missing', :entry => '/mount/base/path/subpath/file01001.tif'))
+        end
+      end
+      context "no included files" do
+        let(:error_message) { I18n.t('batch.ingest_folder.no_ingestable_files', path: ingest_folder.sub_path) }
+        before { allow(ingest_folder).to receive(:scan_files) }
+        it "should have no batch objects warning" do
+          ingest_folder.scan
+          expect(ingest_folder.errors.messages[:base]).to include(error_message)
         end
       end
     end
@@ -187,15 +179,12 @@ describe IngestFolder, type: :model, ingest: true do
       let(:parent_model) { Ddr::Utils.reflection_object_class(Ddr::Utils.relationship_object_reflection(IngestFolder.default_file_model, "parent")).name }
       before { allow_any_instance_of(IngestFolder).to receive(:checksum_file_location).and_return(File.join(Rails.root, 'spec', 'fixtures', 'batch_ingest', 'miscellaneous', 'checksums.txt')) }
 
-      context "collection has admin policy" do
+      context "batch objects present" do
         before do
-          collection.admin_policy = collection
-          collection.save
           ingest_folder.procezz
           objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
         end
         it_behaves_like "a proper set of batch objects"
-        it_behaves_like "batch objects without individual permissions"
         it "should have an admin_policy relationship with the collection's admin policy" do
           user.batches.first.batch_objects.each do |obj|
             expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.admin_policy.pid)
@@ -203,35 +192,11 @@ describe IngestFolder, type: :model, ingest: true do
         end
       end
 
-      context "collection has no admin policy" do
-        context "collection has individual permissions" do
-          before do
-            ingest_folder.procezz
-            objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
-          end
-          it_behaves_like "a proper set of batch objects"
-          it_behaves_like "batch objects without individual permissions"
-          it "should have an admin_policy relationship with the collection" do
-            user.batches.first.batch_objects.each do |obj|
-              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
-            end
-          end
+      context "batch objects not present" do
+        before { allow(ingest_folder).to receive(:scan_files) }
+        it "should not create a batch" do
+          expect { ingest_folder.procezz }.to_not change { Ddr::Batch::Batch.count }
         end
-
-        context "collection has no individual permissions" do
-          before do
-            ingest_folder.procezz
-            objects, atts, dss, rels = populate_comparison_hashes(user.batches.first.batch_objects)
-          end
-          it_behaves_like "a proper set of batch objects"
-          it_behaves_like "batch objects without individual permissions"
-          it "should have an admin_policy relationship with the collection" do
-            user.batches.first.batch_objects.each do |obj|
-              expect(rels.fetch(obj.identifier).fetch('admin_policy').object).to eql(collection.pid)
-            end
-          end
-        end
-
       end
 
     end
