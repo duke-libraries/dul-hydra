@@ -14,6 +14,10 @@ module ApplicationHelper
     options_from_collection_for_select(Ddr::Models::License.all, :url, :title, current_object.license)
   end
 
+  def rights_options_for_select(value)
+    options_from_collection_for_select(Ddr::Models::License.all, :url, :title, value)
+  end
+
   def admin_set_options_for_select
     options_from_collection_for_select(Ddr::Models::AdminSet.all, :code, :title, current_object.admin_set)
   end
@@ -264,10 +268,16 @@ module ApplicationHelper
       :class => "form-control field-value-input",
       :id => counter ? desc_metadata_form_field_id(field, counter) : nil
     }
-    if field == :description
-      text_area_tag name, value, opts
+    case field
+    when :description
+      text_area_tag(name, value, opts)
+    when :rights
+      select_tag(name,
+                 rights_options_for_select(value),
+                 opts.merge(include_blank: "(Select rights statement)")
+                )
     else
-      text_field_tag name, value, opts
+      text_field_tag(name, value, opts)
     end
   end
 
