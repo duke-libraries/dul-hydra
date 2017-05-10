@@ -63,7 +63,6 @@ module DulHydra
           :display_format,
           :depositor,
           :doi,
-          :license,
           :ead_id,
           :aspace_id,
           :rights_note,
