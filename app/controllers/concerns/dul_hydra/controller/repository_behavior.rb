@@ -24,6 +24,8 @@ module DulHydra
         helper_method :current_bookmarks
         helper_method :get_solr_response_for_field_values
         helper_method :admin_metadata_fields
+        helper_method :editable_admin_metadata_fields
+        helper_method :readonly_admin_metadata_fields
 
         copy_blacklight_config_from CatalogController
       end
@@ -93,9 +95,16 @@ module DulHydra
 
       protected
 
-      # Controls what fields are displayed on the admin metadata tab and edit form
       def admin_metadata_fields
-        [:local_id, :display_format, :ead_id, :aspace_id, :doi, :rights_note]
+        Ddr::Datastreams::AdministrativeMetadataDatastream.term_names.select { |t| current_object.respond_to?(t) }
+      end
+
+      def editable_admin_metadata_fields
+        DulHydra.user_editable_admin_metadata_fields
+      end
+
+      def readonly_admin_metadata_fields
+        admin_metadata_fields - editable_admin_metadata_fields
       end
 
       def admin_metadata_params

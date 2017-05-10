@@ -4,10 +4,13 @@ en:
       multiple_object_matches: "%{criteria} retrieved multiple repository objects"
   dul_hydra:
     admin_metadata:
-      local_id: "Local ID"
-      ead_id: "EAD ID"
+      aleph_id: "Aleph ID"
       aspace_id: "ArchivesSpace ID"
       doi: "DOI"
+      ead_id: "EAD ID"
+      local_id: "Local ID"
+      permanent_id: "Permanent ID"
+      permanent_url: "Permanent URL"
     techmd:
       creating_application: "Creating Application"
       creation_time: "File Creation Time"
