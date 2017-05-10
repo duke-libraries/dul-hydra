@@ -6,6 +6,16 @@ module ApplicationHelper
     current_object.send(field)
   end
 
+  def render_admin_metadata_form_field(form, field)
+    render partial: "admin_metadata_form/#{field}", locals: {f: form}
+  rescue ActionView::MissingTemplate
+    render partial: "admin_metadata_form/generic", locals: {f: form, field: field}
+  end
+
+  def admin_metadata_form_field_label(field)
+    I18n.t("dul_hydra.admin_metadata.#{field}", default: field.to_s.titleize)
+  end
+
   def research_help_contact_options_for_select
     options_from_collection_for_select(Ddr::Models::Contact.all, :slug, :name, current_object.research_help_contact)
   end

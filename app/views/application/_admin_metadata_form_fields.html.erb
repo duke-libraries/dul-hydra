@@ -1,7 +1,21 @@
 <fieldset>
-  <% admin_metadata_fields.each do |field| %>
+  <% editable_admin_metadata_fields.each do |field| %>
   <div class="form-group">
-    <%= render partial: "admin_metadata_form/#{field}", locals: {f: f} %>
+    <%= render_admin_metadata_form_field(f, field) %>
   </div>
   <% end %>
 </fieldset>
+
+<h3>Read-only fields</h3>
+<table class="table">
+  <% readonly_admin_metadata_fields.each do |field| %>
+  <tr>
+    <th scope="row">
+      <%= admin_metadata_form_field_label(field) %>
+    </th>
+    <td>
+      <%= current_object.send(field) || " " %>
+    </td>
+  </tr>
+  <% end %>
+</table>
