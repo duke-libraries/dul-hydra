@@ -108,15 +108,11 @@ module DulHydra
       end
 
       def admin_metadata_params
-        params.require(:adminMetadata).tap do |p|
-          p.select  { |k, v| v == "" }.each { |k, v| p[k] = nil }
-          p.reject! { |k, v| current_object.send(k) == v }
-          p.permit!
-        end
+        params.require(:adminMetadata)
       end
 
       def set_admin_metadata
-        params.require(:adminMetadata).each do |term, value|
+        admin_metadata_params.each do |term, value|
           current_object.adminMetadata.set_values(term, value)
         end
       end
