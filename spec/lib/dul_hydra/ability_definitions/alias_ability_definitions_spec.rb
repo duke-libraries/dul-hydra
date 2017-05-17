@@ -10,7 +10,7 @@ module DulHydra
 
     it "should alias actions to :read" do
       expect(subject.aliased_actions[:read])
-        .to include(:attachments, :components, :event, :events, :items, :targets, :versions)
+        .to include(:attachments, :components, :duracloud, :event, :events, :items, :stream, :targets, :versions)
     end
     it "should alias actions to :grant" do
       expect(subject.aliased_actions[:grant]).to include(:roles)

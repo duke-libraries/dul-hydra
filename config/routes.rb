@@ -100,8 +100,10 @@ DulHydra::Application.routes.draw do
     publication_routes
     get 'components'
   end
-  repository_content_resource :components do
+  repository_resource :components do
+    content_routes
     publication_routes
+    get 'stream'
   end
   repository_content_resource :attachments
   repository_content_resource :targets
