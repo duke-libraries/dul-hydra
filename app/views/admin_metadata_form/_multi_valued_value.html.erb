@@ -1,0 +1,3 @@
+<% field_id = "adminMetadata_#{field}_#{num}" %>
+<%= label_tag field_id, admin_metadata_form_field_label(field) %>
+<%= text_field_tag "adminMetadata[#{field}][]", value, id: field_id, class: "form-control" %>

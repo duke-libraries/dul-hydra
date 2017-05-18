@@ -1,15 +1,13 @@
 module ApplicationHelper
 
-  def render_admin_metadata_field(field)
-    render field.to_s
-  rescue ActionView::MissingTemplate
-    current_object.send(field)
-  end
-
   def render_admin_metadata_form_field(form, field)
     render partial: "admin_metadata_form/#{field}", locals: {f: form}
   rescue ActionView::MissingTemplate
-    render partial: "admin_metadata_form/generic", locals: {f: form, field: field}
+    if current_object.class.multiple?(field)
+      render partial: "admin_metadata_form/multi_valued", locals: {field: field}
+    else
+      render partial: "admin_metadata_form/generic", locals: {f: form, field: field}
+    end
   end
 
   def admin_metadata_form_field_label(field)
@@ -20,12 +18,8 @@ module ApplicationHelper
     options_from_collection_for_select(Ddr::Models::Contact.all, :slug, :name, current_object.research_help_contact)
   end
 
-  def license_options_for_select
-    options_from_collection_for_select(Ddr::Models::License.all, :url, :title, current_object.license)
-  end
-
   def rights_options_for_select(value)
-    options_from_collection_for_select(Ddr::Models::License.all, :url, :title, value)
+    options_from_collection_for_select(Ddr::Models::RightsStatement.all, :url, :title, value)
   end
 
   def admin_set_options_for_select
