@@ -143,6 +143,11 @@ module ApplicationHelper
     render_download_link args.merge(label: label)
   end
 
+  def render_stream_link(document, args = {})
+    label = args.fetch(:label, "Stream")
+    link_to label, url_for(controller: document.controller_name, id: document.id, action: "stream"), class: args[:css_class], target: args[:target]
+  end
+
   def thumbnail_image_tag document, image_options = {}
     src = document.has_thumbnail? ? thumbnail_path(document) : default_thumbnail(document)
     thumbnail = image_tag(src, alt: "Thumbnail", class: "img-thumbnail", size: "100x100")
