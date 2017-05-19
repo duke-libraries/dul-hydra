@@ -1,0 +1,29 @@
+:csv:
+    :col_sep: ","
+    :quote_char: '"'
+    :header_converters:
+:parse:
+    :local_identifier: identifier
+    :repeatable_fields:
+        - affiliation
+        - category
+        - company
+        - contributor
+        - creator
+        - date
+        - format
+        - hasPart
+        - identifier
+        - isFormatOf
+        - isPartOf
+        - language
+        - medium
+        - placement_company
+        - product
+        - publication
+        - series
+        - setting
+        - spatial
+        - subject
+        - tone
+        - type
