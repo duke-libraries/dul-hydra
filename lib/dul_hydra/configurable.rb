@@ -60,6 +60,7 @@ module DulHydra
 
       mattr_accessor :user_editable_admin_metadata_fields do
         [
+          :affiliation,
           :aleph_id,
           :aspace_id,
           :depositor,
