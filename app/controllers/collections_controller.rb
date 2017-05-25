@@ -94,7 +94,7 @@ class CollectionsController < ApplicationController
       has_content
       fields :id, :local_id, Ddr::Index::Fields.techmd
     end
-    filename = current_object.pid.sub(/:/, '-')
+    filename = current_object.pid.sub(/:/, '-') + "_TECHMD"
     render csv: query.csv, filename: filename
   end
 
