@@ -54,8 +54,8 @@ class MetadataFile < ActiveRecord::Base
                        Ddr::Models::AdminSet.keys
                      when :research_help_contact
                        Ddr::Models::Contact.keys
-                     when :license
-                       Ddr::Models::License.keys
+                     when :rights
+                       Ddr::Models::RightsStatement.keys
                    end
     as_csv_table.by_col.values_at(idx).each do |value|
       unless value.first.nil? || valid_values.include?(value.first)
@@ -73,7 +73,7 @@ class MetadataFile < ActiveRecord::Base
   end
 
   def controlled_value_headers
-    [ :admin_set, :research_help_contact, :license ]
+    [ :admin_set, :research_help_contact, :rights ]
   end
 
   def model(row)
