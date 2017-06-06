@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170605205141) do
+ActiveRecord::Schema.define(version: 20170606140633) do
 
   create_table "batch_object_attributes", force: :cascade do |t|
     t.integer  "batch_object_id"
@@ -160,8 +160,6 @@ ActiveRecord::Schema.define(version: 20170605205141) do
     t.string   "sha1"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "path"
-    t.string   "md5"
   end
 
   add_index "file_digests", ["repo_id", "file_id"], name: "index_file_digests_on_repo_id_and_file_id"
