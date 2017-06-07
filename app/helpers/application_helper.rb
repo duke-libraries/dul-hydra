@@ -278,7 +278,7 @@ module ApplicationHelper
       :id => counter ? desc_metadata_form_field_id(field, counter) : nil
     }
     case field
-    when :description
+    when :abstract, :description
       text_area_tag(name, value, opts)
     when :rights
       select_tag(name,
