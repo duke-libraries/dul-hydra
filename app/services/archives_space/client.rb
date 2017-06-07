@@ -41,10 +41,9 @@ module ArchivesSpace
       username = other.respond_to?(:aspace_username) ? other.aspace_username : other.to_s
       self.became_auth = post("/users/#{username}/become-user", nil)
       if block_given?
+        # yields to block, "unbecomes" user, and returns value of block
         yield(self).tap { unbecome }
       end
-    rescue Net::HTTPServerException => e
-      raise Client::AuthenticationError, e.message
     end
 
     def unbecome
@@ -97,9 +96,9 @@ module ArchivesSpace
       raise AuthenticationError, e.message
     end
 
-    def http #(become: nil)
+    def http
       Net::HTTP.start(backend_uri.host, backend_uri.port) do |conn|
-        yield Http.new(conn, auth) #, become: become)
+        yield Http.new(conn, auth)
       end
     end
 
@@ -107,13 +106,19 @@ module ArchivesSpace
       become(username) do
         http { |conn| conn.authorized?(permissions) }
       end
+    rescue Error => e
+      if e.message =~ /404/ # i.e., user not found
+        false
+      else
+        raise
+      end
     end
 
     class Http
       attr_reader :conn, :auth
       delegate :logger, to: :Rails
 
-      def initialize(conn, auth) #, become: nil)
+      def initialize(conn, auth)
         @conn = conn
         @auth = auth
       end
