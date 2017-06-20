@@ -21,6 +21,7 @@
         - placement_company
         - product
         - publication
+        - relation
         - series
         - setting
         - spatial

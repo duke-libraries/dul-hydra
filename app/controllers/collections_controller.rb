@@ -57,6 +57,10 @@ class CollectionsController < ApplicationController
 
   protected
 
+  def editable_admin_metadata_fields
+    super + [:admin_set, :research_help_contact]
+  end
+
   def export_metadata
     scope = params.require(:scope)
     dmd_fields = Ddr::Index::Fields.descmd.dup
@@ -103,10 +107,6 @@ class CollectionsController < ApplicationController
     filename = "#{safe_title}_aspace_do_info"
     query = ArchivesSpace::ExportDigitalObjectInfo.call(current_object.id)
     render csv: query.csv, filename: filename
-  end
-
-  def admin_metadata_fields
-    super + [:admin_set, :research_help_contact]
   end
 
   def create_params

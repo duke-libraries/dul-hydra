@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170428154132) do
+ActiveRecord::Schema.define(version: 20170606140633) do
 
   create_table "batch_object_attributes", force: :cascade do |t|
     t.integer  "batch_object_id"

@@ -56,7 +56,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
     context "valid" do
       before do
         allow(Ddr::Models::AdminSet).to receive(:keys) { [ 'dc' ] }
-        allow(Ddr::Models::License).to receive(:keys) { [ 'https://creativecommons.org/licenses/by/4.0/' ] }
+        allow(Ddr::Models::RightsStatement).to receive(:keys) { [ 'https://creativecommons.org/licenses/by/4.0/' ] }
       end
       it "should have a valid factory" do
         expect(metadata_file).to be_valid
@@ -90,7 +90,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
     context "metadata file invalid controlled vocabulary value" do
       before do
         allow(Ddr::Models::AdminSet).to receive(:keys) { [ 'dc', 'dvs' ] }
-        allow(Ddr::Models::License).to receive(:keys) { [ 'https://creativecommons.org/publicdomain/zero/1.0/' ] }
+        allow(Ddr::Models::RightsStatement).to receive(:keys) { [ 'https://creativecommons.org/publicdomain/zero/1.0/' ] }
         metadata_file.update(:metadata => File.new(Rails.root.join('spec', 'fixtures', 'batch_update', 'metadata_csv_invalid_value.csv')))
       end
       it "should have an attribute value error" do
