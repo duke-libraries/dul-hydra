@@ -16,7 +16,7 @@
 /log/*
 /tmp
 
-# Ignore all config yaml files
+# Ignore config yaml files by default
 /config/*.yml
 /config/metadata_file_profiles/*.yml
 # Except for these ...
@@ -24,9 +24,6 @@
 
 # Environment configs
 /config/environments/*.rb
-
-# Ignore certain translation files
-/config/locales/admin_set.yml
 
 # SimpleCov / Coveralls
 /coverage

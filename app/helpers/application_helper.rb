@@ -1,17 +1,25 @@
 module ApplicationHelper
 
-  def render_admin_metadata_field(field)
-    render field.to_s
+  def render_admin_metadata_form_field(form, field)
+    render partial: "admin_metadata_form/#{field}", locals: {f: form}
   rescue ActionView::MissingTemplate
-    current_object.send(field)
+    if current_object.class.multiple?(field)
+      render partial: "admin_metadata_form/multi_valued", locals: {field: field}
+    else
+      render partial: "admin_metadata_form/generic", locals: {f: form, field: field}
+    end
+  end
+
+  def admin_metadata_form_field_label(field)
+    I18n.t("dul_hydra.admin_metadata.#{field}", default: field.to_s.titleize)
   end
 
   def research_help_contact_options_for_select
     options_from_collection_for_select(Ddr::Models::Contact.all, :slug, :name, current_object.research_help_contact)
   end
 
-  def license_options_for_select
-    options_from_collection_for_select(Ddr::Models::License.all, :url, :title, current_object.license)
+  def rights_options_for_select(value)
+    options_from_collection_for_select(Ddr::Models::RightsStatement.all, :url, :title, value)
   end
 
   def admin_set_options_for_select
@@ -133,6 +141,11 @@ module ApplicationHelper
   def render_download_icon(args = {})
     label = content_tag(:span, "", class: "glyphicon glyphicon-download-alt")
     render_download_link args.merge(label: label)
+  end
+
+  def render_stream_link(document, args = {})
+    label = args.fetch(:label, "Stream")
+    link_to label, url_for(controller: document.controller_name, id: document.id, action: "stream"), class: args[:css_class], target: args[:target]
   end
 
   def thumbnail_image_tag document, image_options = {}
@@ -264,10 +277,16 @@ module ApplicationHelper
       :class => "form-control field-value-input",
       :id => counter ? desc_metadata_form_field_id(field, counter) : nil
     }
-    if field == :description
-      text_area_tag name, value, opts
+    case field
+    when :abstract, :description
+      text_area_tag(name, value, opts)
+    when :rights
+      select_tag(name,
+                 rights_options_for_select(value),
+                 opts.merge(include_blank: "(Select rights statement)")
+                )
     else
-      text_field_tag name, value, opts
+      text_field_tag(name, value, opts)
     end
   end
 

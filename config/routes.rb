@@ -17,9 +17,6 @@ DulHydra::Application.routes.draw do
   end
 
   namespace :admin do
-    get 'dashboard', to: 'dashboard#show'
-    get 'reports/:type', to: 'reports#show', as: 'report', constraints: {format: 'csv'}
-
     if defined?(DulHydra::ResqueAdmin)
       constraints DulHydra::ResqueAdmin do
         mount Resque::Server, at: '/queues'
@@ -96,13 +93,17 @@ DulHydra::Application.routes.draw do
     get 'targets'
     get 'export'
     post 'export'
+    get 'aspace'
+    post 'aspace'
   end
   repository_resource :items do
     publication_routes
     get 'components'
   end
-  repository_content_resource :components do
+  repository_resource :components do
+    content_routes
     publication_routes
+    get 'stream'
   end
   repository_content_resource :attachments
   repository_content_resource :targets
@@ -110,14 +111,6 @@ DulHydra::Application.routes.draw do
 
   # Downloads
   get 'download/:id(/:datastream_id)' => 'downloads#show', :constraints => {id: pid_constraint}, as: 'download'
-
-  resources :export_sets do
-    member do
-      get 'archive', as: 'download'
-      patch 'archive'
-      delete 'archive'
-    end
-  end
 
   resources :batches, :only => [:index, :show, :destroy] do
     member do

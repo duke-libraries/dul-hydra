@@ -14,7 +14,7 @@
     </li>
     <% if current_object.respond_to?(:identifier) && current_object.identifier.present? %>
       <li class="small">
-	<%= current_object.identifier.first %>
+        <%= current_object.identifier.first %>
       </li>
     <% end %>
     <% if current_document.has_content? %>
@@ -23,6 +23,10 @@
       </li>
     <% end %>
   </ul>
+
+  <% if current_document.streamable? %>
+    <%= render partial: 'document_streamable_media', locals: {document: current_document } %>
+  <% end %>
 
   <% if current_object.locked? %>
       <div class="text-danger">

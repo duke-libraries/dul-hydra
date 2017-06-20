@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170222201328) do
+ActiveRecord::Schema.define(version: 20170606140633) do
 
   create_table "batch_object_attributes", force: :cascade do |t|
     t.integer  "batch_object_id"
@@ -153,20 +153,6 @@ ActiveRecord::Schema.define(version: 20170222201328) do
   add_index "events", ["permanent_id"], name: "index_events_on_permanent_id"
   add_index "events", ["pid"], name: "index_events_on_pid"
   add_index "events", ["type"], name: "index_events_on_type"
-
-  create_table "export_sets", force: :cascade do |t|
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "archive_file_name",    limit: 255
-    t.string   "archive_content_type", limit: 255
-    t.integer  "archive_file_size"
-    t.datetime "archive_updated_at"
-    t.text     "pids"
-    t.string   "title",                limit: 255
-    t.string   "export_type",          limit: 255
-    t.string   "csv_col_sep",          limit: 255
-  end
 
   create_table "file_digests", force: :cascade do |t|
     t.string   "repo_id"

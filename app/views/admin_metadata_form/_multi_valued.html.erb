@@ -1,0 +1,6 @@
+<% current_object.adminMetadata.values(field).each_with_index do |value, i| %>
+  <%= render partial: "admin_metadata_form/multi_valued_value", locals: {field: field, value: value, num: i+1} %>
+<% end %>
+
+<%= render partial: "admin_metadata_form/multi_valued_value", locals: {field: field, value: nil, num: "new"} %>
+

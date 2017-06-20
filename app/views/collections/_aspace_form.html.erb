@@ -1,0 +1,26 @@
+<p>
+  This process will create a new digital object in ArchivesSpace for each <strong>item</strong>
+  in the collection. A CSV report will be sent to the recipient below.
+</p>
+<p>
+  ArchivesSpace requests will be executed against the backend <strong><%= ArchivesSpace::Client.backend_url %></strong>
+  as user <strong><%= current_user.aspace_username %></strong>.
+</p>
+
+<%= form_tag aspace_collection_path(current_object), role: "form" do %>
+<div class="checkbox">
+  <label>
+    <%= check_box_tag "publish", 1, true %>
+    <strong>Publish digital objects after creation</strong>
+  </label>
+</div>
+<div class="form-group">
+  <label for="notify">Send notification and report to</label>
+  <%= email_field_tag "notify", current_user.email, class: "form-control" %>
+</div>
+<div class="form-group">
+  <label for="filename">Report filename - not including .csv extension</label>
+  <%= text_field_tag "filename", @filename, style: "width: 50%", class: "form-control" %>
+</div>
+<button type="submit" class="btn btn-primary">Submit</button>
+<% end %>

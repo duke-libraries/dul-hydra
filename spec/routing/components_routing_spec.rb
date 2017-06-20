@@ -8,4 +8,8 @@ describe "components router", type: :routing, components: true do
   it_behaves_like "a content-bearing object router" do
     let(:controller) { "components" }
   end
+
+  specify {
+    expect(get: '/components/duke:1/stream').to route_to(controller: 'components', action: 'stream', id: 'duke:1')
+  }
 end

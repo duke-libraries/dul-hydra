@@ -18,6 +18,7 @@ class StandardIngest
   with_options if: 'folder_path.present?' do |folder|
     folder.validate :folder_directory_must_exist
     folder.validate :data_directory_must_exist
+    folder.validate :valid_standard_ingest_directory
     folder.validate :checksum_file_must_exist
     folder.validate :metadata_file_must_exist, unless: 'collection_id.present?'
     folder.validate :validate_metadata_file, if: 'File.exist?(metadata_path)'
@@ -81,6 +82,14 @@ class StandardIngest
   def data_directory_must_exist
     unless Dir.exist?(data_path)
       errors.add(:folder_path, "#{data_path} does not exist or is not a directory")
+    end
+  end
+
+  def valid_standard_ingest_directory
+    begin
+      inspection_results
+    rescue DulHydra::BatchError => e
+      errors.add(:folder_path, e.message)
     end
   end
 

@@ -21,19 +21,19 @@ shared_examples "a successful metadata file processing" do
     expect(clears.size).to eq(8)
     adm_clears = clears.select { |att| att.datastream == Ddr::Datastreams::ADMIN_METADATA }
     desc_clears = clears.select { |att| att.datastream == Ddr::Datastreams::DESC_METADATA }
-    expect(adm_clears.size).to eq(3)
-    expect(desc_clears.size).to eq(5)
-    expect(adm_clears.map { |att| att.name }).to match_array([ 'local_id', 'ead_id', 'license' ])
-    expect(desc_clears.map { |att| att.name }).to match_array([ 'title', 'description', 'subject', 'dateSubmitted', 'arranger' ])
+    expect(adm_clears.size).to eq(2)
+    expect(desc_clears.size).to eq(6)
+    expect(adm_clears.map { |att| att.name }).to match_array([ 'local_id', 'ead_id' ])
+    expect(desc_clears.map { |att| att.name }).to match_array([ 'title', 'description', 'subject', 'dateSubmitted', 'arranger', 'rights' ])
     # Attribute 'add' entries
     adds = @attributes.select { |att| att.operation == Ddr::Batch::BatchObjectAttribute::OPERATION_ADD }
     expect(adds.size).to eq(12)
     adm_adds = adds.select { |att| att.datastream == Ddr::Datastreams::ADMIN_METADATA }
     desc_adds = adds.select { |att| att.datastream == Ddr::Datastreams::DESC_METADATA }
-    expect(adm_adds.size).to eq(3)
-    expect(desc_adds.size).to eq(9)
-    expect(adm_adds.map { |att| att.name }).to match_array([ 'local_id', 'ead_id', 'license' ])
-    expect(desc_adds.map { |att| att.name }).to match_array([ 'title', 'description', 'subject', 'subject', 'subject', 'subject', 'subject', 'dateSubmitted', 'arranger' ])
+    expect(adm_adds.size).to eq(2)
+    expect(desc_adds.size).to eq(10)
+    expect(adm_adds.map { |att| att.name }).to match_array([ 'local_id', 'ead_id' ])
+    expect(desc_adds.map { |att| att.name }).to match_array([ 'title', 'description', 'subject', 'subject', 'subject', 'subject', 'subject', 'dateSubmitted', 'arranger', 'rights' ])
     actual_md = {}
     adds.each do |att|
       expect(att.value_type).to eq(Ddr::Batch::BatchObjectAttribute::VALUE_TYPE_STRING)
@@ -56,7 +56,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
     context "valid" do
       before do
         allow(Ddr::Models::AdminSet).to receive(:keys) { [ 'dc' ] }
-        allow(Ddr::Models::License).to receive(:keys) { [ 'https://creativecommons.org/licenses/by/4.0/' ] }
+        allow(Ddr::Models::RightsStatement).to receive(:keys) { [ 'https://creativecommons.org/licenses/by/4.0/' ] }
       end
       it "should have a valid factory" do
         expect(metadata_file).to be_valid
@@ -90,7 +90,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
     context "metadata file invalid controlled vocabulary value" do
       before do
         allow(Ddr::Models::AdminSet).to receive(:keys) { [ 'dc', 'dvs' ] }
-        allow(Ddr::Models::License).to receive(:keys) { [ 'https://creativecommons.org/publicdomain/zero/1.0/' ] }
+        allow(Ddr::Models::RightsStatement).to receive(:keys) { [ 'https://creativecommons.org/publicdomain/zero/1.0/' ] }
         metadata_file.update(:metadata => File.new(Rails.root.join('spec', 'fixtures', 'batch_update', 'metadata_csv_invalid_value.csv')))
       end
       it "should have an attribute value error" do
@@ -109,9 +109,10 @@ describe MetadataFile, :type => :model, :metadata_file => true do
         "description" => [ 'This is some description; this is "some more" description.' ],
         "subject" => [ "Alpha", "Beta", "Gamma" , "Delta", "Epsilon" ],
         "dateSubmitted" => [ "2010-01-22" ],
-        "arranger" => [ "John Doe"  ],
+        "arranger" => [ "John Doe" ],
         "ead_id" => "abcdef",
-        "license" => "https://creativecommons.org/licenses/by/4.0/" }
+        "rights" => [ "https://creativecommons.org/licenses/by/4.0/" ]
+      }
     end
 
     before do

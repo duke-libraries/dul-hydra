@@ -20,25 +20,6 @@ describe Ability, type: :model, abilities: true do
     end
   end
 
-  describe "ExportSet abilities" do
-    describe "auth context is authenticated" do
-      let(:resource) { FactoryGirl.create(:content_export_set_with_pids) }
-
-      it { should be_able_to(:create, ExportSet) }
-      it { should_not be_able_to(:read, resource) }
-
-      describe "and is creator of export set" do
-        before { allow(auth_context).to receive(:user) { resource.user } }
-        it { should be_able_to(:manage, resource) }
-      end
-    end
-
-    describe "auth context is anonymous" do
-      let(:auth_context) { FactoryGirl.build(:auth_context, :anonymous) }
-      it { should_not be_able_to(:create, ExportSet) }
-    end
-  end
-
   describe "IngestFolder abilities" do
     describe "user has no permitted ingest folders" do
       before { allow(IngestFolder).to receive(:permitted_folders).with(auth_context.user) { [] } }

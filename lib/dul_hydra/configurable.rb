@@ -59,13 +59,16 @@ module DulHydra
       end
 
       mattr_accessor :user_editable_admin_metadata_fields do
-        [ :local_id,
-          :display_format,
-          :depositor,
-          :doi,
-          :license,
-          :ead_id,
+        [
+          :affiliation,
+          :aleph_id,
           :aspace_id,
+          :depositor,
+          :display_format,
+          :doi,
+          :ead_id,
+          :license,
+          :local_id,
           :rights_note,
         ]
       end

@@ -4,8 +4,8 @@ ruby '2.3.1'
 gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
-gem 'ddr-batch', '1.3.0'
-gem 'ddr-models', '2.7.6'
+gem 'ddr-batch', '1.4.0'
+gem 'ddr-models', '2.8.0'
 
 gem 'hydra-head', '7.2.2'
 gem 'blacklight', '5.19.2'
@@ -39,7 +39,7 @@ gem 'rubytree'
 # Rails 4.2
 gem 'responders', '~> 2.0'
 gem 'web-console', '~> 2.0', group: :development
-gem 'sprockets-rails', '>= 2.1.4'
+gem 'sprockets-rails', '2.3.3'
 
 group :development, :test do
   gem 'sqlite3'

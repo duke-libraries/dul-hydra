@@ -10,6 +10,7 @@ class CollectionsController < ApplicationController
   before_action :set_desc_metadata, only: :create
   self.tabs += [ :tab_actions ]
   respond_to :csv
+  skip_authorize_resource only: :aspace
 
   def items
     get_children
@@ -24,6 +25,8 @@ class CollectionsController < ApplicationController
           export_metadata
         when "techmd"
           export_techmd
+        when "aspace"
+          export_aspace
         else
           render nothing: true, status: 404
         end
@@ -31,7 +34,32 @@ class CollectionsController < ApplicationController
     end
   end
 
+  def aspace
+    @aspace_authorized = ArchivesSpace::CreateDigitalObjects.authorized?(current_user.aspace_username)
+    if !@aspace_authorized
+      flash.now[:error] = "You are not authorized to execute this operation in ArchivesSpace. Contact the ArchivesSpace administrator."
+    end
+    @submitted = request.post?
+    if @submitted
+      if @aspace_authorized
+        options = {
+          publish: !!params[:publish],
+          filename: params.require(:filename) + ".csv",
+          notify: params.require(:notify),
+          user: current_user.aspace_username,
+        }
+        ArchivesSpace::CreateDigitalObjectsJob.perform_later(current_object.id, options)
+      end
+    else
+      @filename = "aspace_dos_created_from_#{current_object.safe_id}"
+    end
+  end
+
   protected
+
+  def editable_admin_metadata_fields
+    super + [:admin_set, :research_help_contact]
+  end
 
   def export_metadata
     scope = params.require(:scope)
@@ -70,12 +98,19 @@ class CollectionsController < ApplicationController
       has_content
       fields :id, :local_id, Ddr::Index::Fields.techmd
     end
-    filename = current_object.pid.sub(/:/, '-')
+    filename = current_object.pid.sub(/:/, '-') + "_TECHMD"
     render csv: query.csv, filename: filename
   end
 
-  def admin_metadata_fields
-    super + [:admin_set, :research_help_contact]
+  def export_aspace
+    safe_title = current_object.id.sub(/\W/, "_")
+    filename = "#{safe_title}_aspace_do_info"
+    query = ArchivesSpace::ExportDigitalObjectInfo.call(current_object.id)
+    render csv: query.csv, filename: filename
+  end
+
+  def create_params
+    params.permit(:admin_set, :title)
   end
 
   def tab_actions

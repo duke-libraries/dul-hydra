@@ -24,11 +24,10 @@ module DulHydra
         helper_method :current_bookmarks
         helper_method :get_solr_response_for_field_values
         helper_method :admin_metadata_fields
+        helper_method :editable_admin_metadata_fields
+        helper_method :readonly_admin_metadata_fields
 
         copy_blacklight_config_from CatalogController
-      end
-
-      def new
       end
 
       def create
@@ -40,12 +39,6 @@ module DulHydra
         else
           render :new
         end
-      end
-
-      def show
-      end
-
-      def edit
       end
 
       def update
@@ -102,21 +95,24 @@ module DulHydra
 
       protected
 
-      # Controls what fields are displayed on the admin metadata tab and edit form
       def admin_metadata_fields
-        [:license, :local_id, :display_format, :ead_id, :aspace_id, :doi, :rights_note]
+        Ddr::Datastreams::AdministrativeMetadataDatastream.term_names.select { |t| current_object.respond_to?(t) }
+      end
+
+      def editable_admin_metadata_fields
+        DulHydra.user_editable_admin_metadata_fields
+      end
+
+      def readonly_admin_metadata_fields
+        admin_metadata_fields - editable_admin_metadata_fields
       end
 
       def admin_metadata_params
-        params.require(:adminMetadata).tap do |p|
-          p.select  { |k, v| v == "" }.each { |k, v| p[k] = nil }
-          p.reject! { |k, v| current_object.send(k) == v }
-          p.permit!
-        end
+        params.require(:adminMetadata)
       end
 
       def set_admin_metadata
-        params.require(:adminMetadata).each do |term, value|
+        admin_metadata_params.each do |term, value|
           current_object.adminMetadata.set_values(term, value)
         end
       end
@@ -159,12 +155,18 @@ module DulHydra
       end
 
       def set_desc_metadata
+        if Array(desc_metadata_params[:rights]).length > 1
+          current_object.errors.add(:rights, "Cannot have multiple values.")
+        end
         current_object.set_desc_metadata(desc_metadata_params)
       end
 
       def desc_metadata_params
-        permitted = current_object.desc_metadata_terms.each_with_object({}) { |term, memo| memo[term] = [] }
-        params.require(:descMetadata).permit(permitted)
+        @desc_metadata_params ||= params.require(:descMetadata).permit(permitted_desc_metadata_params)
+      end
+
+      def permitted_desc_metadata_params
+        current_object.desc_metadata_terms.each_with_object({}) { |term, memo| memo[term] = [] }
       end
 
       def tab_descriptive_metadata

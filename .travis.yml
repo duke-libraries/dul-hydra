@@ -10,9 +10,6 @@ before_script:
   - "cp config/log4r.yml.sample config/log4r.yml"
 cache: bundler
 script: "bundle exec rake dul_hydra:ci:build"
-notifications:
-  email:
-    - lib-drs@duke.edu
 # To exclude antivirus tests:
 # env:
 #   - SPEC_OPTS="--tag ~antivirus"

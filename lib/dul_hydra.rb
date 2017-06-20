@@ -10,7 +10,6 @@ module DulHydra
 
   autoload_under 'ability_definitions' do
     autoload :AliasAbilityDefinitions
-    autoload :ExportSetAbilityDefinitions
     autoload :BatchAbilityDefinitions
     autoload :MetadataFileAbilityDefinitions
     autoload :IngestFolderAbilityDefinitions

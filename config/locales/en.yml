@@ -4,10 +4,13 @@ en:
       multiple_object_matches: "%{criteria} retrieved multiple repository objects"
   dul_hydra:
     admin_metadata:
-      local_id: "Local ID"
-      ead_id: "EAD ID"
+      aleph_id: "Aleph ID"
       aspace_id: "ArchivesSpace ID"
       doi: "DOI"
+      ead_id: "EAD ID"
+      local_id: "Local ID"
+      permanent_id: "Permanent ID"
+      permanent_url: "Permanent URL"
     techmd:
       creating_application: "Creating Application"
       creation_time: "File Creation Time"
@@ -62,29 +65,6 @@ en:
           invalid: "Invalid action: '%s'."
         agent_type:
           invalid: "Invalid agent type: '%s'."
-    export_sets:
-      alerts:
-        no_bookmarks: "Export sets are created from bookmarks. Please bookmark one or more objects to export."
-        new:
-          select: "Select objects to export"
-        created: "New export set created."
-        updated: "Export set updated."
-        destroyed: "Export set destroyed."
-        deletion_confirmation: "You are about to delete %{title}. Continue?"
-        archive:
-            created: "Archive created."
-            creation_exception: "Archive creation failed due to a server error."
-            not_created: "Archive already exists or could not be created."
-            deleted: "Archive deleted."
-            deletion_failed: "Archive deletion failed."
-            deletion_confirmation: "You are about to delete the archive file. Continue?"
-        export_type:
-          missing: "Missing export type parameter."
-          invalid: "Invalid export type parameter: '%s'."
-        no_objects:
-          content: "You have bookmarked no objects with content that you have permission to export."
-          descriptive_metadata: "You have bookmarked no objects with descriptive metadata that you have permission to export."
-        warn_change_csv_col_sep: "WARNING: If you change the CSV Column Separator, the existing archive file will be deleted and you will need to re-create it."
     associations:
       is_part_of: 'Part of Item'
       is_member_of_collection: 'Member of Collection'
@@ -187,6 +167,7 @@ en:
               rows: Rows (excludes header row)
   batch:
       ingest_folder:
+          batch_created: "Batch %{batch_id} created"
           batch_name: Folder Ingest
           base_path:
               forbidden: "%{path} is not permitted for folder ingest"
@@ -195,6 +176,8 @@ en:
           creating_batch: Creating Ingest Batch ...
           excluded_files: Excluded Files
           folder: Folder
+          no_batch_created: "No batch was created: %{reason}"
+          no_ingestable_files: "%{path} does not contain any ingestable files"
           not_readable: "%{path} does not exist or is not readable"
           objects_to_ingest: Objects to be Ingested
           scan_folder: Scan Folder

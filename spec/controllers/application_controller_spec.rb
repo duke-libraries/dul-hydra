@@ -1,5 +1,3 @@
-require "spec_helper"
-
 RSpec.describe ApplicationController, type: :controller do
 
   let(:user) { FactoryGirl.create(:user) }
@@ -7,8 +5,8 @@ RSpec.describe ApplicationController, type: :controller do
 
   describe "#find_models_with_gated_discovery" do
     let(:model) { Collection }
-    let(:collection1) { Collection.create(pid: "test:1", title: [ "Collection 1" ]) }
-    let(:collection2) { Collection.create(pid: "test:2", title: [ "Collection 2" ]) }
+    let(:collection1) { Collection.create(pid: "test:1", title: [ "Collection 1" ], admin_set: "foo") }
+    let(:collection2) { Collection.create(pid: "test:2", title: [ "Collection 2" ], admin_set: "foo") }
     before do
       collection2.roles.grant type: "Viewer", agent: user.agent, scope: "resource"
       collection2.save!
