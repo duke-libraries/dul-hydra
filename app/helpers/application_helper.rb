@@ -390,4 +390,10 @@ module ApplicationHelper
     @admin_set_titles ||= Ddr::Models::AdminSet.all.each_with_object({}) { |a, memo| memo[a.code] = a.title }
   end
 
+  # Display git branch on preview banner
+  def git_branch_info
+    branch_name = `git rev-parse --abbrev-ref HEAD`
+    branch_name
+  end
+
 end

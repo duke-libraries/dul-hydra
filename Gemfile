@@ -36,6 +36,9 @@ gem 'paperclip', '~> 4.2'
 # Filesystem representation
 gem 'rubytree'
 
+# Icons
+gem 'font-awesome-sass', '~> 4.6.2'
+
 # Rails 4.2
 gem 'responders', '~> 2.0'
 gem 'web-console', '~> 2.0', group: :development
