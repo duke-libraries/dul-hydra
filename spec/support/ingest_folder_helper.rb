@@ -39,6 +39,14 @@ def populate_comparison_hashes(batch_objects)
   [ objects, atts, dss, rels ]
 end
 
+def nested_folder_ingest_configuration
+  {
+      basepaths: [ '/dir/nested/', '/dir/other/nested/'],
+      scanner: { exclude: [ '.DS_Store', 'Thumbs.db' ] },
+      checksums: { location: '/tmp', type: Ddr::Datastreams::CHECKSUM_TYPE_SHA1 }
+  }
+end
+
 def standard_ingest_configuration
   {
     scanner: {

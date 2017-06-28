@@ -9,6 +9,12 @@
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:add_children, current_object),
+                   'Nested Folder Ingest',
+                   new_nested_folder_ingest_path(nested_folder_ingest: {collection_id: current_object, admin_set: current_object.admin_set })
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:add_children, current_object),
                    'Standard Ingest',
                    new_standard_ingest_path(standard_ingest: {collection_id: current_object, admin_set: current_object.admin_set })
     %>

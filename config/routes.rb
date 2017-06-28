@@ -138,6 +138,8 @@ DulHydra::Application.routes.draw do
     end
   end
 
+  resources :nested_folder_ingests, :only => [:new, :create, :show]
+
   resources :standard_ingests, :only => [:new, :create, :show]
 
   get '/help', to: redirect(DulHydra.help_url)

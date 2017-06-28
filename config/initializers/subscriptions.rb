@@ -11,4 +11,5 @@ ActiveSupport::Notifications.subscribe(Ddr::Models::Base::DELETE, FileDigestMana
 ActiveSupport::Notifications.subscribe(Ddr::Models::Base::DELETE, DeletedObject)
 ActiveSupport::Notifications.subscribe(Ddr::Datastreams::DELETE, DeletedDatastream)
 
+ActiveSupport::Notifications.subscribe(NestedFolderIngest::FINISHED, MonitorNestedFolderIngest)
 ActiveSupport::Notifications.subscribe(StandardIngest::FINISHED, MonitorStandardIngest)

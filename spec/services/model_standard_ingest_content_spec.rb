@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'support/ingest_folder_helper'
 
-shared_examples "a properly modeled filesystem node" do
+shared_examples "a properly modeled standard ingest filesystem node" do
   it "should determine the proper content model" do
     expect(ModelStandardIngestContent.new(node, intermediates_name, targets_name).call).to eq(proper_model)
   end
@@ -33,47 +33,47 @@ RSpec.describe ModelStandardIngestContent, type: :service, batch: true, standard
   context "root node" do
     let(:node) { root_node }
     let(:proper_model) { 'Collection' }
-    it_should_behave_like "a properly modeled filesystem node"
+    it_should_behave_like "a properly modeled standard ingest filesystem node"
   end
   context "non-targets and non-intermediates" do
     context "childless node in root node" do
       let(:node) { nodeA }
       let(:proper_model) { 'Item' }
-      it_should_behave_like "a properly modeled filesystem node"
+      it_should_behave_like "a properly modeled standard ingest filesystem node"
     end
     context "childed node in root node" do
       let(:node) { nodeB }
       let(:proper_model) { 'Item' }
-      it_should_behave_like "a properly modeled filesystem node"
+      it_should_behave_like "a properly modeled standard ingest filesystem node"
     end
     context "childless node in childed node in root node" do
       let(:node) { nodeC }
       let(:proper_model) { 'Component' }
-      it_should_behave_like "a properly modeled filesystem node"
+      it_should_behave_like "a properly modeled standard ingest filesystem node"
     end
   end
   context "targets" do
     context "childed node in root node" do
       let(:node) { nodeTargets }
       let(:proper_model) { nil }
-      it_should_behave_like "a properly modeled filesystem node"
+      it_should_behave_like "a properly modeled standard ingest filesystem node"
     end
     context "childless node in childed node in root node" do
       let(:node) { nodeTarget }
       let(:proper_model) { 'Target' }
-      it_should_behave_like "a properly modeled filesystem node"
+      it_should_behave_like "a properly modeled standard ingest filesystem node"
     end
   end
   context "intermediate files" do
     context "childed node in root node" do
       let(:node) { nodeIntermediates }
       let(:proper_model) { nil }
-      it_should_behave_like "a properly modeled filesystem node"
+      it_should_behave_like "a properly modeled standard ingest filesystem node"
     end
     context "childless node in childed node in root node" do
       let(:node) { nodeIntermediate }
       let(:proper_model) { nil }
-      it_should_behave_like "a properly modeled filesystem node"
+      it_should_behave_like "a properly modeled standard ingest filesystem node"
     end
   end
   context "childed node in childed node in root node" do
