@@ -3,7 +3,7 @@
 <ul class="list-group">
   <li class="list-group-item">
     <%= link_to_if can?(:add_children, current_object) && can?(:create, IngestFolder),
-                   'Folder Ingest',
+                   'DPC Folder Ingest',
                    new_ingest_folder_path(ingest_folder: { collection_pid: current_object })
     %>
   </li>
@@ -29,7 +29,7 @@
     <%= link_to "Create Digital Objects in ArchivesSpace",
 	aspace_collection_path(current_object)
 	%>
-  </li>  
+  </li>
   <li class="list-group-item">
     <%= link_to_if can?(:export, current_object),
 	'Export Technical Metadata',
