@@ -1,0 +1,11 @@
+<div class="alert alert-info alert-dismissible preview-alert preview-alert-<%= Rails.env %>" role="alert">
+  <small>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <span class="fa fa-exclamation-triangle" data-toggle="tooltip" data-html="true" data-placement="right" data-title="Rails Env: &lt;strong&gt;<%= Rails.env %>&lt;/strong&gt;"></span>
+      <span class="preview-alert-msg"><%= DulHydra.preview_banner_msg %></span>
+      <span class="preview-alert-msg"> | </span>
+      <span class="preview-alert-msg">DUL-Hydra <strong>v<%= DulHydra::VERSION %></strong></span>
+      <span class="preview-alert-msg"> | </span>
+      <span class="preview-alert-msg">Git branch: <strong><%= git_branch_info %></strong></span>
+  </small>
+</div>

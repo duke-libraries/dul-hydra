@@ -161,6 +161,8 @@ GEM
       factory_girl (~> 4.8.0)
       railties (>= 3.0.0)
     ffi (1.9.17)
+    font-awesome-sass (4.6.2)
+      sass (>= 3.2)
     globalid (0.3.7)
       activesupport (>= 4.1.0)
     grouper-rest-client (0.2.7)
@@ -516,6 +518,7 @@ DEPENDENCIES
   equivalent-xml
   ezid-client (~> 1.7)
   factory_girl_rails
+  font-awesome-sass (~> 4.6.2)
   hydra-head (= 7.2.2)
   jettywrapper (~> 1.8)
   jquery-rails

@@ -46,6 +46,9 @@ module DulHydra
       # Context used in alert message selection
       mattr_accessor :alert_message_context
 
+      # Message displayed in banner indicating a preview
+      mattr_accessor :preview_banner_msg
+
       mattr_accessor :fixity_check_limit do
         ENV["FIXITY_CHECK_LIMIT"] || 10**4
       end
