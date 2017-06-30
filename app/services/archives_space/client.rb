@@ -86,7 +86,7 @@ module ArchivesSpace
     end
 
     def authenticate!
-      Net::HTTP.start(backend_uri.host, backend_uri.port) do |conn|
+      Net::HTTP.start(backend_uri.host, backend_uri.port, use_ssl: backend_uri.scheme == 'https') do |conn|
         response = conn.post("/users/#{user}/login", URI.encode_www_form(password: password))
         response.value
         self.original_auth = JSON.parse(response.body)
@@ -97,7 +97,7 @@ module ArchivesSpace
     end
 
     def http
-      Net::HTTP.start(backend_uri.host, backend_uri.port) do |conn|
+      Net::HTTP.start(backend_uri.host, backend_uri.port, use_ssl: backend_uri.scheme == 'https') do |conn|
         yield Http.new(conn, auth)
       end
     end
