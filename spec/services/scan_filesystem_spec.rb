@@ -24,13 +24,25 @@ RSpec.describe ScanFilesystem, type: :service, batch: true, standard_ingest: tru
   end
 
   describe "scan" do
-    let(:scanner) { described_class.new(filepath, { exclude: [ 'Thumbs.db' ] }) }
-    let(:expected_filesystem) { Filesystem.new.tree = sample_filesystem }
-    let(:expected_exclusions) { [ File.join(filepath, 'Thumbs.db'), File.join(filepath, 'images') ] }
-    it "should return the expected results" do
-      results = scanner.call
-      expect(results.filesystem.marshal_dump).to eq(expected_filesystem.marshal_dump)
-      expect(results.exclusions).to match_array(expected_exclusions)
+    describe "exclude" do
+      let(:scanner) { described_class.new(filepath, { exclude: [ 'Thumbs.db' ] }) }
+      let(:expected_filesystem) { Filesystem.new.tree = sample_filesystem }
+      let(:expected_exclusions) { [ File.join(filepath, 'Thumbs.db'), File.join(filepath, 'images') ] }
+      it "should return the expected results" do
+        results = scanner.call
+        expect(results.filesystem.marshal_dump).to eq(expected_filesystem.marshal_dump)
+        expect(results.exclusions).to match_array(expected_exclusions)
+      end
+    end
+    describe "include" do
+      let(:scanner) { described_class.new(filepath, { include: [ '.mp4', '.pdf', '.tif', '.wav' ] }) }
+      let(:expected_filesystem) { Filesystem.new.tree = sample_filesystem }
+      let(:expected_exclusions) { [ File.join(filepath, 'Thumbs.db'), File.join(filepath, 'images') ] }
+      it "should return the expected results" do
+        results = scanner.call
+        expect(results.filesystem.marshal_dump).to eq(expected_filesystem.marshal_dump)
+        expect(results.exclusions).to match_array(expected_exclusions)
+      end
     end
   end
 

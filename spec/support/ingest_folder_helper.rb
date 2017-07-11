@@ -139,3 +139,14 @@ def filesystem_three_deep
   itemA_node << itemB_node
   root_node
 end
+
+def filesystem_datastream_uploads
+  root_node = Tree::TreeNode.new('/test/directory')
+  fileA_node = Tree::TreeNode.new('abc001.jpg')
+  fileB_node = Tree::TreeNode.new('abc002.jpg')
+  fileC_node = Tree::TreeNode.new('abc003.jpg')
+  root_node << fileA_node
+  root_node << fileB_node
+  root_node << fileC_node
+  root_node
+end
