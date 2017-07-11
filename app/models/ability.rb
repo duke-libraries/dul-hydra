@@ -4,6 +4,7 @@ class Ability < Ddr::Auth::Ability
                                 DulHydra::BatchAbilityDefinitions,
                                 DulHydra::MetadataFileAbilityDefinitions,
                                 DulHydra::IngestFolderAbilityDefinitions,
+                                DulHydra::NestedFolderIngestAbilityDefinitions,
                                 DulHydra::StandardIngestAbilityDefinitions,
                               ]
 

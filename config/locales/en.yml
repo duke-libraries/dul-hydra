@@ -46,6 +46,8 @@ en:
       new_menu: "Folder Ingest"
     metadata_file:
       new_menu: "Metadata File Upload"
+    nested_folder_ingest:
+      new_menu: "Nested Folder Ingest"
     standard_ingest:
       new_menu: "Standard Ingest"
       validation:
