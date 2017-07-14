@@ -5,7 +5,7 @@ gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
 gem 'ddr-batch', '1.4.1'
-gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: '448e0f78481a79728f07db8310e8a63d0a024887'
+gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: '06728bd079f047c873df2d51735235d271a69580'
 
 gem 'hydra-head', '7.2.2'
 gem 'blacklight', '5.19.2'
