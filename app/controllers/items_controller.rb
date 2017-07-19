@@ -13,6 +13,10 @@ class ItemsController < ApplicationController
 
   protected
 
+  def editable_admin_metadata_fields
+    super + DulHydra.user_editable_item_admin_metadata_fields
+  end
+
   def after_create_success
     return unless params[:content].present?
     child_params = params[:content]
