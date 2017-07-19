@@ -8,7 +8,7 @@ module NestedFolderIngestHelper
     NestedFolderIngest.default_checksum_location
   end
 
-  def permitted_folder_bases
+  def permitted_nested_folder_ingest_bases
     NestedFolderIngest.default_basepaths
   end
 
