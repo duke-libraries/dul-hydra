@@ -76,6 +76,10 @@ module DulHydra
         ]
       end
 
+      mattr_accessor :user_editable_item_admin_metadata_fields do
+        [ :nested_path ]
+      end
+
       # Base path for Standard Ingest folders
       mattr_accessor :standard_ingest_base_path
 

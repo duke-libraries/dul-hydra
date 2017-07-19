@@ -69,7 +69,11 @@ class MetadataFile < ActiveRecord::Base
   end
 
   def user_editable_fields
-    Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.concat(DulHydra.user_editable_admin_metadata_fields)
+    Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.concat(editable_admin_metadata_fields)
+  end
+
+  def editable_admin_metadata_fields
+    DulHydra.user_editable_admin_metadata_fields.concat(DulHydra.user_editable_item_admin_metadata_fields)
   end
 
   def controlled_value_headers

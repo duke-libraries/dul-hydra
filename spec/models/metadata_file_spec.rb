@@ -15,24 +15,24 @@ shared_examples "a successful metadata file processing" do
     expect(@batch.status).to eq(Ddr::Batch::Batch::STATUS_READY)
     expect(@batch.batch_objects.count).to eq(1)
     expect(@batch_object).to be_a(Ddr::Batch::UpdateBatchObject)
-    expect(@attributes.size).to eq(20)
+    expect(@attributes.size).to eq(22)
     # Attribute 'clear' entries
     clears =  @attributes.select { |att| att.operation == Ddr::Batch::BatchObjectAttribute::OPERATION_CLEAR }
-    expect(clears.size).to eq(8)
+    expect(clears.size).to eq(9)
     adm_clears = clears.select { |att| att.datastream == Ddr::Datastreams::ADMIN_METADATA }
     desc_clears = clears.select { |att| att.datastream == Ddr::Datastreams::DESC_METADATA }
-    expect(adm_clears.size).to eq(2)
+    expect(adm_clears.size).to eq(3)
     expect(desc_clears.size).to eq(6)
-    expect(adm_clears.map { |att| att.name }).to match_array([ 'local_id', 'ead_id' ])
+    expect(adm_clears.map { |att| att.name }).to match_array([ 'local_id', 'ead_id', 'nested_path' ])
     expect(desc_clears.map { |att| att.name }).to match_array([ 'title', 'description', 'subject', 'dateSubmitted', 'arranger', 'rights' ])
     # Attribute 'add' entries
     adds = @attributes.select { |att| att.operation == Ddr::Batch::BatchObjectAttribute::OPERATION_ADD }
-    expect(adds.size).to eq(12)
+    expect(adds.size).to eq(13)
     adm_adds = adds.select { |att| att.datastream == Ddr::Datastreams::ADMIN_METADATA }
     desc_adds = adds.select { |att| att.datastream == Ddr::Datastreams::DESC_METADATA }
-    expect(adm_adds.size).to eq(2)
+    expect(adm_adds.size).to eq(3)
     expect(desc_adds.size).to eq(10)
-    expect(adm_adds.map { |att| att.name }).to match_array([ 'local_id', 'ead_id' ])
+    expect(adm_adds.map { |att| att.name }).to match_array([ 'local_id', 'ead_id', 'nested_path' ])
     expect(desc_adds.map { |att| att.name }).to match_array([ 'title', 'description', 'subject', 'subject', 'subject', 'subject', 'subject', 'dateSubmitted', 'arranger', 'rights' ])
     actual_md = {}
     adds.each do |att|
@@ -111,7 +111,8 @@ describe MetadataFile, :type => :model, :metadata_file => true do
         "dateSubmitted" => [ "2010-01-22" ],
         "arranger" => [ "John Doe" ],
         "ead_id" => "abcdef",
-        "rights" => [ "https://creativecommons.org/licenses/by/4.0/" ]
+        "rights" => [ "https://creativecommons.org/licenses/by/4.0/" ],
+        "nested_path" => "/foo/bar"
       }
     end
 
