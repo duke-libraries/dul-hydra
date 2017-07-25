@@ -5,7 +5,7 @@ module ArchivesSpace
 
     def perform(collection_id, options)
       csv = ArchivesSpace::ExportDigitalObjectInfo.call(collection_id).csv
-      output = ArchivesSpace::CreateDigitalObjects.call(csv, options.slice(:user, :publish))
+      output = ArchivesSpace::CreateDigitalObjects.call(csv, options.slice(:user, :publish, :debug))
       subject = "REPORT: Create Digital Objects for #{collection_id}"
       message = "The report is attached."
       ::ReportMailer.basic(
