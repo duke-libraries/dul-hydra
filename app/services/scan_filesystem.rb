@@ -28,11 +28,23 @@ class ScanFilesystem
   def scan_files(dirpath, node)
     Dir.foreach(dirpath).each do |entry|
       next if ['.', '..'].include?(entry)
-      if exclude.include?(entry)
-        exclusions << File.join(dirpath, entry)
-      else
+      if included?(dirpath, entry)
         handle_entry(dirpath, node, entry)
+      else
+        exclusions << File.join(dirpath, entry)
       end
+    end
+  end
+
+  def included?(dirpath, entry)
+    if exclude.include?(entry)
+      false
+    elsif File.directory?(File.join(dirpath, entry))
+      true
+    elsif include.present?
+      include.include?(File.extname(entry)) ? true : false
+    else
+      true
     end
   end
 
@@ -55,6 +67,10 @@ class ScanFilesystem
 
   def exclude
     options.fetch(:exclude, [])
+  end
+
+  def include
+    options.fetch(:include, [])
   end
 
 end

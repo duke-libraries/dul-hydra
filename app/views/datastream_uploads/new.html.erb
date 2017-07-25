@@ -1,0 +1,35 @@
+<h1>Datastream Upload</h1>
+
+<p class="lead">
+  Use the form below to upload <%= @datastream_upload.datastream_name %> files to this collection.
+</p>
+
+<% if @datastream_upload.errors.any? %>
+    <div id="error_explanation">
+      <ul>
+        <% @datastream_upload.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+<% end %>
+
+<div class="row">
+  <div class="col-md-5">
+    <%= form_for @datastream_upload do |f| %>
+        <div class="form-group">
+          <%= f.hidden_field :datastream_name %>
+        </div>
+        <div class="form-group">
+          <%= f.label :collection_id %>
+          <%= f.hidden_field :collection_id %>
+          <%= @datastream_upload.collection_id.present? ? object_display_title(@datastream_upload.collection_id) : '<Will be created by Standard Ingest>' %>
+        </div>
+        <%= render partial: 'folder_path', locals: { f: f, ds_name: @datastream_upload.datastream_name } %>
+        <%= render partial: 'checksum_file', locals: { f: f, ds_name: @datastream_upload.datastream_name } %>
+        <div class="form-group">
+          <%= f.submit "Submit", :id => "datastream_uploads_submit_button", :class => "btn btn-primary" %>
+        </div>
+    <% end %>
+  </div>
+</div>

@@ -20,6 +20,18 @@
     %>
   </li>
   <li class="list-group-item">
+    <%= link_to_if can?(:upload, current_object),
+                   'Upload Intermediate Files',
+                   new_datastream_upload_path(datastream_upload: { collection_id: current_object, datastream_name: Ddr::Datastreams::INTERMEDIATE_FILE })
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:upload, current_object),
+                   'Upload Streamable Media Files',
+                   new_datastream_upload_path(datastream_upload: { collection_id: current_object, datastream_name: Ddr::Datastreams::STREAMABLE_MEDIA })
+    %>
+  </li>
+  <li class="list-group-item">
     <%= link_to_if can?(:export, current_object),
 	'Export Descriptive & Administrative Metadata',
 	export_collection_path(current_object)

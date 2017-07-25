@@ -1,0 +1,20 @@
+intermediateFile:
+  basepaths:
+    - /dir/path
+    - /dir/other/path
+  scanner:
+    exclude:
+      - .DS_Store
+      - Thumbs.db
+  checksums:
+    location: /path/to/checksums/dir
+streamableMedia:
+  basepaths:
+    - /dir/path
+    - /dir/other/path
+  scanner:
+    exclude:
+      - .DS_Store
+      - Thumbs.db
+  checksums:
+    location: /path/to/checksums/dir

@@ -1,0 +1,6 @@
+<div class="form-group">
+  <%= f.label :checksum_file %>
+  <%= f.hidden_field :checksum_location, value: datastream_upload_checksum_location(ds_name) %>
+  <%= datastream_upload_checksum_location(ds_name) %>
+  <%= f.select :checksum_file, datastream_upload_checksum_files_options_for_select(ds_name), { prompt: true }, { class: "form-control" } %>
+</div>

@@ -126,6 +126,8 @@ DulHydra::Application.routes.draw do
     resources :batch_object_relationships, :only => :index
   end
 
+  resources :datastream_uploads, only: [ :new, :create, :show ]
+
   resources :ingest_folders, :only => [:new, :create, :show] do
     member do
       get 'procezz'
