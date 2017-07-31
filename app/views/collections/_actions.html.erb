@@ -21,6 +21,12 @@
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:upload, current_object),
+                   'Upload Caption Files',
+                   new_datastream_upload_path(datastream_upload: { collection_id: current_object, datastream_name: Ddr::Datastreams::CAPTION })
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:upload, current_object),
                    'Upload Intermediate Files',
                    new_datastream_upload_path(datastream_upload: { collection_id: current_object, datastream_name: Ddr::Datastreams::INTERMEDIATE_FILE })
     %>
