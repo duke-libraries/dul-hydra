@@ -12,7 +12,8 @@ class DatastreamUpload
   DEFAULT_CONFIG_FILE = Rails.root.join('config', 'datastream_upload.yml')
 
   validates_presence_of :basepath, :datastream_name, :subpath, :user
-  validates_inclusion_of :datastream_name, in: [ Ddr::Datastreams::INTERMEDIATE_FILE,
+  validates_inclusion_of :datastream_name, in: [ Ddr::Datastreams::CAPTION,
+                                                 Ddr::Datastreams::INTERMEDIATE_FILE,
                                                  Ddr::Datastreams::STREAMABLE_MEDIA ]
   validate :folder_directory_must_exist, if: [ 'basepath.present?', 'subpath.present?' ]
   validate :checksum_path_must_exist, if: 'checksum_file.present?'
@@ -61,7 +62,7 @@ class DatastreamUpload
         datastream_name: datastream_name,
         filesystem: filesystem
     }
-    builder_args.merge!(checksum_file_path: checksum_path) if checksum_file
+    builder_args.merge!(checksum_file_path: checksum_path) if checksum_file.present?
     builder_args.merge!(collection: collection_id) if collection_id
     batch_builder = BuildBatchFromDatastreamUpload.new(builder_args)
     batch_builder.call
