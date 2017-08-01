@@ -153,6 +153,40 @@ module ArchivesSpace
         conn.get("/version").body
       end
 
+      def find_resource_by_ead_id(ead_id)
+        query = {"query"=>{"field"=>"ead_id", "value"=>ead_id, "jsonmodel_type"=>"field_query", "negated"=>false, "literal"=>false}}
+        params = URI.encode_www_form("page"=>"1", "aq"=>query.to_json)
+        results = get("/repositories/2/search?#{params}")
+        if results["total_hits"] == 0
+          raise Client::Error, "No resource found for EAD ID: #{ead_id}"
+        end
+        result = results["results"].first
+        resource = get(result["id"])
+      end
+
+      def find_ao(ref_id, ead_id = nil)
+        params = URI.encode_www_form("ref_id[]"=>ref_id)
+        results = get("/repositories/2/find_by_id/archival_objects?#{params}")["archival_objects"]
+        case results.length
+        when 0
+          raise Client::Error, "Archival object not found for ref id #{ref_id}."
+        when 1
+          get(results.first["ref"])
+        else
+          if !ead_id
+            raise Client::Error,
+                  "Multiple archival objects found for ref id #{ref_id} and EAD ID not provided."
+          end
+          resource = find_resource_by_ead_id(ead_id)
+          results.each do |result|
+            ao = get(result["ref"])
+            return ao if ao["resource"]["ref"] == resource["uri"]
+          end
+          raise Client::Error,
+                "Multiple archival objects found for ref id #{ref_id} and none match EAD ID #{ead_id}."
+        end
+      end
+
       private
 
       def session

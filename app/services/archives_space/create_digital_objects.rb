@@ -32,7 +32,7 @@ module ArchivesSpace
       "document"    => "text-service",
     }
 
-    CSV_IN_HEADERS = %w( pid aspace_id permanent_id permanent_url title display_format )
+    CSV_IN_HEADERS = %w( pid aspace_id ead_id permanent_id permanent_url title display_format )
 
     CSV_OUT_HEADERS = [
       :repo_id,
@@ -58,9 +58,9 @@ module ArchivesSpace
       new(*args).call
     end
 
-    attr_reader :csv_in, :publish, :user
+    attr_reader :csv_in, :publish, :user, :debug
 
-    def initialize(csv, user: nil, publish: false)
+    def initialize(csv, user: nil, publish: false, debug: false)
       csv_in = csv.respond_to?(:read) ? csv.read : csv
       @csv_in = CSV.parse(csv_in.to_s, CSV_IN_OPTS)
       unless CSV_IN_HEADERS.all? { |h| @csv_in.headers.include?(h) }
@@ -68,6 +68,7 @@ module ArchivesSpace
       end
       @user = user
       @publish = publish
+      @debug = debug
     end
 
     def use_statement_for(value)
@@ -87,65 +88,62 @@ module ArchivesSpace
             outcome, published, archival_object_uri, digital_object_uri,
             digital_object_id, file_uri, digital_object_title, use_statement = nil
 
-            repo_id, ref_id = row.values_at("pid", "aspace_id")
+            repo_id, ref_id, ead_id = row.values_at("pid", "aspace_id", "ead_id")
 
             if !ref_id
               logger.debug "No ASpace ref id for repository object #{repo_id} - skipping digital object creation."
               outcome = SKIPPED
             else
-              # Find AO
-              params = URI.encode_www_form("ref_id[]"=>ref_id)
-              results = conn.get("/repositories/2/find_by_id/archival_objects?#{params}")["archival_objects"]
-
-              if results.blank?
-                logger.error "Archival object not found for id: #{ref_id}"
-                outcome = FAILURE
-              else
-                archival_object_uri = results.first["ref"]
-                archival_object = conn.get(archival_object_uri)
-
+              begin
+                archival_object      = conn.find_ao(ref_id, ead_id)
+                archival_object_uri  = archival_object["uri"]
                 digital_object_id    = row["permanent_id"]
                 digital_object_title = row["title"] || archival_object["display_string"]
                 file_uri             = row["permanent_url"]
                 use_statement        = use_statement_for(row["display_format"])
 
-                # Create DO
-                data = {
-                  title: digital_object_title,
-                  digital_object_id: digital_object_id,
-                  file_versions: [
-                    { file_uri: file_uri,
-                      use_statement: use_statement,
-                    }
-                  ],
-                }
+                unless debug
+                  data = {
+                    title: digital_object_title,
+                    digital_object_id: digital_object_id,
+                    file_versions: [
+                      { file_uri: file_uri,
+                        use_statement: use_statement,
+                      }
+                    ],
+                  }
 
-                digital_object_uri = conn.post("/repositories/2/digital_objects", data.to_json)["uri"]
-                logger.info "ASPace digital object created: #{digital_object_uri}."
+                  digital_object_uri = conn.post("/repositories/2/digital_objects", data.to_json)["uri"]
+                  logger.info "ASPace digital object created: #{digital_object_uri}."
 
-                # Publish DO, if required
-                if publish
-                  conn.post("#{digital_object_uri}/publish", nil)
-                  logger.info "ASpace digital object #{digital_object_uri} published."
-                  published = true
-                else
-                  published = false
-                end
+                  # Publish DO, if required
+                  if publish
+                    conn.post("#{digital_object_uri}/publish", nil)
+                    logger.info "ASpace digital object #{digital_object_uri} published."
+                    published = true
+                  else
+                    published = false
+                  end
 
-                # Link DO to AO
-                digital_object_instance = {
-                  instance_type: "digital_object",
-                  digital_object: { ref: digital_object_uri },
-                }
-                archival_object["instances"] << digital_object_instance
+                  # Link DO to AO
+                  digital_object_instance = {
+                    instance_type: "digital_object",
+                    digital_object: { ref: digital_object_uri },
+                  }
+                  archival_object["instances"] << digital_object_instance
 
-                conn.post(archival_object_uri, archival_object.to_json)
-                logger.info "ASpace digital object #{digital_object_uri} " \
-                            "linked to archival object #{archival_object_uri}."
+                  conn.post(archival_object_uri, archival_object.to_json)
+                  logger.info "ASpace digital object #{digital_object_uri} " \
+                              "linked to archival object #{archival_object_uri}."
+                end # unless debug
 
                 outcome = SUCCESS
 
-              end # if archival_object
+              rescue Client::Error => e
+                logger.error e.message
+                outcome = FAILURE
+
+              end # begin
             end # if ref_id
 
             csv_out << {

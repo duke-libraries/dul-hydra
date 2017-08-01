@@ -47,6 +47,7 @@ class CollectionsController < ApplicationController
           filename: params.require(:filename) + ".csv",
           notify: params.require(:notify),
           user: current_user.aspace_username,
+          debug: !!params[:debug],
         }
         ArchivesSpace::CreateDigitalObjectsJob.perform_later(current_object.id, options)
       end
