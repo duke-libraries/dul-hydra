@@ -115,6 +115,24 @@ module DulHydra
       mattr_accessor :csv_mv_separator do
         ENV["CSV_MV_SEPARATOR"] || "|"
       end
+
+      # Directory to store export files
+      mattr_accessor :export_files_store do
+        ENV["EXPORT_FILES_STORE"] || File.join(Rails.root, "public", "export_files")
+      end
+
+      # Base URL for export files - include trailing slash
+      mattr_accessor :export_files_base_url do
+        ENV["EXPORT_FILES_BASE_URL"] || "/export_files/"
+      end
+
+      mattr_accessor :export_files_max_payload_size do
+        if value = ENV["EXPORT_FILES_MAX_PAYLOAD_SIZE"]
+          value.to_i
+        else
+          100 * 10**9 # 100Gb
+        end
+      end
     end
 
     module ClassMethods
@@ -125,4 +143,3 @@ module DulHydra
 
   end
 end
-

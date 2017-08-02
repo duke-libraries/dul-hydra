@@ -34,6 +34,9 @@
 # Pre-compiled assets
 /public/assets
 
+# Export files
+/public/export_files
+
 # Paperclip files
 /public/system
 

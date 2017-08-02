@@ -1,0 +1,27 @@
+<h2>Export Files</h2>
+
+<%= form_tag controller: 'export_files', action: 'create' do %>
+<div class="form-group">
+  <%= label_tag :basename, "Base Name" %>
+  <%= text_field_tag :basename, params[:basename], maxlength: 64, class: "form-control", "aria-describedby"=>"export_files_basename_help" %>
+  <span id="export_files_basename_help" class="help-block">
+    REQUIRED: Name to be used as the base name of the zip archive (without the .zip extension)
+    as well as the root directory of the data in the archive.
+
+    Accepted characters include letters, numbers, underscore, hyphen, or dot.
+    All other characters will be converted to underscores.
+  </span>
+</div>
+<div class="form-group">
+  <%= label_tag :identifiers %>
+  <%= text_area_tag :identifiers, params[:identifiers], rows: 10,
+      class: "form-control", "aria-describedby"=>"export_files_identifiers_help" %>
+  <span id="export_files_identifiers_help" class="help-block">
+    REQUIRED: List of identifiers, one per line, that may include any combination
+    of repository IDs (PIDs), local IDs, or permanent IDs (ARKs).
+
+    An Item identifier will export the files of all the related Component parts.
+  </span>
+</div>
+<%= submit_tag "Export", class: "btn btn-primary" %>
+<% end %>

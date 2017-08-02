@@ -31,6 +31,11 @@
       <% end %>
     </li>
     <li>
+      <%= link_to export_files_path do %>
+        <span class="glyphicon glyphicon-save"></span> Export Files
+      <% end %>
+    </li>
+    <li>
       <%= link_to saved_searches_path do %>
         <span class="glyphicon glyphicon-search"></span> 
         <%= t('blacklight.header_links.saved_searches') %>
