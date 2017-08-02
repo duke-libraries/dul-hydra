@@ -1,5 +1,9 @@
 ActiveSupport::Notifications.subscribe("success.batch.batch.ddr", SetDefaultStructuresAfterSuccessfulBatchIngest)
 
+ActiveSupport::Notifications.subscribe(Ddr::Models::Base::INGEST) do |*args|
+  SetDefaultStructure.call(*args) if [ "Collection", "Item", "Component" ].include?(args.last[:model])
+end
+
 ActiveSupport::Notifications.subscribe(Ddr::Models::Base::UPDATE) do |*args|
   ReindexCollectionContents.call(*args) if args.last[:model] == "Collection"
 end
