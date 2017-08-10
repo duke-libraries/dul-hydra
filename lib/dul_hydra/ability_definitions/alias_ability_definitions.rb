@@ -4,6 +4,7 @@ module DulHydra
     def call
       alias_action :attachments,
                    :duracloud,
+                   :captions,
                    :components,
                    :event,
                    :events,

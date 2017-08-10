@@ -11,11 +11,23 @@ class ComponentsController < ApplicationController
       send_file current_object.streamable_media_path,
                 type: current_object.streamable_media_type,
                 stream: true,
-                filename: current_object.id + Ddr::Models.preferred_media_types.key(current_object.streamable_media_type),
+                filename: [current_object.id, current_object.streamable_media_extension].join("."),
                 disposition: 'inline'
     else
       render nothing: true, status: 404
     end
   end
+
+  def captions
+    if current_object.captioned?
+
+      send_file current_object.caption_path,
+                type: current_object.caption_type,
+                filename: [current_object.id, current_object.caption_extension].join(".")
+    else
+      render nothing: true, status: 404
+    end
+  end
+
 
 end

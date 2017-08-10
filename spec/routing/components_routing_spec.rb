@@ -12,4 +12,9 @@ describe "components router", type: :routing, components: true do
   specify {
     expect(get: '/components/duke:1/stream').to route_to(controller: 'components', action: 'stream', id: 'duke:1')
   }
+
+  specify {
+    expect(get: '/components/duke:1/captions').to route_to(controller: 'components', action: 'captions', id: 'duke:1')
+  }
+
 end

@@ -104,6 +104,7 @@ DulHydra::Application.routes.draw do
     content_routes
     publication_routes
     get 'stream'
+    get 'captions'
   end
   repository_content_resource :attachments
   repository_content_resource :targets
