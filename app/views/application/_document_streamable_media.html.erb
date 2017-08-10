@@ -1,4 +1,2 @@
-<div>
-  Streamable Media<br/>
-  <%= render_stream_link document, label: document.streamable_media_type, css_class: 'small', target: '_blank' %>
-</div>
+<%= render_stream_link document, target: '_blank' %>
+<div class="text-muted small"><%= document.streamable_media_type %></div>

@@ -29,6 +29,15 @@ RSpec.describe ApplicationHelper, type: :helper do
     end    
   end
 
+  describe "#render_caption_link" do
+    let(:pid) { 'test:1' }
+    let(:solr_doc) { SolrDocument.new('id' => pid, Ddr::Index::Fields::ACTIVE_FEDORA_MODEL => 'Component') }
+    it "should return the correct link to a caption file" do
+      expect(helper.render_caption_link(solr_doc)).to include('components/test:1/captions')
+    end    
+  end
+
+
   describe "#model_options_for_select" do
     context "access option" do
       let(:collection1) { Collection.new(pid: 'test:1', title: [ 'Collection 1' ]) }

@@ -1,16 +1,18 @@
 <div class="well well-sm clearfix" id="object-summary">
 
   <div id="object-thumbnail" class="pull-right">
-    <%= render_thumbnail current_object %>
+    <%= render_thumbnail current_object %><br/>
+    <%= render partial: 'catalog/bookmark_control', locals: {document: current_document} %>
   </div>
 
-  <h5 id="object-title">
+  <h4 id="object-title">
     <%= link_to_unless_current render_object_title, url_for(current_object) %>
-  </h5>
+  </h4>
 
   <ul class="list-unstyled">
     <li>
-      <%= current_object.class.to_s %> <%= current_object.pid %>
+      <%= current_object.class.to_s %> <%= current_object.pid %><br/>
+      <hr/>
     </li>
     <% if current_object.respond_to?(:identifier) && current_object.identifier.present? %>
       <li class="small">
@@ -18,25 +20,27 @@
       </li>
     <% end %>
     <% if current_document.has_content? %>
-      <li class="small">
-        <%= render partial: 'document_content', locals: {document: current_document} %>
+      <li>
+        <%= render partial: 'document_content', locals: {document: current_document} %><br/>
+      </li>
+    <% end %>
+    <% if current_document.streamable? %>
+      <li>
+        <%= render partial: 'document_streamable_media', locals: {document: current_document } %><br/>
+      </li>
+    <% end %>
+    <% if current_document.caption_path.present? %>
+      <li>
+        <%= render partial: 'document_caption', locals: {document: current_document } %><br/>
+      </li>
+    <% end %>
+    <% if current_object.locked? %>
+      <li>
+        <span class="text-danger">
+          <span class="glyphicon glyphicon-lock"></span> Locked
+        </span>
       </li>
     <% end %>
   </ul>
-
-  <% if current_document.streamable? %>
-    <%= render partial: 'document_streamable_media', locals: {document: current_document } %>
-  <% end %>
-
-  <% if current_object.locked? %>
-      <div class="text-danger">
-        <span class="glyphicon glyphicon-lock"></span> Locked
-      </div>
-  <% end %>
-
-  <%# bookmark toggle control %>
-  <div>
-    <%= render partial: 'catalog/bookmark_control', locals: {document: current_document} %>
-  </div>
 
 </div>
