@@ -5,7 +5,7 @@ gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
 gem 'ddr-batch', '1.4.1'
-gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: 'b9085fc0d3ed5bdb827345f0a5d551f023ec63a6'
+gem 'ddr-models', github: 'duke-libraries/ddr-models', ref: 'a3a4e39f53f565959252333b18e5c3490ba96211'
 
 gem 'hydra-head', '7.2.2'
 gem 'blacklight', '5.19.2'
@@ -45,6 +45,7 @@ gem 'web-console', '~> 2.0', group: :development
 gem 'sprockets-rails', '2.3.3'
 
 group :development, :test do
+  gem 'byebug'
   gem 'sqlite3'
   gem 'jettywrapper', '~> 1.8'
 end
