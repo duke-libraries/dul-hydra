@@ -73,3 +73,4 @@ RSpec.configure do |config|
 end
 
 DulHydra.host_name = 'localhost'
+DulHydra.auto_update_parent_structure = false

@@ -96,6 +96,10 @@ module DulHydra
         false
       end
 
+      mattr_accessor :auto_update_parent_structure do
+        true
+      end
+
       # Home directory for FITS
       mattr_accessor :fits_home do
         ENV["FITS_HOME"]
