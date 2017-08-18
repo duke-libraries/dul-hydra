@@ -6,7 +6,7 @@ class UpdateParentStructure
     event = ActiveSupport::Notifications::Event.new(*args)
     payload = event.payload
     return false unless DulHydra.auto_update_parent_structure
-    return false if payload[:skip_update_parent_structure]
+    return false if payload[:skip_structure_updates]
     service = UpdateParentStructure.new(event.payload[:pid], event.payload[:parent])
     service.run
   end

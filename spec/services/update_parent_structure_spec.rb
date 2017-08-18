@@ -9,7 +9,7 @@ RSpec.describe UpdateParentStructure, type: :service do
 
   describe ".call" do
     let(:notification_args) { [ 'test', DateTime.now - 2.seconds, DateTime.now - 1.seconds, 'testid', payload ] }
-    let(:payload) { { pid: object_id, parent: parent_id, skip_update_parent_structure: skip_parent_update } }
+    let(:payload) { { pid: object_id, parent: parent_id, skip_structure_updates: skip_parent_update } }
     around do |example|
       prev_auto_update_parent_structure = DulHydra.auto_update_parent_structure
       example.run
