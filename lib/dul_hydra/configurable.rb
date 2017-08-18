@@ -109,6 +109,12 @@ module DulHydra
       mattr_accessor :host_name do
         ENV["HOST_NAME"]
       end
+
+      # Value used in metadata export/import to separate
+      # multiple values in a single CSV cell.
+      mattr_accessor :csv_mv_separator do
+        ENV["CSV_MV_SEPARATOR"] || "|"
+      end
     end
 
     module ClassMethods

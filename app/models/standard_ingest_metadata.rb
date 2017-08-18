@@ -82,7 +82,7 @@ class StandardIngestMetadata
   end
 
   def repeating_fields_separator
-    metadata_profile[:parse][:repeating_fields_separator]
+    metadata_profile[:parse][:repeating_fields_separator] || DulHydra.csv_mv_separator
   end
 
   def repeatable_fields

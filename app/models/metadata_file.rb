@@ -29,7 +29,7 @@ class MetadataFile < ActiveRecord::Base
       :csv => DulHydra.csv_options,
       :parse => {
         :include_empty_fields => false,
-        :repeating_fields_separator => ";"
+        :repeating_fields_separator => DulHydra.csv_mv_separator,
       }
     }
   end
