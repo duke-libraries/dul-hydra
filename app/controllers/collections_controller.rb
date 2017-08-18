@@ -88,7 +88,7 @@ class CollectionsController < ApplicationController
                when "admin_set"
                  current_object.admin_set
                end
-    csv = query.csv
+    csv = CSVMetadataExport.new(query)
     csv.delete_empty_columns! if params[:remove_empty_columns]
     render csv: csv, filename: filename
   end

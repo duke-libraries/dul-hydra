@@ -10,7 +10,6 @@ describe StandardIngestMetadata, type: :model, batch: true, standard_ingest: tru
            },
       parse: {
               locator_field_count: 2,
-              repeating_fields_separator: ";",
               repeatable_fields: [ "contributor", "creator", "date", "subject", "type" ]
              }
     }
