@@ -15,6 +15,7 @@ module DulHydra
     autoload :MetadataFileAbilityDefinitions
     autoload :NestedFolderIngestAbilityDefinitions
     autoload :StandardIngestAbilityDefinitions
+    autoload :StructureAbilityDefinitions
   end
 
   include DulHydra::Configurable

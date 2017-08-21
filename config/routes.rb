@@ -45,6 +45,10 @@ DulHydra::Application.routes.draw do
     patch 'roles'
   end
 
+  def structure_routes
+    get 'generate_structure'
+  end
+
   def amd_routes
     get 'admin_metadata'
     patch 'admin_metadata'
@@ -54,6 +58,7 @@ DulHydra::Application.routes.draw do
     event_routes
     roles_routes
     amd_routes
+    structure_routes
     get 'duracloud'
   end
 
