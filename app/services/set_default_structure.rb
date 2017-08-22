@@ -4,7 +4,9 @@ class SetDefaultStructure
 
   def self.call(*args)
     event = ActiveSupport::Notifications::Event.new(*args)
-    service = SetDefaultStructure.new(event.payload[:pid])
+    payload = event.payload
+    return false if payload[:skip_structure_updates]
+    service = SetDefaultStructure.new(payload[:pid])
     service.enqueue_default_structure_job
   end
 

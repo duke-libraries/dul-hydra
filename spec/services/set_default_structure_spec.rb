@@ -10,6 +10,25 @@ RSpec.describe SetDefaultStructure, type: :service do
     allow(ActiveFedora::Base).to receive(:find) { object }
   end
 
+  describe '.call' do
+    let(:notification_args) { [ 'test', DateTime.now - 2.seconds, DateTime.now - 1.seconds, 'testid', payload ] }
+    let(:payload) { { pid: repo_id, skip_structure_updates: skip_updates } }
+    describe 'skip structure updates' do
+      let(:skip_updates) { true }
+      it "does not instantiate the service" do
+        expect(described_class).to_not receive(:new)
+        SetDefaultStructure.call(*notification_args)
+      end
+    end
+    describe 'do not skip structure updates' do
+      let(:skip_updates) { false }
+      it "does not instantiate the service" do
+        expect(described_class).to receive(:new) { double('SetDefaultStructure', enqueue_default_structure_job: nil) }
+        SetDefaultStructure.call(*notification_args)
+      end
+    end
+  end
+
   describe '#default_structure_needed?' do
     describe 'can have structural metadata' do
       describe 'no existing structural metadata' do
@@ -28,6 +47,7 @@ RSpec.describe SetDefaultStructure, type: :service do
         end
       end
     end
+
     describe 'cannot have structural metadata' do
       let(:object) { double(can_have_struct_metadata?: false) }
       its(:default_structure_needed?) { is_expected.to be false }
