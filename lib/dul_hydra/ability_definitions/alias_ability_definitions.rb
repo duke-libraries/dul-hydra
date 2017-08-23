@@ -14,7 +14,9 @@ module DulHydra
                    :versions,
                    to: :read
       alias_action :roles, to: :grant
-      alias_action :admin_metadata, to: :update
+      alias_action :admin_metadata,
+                   :generate_structure,
+                   to: :update
     end
 
   end

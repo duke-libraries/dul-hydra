@@ -14,7 +14,7 @@ module DulHydra
                 actions: [
                     TabAction.new("generate_structure",
                                   url_for(action: "generate_structure"),
-                                  can?(:generate_structure, current_object))
+                                  show_generate_structure_link?(current_object))
                 ]
         )
       end

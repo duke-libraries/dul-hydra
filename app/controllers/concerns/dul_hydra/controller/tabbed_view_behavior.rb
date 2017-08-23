@@ -18,6 +18,12 @@ module DulHydra
         ds.has_content? && can?(:download, ds)
       end
 
+      def show_generate_structure_link? obj
+        obj.can_have_struct_metadata? &&
+            (obj.structure.nil? || obj.structure.repository_maintained?) &&
+            can?(:generate_structure, obj)
+      end
+
     end
   end
 end

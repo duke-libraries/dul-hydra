@@ -6,7 +6,6 @@ class Ability < Ddr::Auth::Ability
                                 DulHydra::IngestFolderAbilityDefinitions,
                                 DulHydra::NestedFolderIngestAbilityDefinitions,
                                 DulHydra::StandardIngestAbilityDefinitions,
-                                DulHydra::StructureAbilityDefinitions,
                               ]
 
 end
