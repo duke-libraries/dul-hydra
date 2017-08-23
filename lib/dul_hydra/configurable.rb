@@ -96,7 +96,7 @@ module DulHydra
         false
       end
 
-      mattr_accessor :auto_update_parent_structure do
+      mattr_accessor :auto_update_structures do
         true
       end
 

@@ -11,12 +11,12 @@ RSpec.describe UpdateParentStructure, type: :service do
     let(:notification_args) { [ 'test', DateTime.now - 2.seconds, DateTime.now - 1.seconds, 'testid', payload ] }
     let(:payload) { { pid: object_id, parent: parent_id, skip_structure_updates: skip_parent_update } }
     around do |example|
-      prev_auto_update_parent_structure = DulHydra.auto_update_parent_structure
+      prev_auto_update_structures = DulHydra.auto_update_structures
       example.run
-      DulHydra.auto_update_parent_structure = prev_auto_update_parent_structure
+      DulHydra.auto_update_structures = prev_auto_update_structures
     end
     describe "auto update parent structure" do
-      before { DulHydra.auto_update_parent_structure = true }
+      before { DulHydra.auto_update_structures = true }
       describe "skip parent structure updating" do
         let(:skip_parent_update) { true }
         it "does not update the parent's structure" do
@@ -33,7 +33,7 @@ RSpec.describe UpdateParentStructure, type: :service do
       end
     end
     describe "do not auto update parent structure" do
-      before { DulHydra.auto_update_parent_structure = false }
+      before { DulHydra.auto_update_structures = false }
       describe "do not skip parent structure updating" do
         let(:skip_parent_update) { false }
         it "updates the parent's structure" do

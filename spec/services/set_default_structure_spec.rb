@@ -13,6 +13,12 @@ RSpec.describe SetDefaultStructure, type: :service do
   describe '.call' do
     let(:notification_args) { [ 'test', DateTime.now - 2.seconds, DateTime.now - 1.seconds, 'testid', payload ] }
     let(:payload) { { pid: repo_id, skip_structure_updates: skip_updates } }
+    around do |example|
+      prev_auto_update_structures = DulHydra.auto_update_structures
+      DulHydra.auto_update_structures = true
+      example.run
+      DulHydra.auto_update_structures = prev_auto_update_structures
+    end
     describe 'skip structure updates' do
       let(:skip_updates) { true }
       it "does not instantiate the service" do
