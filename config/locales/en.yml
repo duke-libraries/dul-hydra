@@ -136,7 +136,7 @@ en:
       structural_metadata:
           label: "Structural Metadata"
           actions:
-              struct_map_xml: "StructMap XML"
+              generate_structure: "(Re-)Generate Default Structural Metadata"
       roles:
         label: Roles
         actions:

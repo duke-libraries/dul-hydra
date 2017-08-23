@@ -93,6 +93,12 @@ module DulHydra
         end
       end
 
+      def generate_structure
+        Resque.enqueue(GenerateDefaultStructureJob, current_object.id)
+        flash[:success] = "Default Structure Generation Job queued."
+        redirect_to(action: "show", tab: "struct_metadata")
+      end
+
       protected
 
       def admin_metadata_fields
