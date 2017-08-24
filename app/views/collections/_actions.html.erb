@@ -21,20 +21,26 @@
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:upload, current_object),
-                   'Upload Caption Files',
+                   'Upload Component Caption Files',
                    new_datastream_upload_path(datastream_upload: { collection_id: current_object, datastream_name: Ddr::Datastreams::CAPTION })
     %>
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:upload, current_object),
-                   'Upload Intermediate Files',
+                   'Upload Component Intermediate Files',
                    new_datastream_upload_path(datastream_upload: { collection_id: current_object, datastream_name: Ddr::Datastreams::INTERMEDIATE_FILE })
     %>
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:upload, current_object),
-                   'Upload Streamable Media Files',
+                   'Upload Component Streamable Media Files',
                    new_datastream_upload_path(datastream_upload: { collection_id: current_object, datastream_name: Ddr::Datastreams::STREAMABLE_MEDIA })
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:upload, current_object),
+                   'Upload Component Thumbnail Files',
+                   new_datastream_upload_path(datastream_upload: { collection_id: current_object, datastream_name: Ddr::Datastreams::THUMBNAIL })
     %>
   </li>
   <li class="list-group-item">

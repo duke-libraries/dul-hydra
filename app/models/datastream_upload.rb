@@ -14,7 +14,8 @@ class DatastreamUpload
   validates_presence_of :basepath, :datastream_name, :subpath, :user
   validates_inclusion_of :datastream_name, in: [ Ddr::Datastreams::CAPTION,
                                                  Ddr::Datastreams::INTERMEDIATE_FILE,
-                                                 Ddr::Datastreams::STREAMABLE_MEDIA ]
+                                                 Ddr::Datastreams::STREAMABLE_MEDIA,
+                                                 Ddr::Datastreams::THUMBNAIL ]
   validate :folder_directory_must_exist, if: [ 'basepath.present?', 'subpath.present?' ]
   validate :checksum_path_must_exist, if: 'checksum_file.present?'
 
