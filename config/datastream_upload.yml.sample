@@ -28,3 +28,13 @@ streamableMedia:
       - Thumbs.db
   checksums:
     location: /path/to/checksums/dir
+thumbnail:
+  basepaths:
+    - /dir/path
+    - /dir/other/path
+  scanner:
+    exclude:
+      - .DS_Store
+      - Thumbs.db
+  checksums:
+    location: /path/to/checksums/dir
