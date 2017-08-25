@@ -3,6 +3,7 @@ require 'spec_helper'
 RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
 
   let(:user) { FactoryGirl.create(:user) }
+  let(:admin_set) { 'foo' }
   let(:folder_path) { '/test/directory' }
   let(:fs_node_paths) { filesystem.each_leaf.map { |leaf| Filesystem.node_locator(leaf) } }
   let(:standard_ingest_metadata) { double(StandardIngestMetadata) }
@@ -12,7 +13,8 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
   describe 'validation' do
     let(:filesystem) { Filesystem.new }
     let(:standard_ingest_args) { { 'batch_user' => user.user_key,
-                                   'folder_path' => folder_path } }
+                                   'folder_path' => folder_path,
+                                   'admin_set' => admin_set } }
     before do
       filesystem.tree = sample_filesystem
       allow(Dir).to receive(:exist?).with(folder_path) { true }

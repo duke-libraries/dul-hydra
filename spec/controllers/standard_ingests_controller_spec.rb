@@ -4,11 +4,12 @@ RSpec.describe StandardIngestsController, type: :controller do
 
   describe "#create" do
     let(:user) { FactoryGirl.create(:user) }
+    let(:admin_set) { "foo" }
     let(:folder_path) { "/foo/bar/baz" }
     let(:checksum_path) { File.join(folder_path, StandardIngest::CHECKSUM_FILE).to_s }
     let(:data_path) { File.join(folder_path, StandardIngest::DATA_DIRECTORY).to_s }
     let(:metadata_path) { File.join(data_path, StandardIngest::METADATA_FILE).to_s }
-    let(:job_params) { {"admin_set" => nil, "batch_user" => user.user_key, "collection_id" => "",
+    let(:job_params) { {"admin_set" => admin_set, "batch_user" => user.user_key, "collection_id" => "",
                         "config_file" => StandardIngest::DEFAULT_CONFIG_FILE.to_s, "folder_path" => folder_path } }
 
     before do
@@ -29,7 +30,7 @@ RSpec.describe StandardIngestsController, type: :controller do
       }
       it "enqueues the job and renders the 'queued' view" do
         expect(Resque).to receive(:enqueue).with(StandardIngestJob, job_params)
-        post :create, standard_ingest: {"folder_path" => folder_path, "collection_id" => "" }
+        post :create, standard_ingest: {"folder_path" => folder_path, "collection_id" => "", "admin_set" => admin_set }
         expect(response).to render_template(:queued)
       end
       describe "and the collection is specified" do
