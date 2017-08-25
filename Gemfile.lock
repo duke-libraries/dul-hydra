@@ -1,5 +1,17 @@
 GIT
-  remote: git://github.com/duke-libraries/ddr-models.git
+  remote: https://github.com/duke-libraries/ddr-batch
+  revision: ccd6dfdfab44c7ca0ca1ec30510d5f5048bc447d
+  ref: ccd6dfdfab44c7ca0ca1ec30510d5f5048bc447d
+  specs:
+    ddr-batch (1.5.0.pre)
+      ddr-models (~> 2.8)
+      devise (~> 3.4)
+      log4r
+      paperclip (~> 4.2.0)
+      rails (~> 4.1)
+
+GIT
+  remote: https://github.com/duke-libraries/ddr-models
   revision: a7765bbd60c389440dfc0e50d0f13cbbb1d81df3
   ref: a7765bbd60c389440dfc0e50d0f13cbbb1d81df3
   specs:
@@ -22,18 +34,6 @@ GIT
       resque (~> 1.25)
       rubydora (~> 2.0)
       virtus (~> 1.0.5)
-
-GIT
-  remote: https://github.com/duke-libraries/ddr-batch
-  revision: ccd6dfdfab44c7ca0ca1ec30510d5f5048bc447d
-  ref: ccd6dfdfab44c7ca0ca1ec30510d5f5048bc447d
-  specs:
-    ddr-batch (1.5.0.pre)
-      ddr-models (~> 2.8)
-      devise (~> 3.4)
-      log4r
-      paperclip (~> 4.2.0)
-      rails (~> 4.1)
 
 GEM
   remote: https://rubygems.org/
