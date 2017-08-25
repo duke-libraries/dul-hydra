@@ -3,9 +3,9 @@ class UpdateParentStructure
   attr_reader :object_id, :parent_id
 
   def self.call(*args)
+    return false unless DulHydra.auto_update_structures
     event = ActiveSupport::Notifications::Event.new(*args)
     payload = event.payload
-    return false unless DulHydra.auto_update_parent_structure
     return false if payload[:skip_structure_updates]
     service = UpdateParentStructure.new(event.payload[:pid], event.payload[:parent])
     service.run

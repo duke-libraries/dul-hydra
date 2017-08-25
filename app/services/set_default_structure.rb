@@ -3,6 +3,7 @@ class SetDefaultStructure
   attr_reader :object
 
   def self.call(*args)
+    return false unless DulHydra.auto_update_structures
     event = ActiveSupport::Notifications::Event.new(*args)
     payload = event.payload
     return false if payload[:skip_structure_updates]

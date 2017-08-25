@@ -19,10 +19,9 @@ ActiveSupport::Notifications.subscribe(Ddr::Models::Base::INGEST) do |*args|
   SetDefaultStructure.call(*args) if [ "Collection", "Item", "Component" ].include?(args.last[:model])
   UpdateParentStructure.call(*args) if [ "Item", "Component" ].include?(args.last[:model])
 end
+ActiveSupport::Notifications.subscribe(Ddr::Models::Base::UPDATE) do |*args|
+  UpdateComponentStructure.call(*args) if args.last[:model] == "Component"
+end
 ActiveSupport::Notifications.subscribe(Ddr::Models::Base::DELETE) do |*args|
   UpdateParentStructure.call(*args) if [ "Item", "Component" ].include?(args.last[:model])
-end
-ActiveSupport::Notifications.subscribe(Ddr::Datastreams::CREATE, UpdateComponentStructure)
-ActiveSupport::Notifications.subscribe(Ddr::Datastreams::DELETE) do |*args|
-  SetDefaultStructure.call(*args) if args.last[:model] = "Component"
 end
