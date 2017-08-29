@@ -397,4 +397,8 @@ module ApplicationHelper
     branch_name
   end
 
+  def exportable_admin_metadata_fields
+    (DulHydra.user_editable_admin_metadata_fields +
+        DulHydra.user_editable_item_admin_metadata_fields).map { |f| Ddr::Index::Fields.get(f) }
+  end
 end
