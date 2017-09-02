@@ -24,6 +24,11 @@
         <%= render partial: 'document_content', locals: {document: current_document} %><br/>
       </li>
     <% end %>
+    <% if current_document.has_intermediate_file? %>
+      <li>
+        <%= render partial: 'document_intermediate', locals: {document: current_document}%><br/>
+      </li>
+    <% end %>
     <% if current_document.streamable? %>
       <li>
         <%= render partial: 'document_streamable_media', locals: {document: current_document } %><br/>

@@ -138,6 +138,12 @@ module ApplicationHelper
     link_to [label,icon("download")].join(" ").html_safe, download_path(args[:document]), class: args[:css_class], id: args[:css_id]
   end
 
+  def render_intermediate_link(document, args = {})
+    label = args.fetch(:label, "Intermediate File")
+    link_to [label,icon("download")].join(" ").html_safe, url_for(controller: document.controller_name, id: document.id, action: "intermediate"), class: args[:css_class], target: args[:target]
+  end
+
+
   def render_stream_link(document, args = {})
     label = args.fetch(:label, "Stream")
     link_to [label,icon("external-link")].join(" ").html_safe, url_for(controller: document.controller_name, id: document.id, action: "stream"), class: args[:css_class], target: args[:target]
