@@ -108,6 +108,7 @@ DulHydra::Application.routes.draw do
   repository_resource :components do
     content_routes
     publication_routes
+    get 'intermediate'
     get 'stream'
     get 'captions'
   end

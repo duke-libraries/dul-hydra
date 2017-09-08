@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: https://github.com/duke-libraries/ddr-models
-  revision: a7765bbd60c389440dfc0e50d0f13cbbb1d81df3
-  ref: a7765bbd60c389440dfc0e50d0f13cbbb1d81df3
+  revision: 2fc0de42b3a831ec1eca8953d485524658611612
+  ref: 2fc0de42b3a831ec1eca8953d485524658611612
   specs:
     ddr-models (2.9.0.pre)
       active-fedora (>= 7.3.1, < 8)
@@ -563,4 +563,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.15.3
+   1.15.4

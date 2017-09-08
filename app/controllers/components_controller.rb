@@ -5,6 +5,18 @@ class ComponentsController < ApplicationController
   include DulHydra::Controller::HasParentBehavior
   include DulHydra::Controller::HasStructuralMetadataBehavior
 
+  def intermediate
+    if current_object.has_intermediate_file?
+
+      send_file current_object.intermediate_path,
+                type: current_object.intermediate_type,
+                filename: [current_object.id, current_object.intermediate_extension].join(".")
+    else
+      render nothing: true, status: 404
+    end
+  end
+
+
   def stream
     if current_object.streamable?
 

@@ -8,6 +8,7 @@ module DulHydra
                    :components,
                    :event,
                    :events,
+                   :intermediate,
                    :items,
                    :stream,
                    :targets,
