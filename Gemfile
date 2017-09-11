@@ -15,6 +15,7 @@ gem 'devise'
 gem 'deprecation'
 gem 'virtus', '~> 1.0.5'
 gem 'ezid-client', '~> 1.7'
+gem 'bagit'
 
 gem 'log4r'
 
@@ -29,8 +30,6 @@ gem 'therubyracer', require: 'v8', group: :production
 # For mapping file extensions to MIME types
 gem 'mime-types', '~> 2.6'
 
-# Export sets
-gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 4.2'
 
 # Filesystem representation

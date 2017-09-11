@@ -12,6 +12,9 @@ DulHydra::Application.routes.draw do
 
   get 'id/*permanent_id', to: 'permanent_ids#show'
 
+  get 'export_files', to: 'export_files#new'
+  post 'export_files', to: 'export_files#create'
+
   def pid_constraint
     /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
   end
