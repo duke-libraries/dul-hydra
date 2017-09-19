@@ -29,7 +29,7 @@ module ArchivesSpace
       "folder"      => "image-service",
       "audio"       => "audio-streaming",
       "video"       => "video-streaming",
-      "document"    => "text-service",
+      "document"    => "image-service",
     }
 
     CSV_IN_HEADERS = %w( pid aspace_id ead_id permanent_id permanent_url title display_format )
