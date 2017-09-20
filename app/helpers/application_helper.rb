@@ -135,18 +135,25 @@ module ApplicationHelper
   def render_download_link(args = {})
     return unless args[:document]
     label = args.fetch(:label, "Download")
-    link_to label, download_path(args[:document]), class: args[:css_class], id: args[:css_id]
+    link_to [label,icon("download")].join(" ").html_safe, download_path(args[:document]), class: args[:css_class], id: args[:css_id]
   end
 
-  def render_download_icon(args = {})
-    label = content_tag(:span, "", class: "glyphicon glyphicon-download-alt")
-    render_download_link args.merge(label: label)
+  def render_intermediate_link(document, args = {})
+    label = args.fetch(:label, "Intermediate File")
+    link_to [label,icon("download")].join(" ").html_safe, url_for(controller: document.controller_name, id: document.id, action: "intermediate"), class: args[:css_class], target: args[:target]
   end
+
 
   def render_stream_link(document, args = {})
     label = args.fetch(:label, "Stream")
-    link_to label, url_for(controller: document.controller_name, id: document.id, action: "stream"), class: args[:css_class], target: args[:target]
+    link_to [label,icon("external-link")].join(" ").html_safe, url_for(controller: document.controller_name, id: document.id, action: "stream"), class: args[:css_class], target: args[:target]
   end
+
+  def render_caption_link(document, args = {})
+    label = args.fetch(:label, "Captions")
+    link_to [label,icon("download")].join(" ").html_safe, url_for(controller: document.controller_name, id: document.id, action: "captions"), class: args[:css_class], target: args[:target]
+  end
+
 
   def thumbnail_image_tag document, image_options = {}
     src = document.has_thumbnail? ? thumbnail_path(document) : default_thumbnail(document)
@@ -390,4 +397,14 @@ module ApplicationHelper
     @admin_set_titles ||= Ddr::Models::AdminSet.all.each_with_object({}) { |a, memo| memo[a.code] = a.title }
   end
 
+  # Display git branch on preview banner
+  def git_branch_info
+    branch_name = `git rev-parse --abbrev-ref HEAD`
+    branch_name
+  end
+
+  def exportable_admin_metadata_fields
+    (DulHydra.user_editable_admin_metadata_fields +
+        DulHydra.user_editable_item_admin_metadata_fields).map { |f| Ddr::Index::Fields.get(f) }
+  end
 end

@@ -1,0 +1,9 @@
+basepaths:
+  - /dir/nested/
+scanner:
+  exclude:
+    - .DS_Store
+    - Thumbs.db
+checksums:
+  location: /dir/fixity/
+  type: SHA-1

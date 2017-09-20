@@ -43,8 +43,7 @@
   <label for="amd_fields[]">Administrative Metadata Fields</label>
   <select name="amd_fields[]" class="metadata-field-selector form-control" multiple="true">
     <option value="permanent_id" selected="selected">Permanent ID</option>
-    <% amd_fields = DulHydra.user_editable_admin_metadata_fields.map { |f| Ddr::Index::Fields.get(f) } %>
-    <%= options_from_collection_for_select amd_fields, :base, :label %>
+    <%= options_from_collection_for_select exportable_admin_metadata_fields, :base, :label %>
   </select>
 </div>
 <div class="form-group">

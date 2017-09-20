@@ -22,5 +22,11 @@
   <label for="filename">Report filename - not including .csv extension</label>
   <%= text_field_tag "filename", @filename, style: "width: 50%", class: "form-control" %>
 </div>
+<div class="checkbox">
+  <label>
+    <%= check_box_tag "debug" %>
+    Debug (will not make changes in ArchivesSpace)
+  </label>
+</div>
 <button type="submit" class="btn btn-primary">Submit</button>
 <% end %>

@@ -29,7 +29,7 @@ class MetadataFile < ActiveRecord::Base
       :csv => DulHydra.csv_options,
       :parse => {
         :include_empty_fields => false,
-        :repeating_fields_separator => ";"
+        :repeating_fields_separator => DulHydra.csv_mv_separator,
       }
     }
   end
@@ -69,7 +69,11 @@ class MetadataFile < ActiveRecord::Base
   end
 
   def user_editable_fields
-    Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.concat(DulHydra.user_editable_admin_metadata_fields)
+    Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.concat(editable_admin_metadata_fields)
+  end
+
+  def editable_admin_metadata_fields
+    DulHydra.user_editable_admin_metadata_fields.concat(DulHydra.user_editable_item_admin_metadata_fields)
   end
 
   def controlled_value_headers

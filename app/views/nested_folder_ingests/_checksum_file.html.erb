@@ -1,0 +1,5 @@
+<div class="form-group">
+  <%= f.label :checksum_file %>
+  <%= checksum_location %>
+  <%= f.select :checksum_file, checksum_files_options_for_select, { prompt: true }, { class: "form-control" } %>
+</div>

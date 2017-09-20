@@ -47,6 +47,7 @@ class CollectionsController < ApplicationController
           filename: params.require(:filename) + ".csv",
           notify: params.require(:notify),
           user: current_user.aspace_username,
+          debug: !!params[:debug],
         }
         ArchivesSpace::CreateDigitalObjectsJob.perform_later(current_object.id, options)
       end
@@ -87,7 +88,7 @@ class CollectionsController < ApplicationController
                when "admin_set"
                  current_object.admin_set
                end
-    csv = query.csv
+    csv = CSVMetadataExport.new(query)
     csv.delete_empty_columns! if params[:remove_empty_columns]
     render csv: csv, filename: filename
   end

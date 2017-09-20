@@ -24,6 +24,7 @@ class StandardIngest
     folder.validate :validate_metadata_file, if: 'File.exist?(metadata_path)'
   end
   validate :collection_must_exist, if: 'collection_id.present?'
+  validates_presence_of(:admin_set, unless: 'collection_id.present?')
 
   def initialize(args)
     @admin_set = args['admin_set']

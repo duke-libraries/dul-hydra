@@ -1,0 +1,13 @@
+<div class="form-group">
+  <%= f.label :basepath %>
+  <% if permitted_datastream_upload_bases(ds_name).size == 1 %>
+      <%= f.hidden_field :basepath, value: permitted_datastream_upload_bases(ds_name).first %>
+      <%= permitted_datastream_upload_bases(ds_name).first %>
+  <% else %>
+      <%= f.select :basepath, options_for_select(permitted_datastream_upload_bases(ds_name)), {prompt: true}, {class: 'form-control'} %>
+  <% end %>
+</div>
+<div class="form-group">
+  <%= f.label :subpath %>
+  <%= f.text_field :subpath, class: 'form-control' %>
+</div>

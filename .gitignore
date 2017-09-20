@@ -34,6 +34,9 @@
 # Pre-compiled assets
 /public/assets
 
+# Export files
+/public/export_files
+
 # Paperclip files
 /public/system
 
@@ -41,3 +44,6 @@
 
 # Ignore Mac .DS_Store files
 .DS_Store
+
+# Ignore byebug history files
+.byebug_history

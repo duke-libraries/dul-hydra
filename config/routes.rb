@@ -12,6 +12,9 @@ DulHydra::Application.routes.draw do
 
   get 'id/*permanent_id', to: 'permanent_ids#show'
 
+  get 'export_files', to: 'export_files#new'
+  post 'export_files', to: 'export_files#create'
+
   def pid_constraint
     /[a-zA-Z0-9\-_]+:[a-zA-Z0-9\-_]+/
   end
@@ -45,6 +48,10 @@ DulHydra::Application.routes.draw do
     patch 'roles'
   end
 
+  def structure_routes
+    get 'generate_structure'
+  end
+
   def amd_routes
     get 'admin_metadata'
     patch 'admin_metadata'
@@ -54,6 +61,7 @@ DulHydra::Application.routes.draw do
     event_routes
     roles_routes
     amd_routes
+    structure_routes
     get 'duracloud'
   end
 
@@ -103,7 +111,9 @@ DulHydra::Application.routes.draw do
   repository_resource :components do
     content_routes
     publication_routes
+    get 'intermediate'
     get 'stream'
+    get 'captions'
   end
   repository_content_resource :attachments
   repository_content_resource :targets
@@ -126,6 +136,8 @@ DulHydra::Application.routes.draw do
     resources :batch_object_relationships, :only => :index
   end
 
+  resources :datastream_uploads, only: [ :new, :create, :show ]
+
   resources :ingest_folders, :only => [:new, :create, :show] do
     member do
       get 'procezz'
@@ -137,6 +149,8 @@ DulHydra::Application.routes.draw do
       get 'procezz'
     end
   end
+
+  resources :nested_folder_ingests, :only => [:new, :create, :show]
 
   resources :standard_ingests, :only => [:new, :create, :show]
 

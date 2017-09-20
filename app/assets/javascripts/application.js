@@ -19,5 +19,6 @@
 // Bootstrap
 //= require bootstrap/tab
 //= require bootstrap/button
+//= require bootstrap/tooltip
 //= require_tree .
 

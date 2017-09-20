@@ -1,0 +1,8 @@
+<div class="form-group">
+  <%= f.label :collection_title, "Collection Title" %>
+  <%= f.text_field :collection_title, class: 'form-control' %>
+</div>
+<div class="form-group">
+  <%= f.label :admin_set, "Admin Set" %>
+  <%= f.select :admin_set, options_from_collection_for_select(Ddr::Models::AdminSet.all, :code, :title), { include_blank: "Select Admin Set for Collection" }, { class: "form-control" } %>
+</div>

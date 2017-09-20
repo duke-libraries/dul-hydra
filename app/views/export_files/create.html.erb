@@ -1,0 +1,36 @@
+<h2>Export Files</h2>
+
+<% if @confirmed %>
+  <div class="bg-success" style="padding: 1em">
+    <p>
+      Files are being prepared for export.
+      You will receive an email notification when the job is complete.
+    </p>
+  </div>
+<% else %>
+  <%= form_tag controller: 'export_files', action: 'create' do %>
+    <%= hidden_field_tag :identifiers, @export.repo_ids.join(" ") %>
+    <%= hidden_field_tag :basename, @export.basename %>
+    <%= hidden_field_tag :confirmed, 1 %>
+    <div class="bg-info" style="padding: 1em">
+      <p>
+	You are preparing to export <strong><%= @export.expected_num_files %> files</strong>
+	at a total size of <strong><%= number_to_human_size(@export.expected_payload_size, prefix: :si) %></strong>.
+	Continue?
+      </p>
+      <%= submit_tag "Yes, Export", class: "btn btn-primary" %>
+    </div>    
+    <% end %>
+
+  <% if @export.not_found.present? %>
+    <div class="bg-warning" style="padding: 1em">
+      <p>Some identifiers were not found or were excluded due to insufficient privileges:</p>
+      <ul>
+	<% @export.not_found.each do |id| %>
+	<li><%= id %></li>
+	<% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %>
+  

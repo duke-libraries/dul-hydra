@@ -17,7 +17,7 @@ module DulHydra
         include Blacklight::Base
         include DulHydra::Controller::TabbedViewBehavior
 
-        self.tabs = [ :tab_descriptive_metadata, :tab_admin_metadata, :tab_roles, :tab_duracloud ]
+        self.tabs = [ :tab_descriptive_metadata, :tab_admin_metadata, :tab_roles ]
 
         helper_method :current_object
         helper_method :current_document
@@ -91,6 +91,12 @@ module DulHydra
         else
          redirect_to action: "show", tab: "duracloud"
         end
+      end
+
+      def generate_structure
+        Resque.enqueue(GenerateDefaultStructureJob, current_object.id)
+        flash[:success] = "Default Structure Generation Job queued."
+        redirect_to(action: "show", tab: "struct_metadata")
       end
 
       protected

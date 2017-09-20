@@ -1,0 +1,40 @@
+<h1>Nested Folder Ingest</h1>
+
+<p class="lead">
+  <% if @nested_folder_ingest.collection_id.present? %>
+    Use the form below to add additional items to this collection.
+  <% else %>
+    Use the form below to create a new collection.
+  <% end %>
+  All fields are required.
+</p>
+
+<% if @nested_folder_ingest.errors.any? %>
+    <div id="error_explanation">
+      <ul>
+        <% @nested_folder_ingest.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+<% end %>
+
+<div class="row">
+  <div class="col-md-5">
+    <%= form_for @nested_folder_ingest do |f| %>
+        <div class="form-group">
+          <%= f.label :collection_id %>
+          <%= f.hidden_field :collection_id %>
+          <%= @nested_folder_ingest.collection_id.present? ? object_display_title(@nested_folder_ingest.collection_id) : '<Will be created by Nested Folder Ingest>' %>
+        </div>
+        <%= render partial: 'folder_path', locals: { f: f } %>
+        <%= render partial: 'checksum_file', locals: { f: f } %>
+        <% unless @nested_folder_ingest.collection_id.present? %>
+          <%= render partial: 'collection_form_fields', locals: { f: f } %>
+        <% end %>
+        <div class="form-group">
+          <%= f.submit "Submit", :id => "nested_folder_ingests_submit_button", :class => "btn btn-primary" %>
+        </div>
+    <% end %>
+  </div>
+</div>

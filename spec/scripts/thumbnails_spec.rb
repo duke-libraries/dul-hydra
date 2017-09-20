@@ -21,7 +21,7 @@ module DulHydra::Scripts
       context "child has thumbnail" do
         before do
           component.thumbnail.content = thumbnail
-          component.save!
+          component.save!(skip_structure_updates: true)
         end
         it "should populate the thumbnail datastream from the child thumbnail" do
           thumbnails_script.execute
@@ -44,7 +44,7 @@ module DulHydra::Scripts
       let(:item_thumbnail) { StringIO.new("awesome image") }
       before do
         component.thumbnail.content = thumbnail
-        component.save!
+        component.save!(skip_structure_updates: true)
         item.thumbnail.content = item_thumbnail
         item.save!
       end

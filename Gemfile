@@ -4,8 +4,8 @@ ruby '2.3.1'
 gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
-gem 'ddr-batch', '1.4.1'
-gem 'ddr-models', '2.8.0'
+gem 'ddr-batch', '1.5.0.rc1'
+gem 'ddr-models', '2.9.0.rc1'
 
 gem 'hydra-head', '7.2.2'
 gem 'blacklight', '5.19.2'
@@ -15,6 +15,7 @@ gem 'devise'
 gem 'deprecation'
 gem 'virtus', '~> 1.0.5'
 gem 'ezid-client', '~> 1.7'
+gem 'bagit'
 
 gem 'log4r'
 
@@ -29,12 +30,13 @@ gem 'therubyracer', require: 'v8', group: :production
 # For mapping file extensions to MIME types
 gem 'mime-types', '~> 2.6'
 
-# Export sets
-gem 'rubyzip', '< 1.0.0'
 gem 'paperclip', '~> 4.2'
 
 # Filesystem representation
 gem 'rubytree'
+
+# Icons
+gem 'font-awesome-sass', '~> 4.6.2'
 
 # Rails 4.2
 gem 'responders', '~> 2.0'
@@ -42,6 +44,7 @@ gem 'web-console', '~> 2.0', group: :development
 gem 'sprockets-rails', '2.3.3'
 
 group :development, :test do
+  gem 'byebug'
   gem 'sqlite3'
   gem 'jettywrapper', '~> 1.8'
 end

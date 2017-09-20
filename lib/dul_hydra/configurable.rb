@@ -46,6 +46,9 @@ module DulHydra
       # Context used in alert message selection
       mattr_accessor :alert_message_context
 
+      # Message displayed in banner indicating a preview
+      mattr_accessor :preview_banner_msg
+
       mattr_accessor :fixity_check_limit do
         ENV["FIXITY_CHECK_LIMIT"] || 10**4
       end
@@ -73,6 +76,10 @@ module DulHydra
         ]
       end
 
+      mattr_accessor :user_editable_item_admin_metadata_fields do
+        [ :nested_path ]
+      end
+
       # Base path for Standard Ingest folders
       mattr_accessor :standard_ingest_base_path
 
@@ -89,6 +96,10 @@ module DulHydra
         false
       end
 
+      mattr_accessor :auto_update_structures do
+        true
+      end
+
       # Home directory for FITS
       mattr_accessor :fits_home do
         ENV["FITS_HOME"]
@@ -97,6 +108,30 @@ module DulHydra
       # Host name for use in non-web-request situations
       mattr_accessor :host_name do
         ENV["HOST_NAME"]
+      end
+
+      # Value used in metadata export/import to separate
+      # multiple values in a single CSV cell.
+      mattr_accessor :csv_mv_separator do
+        ENV["CSV_MV_SEPARATOR"] || "|"
+      end
+
+      # Directory to store export files
+      mattr_accessor :export_files_store do
+        ENV["EXPORT_FILES_STORE"] || File.join(Rails.root, "public", "export_files")
+      end
+
+      # Base URL for export files - include trailing slash
+      mattr_accessor :export_files_base_url do
+        ENV["EXPORT_FILES_BASE_URL"] || "/export_files/"
+      end
+
+      mattr_accessor :export_files_max_payload_size do
+        if value = ENV["EXPORT_FILES_MAX_PAYLOAD_SIZE"]
+          value.to_i
+        else
+          100 * 10**9 # 100Gb
+        end
       end
     end
 
@@ -108,4 +143,3 @@ module DulHydra
 
   end
 end
-

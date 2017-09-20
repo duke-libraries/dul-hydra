@@ -11,8 +11,9 @@ module DulHydra
   autoload_under 'ability_definitions' do
     autoload :AliasAbilityDefinitions
     autoload :BatchAbilityDefinitions
-    autoload :MetadataFileAbilityDefinitions
     autoload :IngestFolderAbilityDefinitions
+    autoload :MetadataFileAbilityDefinitions
+    autoload :NestedFolderIngestAbilityDefinitions
     autoload :StandardIngestAbilityDefinitions
   end
 

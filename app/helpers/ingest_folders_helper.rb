@@ -1,6 +1,6 @@
 module IngestFoldersHelper
 
-  def permitted_folder_bases
+  def permitted_ingest_folder_bases
     IngestFolder.permitted_folders(current_user)
   end
 

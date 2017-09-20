@@ -39,6 +39,14 @@ def populate_comparison_hashes(batch_objects)
   [ objects, atts, dss, rels ]
 end
 
+def nested_folder_ingest_configuration
+  {
+      basepaths: [ '/dir/nested/', '/dir/other/nested/'],
+      scanner: { exclude: [ '.DS_Store', 'Thumbs.db' ] },
+      checksums: { location: '/tmp', type: Ddr::Datastreams::CHECKSUM_TYPE_SHA1 }
+  }
+end
+
 def standard_ingest_configuration
   {
     scanner: {
@@ -129,5 +137,16 @@ def filesystem_three_deep
   itemB_node << Tree::TreeNode.new('file02.pdf')
   itemB_node << Tree::TreeNode.new('track02.wav')
   itemA_node << itemB_node
+  root_node
+end
+
+def filesystem_datastream_uploads
+  root_node = Tree::TreeNode.new('/test/directory')
+  fileA_node = Tree::TreeNode.new('abc001.jpg')
+  fileB_node = Tree::TreeNode.new('abc002.jpg')
+  fileC_node = Tree::TreeNode.new('abc003.jpg')
+  root_node << fileA_node
+  root_node << fileB_node
+  root_node << fileC_node
   root_node
 end
