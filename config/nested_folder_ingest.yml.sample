@@ -1,9 +1,16 @@
-basepaths:
+:basepaths:
   - /dir/nested/
-scanner:
-  exclude:
+:scanner:
+  :exclude:
     - .DS_Store
     - Thumbs.db
-checksums:
-  location: /dir/fixity/
-  type: SHA-1
+:checksums:
+  :location: /dir/fixity/
+  :type: SHA-1
+:metadata:
+  :csv:
+    :encoding: UTF-8
+    :headers: true
+    :col_sep: "\t"
+  :location: /dir/metadata
+

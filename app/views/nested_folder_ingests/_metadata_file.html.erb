@@ -1,0 +1,5 @@
+<div class="form-group">
+  <%= f.label :metadata_file %>
+  <%= metadata_location %>
+  <%= f.select :metadata_file, metadata_files_options_for_select, { prompt: true }, { class: "form-control" } %>
+</div>

@@ -29,6 +29,7 @@
         </div>
         <%= render partial: 'folder_path', locals: { f: f } %>
         <%= render partial: 'checksum_file', locals: { f: f } %>
+        <%= render partial: 'metadata_file', locals: { f: f } %>
         <% unless @nested_folder_ingest.collection_id.present? %>
           <%= render partial: 'collection_form_fields', locals: { f: f } %>
         <% end %>

@@ -1,10 +1,12 @@
-basepaths:
+:basepaths:
   - /dir/nested/
   - /dir/other/nested
-scanner:
-  exclude:
+:scanner:
+  :exclude:
     - .DS_Store
     - Thumbs.db
-checksums:
-  location: /dir/fixity/fedora_ingest/
-  type: SHA-1
+:checksums:
+  :location: /dir/fixity/fedora_ingest/
+  :type: SHA-1
+:metadata:
+  :location: /dir/metadata

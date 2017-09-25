@@ -8,15 +8,18 @@ RSpec.describe NestedFolderIngestsController, type: :controller do
     let(:subpath) { 'baz/' }
     let(:folder_path) { File.join(basepath, subpath) }
     let(:checksum_file) { 'my_checksums.txt' }
+    let(:metadata_file) { 'my_metadata.txt' }
     let(:test_config_file) do
       Rails.root.join('spec', 'fixtures', 'batch_ingest', 'nested_folder_ingest', 'nested_folder_ingest.yml')
     end
-    let(:test_configuration) { YAML.load(File.read(test_config_file)).deep_symbolize_keys }
+    let(:test_configuration) { YAML.load(File.read(test_config_file)) }
     let(:checksums_location) { test_configuration[:checksums][:location] }
+    let(:metadata_location) { test_configuration[:metadata][:location] }
     let(:checksum_path) { File.join(checksums_location, checksum_file) }
+    let(:metadata_path) { File.join(metadata_location, metadata_file) }
     let(:job_params) { { "admin_set" => "foo", "basepath" => basepath, "batch_user" => user.user_key,
                          "checksum_file" => checksum_file, "collection_id" => "", "collection_title" => "Test",
-                         "config_file" => test_config_file.to_s, "subpath" => subpath } }
+                         "config_file" => test_config_file.to_s, "metadata_file" => metadata_file, "subpath" => subpath } }
 
     before do
       sign_in user
@@ -24,8 +27,12 @@ RSpec.describe NestedFolderIngestsController, type: :controller do
       allow(Dir).to receive(:exist?).with(folder_path) { true }
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(checksum_path) { true }
+      allow(File).to receive(:exist?).with(metadata_path) { true }
       allow(File).to receive(:read).and_call_original
       allow(File).to receive(:read).with(NestedFolderIngest::DEFAULT_CONFIG_FILE.to_s) { File.read(test_config_file) }
+      allow_any_instance_of(NestedFolderIngest).to receive(:metadata_path) { metadata_path }
+      allow_any_instance_of(IngestMetadata).to receive(:validate_headers) { [] }
+      allow_any_instance_of(IngestMetadata).to receive(:locators) { [] }
     end
 
     describe "when the user can create NestedFolderIngest" do
@@ -37,8 +44,8 @@ RSpec.describe NestedFolderIngestsController, type: :controller do
         expect(Resque).to receive(:enqueue).with(NestedFolderIngestJob, job_params)
         post :create, nested_folder_ingest: { "basepath" => basepath, "subpath" => subpath,
                                               "checksum_file" => checksum_file, "collection_id" => "",
-                                              "collection_title" => "Test","config_file" => test_config_file.to_s,
-                                              "admin_set" => "foo" }
+                                              "collection_title" => "Test", "config_file" => test_config_file.to_s,
+                                              "admin_set" => "foo", "metadata_file" => metadata_file }
         expect(response).to render_template(:queued)
       end
       describe "and the collection is specified" do
