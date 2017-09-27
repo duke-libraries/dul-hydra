@@ -1,14 +1,5 @@
 :csv:
     :col_sep: "\t"
-:parse:
-    :local_identifier: Identifier-Local
-    :repeatable_fields:
-        - Contributor
-        - Creator
-        - Date
-        - Subject-Name
-        - Subject-Topic
-        - Type-AAT
 :schema_map:
     Abstract: abstract
     Audience: audience

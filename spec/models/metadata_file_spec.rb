@@ -136,8 +136,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
           },
           :parse => {
             :include_empty_fields => false,
-            :repeating_fields_separator => ";",
-            :repeatable_fields => [ "subject" ]
+            :repeating_fields_separator => '|'
           }
         }
       end

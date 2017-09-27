@@ -34,7 +34,7 @@ describe "metadata_files/queued.html.erb", :type => :feature, :metadata_file => 
   let(:headers_id) { '#headers' }
   let(:rows_id) { '#rows' }
   let(:rows_text) {
-    [ [ 'test12345', 'Updated Title', 'This is some description; this is "some more" description.', 'Alpha; Beta; Gamma', 'Delta; Epsilon', '2010-01-22' ] ]
+    [ [ 'test12345', 'Updated Title', 'This is some description; this is "some more" description.', 'Alpha|Beta|Gamma', 'Delta|Epsilon', '2010-01-22' ] ]
   }
 
   before do
@@ -45,8 +45,7 @@ describe "metadata_files/queued.html.erb", :type => :feature, :metadata_file => 
   context "factory version" do
     let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
     let(:headers_text) {
-      [ [ 'local_id', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ],
-        [ '', '', '', 'multi', 'multi', '', ''] ]
+      [ [ 'local_id', 'title', 'description', 'subject', 'subject', 'dateSubmitted', 'arranger' ] ]
     }
     it_behaves_like "metadata file show page"
   end

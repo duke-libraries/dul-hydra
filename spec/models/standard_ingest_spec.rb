@@ -84,9 +84,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
     let(:config) { {:scanner=>{:exclude=>[".DS_Store", "Thumbs.db", "metadata.txt"], :targets=>"dpc_targets",
                                :intermediate_files=>"intermediate_files"},
                     :metadata=>{:csv=>{:encoding=>"UTF-8", :headers=>true, :col_sep=>"\t"},
-                                :parse=>{:repeating_fields_separator=>";",
-                                         :repeatable_fields=>["contributor", "coverage", "creator", "extent",
-                                                              "identifier", "rightsHolder", "subject", "temporal"]}}} }
+                                :parse=>{:repeating_fields_separator=>";"}}} }
     let(:admin_set) { 'dvs' }
 
     before do
