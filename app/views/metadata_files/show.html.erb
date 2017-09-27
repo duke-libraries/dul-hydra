@@ -25,17 +25,6 @@
 				<th><%= header %></th>
 			<% end %>
 		</tr>
-		<% if @metadata_file.effective_options[:parse][:repeatable_fields].present? %>
-			<tr>
-				<% @metadata_file.as_csv_table.headers.each do |header| %>
-					<th class="sub-header">
-						<% if @metadata_file.effective_options[:parse][:repeatable_fields].include?(header) %>
-							multi
-						<% end %>
-					</th>
-				<% end %>
-			</tr>
-		<% end %>
 		<% if @metadata_file.effective_options[:schema_map].present? %>
 			<tr>
 				<% @metadata_file.as_csv_table.headers.each do |header| %>

@@ -7,11 +7,7 @@ describe StandardIngestMetadata, type: :model, batch: true, standard_ingest: tru
             encoding: "UTF-8",
             headers: true,
             header_converters: :canonicalize
-           },
-      parse: {
-              locator_field_count: 2,
-              repeatable_fields: [ "contributor", "creator", "date", "subject", "type" ]
-             }
+           }
     }
   end
 

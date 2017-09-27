@@ -62,9 +62,7 @@ def standard_ingest_configuration
         col_sep: '\t'
       },
       parse: {
-        locator_field_count: 1,
-        repeating_fields_separator: ';',
-        repeatable_fields: [ 'contributor', 'creator', 'date', 'subject', 'type' ]
+        repeating_fields_separator: ';'
       }
     }
   }

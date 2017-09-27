@@ -10,28 +10,3 @@
         :encoding: UTF-8
         :headers: true
         :col_sep: "\t"
-    :parse:
-        :repeatable_fields:
-            - affiliation
-            - category
-            - company
-            - contributor
-            - creator
-            - date
-            - format
-            - hasPart
-            - identifier
-            - isFormatOf
-            - isPartOf
-            - language
-            - medium
-            - placement_company
-            - product
-            - publication
-            - relation
-            - series
-            - setting
-            - spatial
-            - subject
-            - tone
-            - type
