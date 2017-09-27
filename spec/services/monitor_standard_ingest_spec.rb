@@ -55,7 +55,7 @@ RSpec.describe MonitorStandardIngest, type: :service do
       end
       it "should generate an appropriate email" do
         expect(JobMailer).to receive(:basic).with(to: user_email,
-                                                  subject: "COMPLETED - Standard Ingest Job - #{collection_title}",
+                                                  subject: "BATCH CREATED - Standard Ingest Job - #{collection_title}",
                                                   message: expected_msg).and_call_original
         described_class.call(*notification)
       end
@@ -72,7 +72,7 @@ RSpec.describe MonitorStandardIngest, type: :service do
         end
         it "should generate an appropriate email" do
           expect(JobMailer).to receive(:basic).with(to: user_email,
-                                                    subject: "COMPLETED - Standard Ingest Job - #{collection_title}",
+                                                    subject: "BATCH CREATED - Standard Ingest Job - #{collection_title}",
                                                     message: expected_msg).and_call_original
           described_class.call(*notification)
         end
@@ -88,7 +88,7 @@ RSpec.describe MonitorStandardIngest, type: :service do
         end
         it "should generate an appropriate email" do
           expect(JobMailer).to receive(:basic).with(to: user_email,
-                                                    subject: "COMPLETED - Standard Ingest Job - #{collection_title}",
+                                                    subject: "BATCH CREATED - Standard Ingest Job - #{collection_title}",
                                                     message: expected_msg).and_call_original
           described_class.call(*notification)
         end

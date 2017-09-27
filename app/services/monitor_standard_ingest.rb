@@ -35,7 +35,7 @@ class MonitorStandardIngest
         To review and process the batch, go to #{batch_url(batch)}
       EOS
       JobMailer.basic(to: user.email,
-                      subject: "COMPLETED - Standard Ingest Job - #{coll_title}",
+                      subject: "BATCH CREATED - Standard Ingest Job - #{coll_title}",
                       message: msg).deliver_now
     end
 
