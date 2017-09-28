@@ -48,6 +48,8 @@ en:
       new_menu: "Metadata File Upload"
     nested_folder_ingest:
       new_menu: "Nested Folder Ingest"
+      validation:
+        missing_file: "Cannot find file that matches '%{miss}' path"
     standard_ingest:
       new_menu: "Standard Ingest"
       validation:

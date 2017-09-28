@@ -22,7 +22,7 @@ RSpec.shared_examples "a successfully built nested folder ingest batch" do
     expect(collections.count).to eq(coll_count)
     if coll_count == 1
       expect(collections.first.id).to be_present
-      expect(collections.first.batch_object_attributes.where(name: 'title').first.value).to eq(collection_title)
+      expect(collections.first.batch_object_attributes.where(name: 'title').first.value).to eq(expected_collection_title)
       expect(collections.first.batch_object_attributes.where(name: 'admin_set').first.value).to eq(admin_set)
       expect(collections.first.batch_object_roles.size).to eq(1)
       expect(collections.first.batch_object_roles[0].agent).to eq(user.user_key)
@@ -34,16 +34,21 @@ RSpec.shared_examples "a successfully built nested folder ingest batch" do
     expect(items.count).to eq(6)
     item_pids = []
     item_nested_paths = []
+    item_titles = []
     items.each do |obj|
       expect(obj.id).to be_present
       item_pids << obj.pid
       item_nested_paths << obj.batch_object_attributes.where(name: 'nested_path').first.value
+      if a = obj.batch_object_attributes.where(name: 'title').first
+        item_titles << a.value
+      end
       parent_relationships = obj.batch_object_relationships.where(
           name: Ddr::Batch::BatchObjectRelationship::RELATIONSHIP_PARENT)
       expect(parent_relationships.size).to eq(1)
       expect(parent_relationships.first.object).to eq(coll_id)
     end
     expect(item_nested_paths).to match_array(expected_nested_paths)
+    expect(item_titles).to match_array(expected_item_titles)
 
     # Component expectations
     expect(components.count).to eq(6)
@@ -85,16 +90,16 @@ RSpec.describe BuildBatchFromNestedFolderIngest, type: :service, batch: true, in
   let(:batch_description) { "Testing ingest batch building" }
   let(:filesystem) { Filesystem.new }
 
-  context 'nested ingest' do
+  context 'nested folder ingest' do
 
     let(:content_modeler) { ModelNestedFolderIngestContent }
     let(:checksum_provider) { double("IngestChecksum") }
-    let(:admin_set) { "abc" }
-    let(:collection_title) { "My Collection" }
+    let(:metadata_provider) { double("IngestMetadata") }
 
     let(:expected_nested_paths) { [ 'directory/movie.mp4', 'directory/file01001.tif', 'directory/itemA/file01.pdf',
                                     'directory/itemA/track01.wav', 'directory/itemB/file02.pdf',
                                     'directory/itemB/track02.wav' ] }
+    let(:expected_item_titles) { [ 'File01001 Title', 'Track02 Title' ] }
 
     let(:batch_objects) { batch.batch_objects }
     let(:collections) { batch_objects.where(model: 'Collection') }
@@ -109,27 +114,40 @@ RSpec.describe BuildBatchFromNestedFolderIngest, type: :service, batch: true, in
       allow(checksum_provider).to receive(:checksum).with('/test/directory/itemA/track01.wav') { 'd72880438ba42224b9dd185e4e8c1b60e6ddf61d977d0b99aed72bb9f964657b' }
       allow(checksum_provider).to receive(:checksum).with('/test/directory/itemB/file02.pdf') { 'a2b872e2a3958a1ec7de3afcfd017d323c0a43dcebf0e607ab31acde4799aa8f' }
       allow(checksum_provider).to receive(:checksum).with('/test/directory/itemB/track02.wav') { 'dd60f671e6f31c75f11643e98384f71864ee654c6afb9d26cdc6a7c458741d47' }
+      allow(metadata_provider).to receive(:metadata) { { } }
+      allow(metadata_provider).to receive(:metadata).with('/test/directory/file01001.tif') { { "title" => "File01001 Title" } }
+      allow(metadata_provider).to receive(:metadata).with('/test/directory/itemB/track02.wav') { { "title" => "Track02 Title" } }
     end
 
     context 'collection repository ID not provided' do
+      let(:admin_set) { "abc" }
       let(:batch_builder) { described_class.new(user: user, filesystem: filesystem,
                                                 content_modeler: content_modeler, checksum_provider: checksum_provider,
-                                                admin_set: admin_set, collection_title: collection_title,
-                                                batch_name: batch_name, batch_description: batch_description) }
-      it_behaves_like "a successfully built nested folder ingest batch" do
-        let(:batch) { batch_builder.call }
-        let(:coll_count) { 1 }
-        let(:coll_id) { collections.first.pid }
+                                                metadata_provider: metadata_provider, admin_set: admin_set,
+                                                collection_title: "My Collection", batch_name: batch_name,
+                                                batch_description: batch_description) }
+      let(:batch) { batch_builder.call }
+      let(:coll_count) { 1 }
+      let(:coll_id) { collections.first.pid }
+      context "metadata file with collection metadata" do
+        let(:expected_collection_title) { "Collection Title" }
+        before do
+          allow(metadata_provider).to receive(:metadata).with(nil) { { "title" => "Collection Title" } }
+        end
+        it_behaves_like "a successfully built nested folder ingest batch"
+      end
+      context "metadata file without collection metadata" do
+        let(:expected_collection_title) { "My Collection" }
+        it_behaves_like "a successfully built nested folder ingest batch"
       end
     end
 
     context 'collection repository ID provided' do
       let(:collection_id) { 'test:abcd' }
       let(:batch_builder) { described_class.new(user: user, filesystem: filesystem,
-                                                content_modeler: content_modeler,
-                                                checksum_provider: checksum_provider,
-                                                collection_repo_id: collection_id, batch_name: batch_name,
-                                                batch_description: batch_description) }
+                                                content_modeler: content_modeler, checksum_provider: checksum_provider,
+                                                metadata_provider: metadata_provider, collection_repo_id: collection_id,
+                                                batch_name: batch_name, batch_description: batch_description) }
       before do
         allow_any_instance_of(Ddr::Batch::Batch).to receive(:found_pids) { { collection_id => 'Collection' } }
       end

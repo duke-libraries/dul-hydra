@@ -15,6 +15,7 @@ class NestedFolderIngestsController < ApplicationController
                      'collection_id' => @nested_folder_ingest.collection_id,
                      'collection_title' => @nested_folder_ingest.collection_title,
                      'config_file' => @nested_folder_ingest.config_file,
+                     'metadata_file' => @nested_folder_ingest.metadata_file,
                      'subpath' => @nested_folder_ingest.subpath)
       render "queued"
     else
@@ -26,7 +27,7 @@ class NestedFolderIngestsController < ApplicationController
 
   def create_params
     params.require(:nested_folder_ingest).permit(:admin_set, :basepath, :checksum_file, :collection_id,
-                                                 :collection_title, :config_file, :subpath)
+                                                 :collection_title, :config_file, :metadata_file, :subpath)
   end
 
   def authorize_create
