@@ -60,7 +60,7 @@ class StandardIngest
         batch_description: filesystem.root.name
     }
     if File.exist?(metadata_path)
-      builder_args.merge!(metadata_provider: StandardIngestMetadata.new(metadata_path, configuration[:metadata]))
+      builder_args.merge!(metadata_provider: IngestMetadata.new(metadata_path, configuration[:metadata]))
     end
     builder_args.merge!(admin_set: admin_set) if admin_set
     builder_args.merge!(collection_repo_id: collection_id) if collection_id
@@ -131,7 +131,7 @@ class StandardIngest
   end
 
   def metadata_provider
-    @metadata_provider ||= StandardIngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata])
+    @metadata_provider ||= IngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata])
   end
 
   def inspection_results
