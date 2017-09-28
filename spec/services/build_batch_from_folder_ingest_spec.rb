@@ -125,7 +125,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
     let(:intermediate_files_name) { "intermediate_files" }
     let(:targets_name) { "dpc_targets" }
     let(:content_modeler) { ModelStandardIngestContent }
-    let(:metadata_provider) { double("standardIngestMetadata") }
+    let(:metadata_provider) { double("IngestMetadata") }
     let(:checksum_provider) { double("StandardIngestChecksum") }
     let(:admin_set) { "abc" }
 
