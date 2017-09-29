@@ -1,0 +1,16 @@
+<h4>Initiate Action</h4>
+<p>Note: If an action is not linked, you are not authorized to initiate that action.</p>
+<ul class="list-group">
+  <li class="list-group-item">
+    <%= link_to_if can?(:publish, current_object),
+                   "Publish #{t('dul_hydra.publication.scope.item')}",
+                   publish_item_path(id: current_object)
+    %>
+  </li>
+  <li class="list-group-item">
+    <%= link_to_if can?(:unpublish, current_object),
+                   "Un-Publish #{t('dul_hydra.publication.scope.item')}",
+                   unpublish_item_path(id: current_object)
+    %>
+  </li>
+</ul>

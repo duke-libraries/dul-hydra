@@ -121,6 +121,11 @@ en:
         changed: "Policy successfully changed."
       page_titles:
         edit: 'Editing Admin Policy'
+    publication:
+      scope:
+        collection: 'Collection, Items, and Components'
+        item: 'Item and Components'
+        component: 'Component'
     tabs:
       tech_metadata:
         label: "Tech Metadata"

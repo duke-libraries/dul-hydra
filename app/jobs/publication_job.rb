@@ -6,4 +6,7 @@ class PublicationJob
                            message: message)
   end
 
+  def self.publication_scope(object)
+    I18n.t("dul_hydra.publication.scope.#{object.class.to_s.downcase}")
+  end
 end
