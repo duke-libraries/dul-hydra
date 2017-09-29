@@ -3,7 +3,10 @@ class ComponentsController < ApplicationController
   include DulHydra::Controller::RepositoryBehavior
   include DulHydra::Controller::HasContentBehavior
   include DulHydra::Controller::HasParentBehavior
+  include DulHydra::Controller::PublicationBehavior
   include DulHydra::Controller::HasStructuralMetadataBehavior
+
+  self.tabs += [ :tab_actions ]
 
   def intermediate
     if current_object.has_intermediate_file?
@@ -41,5 +44,8 @@ class ComponentsController < ApplicationController
     end
   end
 
+  def tab_actions
+    Tab.new("actions")
+  end
 
 end

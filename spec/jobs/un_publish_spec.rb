@@ -3,9 +3,9 @@ require 'spec_helper'
 RSpec.describe UnPublishJob, type: :job do
 
   describe ".perform" do
-    let!(:obj) { double(id: 'test-1', unpublish!: nil) }
+    let!(:obj) { double(id: 'test-1', class: Item, unpublish!: nil) }
     let(:email) { 'test@example.com' }
-    let(:expected_msg) { "Un-Publication of #{obj.id} (and its descendants) has completed." }
+    let(:expected_msg) { "Un-Publication of #{obj.id} (#{I18n.t('dul_hydra.publication.scope.item')}) has completed." }
     before do
       allow(ActiveFedora::Base).to receive(:find).with(obj.id) { obj }
     end

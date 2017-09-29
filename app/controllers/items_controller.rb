@@ -3,9 +3,11 @@ class ItemsController < ApplicationController
   include DulHydra::Controller::RepositoryBehavior
   include DulHydra::Controller::HasParentBehavior
   include DulHydra::Controller::HasChildrenBehavior
+  include DulHydra::Controller::PublicationBehavior
   include DulHydra::Controller::HasStructuralMetadataBehavior
 
   before_action :set_desc_metadata, only: :create
+  self.tabs += [ :tab_actions ]
 
   def components
     get_children
@@ -48,6 +50,10 @@ class ItemsController < ApplicationController
       # Checksum provided for component without file
       flash[:error] = "The component was not created: File missing." if child_params[:checksum].present?
     end
+  end
+
+  def tab_actions
+    Tab.new("actions")
   end
 
 end

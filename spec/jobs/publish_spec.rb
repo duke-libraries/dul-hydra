@@ -3,9 +3,9 @@ require 'spec_helper'
 RSpec.describe PublishJob, type: :job do
 
   describe ".perform" do
-    let!(:obj) { double(id: 'test-1', publish!: nil) }
+    let!(:obj) { double(id: 'test-1', class: Collection, publish!: nil) }
     let(:email) { 'test@example.com' }
-    let(:expected_msg) { "Publication of #{obj.id} (and its descendants) has completed." }
+    let(:expected_msg) { "Publication of #{obj.id} (#{I18n.t('dul_hydra.publication.scope.collection')}) has completed." }
     before do
       allow(ActiveFedora::Base).to receive(:find).with(obj.id) { obj }
     end

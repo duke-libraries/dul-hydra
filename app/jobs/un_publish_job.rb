@@ -7,13 +7,13 @@ class UnPublishJob < PublicationJob
     obj.unpublish!
     send_notification(email: email_addr,
                       subject: 'Un-Publication Job COMPLETED',
-                      message: "Un-Publication of #{id} (and its descendants) has completed.")
+                      message: "Un-Publication of #{id} (#{self.publication_scope(obj)}) has completed.")
   end
 
   def self.on_failure_send_notification(exception, id, email_addr)
     send_notification(email: email_addr,
                       subject: 'Un-Publication Job FAILED',
-                      message: "Un-Publication of #{id} (and its descendants) FAILED.")
+                      message: "Un-Publication of #{id} (#{self.publication_scope(obj)}) FAILED.")
   end
 
 end
