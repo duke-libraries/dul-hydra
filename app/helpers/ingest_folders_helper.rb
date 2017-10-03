@@ -16,10 +16,6 @@ module IngestFoldersHelper
     pluralize(@scan_results.file_count, @ingest_folder.model)
   end
 
-  def file_creator
-    IngestFolder.file_creators.fetch(@ingest_folder.file_creator, nil)
-  end
-
   def parent_count
     pluralize(@scan_results.parent_count, parent_model)
   end

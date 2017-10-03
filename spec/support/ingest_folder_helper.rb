@@ -9,8 +9,6 @@ def test_ingest_folder_config
       checksum_file:
           location: #{checksum_directory}
           type: #{checksum_type}
-      file_creators:
-          ABC: Alpha Bravo Charlie
   files:
       included_extensions:
           - .mp4
