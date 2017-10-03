@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170606140633) do
+ActiveRecord::Schema.define(version: 20171003145442) do
 
   create_table "batch_object_attributes", force: :cascade do |t|
     t.integer  "batch_object_id"
@@ -162,7 +162,7 @@ ActiveRecord::Schema.define(version: 20170606140633) do
     t.datetime "updated_at"
   end
 
-  add_index "file_digests", ["repo_id", "file_id"], name: "index_file_digests_on_repo_id_and_file_id"
+  add_index "file_digests", ["repo_id", "file_id"], name: "index_file_digests_on_repo_id_and_file_id", unique: true
 
   create_table "ingest_folders", force: :cascade do |t|
     t.integer  "user_id"
@@ -171,7 +171,6 @@ ActiveRecord::Schema.define(version: 20170606140633) do
     t.string   "admin_policy_pid", limit: 255
     t.string   "collection_pid",   limit: 255
     t.string   "model",            limit: 255
-    t.string   "file_creator",     limit: 255
     t.string   "checksum_file",    limit: 255
     t.string   "checksum_type",    limit: 255
     t.boolean  "add_parents"
