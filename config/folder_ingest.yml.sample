@@ -10,6 +10,8 @@ files:
         - .pdf
         - .tif
         - .tiff
+    exclude:
+        - intermediate_files
     mount_points:
         base_folder: /mnt/point/
     permissions:
