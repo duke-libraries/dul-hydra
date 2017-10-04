@@ -6,18 +6,19 @@ module DulHydra
       included do
         before_action :upload_content, only: :create
         self.tabs.unshift :tab_tech_metadata
-        self.tabs << :tab_versions
+        self.tabs << :tab_files
         helper_method :tech_metadata_fields
       end
 
       def upload
+        @dsid = params[:dsid] || request.params['content']['datastream']
         if request.patch?
           begin
-            upload_content
+            upload_file(content_params[:datastream])
           rescue ActionController::ParameterMissing => e
             flash.now[:error] = ( e.param == :file ? "File is required." : e.to_s )
           else
-            if current_object.save(summary: "Object content was updated")
+            if current_object.save(summary: "Object was updated with file")
               validate_checksum
               flash[:success] = I18n.t('dul_hydra.upload.alerts.success')
               redirect_to(action: "show") and return
@@ -26,13 +27,13 @@ module DulHydra
         end
       end
 
-      def versions
+      def files
         if request.xhr?
           # For async loading of tab content
-          @tab = tab_versions
-          render "versions", layout: false
+          @tab = tab_files
+          render "files", layout: false
         else
-          redirect_to action: "show", tab: "versions"
+          redirect_to action: "show", tab: "files"
         end
       end
 
@@ -45,9 +46,13 @@ module DulHydra
       end
 
       def upload_content
-        current_object.upload content_params[:file]
+        upload_file(Ddr::Datastreams::CONTENT)
       end
 
+      def upload_file(datastream)
+        current_object.add_file content_params[:file], datastream
+      end
+      
       def after_create_success
         validate_checksum
       end
@@ -61,6 +66,7 @@ module DulHydra
 
       def content_params
         @content_params ||= params.require(:content).tap do |p|
+          p.require(:datastream)
           p.require(:file)
           p.permit(:checksum, :checksum_type)
         end
@@ -81,16 +87,9 @@ module DulHydra
                )
       end
 
-      def tab_versions
-        Tab.new("versions",
-                actions: [
-                  TabAction.new("upload",
-                                url_for(id: current_object, action: "upload"),
-                                can?(:upload, current_object)
-                               ),
-                ],
-                guard: current_object.has_content?,
-                href: url_for(id: current_object, action: "versions")
+      def tab_files
+        Tab.new("files",
+                href: url_for(id: current_object, action: "files")
                )
       end
 

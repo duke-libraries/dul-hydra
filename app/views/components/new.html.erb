@@ -5,5 +5,7 @@
 
 <%= render partial: 'parent_field', locals: {label: "Part of Item"} %>
 
+<%= hidden_field_tag "content[datastream]", 'content' %>
+
 <%= render 'select_content_file' %>
 

@@ -61,7 +61,7 @@ en:
         subject: "Duke Digital Repository Email Contact"
     upload:
       alerts:
-        has_content: "Uploading new content will supersede the existing content with a new version."
+        has_content: "Uploading new %{dsid} file will supersede the existing %{dsid} file with a new version."
         success: "Content successfully uploaded."
     event_logs:
       alerts:

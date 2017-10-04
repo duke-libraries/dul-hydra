@@ -30,7 +30,7 @@ DulHydra::Application.routes.draw do
   def content_routes
     get 'upload'
     patch 'upload'
-    get 'versions'
+    get 'files'
   end
 
   def event_routes
