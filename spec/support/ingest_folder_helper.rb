@@ -16,6 +16,8 @@ def test_ingest_folder_config
           - .tif
           - .tiff
           - .wav
+      exclude:
+          - misc
       mount_points:
           #{mount_point_name}: #{mount_point_path}
       permissions:
