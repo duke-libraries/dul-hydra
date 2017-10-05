@@ -29,6 +29,10 @@ describe ComponentsController, type: :controller, components: true do
     end
   end
 
+  it_behaves_like "a content object controller" do
+    let(:object) { Component.create }
+  end
+
   describe "#new" do
     # see shared examples
     let(:item) { FactoryGirl.create(:item) }
@@ -104,4 +108,5 @@ describe ComponentsController, type: :controller, components: true do
       end
     end
   end
+
 end

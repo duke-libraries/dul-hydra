@@ -17,8 +17,7 @@ module DulHydra
           rescue ActionController::ParameterMissing => e
             flash.now[:error] = ( e.param == :file ? "File is required." : e.to_s )
           else
-            if current_object.save
-              notify_upload
+            if current_object.save(summary: "Object content was updated")
               validate_checksum
               flash[:success] = I18n.t('dul_hydra.upload.alerts.success')
               redirect_to(action: "show") and return
@@ -43,10 +42,6 @@ module DulHydra
         DulHydra.techmd_show_fields.map do |field|
           [field, Array(current_object.techmd.send(field))]
         end.to_h
-      end
-
-      def notify_upload
-        notify_update(summary: "Object content was updated")
       end
 
       def upload_content
