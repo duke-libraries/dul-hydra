@@ -28,6 +28,10 @@ describe AttachmentsController, type: :controller, attachments: true do
     end
   end
 
+  it_behaves_like "a content object controller" do
+    let(:object) { Attachment.create }
+  end
+
   describe "#new" do
     # see shared examples
     describe "when user cannot add attachments to object" do
