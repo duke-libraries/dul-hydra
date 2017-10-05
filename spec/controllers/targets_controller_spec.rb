@@ -3,6 +3,10 @@ RSpec.describe TargetsController, type: :controller, targets: true do
   let(:user) { FactoryGirl.create(:user) }
   before { sign_in user }
 
+  it_behaves_like "a content object controller" do
+    let(:object) { Target.create }
+  end
+
   describe "#show" do
     let(:obj) { FactoryGirl.create(:target) }
     context "when the user can read the object" do
