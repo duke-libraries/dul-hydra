@@ -168,18 +168,17 @@ class IngestFolder < ActiveRecord::Base
           scan_files(file_loc, create_batch_objects)
         else
           if included_extensions.include?(File.extname(entry))
-            case target?(dirpath)
-              when true
-                @target_count += 1
-              else
-                @file_count += 1
-                if add_parents && !target?(dirpath)
-                  parent_id = parent_identifier(extract_identifier_from_filename(entry))
-                  unless @parent_hash.has_key?(parent_id)
-                    @parent_count += 1
-                    @parent_hash[parent_id] = nil
-                  end
+            if target?(dirpath)
+              @target_count += 1
+            else
+              @file_count += 1
+              if add_parents && !target?(dirpath)
+                parent_id = parent_identifier(extract_identifier_from_filename(entry))
+                unless @parent_hash.has_key?(parent_id)
+                  @parent_count += 1
+                  @parent_hash[parent_id] = nil
                 end
+              end
             end
             if checksum_file.present? && file_checksum(File.join(dirpath, entry)).blank?
               errors.add(:base, I18n.t('batch.ingest_folder.checksum_missing', entry: File.join(dirpath, entry)))
