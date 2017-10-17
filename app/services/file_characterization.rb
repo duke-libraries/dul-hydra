@@ -10,12 +10,10 @@ class FileCharacterization < SimpleDelegator
   end
 
   def call
-    with_content_file do |path|
-      fits_output = run_fits(path)
-      reload
-      fits.content = fits_output
-      save!
-    end
+    fits_output = run_fits(content.file_path)
+    reload
+    fits.content = fits_output
+    save!
   end
 
   private
