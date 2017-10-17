@@ -8,6 +8,8 @@ class ComponentsController < ApplicationController
 
   self.tabs += [ :tab_actions ]
 
+  helper_method :upload_datastreams
+  
   def intermediate
     if current_object.has_intermediate_file?
 
@@ -46,6 +48,11 @@ class ComponentsController < ApplicationController
 
   def tab_actions
     Tab.new("actions")
+  end
+
+  def upload_datastreams
+    [ Ddr::Datastreams::CONTENT, Ddr::Datastreams::CAPTION, Ddr::Datastreams::INTERMEDIATE_FILE,
+      Ddr::Datastreams::STREAMABLE_MEDIA, Ddr::Datastreams::THUMBNAIL ]
   end
 
 end

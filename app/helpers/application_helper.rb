@@ -61,6 +61,12 @@ module ApplicationHelper
     end
   end
 
+  def file_upload_link(dsid)
+    link_to '<i class="glyphicon glyphicon-upload"></i>'.html_safe,
+            url_for(id: current_object, action: 'upload', dsid: dsid),
+            title: "Upload #{dsid} file", 'data-toggle' =>'tooltip'
+  end
+
   def user_icon
     content_tag :span, nil, class: "glyphicon glyphicon-user"
   end

@@ -10,7 +10,7 @@ describe Ability, type: :model, abilities: true do
   describe "aliases" do
     it "should alias actions to :read" do
       expect(subject.aliased_actions[:read])
-        .to include(:attachments, :components, :event, :events, :items, :targets, :versions, :duracloud)
+        .to include(:attachments, :components, :event, :events, :files, :items, :targets, :duracloud)
     end
     it "should alias actions to :grant" do
       expect(subject.aliased_actions[:grant]).to include(:roles)

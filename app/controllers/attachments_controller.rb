@@ -8,8 +8,12 @@ class AttachmentsController < ApplicationController
 
   delegate :attached_to, to: :current_object
 
-  helper_method :attached_to
+  helper_method :attached_to, :upload_datastreams
 
+  def upload_datastreams
+    [ Ddr::Datastreams::CONTENT ]
+  end
+  
   protected
 
   def after_load_before_authorize
