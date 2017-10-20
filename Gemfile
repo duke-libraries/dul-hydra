@@ -4,7 +4,8 @@ ruby '2.3.1'
 gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
-gem 'ddr-batch', '1.5.0'
+# gem 'ddr-batch', '1.5.0'
+gem 'ddr-batch', git: 'https://github.com/duke-libraries/ddr-batch', ref: '8841727a8308841f4d904ed8d76974ed22e1b621'
 # gem 'ddr-models', '2.9.0'
 gem 'ddr-models', git: 'https://github.com/duke-libraries/ddr-models', ref: '44cb237b6a9a0eb8aad9385bcff4353efe69695c'
 
