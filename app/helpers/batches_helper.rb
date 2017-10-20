@@ -82,7 +82,7 @@ module BatchesHelper
     end
 
     def render_batch_delete_link(batch)
-      if can?(:destroy, batch) && [nil, Ddr::Batch::Batch::STATUS_READY, Ddr::Batch::Batch::STATUS_VALIDATED, Ddr::Batch::Batch::STATUS_INVALID].include?(batch.status)
+      if can?(:destroy, batch) && batch.deletable?
         link_to content_tag(:span, "", :class => "glyphicon glyphicon-trash"), {:action => 'destroy', :id => batch}, :method => 'delete', :id => "batch_delete_#{batch.id}", :data => { :confirm => "#{t('batch.web.batch_deletion_confirmation', batch_id: batch.id)}" }
       end
     end

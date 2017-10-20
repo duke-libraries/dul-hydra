@@ -17,8 +17,7 @@ class BatchesController < ApplicationController
   end
 
   def destroy
-    case @batch.status
-    when nil, Ddr::Batch::Batch::STATUS_READY, Ddr::Batch::Batch::STATUS_VALIDATED, Ddr::Batch::Batch::STATUS_INVALID
+    if @batch.deletable?
       Resque.enqueue(Ddr::Batch::BatchDeletionJob, @batch.id)
       flash[:notice] = I18n.t('batch.web.batch_deleting', :id => @batch.id)
     else
