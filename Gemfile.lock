@@ -1,3 +1,28 @@
+GIT
+  remote: https://github.com/duke-libraries/ddr-models
+  revision: 44cb237b6a9a0eb8aad9385bcff4353efe69695c
+  ref: 44cb237b6a9a0eb8aad9385bcff4353efe69695c
+  specs:
+    ddr-models (2.10.0.pre)
+      active-fedora (>= 7.3.1, < 8)
+      activeresource
+      cancancan (~> 1.12)
+      ddr-antivirus (~> 2.1.1)
+      devise (~> 3.4)
+      edtf (~> 3.0)
+      ezid-client (~> 1.6)
+      grouper-rest-client
+      hashie (~> 3.4, < 3.4.4)
+      hydra-core (~> 7.2)
+      hydra-validations (~> 0.5)
+      net-ldap (~> 0.11)
+      omniauth-shibboleth (~> 1.2.0)
+      rails (>= 4.2.7, < 5)
+      rdf-vocab (~> 0.8)
+      resque (~> 1.25)
+      rubydora (~> 2.0)
+      virtus (~> 1.0.5)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -113,25 +138,6 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1)
-    ddr-models (2.9.0)
-      active-fedora (>= 7.3.1, < 8)
-      activeresource
-      cancancan (~> 1.12)
-      ddr-antivirus (~> 2.1.1)
-      devise (~> 3.4)
-      edtf (~> 3.0)
-      ezid-client (~> 1.6)
-      grouper-rest-client
-      hashie (~> 3.4, < 3.4.4)
-      hydra-core (~> 7.2)
-      hydra-validations (~> 0.5)
-      net-ldap (~> 0.11)
-      omniauth-shibboleth (~> 1.2.0)
-      rails (>= 4.2.7, < 5)
-      rdf-vocab (~> 0.8)
-      resque (~> 1.25)
-      rubydora (~> 2.0)
-      virtus (~> 1.0.5)
     debug_inspector (0.0.2)
     deprecation (0.2.2)
       activesupport
@@ -151,7 +157,7 @@ GEM
     ebnf (1.0.0)
       rdf (~> 1.1)
       sxp (~> 0.1, >= 0.1.3)
-    edtf (3.0.2)
+    edtf (3.0.4)
       activesupport (>= 3.0, < 6.0)
     equalizer (0.0.11)
     equivalent-xml (0.6.0)
@@ -519,7 +525,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (= 1.1.0)
   ddr-batch (= 1.5.0)
-  ddr-models (= 2.9.0)
+  ddr-models!
   deprecation
   devise
   equivalent-xml

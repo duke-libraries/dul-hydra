@@ -1,0 +1,18 @@
+# NOTE: This configuration and the associated application functionality does not
+# account for precedence among the media types and associated type designations.
+# In practical terms, this means that the media type for any given Component is
+# to match no more than one of the indicated media type values.  If the media type
+# for a Component matches more than one media type value, the type designation
+# that is used is arbitrary.
+Documents:
+  - application/pdf
+  - application/msword
+  - application/vnd.openxmlformats-officedocument.wordprocessingml*
+  - application/vnd.ms-word*
+  - application/rtf
+  - text/*
+Images:
+  - image/*
+Media:
+  - audio/*
+  - video/*
