@@ -1,3 +1,40 @@
+GIT
+  remote: https://github.com/duke-libraries/ddr-batch
+  revision: 29b1d894aaf62b0451c19802ae3564fb88eba7a6
+  ref: 29b1d894aaf62b0451c19802ae3564fb88eba7a6
+  specs:
+    ddr-batch (1.6.0.pre)
+      ddr-models (~> 2.9, >= 2.9.2)
+      devise (~> 3.4)
+      log4r
+      paperclip (~> 4.2.0)
+      rails (~> 4.1)
+
+GIT
+  remote: https://github.com/duke-libraries/ddr-models
+  revision: 2b1c00ac3df297e666c814a9ba056a4f83218fce
+  ref: 2b1c00ac3df297e666c814a9ba056a4f83218fce
+  specs:
+    ddr-models (2.10.0.pre)
+      active-fedora (>= 7.3.1, < 8)
+      activeresource
+      cancancan (~> 1.12)
+      ddr-antivirus (~> 2.1.1)
+      devise (~> 3.4)
+      edtf (~> 3.0)
+      ezid-client (~> 1.6)
+      grouper-rest-client
+      hashie (~> 3.4, < 3.4.4)
+      hydra-core (~> 7.2)
+      hydra-validations (~> 0.5)
+      net-ldap (~> 0.11)
+      omniauth-shibboleth (~> 1.2.0)
+      rails (>= 4.2.7, < 5)
+      rdf-vocab (~> 0.8)
+      resque (~> 1.25)
+      rubydora (~> 2.0)
+      virtus (~> 1.0.5)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -107,31 +144,6 @@ GEM
     ddr-alerts (1.1.0)
       rails (~> 4.2)
     ddr-antivirus (2.1.1)
-    ddr-batch (1.5.1)
-      ddr-models (~> 2.9, >= 2.9.2)
-      devise (~> 3.4)
-      log4r
-      paperclip (~> 4.2.0)
-      rails (~> 4.1)
-    ddr-models (2.9.2)
-      active-fedora (>= 7.3.1, < 8)
-      activeresource
-      cancancan (~> 1.12)
-      ddr-antivirus (~> 2.1.1)
-      devise (~> 3.4)
-      edtf (~> 3.0)
-      ezid-client (~> 1.6)
-      grouper-rest-client
-      hashie (~> 3.4, < 3.4.4)
-      hydra-core (~> 7.2)
-      hydra-validations (~> 0.5)
-      net-ldap (~> 0.11)
-      omniauth-shibboleth (~> 1.2.0)
-      rails (>= 4.2.7, < 5)
-      rdf-vocab (~> 0.8)
-      resque (~> 1.25)
-      rubydora (~> 2.0)
-      virtus (~> 1.0.5)
     debug_inspector (0.0.2)
     deprecation (0.2.2)
       activesupport
@@ -518,8 +530,8 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (= 1.1.0)
-  ddr-batch (= 1.5.1)
-  ddr-models (= 2.9.2)
+  ddr-batch!
+  ddr-models!
   deprecation
   devise
   equivalent-xml
