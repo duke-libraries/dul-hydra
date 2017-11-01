@@ -14,6 +14,7 @@ DulHydra.configure do |config|
   config.create_menu_models = [ "Collection", "MetadataFile", "NestedFolderIngest", "StandardIngest" ]
   config.standard_ingest_base_path = ENV['STANDARD_INGEST_BASE_PATH']
   config.preview_banner_msg = ENV['PREVIEW_BANNER_MSG']
+  config.collection_report_fields = [:pid, :local_id, :content_size]
 end
 
 Blacklight::Configuration.default_values[:http_method] = :post
