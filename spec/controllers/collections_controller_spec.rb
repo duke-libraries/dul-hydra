@@ -130,4 +130,31 @@ describe CollectionsController, type: :controller, collections: true do
     end
   end
 
+  describe "#collection_info" do
+    let(:collection) { FactoryGirl.create(:collection) }
+    context "when the user can read the collection" do
+      let(:items) { FactoryGirl.build_list(:item, 3) }
+      before do
+        allow_any_instance_of(Collection).to receive(:children).and_return(items)
+        allow_any_instance_of(Collection).to receive(:components_from_solr).and_return(component_solr_doc_array.lazy)
+        collection.roles.grant role_type: "Viewer", agent: user
+        collection.save!
+      end
+      it "should report the statistics" do
+        get :collection_info, id: collection
+        expect(response).to render_template(:collection_info)
+        expect(controller.send(:collection_report)[:components]).to eq(6)
+        expect(controller.send(:collection_report)[:items]).to eq(3)
+        expect(controller.send(:collection_report)[:total_file_size]).to eq(60192)
+      end
+    end
+    context "when the user cannot read the collection" do
+      before { controller.current_ability.cannot(:read, collection) }
+      it "should be unauthorized" do
+        get :collection_info, id: collection
+        expect(response.response_code).to eq(403)
+      end
+    end
+  end
+
 end

@@ -96,6 +96,7 @@ DulHydra::Application.routes.draw do
 
   repository_resource :collections do
     publication_routes
+    get 'collection_info'
     get 'items'
     get 'attachments'
     get 'targets'

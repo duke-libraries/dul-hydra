@@ -133,6 +133,12 @@ module DulHydra
           100 * 10**9 # 100Gb
         end
       end
+
+      # Columns in the CSV report generated for a collection
+      # Each column represents a *method* of a SolrDocument
+      # See DulHydra::SolrDocument
+      mattr_accessor :collection_report_fields
+
     end
 
     module ClassMethods

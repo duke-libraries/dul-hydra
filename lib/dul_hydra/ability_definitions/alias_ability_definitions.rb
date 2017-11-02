@@ -5,6 +5,7 @@ module DulHydra
       alias_action :attachments,
                    :duracloud,
                    :captions,
+                   :collection_info,
                    :components,
                    :event,
                    :events,
