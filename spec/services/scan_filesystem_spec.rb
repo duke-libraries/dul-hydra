@@ -12,7 +12,7 @@ RSpec.describe ScanFilesystem, type: :service, batch: true, standard_ingest: tru
       Enumerator.new { |y| y << "." << ".." }
     )
     allow(Dir).to receive(:foreach).with(File.join(filepath, 'itemA')).and_return(
-      Enumerator.new { |y| y << "." << ".." << "file01.pdf" << "track01.wav" }
+      Enumerator.new { |y| y << "." << ".." << "file01.pdf" << ".foo.bar" << "track01.wav" }
     )
     allow(Dir).to receive(:foreach).with(File.join(filepath, 'itemB')).and_return(
     Enumerator.new { |y| y << "." << ".." << "file02.pdf" << "track02.wav" }
@@ -25,19 +25,31 @@ RSpec.describe ScanFilesystem, type: :service, batch: true, standard_ingest: tru
 
   describe "scan" do
     describe "exclude" do
-      let(:scanner) { described_class.new(filepath, { exclude: [ 'Thumbs.db' ] }) }
-      let(:expected_filesystem) { Filesystem.new.tree = sample_filesystem }
-      let(:expected_exclusions) { [ File.join(filepath, 'Thumbs.db'), File.join(filepath, 'images') ] }
-      it "should return the expected results" do
-        results = scanner.call
-        expect(results.filesystem.marshal_dump).to eq(expected_filesystem.marshal_dump)
-        expect(results.exclusions).to match_array(expected_exclusions)
+      describe "exclude dot files" do
+        let(:scanner) { described_class.new(filepath, { exclude: [ 'Thumbs.db' ], exclude_dot_files: true }) }
+        let(:expected_filesystem) { Filesystem.new.tree = sample_filesystem_without_dot_files }
+        let(:expected_exclusions) { [ File.join(filepath, 'Thumbs.db'), File.join(filepath, 'images'), File.join(filepath, 'itemA', '.foo.bar') ] }
+        it "should return the expected results" do
+          results = scanner.call
+          expect(results.filesystem.marshal_dump).to eq(expected_filesystem.marshal_dump)
+          expect(results.exclusions).to match_array(expected_exclusions)
+        end
+      end
+      describe "do not exclude dot files" do
+        let(:scanner) { described_class.new(filepath, { exclude: [ 'Thumbs.db' ], exclude_dot_files: false }) }
+        let(:expected_filesystem) { Filesystem.new.tree = sample_filesystem_with_dot_files }
+        let(:expected_exclusions) { [ File.join(filepath, 'Thumbs.db'), File.join(filepath, 'images') ] }
+        it "should return the expected results" do
+          results = scanner.call
+          expect(results.filesystem.marshal_dump).to eq(expected_filesystem.marshal_dump)
+          expect(results.exclusions).to match_array(expected_exclusions)
+        end
       end
     end
     describe "include" do
       let(:scanner) { described_class.new(filepath, { include: [ '.mp4', '.pdf', '.tif', '.wav' ] }) }
-      let(:expected_filesystem) { Filesystem.new.tree = sample_filesystem }
-      let(:expected_exclusions) { [ File.join(filepath, 'Thumbs.db'), File.join(filepath, 'images') ] }
+      let(:expected_filesystem) { Filesystem.new.tree = sample_filesystem_without_dot_files }
+      let(:expected_exclusions) { [ File.join(filepath, 'Thumbs.db'), File.join(filepath, 'images'), File.join(filepath, 'itemA', '.foo.bar') ] }
       it "should return the expected results" do
         results = scanner.call
         expect(results.filesystem.marshal_dump).to eq(expected_filesystem.marshal_dump)

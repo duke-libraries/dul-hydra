@@ -37,7 +37,9 @@ class ScanFilesystem
   end
 
   def included?(dirpath, entry)
-    if exclude.include?(entry)
+    if exclude_dot_files && entry.start_with?('.')
+      false
+    elsif exclude.include?(entry)
       false
     elsif File.directory?(File.join(dirpath, entry))
       true
@@ -68,6 +70,10 @@ class ScanFilesystem
   def exclude
     options.fetch(:exclude, [])
   end
+
+    def exclude_dot_files
+      options.fetch(:exclude_dot_files, false)
+    end
 
   def include
     options.fetch(:include, [])

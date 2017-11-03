@@ -16,7 +16,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                    'folder_path' => folder_path,
                                    'admin_set' => admin_set } }
     before do
-      filesystem.tree = sample_filesystem
+      filesystem.tree = sample_filesystem_without_dot_files
       allow(Dir).to receive(:exist?).with(folder_path) { true }
       allow(Dir).to receive(:exist?).with(subject.data_path) { true }
       allow(File).to receive(:exist?).with(subject.checksum_path) { true }

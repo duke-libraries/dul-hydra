@@ -5,7 +5,7 @@ RSpec.describe Filesystem, type: :model, batch: true, standard_ingest: true do
   let(:filesystem) { Filesystem.new }
 
   describe '.path_to_node' do
-    before { filesystem.tree = sample_filesystem }
+    before { filesystem.tree = sample_filesystem_without_dot_files }
     context "full path" do
       it "should provide the full path" do
         expect(described_class.path_to_node(filesystem['movie.mp4'])).to eq('/test/directory/movie.mp4')
@@ -21,7 +21,7 @@ RSpec.describe Filesystem, type: :model, batch: true, standard_ingest: true do
   end
 
   describe '.node_locator' do
-    before { filesystem.tree = sample_filesystem }
+    before { filesystem.tree = sample_filesystem_without_dot_files }
     context "root node" do
       it "include no nodes in the locator" do
         expect(described_class.node_locator(filesystem.root)).to be_nil

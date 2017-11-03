@@ -12,7 +12,7 @@ RSpec.describe DatastreamUpload, type: :model, batch: true  do
     let(:datastream_name) { Ddr::Datastreams::INTERMEDIATE_FILE }
     let(:collection) { double('Collection', id: 'test:17') }
     let(:subpath) { 'directory/' }
-    let(:filesystem) { sample_filesystem }
+    let(:filesystem) { sample_filesystem_without_dot_files }
     let(:fs_node_paths) { filesystem.each_leaf.map { |leaf| Filesystem.node_locator(leaf) } }
     let(:test_config_file) do
       Rails.root.join('spec', 'fixtures', 'batch_update', 'datastream_upload', 'datastream_upload.yml')

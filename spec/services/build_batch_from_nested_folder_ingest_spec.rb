@@ -107,7 +107,7 @@ RSpec.describe BuildBatchFromNestedFolderIngest, type: :service, batch: true, in
     let(:components) { batch_objects.where(model: 'Component') }
 
     before do
-      filesystem.tree = sample_filesystem
+      filesystem.tree = sample_filesystem_without_dot_files
       allow(checksum_provider).to receive(:checksum).with('/test/directory/movie.mp4') { '4f7bf7c679ab58da75c021279ae08b59e609801fe3ee8401d7cdb4d0ea3c4697' }
       allow(checksum_provider).to receive(:checksum).with('/test/directory/file01001.tif') { '6cba6e3bcefc0454c1ec15ef44b0798e1de7d0d7a776ea341ecf16ea1ea2e162' }
       allow(checksum_provider).to receive(:checksum).with('/test/directory/itemA/file01.pdf') { 'e20e0a30eee4e29eea5e1ef6eed422cd33174810a433e688c503a4b805b9c6fa' }
