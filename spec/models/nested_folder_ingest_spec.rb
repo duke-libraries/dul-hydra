@@ -10,7 +10,7 @@ RSpec.describe NestedFolderIngest, type: :model, batch: true, ingest: true do
     let(:subpath) { 'directory/' }
     let(:ingest_checksum) { double(IngestChecksum) }
     let(:ingest_metadata) { double(IngestMetadata) }
-    let(:filesystem) { sample_filesystem }
+    let(:filesystem) { sample_filesystem_without_dot_files }
     let(:fs_node_paths) { filesystem.each_leaf.map { |leaf| Filesystem.path_to_node(leaf) } + [ nil ] }
     let(:test_config_file) do
       Rails.root.join('spec', 'fixtures', 'batch_ingest', 'nested_folder_ingest', 'nested_folder_ingest.yml')

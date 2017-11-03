@@ -12,7 +12,7 @@ RSpec.describe InspectNestedFolderIngest, type: :service, batch: true, nested_fo
     allow(Dir).to receive(:exist?) { true }
     allow(File).to receive(:readable?).with(filepath) { true }
     allow_any_instance_of(ScanFilesystem).to receive(:call) { scan_results }
-    filesystem.tree = sample_filesystem
+    filesystem.tree = sample_filesystem_without_dot_files
   end
 
   describe "nested folder ingest folder" do
