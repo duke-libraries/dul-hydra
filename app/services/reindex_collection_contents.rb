@@ -1,6 +1,6 @@
 class ReindexCollectionContents
 
-  TRIGGER_ON_CHANGED = %w( admin_set title )
+  TRIGGER_ON_DS_CHANGED = [ Ddr::Datastreams::DESC_METADATA, Ddr::Datastreams::ADMIN_METADATA ]
 
   def self.call(*args)
     if args.size > 1
@@ -18,8 +18,7 @@ class ReindexCollectionContents
 
   def self.handle_notification(*args)
     event = ActiveSupport::Notifications::Event.new(*args)
-    attributes_changed = event.payload[:attributes_changed].keys
-    if (attributes_changed & TRIGGER_ON_CHANGED).present?
+    if (event.payload[:datastreams_changed] & TRIGGER_ON_DS_CHANGED).present?
       call event.payload[:pid]
     end
   end

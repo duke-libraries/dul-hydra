@@ -5,17 +5,24 @@ RSpec.describe ReindexCollectionContents do
       before {
         @collection = FactoryGirl.create(:collection)
       }
-      describe "when a tracked attribute changed" do
-        it "calls the service" do
-          expect(described_class).to receive(:call)
+      describe "when adminMetadata datastream changed" do
+        it "reindexes" do
+          expect(ReindexQueryResult).to receive(:call)
+          @collection.admin_set = "bar"
+          @collection.save!
+        end
+      end
+      describe "when descMetadata datastream changed" do
+        it "reindexes" do
+          expect(ReindexQueryResult).to receive(:call)
           @collection.title = [ "Title Changed" ]
           @collection.save!
         end
       end
-      describe "when no tracked attribute is changed" do
-        it "does not call the service" do
-          expect(described_class).not_to receive(:call).with(@collection.pid)
-          @collection.local_id = "001"
+      describe "when RELS-EXT datastream changed" do
+        it "does not reindex" do
+          expect(ReindexQueryResult).not_to receive(:call)
+          @collection.admin_policy = FactoryGirl.create(:collection)
           @collection.save!
         end
       end
