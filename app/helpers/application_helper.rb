@@ -410,7 +410,6 @@ module ApplicationHelper
   end
 
   def exportable_admin_metadata_fields
-    (DulHydra.user_editable_admin_metadata_fields +
-        DulHydra.user_editable_item_admin_metadata_fields).map { |f| Ddr::Index::Fields.get(f) }
+    Ddr::Index::Fields.adminmd - [Ddr::Index::Fields::IS_LOCKED, Ddr::Index::Fields::ACCESS_ROLE]
   end
 end

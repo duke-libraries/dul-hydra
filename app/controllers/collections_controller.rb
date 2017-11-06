@@ -81,7 +81,10 @@ class CollectionsController < ApplicationController
     unless params["dmd_fields"].blank?
       dmd_fields.select! { |f| params["dmd_fields"].include?(f.base) }
     end
-    amd_fields = params["amd_fields"].map { |f| Ddr::Index::Fields.get(f) }
+    amd_fields = Ddr::Index::Fields.adminmd.dup
+    unless params["amd_fields"].blank?
+      amd_fields.select! { |f| params["amd_fields"].include?(f.base) }
+    end
     all_fields = [:id, :active_fedora_model] + amd_fields + dmd_fields.sort
     models = params.require("models")
     query = Ddr::Index::Query.build(current_object) do |coll|
