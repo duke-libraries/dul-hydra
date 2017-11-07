@@ -12,8 +12,8 @@ GIT
 
 GIT
   remote: https://github.com/duke-libraries/ddr-models
-  revision: 2b1c00ac3df297e666c814a9ba056a4f83218fce
-  ref: 2b1c00ac3df297e666c814a9ba056a4f83218fce
+  revision: 0d96a13df6ed0c054ee1dc17b1c45c945248b8fe
+  ref: 0d96a13df6ed0c054ee1dc17b1c45c945248b8fe
   specs:
     ddr-models (2.10.0.pre)
       active-fedora (>= 7.3.1, < 8)
