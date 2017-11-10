@@ -21,7 +21,7 @@ module DulHydra
     end
 
     describe "show" do
-      let(:resource) { FactoryGirl.create(:metadata_file_descmd_csv) }
+      let(:resource) { FactoryGirl.create(:metadata_file_csv) }
       describe "when the user is the creator of the MetadataFile" do
         before { allow(ability).to receive(:user) { resource.user } }
         it { should be_able_to(:show, resource) }
@@ -32,7 +32,7 @@ module DulHydra
     end
 
     describe "procezz" do
-      let(:resource) { FactoryGirl.create(:metadata_file_descmd_csv) }
+      let(:resource) { FactoryGirl.create(:metadata_file_csv) }
       describe "when the user is the creator of the MetadataFile" do
         before { allow(ability).to receive(:user) { resource.user } }
         it { should be_able_to(:procezz, resource) }

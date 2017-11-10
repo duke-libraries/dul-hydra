@@ -25,6 +25,11 @@
 				<th><%= header %></th>
 			<% end %>
 		</tr>
+    <tr>
+      <% @metadata_file.as_csv_table.headers.each do |header| %>
+        <th class="sub-header"><%= metadata_field_disposition(header, @metadata_file) %></th>
+      <% end %>
+    </tr>
 		<% if @metadata_file.effective_options[:schema_map].present? %>
 			<tr>
 				<% @metadata_file.as_csv_table.headers.each do |header| %>
