@@ -11,19 +11,12 @@ module ArchivesSpace
     self.backend_url = ENV["ASPACE_BACKEND_URL"]
 
     delegate :logger, to: :Rails
+
     attr_reader :backend_uri
     attr_accessor :original_auth, :became_auth
 
-    def self.http(&block)
-      new.http(&block)
-    end
-
-    def self.become(other, &block)
-      new.become(other, &block)
-    end
-
-    def self.authorized?(user, permissions)
-      new.authorized?(user, permissions)
+    class << self
+      delegate :http, :get, :post, :become, :authorized?, to: :new
     end
 
     def initialize
@@ -54,32 +47,13 @@ module ArchivesSpace
       ArchivesSpace::User.new auth["user"]
     end
 
-    module RequestMethods
-      def get(*args, **opts)
-        request(:get, *args, **opts)
-      end
-
-      def post(*args, **opts)
-        request(:post, *args, **opts)
-      end
-
-      def delete(*args, **opts)
-        request(:delete, *args, **opts)
-      end
-
-      def version
-        request(:version)
-      end
-
-      private
-
-      def request(method, *args, **opts)
-        http { |conn| conn.send(method, *args) }
-      end
+    def get(*args)
+      http { |conn| conn.get(*args) }
     end
 
-    include RequestMethods
-    extend RequestMethods
+    def post(*args)
+      http { |conn| conn.post(*args) }
+    end
 
     def authenticated?
       !!original_auth
@@ -123,16 +97,16 @@ module ArchivesSpace
         @auth = auth
       end
 
-      def get(*args)
-        request(:get, *args)
+      def get(path, initheader={})
+        headers = initheader.merge(session_header)
+        response = conn.get(path, headers)
+        handle_response(response)
       end
 
-      def post(*args)
-        request(:post, *args)
-      end
-
-      def delete(*args)
-        request(:delete, *args)
+      def post(path, data=nil, initheader={})
+        headers = initheader.merge(session_header)
+        response = conn.post(path, data, headers)
+        handle_response(response)
       end
 
       def user
@@ -147,10 +121,6 @@ module ArchivesSpace
 
       def authorized?(perms)
         Array(perms).all? { |p| user.permissions.include?(p) }
-      end
-
-      def version
-        conn.get("/version").body
       end
 
       def find_resource_by_ead_id(ead_id)
@@ -193,9 +163,7 @@ module ArchivesSpace
         auth["session"]
       end
 
-      def request(method, *args)
-        request_args = args.dup << request_headers
-        response = conn.send(method, *request_args)
+      def handle_reponse(response)
         response.value
         JSON.parse(response.body).tap do |json|
           logger.debug "ASpace response: #{json}"
@@ -204,7 +172,7 @@ module ArchivesSpace
         raise Client::Error, e.message
       end
 
-      def request_headers
+      def session_header
         { "X-ArchivesSpace-Session" => session }
       end
     end
