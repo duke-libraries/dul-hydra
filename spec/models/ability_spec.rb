@@ -45,7 +45,7 @@ describe Ability, type: :model, abilities: true do
     end
 
     describe "show" do
-      let(:resource) { FactoryGirl.create(:metadata_file_descmd_csv) }
+      let(:resource) { FactoryGirl.create(:metadata_file_csv) }
       describe "when the user is the creator of the MetadataFile" do
         before { allow(auth_context).to receive(:user) { resource.user } }
         it { should be_able_to(:show, resource) }
@@ -56,7 +56,7 @@ describe Ability, type: :model, abilities: true do
     end
 
     describe "procezz" do
-      let(:resource) { FactoryGirl.create(:metadata_file_descmd_csv) }
+      let(:resource) { FactoryGirl.create(:metadata_file_csv) }
       describe "when the user is the creator of the MetadataFile" do
         before { allow(auth_context).to receive(:user) { resource.user } }
         it { should be_able_to(:procezz, resource) }

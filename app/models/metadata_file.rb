@@ -65,7 +65,9 @@ class MetadataFile < ActiveRecord::Base
   end
 
   def valid_headers
-    [ :pid, :model, :permanent_id, :is_governed_by ].concat(user_editable_fields)
+    [ :pid, :model, :is_governed_by ]
+        .concat(Ddr::Datastreams::DescriptiveMetadataDatastream.term_names)
+        .concat(Ddr::Datastreams::AdministrativeMetadataDatastream.term_names)
   end
 
   def user_editable_fields
