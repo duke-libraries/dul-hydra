@@ -47,14 +47,13 @@ RSpec.describe BuildBatchFromDatastreamUpload, type: :service, batch: true do
   let(:filesystem) { Filesystem.new }
   let(:user) { FactoryGirl.create(:user) }
 
-  before do
-    filesystem.tree = filesystem_datastream_uploads
-    allow(batch_builder).to receive(:matching_component_query).with(collection, 'abc001') { double('Ddr::Index::Query', ids: [ 'test:22' ]) }
-    allow(batch_builder).to receive(:matching_component_query).with(collection, 'abc002') { double('Ddr::Index::Query', ids: [ 'test:25' ]) }
-    allow(batch_builder).to receive(:matching_component_query).with(collection, 'abc003') { double('Ddr::Index::Query', ids: [ 'test:28' ]) }
-  end
-
   describe 'datastream upload' do
+    before do
+      filesystem.tree = filesystem_datastream_uploads
+      allow(batch_builder).to receive(:matching_component_query_by_local_id).with(collection, 'abc001') { double('Ddr::Index::Query', ids: [ 'test:22' ]) }
+      allow(batch_builder).to receive(:matching_component_query_by_local_id).with(collection, 'abc002') { double('Ddr::Index::Query', ids: [ 'test:25' ]) }
+      allow(batch_builder).to receive(:matching_component_query_by_local_id).with(collection, 'abc003') { double('Ddr::Index::Query', ids: [ 'test:28' ]) }
+    end
     describe 'checksum file not provided' do
       let(:builder_args) { { batch_description: batch_description, batch_name: batch_name,
                              batch_user: user, collection: collection, datastream_name: datastream_name,
@@ -81,6 +80,41 @@ RSpec.describe BuildBatchFromDatastreamUpload, type: :service, batch: true do
       end
       it_behaves_like 'a successfully built datastream upload batch' do
         let(:batch) { batch_builder.call }
+      end
+    end
+  end
+  describe 'component matching' do
+    let(:component) { FactoryGirl.build(:component) }
+    let(:collection) { Collection.create(title: ['Test Collection' ], admin_set: 'dc') }
+    let(:builder_args) { { batch_description: batch_description, batch_name: batch_name,
+                           batch_user: user, collection: collection, datastream_name: datastream_name,
+                           filesystem: filesystem } }
+    before do
+      filesystem.tree = filesystem_single_datastream_upload
+      component.admin_policy = collection
+      component.save!
+    end
+    describe 'no match by local_id or filename' do
+      it 'should raise an error' do
+        expect { batch_builder.call }.to raise_error(DulHydra::Error, /Unable to find matching component/)
+      end
+    end
+    describe 'match by local_id' do
+      before do
+        component.update_attributes(local_id: 'abc001')
+      end
+      it 'should find the correct component' do
+        batch = batch_builder.call
+        expect(batch.batch_objects.first.pid).to eq(component.pid)
+      end
+    end
+    describe 'match by filename but not local_id' do
+      before do
+        component.update_attributes(original_filename: 'abc001.tif')
+      end
+      it 'should find the correct component' do
+        batch = batch_builder.call
+        expect(batch.batch_objects.first.pid).to eq(component.pid)
       end
     end
   end

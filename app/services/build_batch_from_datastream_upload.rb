@@ -39,22 +39,40 @@ class BuildBatchFromDatastreamUpload
   end
 
   def find_matching_component(collection, file_path)
-    local_id = File.basename(file_path, '.*')
-    ids = matching_component_query(collection, local_id).ids
+    basename = File.basename(file_path, '.*')
+    ids = find_matching_component_ids(collection, basename)
     case
       when ids.count == 0
-        raise DulHydra::Error, "Unable to find Component matching local_id '#{local_id}' for #{file_path}"
+        raise DulHydra::Error, "Unable to find matching component '#{basename}' for #{file_path}"
       when ids.count > 1
-        raise DulHydra::Error, "Multiple Components matching local_id '#{local_id}' for #{file_path}"
+        raise DulHydra::Error, "Multiple components found matching for '#{basename}' for #{file_path}"
+      else
+        ids.first
     end
-    ids.first
   end
 
-  def matching_component_query(collection, local_id)
+  def find_matching_component_ids(collection, basename)
+    ids = matching_component_query_by_local_id(collection, basename).ids
+    if ids.count == 0
+      ids = matching_component_query_by_filename(collection, basename).ids
+    end
+    ids
+  end
+
+  def matching_component_query_by_local_id(collection, local_id)
     Ddr::Index::Query.new do
       model 'Component'
       is_governed_by collection
       where local_id: local_id
+      fields 'id'
+    end
+  end
+
+  def matching_component_query_by_filename(collection, filename)
+    Ddr::Index::Query.new do
+      model 'Component'
+      is_governed_by collection
+      raw "#{Ddr::Index::Fields::ORIGINAL_FILENAME}:/#{filename}.*/"
       fields 'id'
     end
   end

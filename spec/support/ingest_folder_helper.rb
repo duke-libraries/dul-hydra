@@ -164,3 +164,10 @@ def filesystem_datastream_uploads
   root_node << fileC_node
   root_node
 end
+
+def filesystem_single_datastream_upload
+  root_node = Tree::TreeNode.new('/test/directory')
+  file_node = Tree::TreeNode.new('abc001.jpg')
+  root_node << file_node
+  root_node
+end
