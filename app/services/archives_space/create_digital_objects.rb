@@ -175,6 +175,7 @@ module ArchivesSpace
               outcome: outcome,
               published: published,
               user: conn.user.username,
+              message: message,
             }
 
           end # csv_in.each
