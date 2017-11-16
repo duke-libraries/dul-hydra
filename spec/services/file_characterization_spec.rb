@@ -54,12 +54,17 @@ RSpec.describe FileCharacterization do
         end
         it "does not update the content datastream mimeType" do
           expect_any_instance_of(obj.content.class).not_to receive(:save)
+          subject.call
         end
       end
     end
     describe "when the FITS media type has multiple values (conflict)" do
+      before do
+        allow_any_instance_of(obj.techmd.class).to receive(:media_type) { ["image/jpeg", "image/tiff"] }
+      end
       it "does not update the content datastream mimeType" do
         expect_any_instance_of(obj.content.class).not_to receive(:save)
+        subject.call
       end
     end
   end
