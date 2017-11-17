@@ -1,11 +1,17 @@
-class ExportFilesJob < ActiveJob::Base
+class ExportFilesJob < ApplicationJob
 
-  queue_as :export
+  self.queue = :export
 
-  def perform(identifiers, basename: nil, user: nil)
+  def self.perform(identifiers, basename, user)
     export = ExportFiles::Package.call(identifiers, basename: basename)
     if user
-      ExportFilesMailer.notify_user(export, user).deliver_now
+      ExportFilesMailer.notify_success(export, user).deliver_now
+    end
+  end
+
+  def self.on_failure(e, identifiers, basename, user)
+    if user
+      ExportFilesMailer.notify_failure(identifiers, basename, user).deliver_now
     end
   end
 
