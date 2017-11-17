@@ -7,6 +7,8 @@ RSpec.shared_examples 'a successfully built datastream upload batch' do
     expect(batch.id).to be_present
     expect(batch.name).to eq(batch_name)
     expect(batch.description).to eq(batch_description)
+    expect(batch.collection_id).to eq(collection_id)
+    expect(batch.collection_title).to eq(collection_title)
     expect(batch.status).to eq(Ddr::Batch::Batch::STATUS_READY)
 
     # Batch object expectations
@@ -39,7 +41,9 @@ RSpec.describe BuildBatchFromDatastreamUpload, type: :service, batch: true do
   let(:batch_description) { 'Testing datastream upload batch building' }
   let(:batch_name) { 'Test Datastream Upload Batch' }
   let(:batch_objects) { batch.batch_objects }
-  let(:collection) { Collection.new(pid: 'test:17') }
+  let(:collection_id) { 'test:17' }
+  let(:collection_title) { 'Test Collection' }
+  let(:collection) { Collection.new(pid: collection_id, title: [ collection_title ]) }
   let(:datastream_name) { Ddr::Datastreams::INTERMEDIATE_FILE }
   let(:expected_filepaths) { { 'test:22' => '/test/directory/abc001.jpg',
                                'test:25' => '/test/directory/abc002.jpg',

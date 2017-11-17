@@ -7,6 +7,8 @@ RSpec.shared_examples "a successfully built nested folder ingest batch" do
     expect(batch.id).to be_present
     expect(batch.name).to eq(batch_name)
     expect(batch.description).to eq(batch_description)
+    expect(batch.collection_id).to eq(coll_id)
+    expect(batch.collection_title).to eq(collection_title)
     expect(batch.status).to eq(Ddr::Batch::Batch::STATUS_READY)
 
     # All batch object expectations
@@ -22,7 +24,7 @@ RSpec.shared_examples "a successfully built nested folder ingest batch" do
     expect(collections.count).to eq(coll_count)
     if coll_count == 1
       expect(collections.first.id).to be_present
-      expect(collections.first.batch_object_attributes.where(name: 'title').first.value).to eq(expected_collection_title)
+      expect(collections.first.batch_object_attributes.where(name: 'title').first.value).to eq(collection_title)
       expect(collections.first.batch_object_attributes.where(name: 'admin_set').first.value).to eq(admin_set)
       expect(collections.first.batch_object_roles.size).to eq(1)
       expect(collections.first.batch_object_roles[0].agent).to eq(user.user_key)
@@ -96,6 +98,7 @@ RSpec.describe BuildBatchFromNestedFolderIngest, type: :service, batch: true, in
     let(:checksum_provider) { double("IngestChecksum") }
     let(:metadata_provider) { double("IngestMetadata") }
 
+    let(:collection_title) { "My Collection" }
     let(:expected_nested_paths) { [ 'directory/movie.mp4', 'directory/file01001.tif', 'directory/itemA/file01.pdf',
                                     'directory/itemA/track01.wav', 'directory/itemB/file02.pdf',
                                     'directory/itemB/track02.wav' ] }
@@ -124,32 +127,32 @@ RSpec.describe BuildBatchFromNestedFolderIngest, type: :service, batch: true, in
       let(:batch_builder) { described_class.new(user: user, filesystem: filesystem,
                                                 content_modeler: content_modeler, checksum_provider: checksum_provider,
                                                 metadata_provider: metadata_provider, admin_set: admin_set,
-                                                collection_title: "My Collection", batch_name: batch_name,
+                                                collection_title: collection_title, batch_name: batch_name,
                                                 batch_description: batch_description) }
       let(:batch) { batch_builder.call }
       let(:coll_count) { 1 }
       let(:coll_id) { collections.first.pid }
       context "metadata file with collection metadata" do
-        let(:expected_collection_title) { "Collection Title" }
         before do
-          allow(metadata_provider).to receive(:metadata).with(nil) { { "title" => "Collection Title" } }
+          allow(metadata_provider).to receive(:metadata).with(nil) { { "title" => collection_title } }
         end
         it_behaves_like "a successfully built nested folder ingest batch"
       end
       context "metadata file without collection metadata" do
-        let(:expected_collection_title) { "My Collection" }
         it_behaves_like "a successfully built nested folder ingest batch"
       end
     end
 
     context 'collection repository ID provided' do
       let(:collection_id) { 'test:abcd' }
+      let(:collection) { Collection.new(pid: collection_id, title: [ collection_title ]) }
       let(:batch_builder) { described_class.new(user: user, filesystem: filesystem,
                                                 content_modeler: content_modeler, checksum_provider: checksum_provider,
                                                 metadata_provider: metadata_provider, collection_repo_id: collection_id,
                                                 batch_name: batch_name, batch_description: batch_description) }
       before do
         allow_any_instance_of(Ddr::Batch::Batch).to receive(:found_pids) { { collection_id => 'Collection' } }
+        allow(Collection).to receive(:find).with(collection_id) { collection }
       end
 
       it_behaves_like "a successfully built nested folder ingest batch" do

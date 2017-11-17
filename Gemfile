@@ -4,7 +4,7 @@ ruby '2.3.1'
 gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
-gem 'ddr-batch', git: 'https://github.com/duke-libraries/ddr-batch', ref: '29b1d894aaf62b0451c19802ae3564fb88eba7a6'
+gem 'ddr-batch', git: 'https://github.com/duke-libraries/ddr-batch', ref: 'a55bca3287097205c6ab3374c6ad1d25da5dc9c0'
 gem 'ddr-models', git: 'https://github.com/duke-libraries/ddr-models', ref: '79c379a9a1a4c9300c4d1060789e8d77d14596ad'
 
 gem 'hydra-head', '7.2.2'
