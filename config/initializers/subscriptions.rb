@@ -25,3 +25,9 @@ end
 ActiveSupport::Notifications.subscribe(Ddr::Models::Base::DELETE) do |*args|
   UpdateParentStructure.call(*args) if [ "Item", "Component" ].include?(args.last[:model])
 end
+
+ActiveSupport::Notifications.subscribe(Ddr::Datastreams::SAVE) do |*args|
+  if args.last[:file_id] == Ddr::Datastreams::FITS
+    UpdateContentMediaType.call(*args)
+  end
+end
