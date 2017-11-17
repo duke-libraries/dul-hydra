@@ -91,7 +91,7 @@ class IngestFolder < ActiveRecord::Base
   end
 
   def collection_title
-    collection.title.first
+    collection.title.first if collection.present?
   end
 
   def collection_admin_policy

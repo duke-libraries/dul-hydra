@@ -38,7 +38,7 @@ class BuildBatchFromNestedFolderIngest
     else
       Collection.find(collection_repo_id).title.first
     end
-  rescue
+  rescue ActiveFedora::ObjectNotFoundError
     nil
   end
 
