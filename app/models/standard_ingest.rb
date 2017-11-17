@@ -64,7 +64,7 @@ class StandardIngest
     end
     builder_args.merge!(admin_set: admin_set) if admin_set
     builder_args.merge!(collection_repo_id: collection_id) if collection_id
-    batch_builder = BuildBatchFromFolderIngest.new(builder_args)
+    batch_builder = BuildBatchFromStandardIngest.new(builder_args)
     batch_builder.call
   end
 

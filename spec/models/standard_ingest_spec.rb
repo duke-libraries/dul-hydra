@@ -110,8 +110,8 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                    batch_description: filesystem.root.name,
                                    admin_set: admin_set } }
       before do
-        expect(BuildBatchFromFolderIngest).to receive(:new).with(batch_builder_args).and_call_original
-        allow_any_instance_of(BuildBatchFromFolderIngest).to receive(:call) { nil }
+        expect(BuildBatchFromStandardIngest).to receive(:new).with(batch_builder_args).and_call_original
+        allow_any_instance_of(BuildBatchFromStandardIngest).to receive(:call) { nil }
       end
       it "calls the batch builder correctly" do
         subject.build_batch
@@ -136,8 +136,8 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                    admin_set: admin_set,
                                    collection_repo_id: collection_repo_id } }
       before do
-        expect(BuildBatchFromFolderIngest).to receive(:new).with(batch_builder_args).and_call_original
-        allow_any_instance_of(BuildBatchFromFolderIngest).to receive(:call) { nil }
+        expect(BuildBatchFromStandardIngest).to receive(:new).with(batch_builder_args).and_call_original
+        allow_any_instance_of(BuildBatchFromStandardIngest).to receive(:call) { nil }
       end
       it "calls the batch builder correctly" do
         subject.build_batch

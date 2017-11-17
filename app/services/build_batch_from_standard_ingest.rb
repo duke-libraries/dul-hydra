@@ -1,4 +1,4 @@
-class BuildBatchFromFolderIngest
+class BuildBatchFromStandardIngest
 
   attr_reader :user, :filesystem, :intermediate_files_name, :targets_name, :content_modeler, :metadata_provider,
               :checksum_provider, :admin_set, :batch_name, :batch_description

@@ -115,7 +115,7 @@ RSpec.shared_examples "a successfully built folder ingest batch" do
   end
 end
 
-RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard_ingest: true do
+RSpec.describe BuildBatchFromStandardIngest, type: :service, batch: true, standard_ingest: true do
 
   let(:user) { FactoryGirl.create(:user) }
   let(:batch_name) { "Test Ingest Batch" }
