@@ -7,6 +7,8 @@ RSpec.shared_examples "a successfully built folder ingest batch" do
     expect(batch.id).to be_present
     expect(batch.name).to eq(batch_name)
     expect(batch.description).to eq(batch_description)
+    expect(batch.collection_id).to eq(coll_id)
+    expect(batch.collection_title).to eq(collection_title)
     expect(batch.status).to eq(Ddr::Batch::Batch::STATUS_READY)
 
     # All batch object expectations
@@ -128,6 +130,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
     let(:metadata_provider) { double("IngestMetadata") }
     let(:checksum_provider) { double("StandardIngestChecksum") }
     let(:admin_set) { "abc" }
+    let(:collection_title) { 'Collection Title' }
 
     let(:batch_objects) { batch.batch_objects }
     let(:collections) { batch_objects.where(model: 'Collection') }
@@ -138,7 +141,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
     before do
       filesystem.tree = filesystem_standard_ingest
       allow(metadata_provider).to receive(:metadata) { { } }
-      allow(metadata_provider).to receive(:metadata).with(nil) { { title: 'Collection Title', local_id: 'collect' } }
+      allow(metadata_provider).to receive(:metadata).with(nil) { { title: collection_title, local_id: 'collect' } }
       allow(metadata_provider).to receive(:metadata).with('[movie.mp4]') { { title: 'Title 1' } }
       allow(metadata_provider).to receive(:metadata).with('[file01001.tif]') { { title: 'Title 2' } }
       allow(metadata_provider).to receive(:metadata).with('itemA') { { title: 'Title 3' } }
@@ -169,6 +172,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
 
     context 'collection repository ID provided' do
       let(:collection_id) { 'test:abcd' }
+      let(:collection) { Collection.new(pid: collection_id, title: [ collection_title ]) }
       let(:batch_builder) { described_class.new(user: user, filesystem: filesystem, intermediate_files_name: intermediate_files_name,
                                                 targets_name: targets_name,
                                                 content_modeler: content_modeler, metadata_provider: metadata_provider,
@@ -177,6 +181,7 @@ RSpec.describe BuildBatchFromFolderIngest, type: :service, batch: true, standard
                                                 batch_description: batch_description) }
       before do
         allow_any_instance_of(Ddr::Batch::Batch).to receive(:found_pids) { { collection_id => 'Collection' } }
+        allow(Collection).to receive(:find).with(collection_id) { collection }
       end
 
       it_behaves_like "a successfully built folder ingest batch" do

@@ -90,6 +90,10 @@ class IngestFolder < ActiveRecord::Base
     @collection ||= Collection.find(collection_pid) if collection_pid
   end
 
+  def collection_title
+    collection.title.first if collection.present?
+  end
+
   def collection_admin_policy
     collection.admin_policy
   end
@@ -115,7 +119,9 @@ class IngestFolder < ActiveRecord::Base
     @batch = Ddr::Batch::Batch.create(
                 user: user,
                 name: I18n.t('batch.ingest_folder.batch_name'),
-                description: abbreviated_path
+                description: abbreviated_path,
+                collection_id: collection_pid,
+                collection_title: collection_title
                 )
     @total_count = 0
     @file_count = 0

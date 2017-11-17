@@ -25,7 +25,8 @@ class BuildBatchFromDatastreamUpload
   private
 
   def create_batch
-    Ddr::Batch::Batch.create(user: batch_user, name: batch_name, description: batch_description)
+    Ddr::Batch::Batch.create(user: batch_user, name: batch_name, description: batch_description,
+                             collection_id: collection.pid, collection_title: collection.title.first)
   end
 
   def traverse_filesystem

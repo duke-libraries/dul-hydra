@@ -23,11 +23,26 @@ class BuildBatchFromFolderIngest
   def call
     @batch = create_batch
     traverse_filesystem
-    batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
+    batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY,
+                            collection_id: collection_repo_id,
+                            collection_title: collection_title)
     batch
   end
 
   private
+
+  def collection_title
+    collection_batch_objects = batch.batch_objects.where(model: 'Collection')
+    if collection_batch_objects.present?
+      collection_batch_object = collection_batch_objects.first
+      titles = collection_batch_object.batch_object_attributes.where(name: 'title')
+      titles.empty? ? nil : titles.first.value
+    else
+      Collection.find(collection_repo_id).title.first
+    end
+  rescue ActiveFedora::ObjectNotFoundError
+    nil
+  end
 
   def create_batch
     Ddr::Batch::Batch.create(user: user, name: batch_name, description: batch_description)
