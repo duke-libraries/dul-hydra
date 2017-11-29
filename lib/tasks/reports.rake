@@ -12,7 +12,7 @@ namespace :dul_hydra do
         exit(false)
       end
       report_path = File.join(Rails.root, "reports", "collection_summary.rb")
-      pid = spawn("bundle exec rails runner #{report_path} #{args[:email]}")
+      pid = spawn("bundle exec script/rails runner #{report_path} #{args[:email]}")
       Process.detach(pid)
       puts "Report started (PID: #{pid})"
     end
