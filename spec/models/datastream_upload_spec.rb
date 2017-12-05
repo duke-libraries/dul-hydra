@@ -36,7 +36,7 @@ RSpec.describe DatastreamUpload, type: :model, batch: true  do
                                    batch_user: user,
                                    datastream_name: datastream_name,
                                    filesystem: filesystem,
-                                   collection: collection.id } }
+                                   collection_id: collection.id } }
       it "calls the batch builder correctly" do
         expect(BuildBatchFromDatastreamUpload).to receive(:new).with(batch_builder_args).and_call_original
         subject.build_batch
@@ -59,7 +59,7 @@ RSpec.describe DatastreamUpload, type: :model, batch: true  do
                                    datastream_name: datastream_name,
                                    filesystem: filesystem,
                                    checksum_file_path: File.join(checksum_location, checksum_file),
-                                   collection: collection.id } }
+                                   collection_id: collection.id } }
       it "calls the batch builder correctly" do
         expect(BuildBatchFromDatastreamUpload).to receive(:new).with(batch_builder_args).and_call_original
         subject.build_batch

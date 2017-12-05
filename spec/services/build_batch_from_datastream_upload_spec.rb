@@ -54,13 +54,14 @@ RSpec.describe BuildBatchFromDatastreamUpload, type: :service, batch: true do
   describe 'datastream upload' do
     before do
       filesystem.tree = filesystem_datastream_uploads
+      allow(Collection).to receive(:find).with(collection_id) { collection }
       allow(batch_builder).to receive(:matching_component_query_by_local_id).with(collection, 'abc001') { double('Ddr::Index::Query', ids: [ 'test:22' ]) }
       allow(batch_builder).to receive(:matching_component_query_by_local_id).with(collection, 'abc002') { double('Ddr::Index::Query', ids: [ 'test:25' ]) }
       allow(batch_builder).to receive(:matching_component_query_by_local_id).with(collection, 'abc003') { double('Ddr::Index::Query', ids: [ 'test:28' ]) }
     end
     describe 'checksum file not provided' do
       let(:builder_args) { { batch_description: batch_description, batch_name: batch_name,
-                             batch_user: user, collection: collection, datastream_name: datastream_name,
+                             batch_user: user, collection_id: collection_id, datastream_name: datastream_name,
                              filesystem: filesystem } }
       it_behaves_like 'a successfully built datastream upload batch' do
         let(:batch) { batch_builder.call }
@@ -75,7 +76,7 @@ RSpec.describe BuildBatchFromDatastreamUpload, type: :service, batch: true do
                                    'test:25' => checksums['/test/directory/abc002.jpg'] ,
                                    'test:28' => checksums['/test/directory/abc003.jpg'] } }
       let(:builder_args) { { batch_description: batch_description, batch_name: batch_name,
-                             batch_user: user, checksum_file_path: checksum_file_path, collection: collection,
+                             batch_user: user, checksum_file_path: checksum_file_path, collection_id: collection_id,
                              datastream_name: datastream_name, filesystem: filesystem } }
       before do
         checksums.each do |key, value|
@@ -89,9 +90,10 @@ RSpec.describe BuildBatchFromDatastreamUpload, type: :service, batch: true do
   end
   describe 'component matching' do
     let(:component) { FactoryGirl.build(:component) }
-    let(:collection) { Collection.create(title: ['Test Collection' ], admin_set: 'dc') }
+    let(:collection_id) { 'test:17' }
+    let(:collection) { Collection.create(pid: collection_id, title: ['Test Collection' ], admin_set: 'dc') }
     let(:builder_args) { { batch_description: batch_description, batch_name: batch_name,
-                           batch_user: user, collection: collection, datastream_name: datastream_name,
+                           batch_user: user, collection_id: collection_id, datastream_name: datastream_name,
                            filesystem: filesystem } }
     before do
       filesystem.tree = filesystem_single_datastream_upload
