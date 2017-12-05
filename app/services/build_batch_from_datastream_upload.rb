@@ -1,16 +1,16 @@
 class BuildBatchFromDatastreamUpload
 
-  attr_reader :batch_user, :checksum_provider, :collection, :filesystem, :batch_name, :batch_description,
+  attr_reader :batch_user, :checksum_provider, :collection_id, :filesystem, :batch_name, :batch_description,
               :datastream_name
   attr_accessor :batch
 
   def initialize(batch_description: nil, batch_name: 'Datastream Uploads', batch_user:, checksum_file_path: nil,
-                 collection:, datastream_name:, filesystem:)
+                 collection_id:, datastream_name:, filesystem:)
     @batch_description = batch_description
     @batch_name = batch_name
     @batch_user = batch_user
     @checksum_provider = IngestChecksum.new(checksum_file_path) if checksum_file_path.present?
-    @collection = collection
+    @collection_id = collection_id
     @datastream_name = datastream_name
     @filesystem = filesystem
   end
@@ -26,7 +26,7 @@ class BuildBatchFromDatastreamUpload
 
   def create_batch
     Ddr::Batch::Batch.create(user: batch_user, name: batch_name, description: batch_description,
-                             collection_id: collection.pid, collection_title: collection.title.first)
+                             collection_id: collection_id, collection_title: collection.title.first)
   end
 
   def traverse_filesystem
@@ -77,4 +77,9 @@ class BuildBatchFromDatastreamUpload
       fields 'id'
     end
   end
+
+  def collection
+    Collection.find(collection_id)
+  end
+
 end
