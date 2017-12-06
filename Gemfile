@@ -5,7 +5,7 @@ gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
 gem 'ddr-batch', '1.6.0.rc1'
-gem 'ddr-models', '2.10.0.rc1'
+gem 'ddr-models', '2.10.0.rc2'
 
 gem 'hydra-head', '7.2.2'
 gem 'blacklight', '5.19.2'
