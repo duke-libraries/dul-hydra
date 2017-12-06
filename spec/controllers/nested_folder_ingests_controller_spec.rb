@@ -19,7 +19,7 @@ RSpec.describe NestedFolderIngestsController, type: :controller do
     let(:metadata_path) { File.join(metadata_location, metadata_file) }
     let(:job_params) { { "admin_set" => "foo", "basepath" => basepath, "batch_user" => user.user_key,
                          "checksum_file" => checksum_file, "collection_id" => "", "collection_title" => "Test",
-                         "config_file" => test_config_file.to_s, "metadata_file" => metadata_file, "subpath" => subpath } }
+                         "config_file" => test_config_file.to_s, "subpath" => subpath, "metadata_file" => metadata_file  } }
 
     before do
       sign_in user
