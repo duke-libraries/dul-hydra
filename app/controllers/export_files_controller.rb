@@ -16,7 +16,7 @@ class ExportFilesController < ApplicationController
         Resque.enqueue(ExportFilesJob,
                        @export.identifiers,
                        @export.basename,
-                       current_user)
+                       current_user.id)
       end
     else # not valid
       flash.now[:error] = "Export request cannot be processed: " +
