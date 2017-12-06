@@ -18,7 +18,7 @@ class NestedFolderIngest
   validates_presence_of :admin_set, :collection_title, unless: 'collection_id.present?'
   validate :checksum_file_must_exist, if: 'checksum_file.present?'
   validate :metadata_file_must_exist, if: 'metadata_file.present?'
-  validate :validate_metadata_file, if: 'File.exist?(metadata_path)'
+  validate :validate_metadata_file, if: [ 'metadata_file.present?', 'File.exist?(metadata_path)' ]
 
   def self.default_config
     YAML.load(File.read(DEFAULT_CONFIG_FILE)).deep_symbolize_keys

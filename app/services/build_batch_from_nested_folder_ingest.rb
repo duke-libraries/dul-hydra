@@ -80,7 +80,7 @@ class BuildBatchFromNestedFolderIngest
     add_parent_relationship(batch_object, collection_repo_id)
     nested_path = File.join(nested_path_base, Filesystem.path_to_node(node, 'relative'))
     add_attribute(batch_object, Ddr::Datastreams::ADMIN_METADATA, 'nested_path', nested_path)
-    add_metadata(batch_object, Filesystem.path_to_node(node))
+    add_metadata(batch_object, Filesystem.path_to_node(node)) if @metadata_provider.present?
     pid
   end
 

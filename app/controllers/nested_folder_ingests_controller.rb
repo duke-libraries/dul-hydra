@@ -7,16 +7,18 @@ class NestedFolderIngestsController < ApplicationController
     authorize! :create, @nested_folder_ingest
     @nested_folder_ingest.user = current_user
     if @nested_folder_ingest.valid?
-      Resque.enqueue(NestedFolderIngestJob,
-                     'admin_set' => @nested_folder_ingest.admin_set,
-                     'basepath' => @nested_folder_ingest.basepath,
-                     'batch_user' => @nested_folder_ingest.user.user_key,
-                     'checksum_file' => @nested_folder_ingest.checksum_file,
-                     'collection_id' => @nested_folder_ingest.collection_id,
-                     'collection_title' => @nested_folder_ingest.collection_title,
-                     'config_file' => @nested_folder_ingest.config_file,
-                     'metadata_file' => @nested_folder_ingest.metadata_file,
-                     'subpath' => @nested_folder_ingest.subpath)
+      job_args = { 'admin_set' => @nested_folder_ingest.admin_set,
+                   'basepath' => @nested_folder_ingest.basepath,
+                   'batch_user' => @nested_folder_ingest.user.user_key,
+                   'checksum_file' => @nested_folder_ingest.checksum_file,
+                   'collection_id' => @nested_folder_ingest.collection_id,
+                   'collection_title' => @nested_folder_ingest.collection_title,
+                   'config_file' => @nested_folder_ingest.config_file,
+                   'subpath' => @nested_folder_ingest.subpath }
+      unless @nested_folder_ingest.metadata_file.empty?
+        job_args.merge!({ 'metadata_file' => @nested_folder_ingest.metadata_file })
+      end
+      Resque.enqueue(NestedFolderIngestJob, job_args)
       render "queued"
     else
       render "new"
