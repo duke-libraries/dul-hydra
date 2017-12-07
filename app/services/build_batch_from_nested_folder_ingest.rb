@@ -66,7 +66,7 @@ class BuildBatchFromNestedFolderIngest
     batch_object = Ddr::Batch::IngestBatchObject.create(batch: batch, model: 'Collection', pid: pid)
     add_admin_policy_relationship(batch_object)
     add_attribute(batch_object, Ddr::Datastreams::ADMIN_METADATA, 'admin_set', admin_set)
-    add_metadata(batch_object, nil)
+    add_metadata(batch_object, nil) if metadata_provider.present?
     if batch_object.batch_object_attributes.where(name: 'title').empty?
       add_attribute(batch_object, Ddr::Datastreams::DESC_METADATA, 'title', collection_title)
     end
@@ -80,7 +80,7 @@ class BuildBatchFromNestedFolderIngest
     add_parent_relationship(batch_object, collection_repo_id)
     nested_path = File.join(nested_path_base, Filesystem.path_to_node(node, 'relative'))
     add_attribute(batch_object, Ddr::Datastreams::ADMIN_METADATA, 'nested_path', nested_path)
-    add_metadata(batch_object, Filesystem.path_to_node(node)) if @metadata_provider.present?
+    add_metadata(batch_object, Filesystem.path_to_node(node)) if metadata_provider.present?
     pid
   end
 
