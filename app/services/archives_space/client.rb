@@ -163,7 +163,7 @@ module ArchivesSpace
         auth["session"]
       end
 
-      def handle_reponse(response)
+      def handle_response(response)
         response.value
         JSON.parse(response.body).tap do |json|
           logger.debug "ASpace response: #{json}"
