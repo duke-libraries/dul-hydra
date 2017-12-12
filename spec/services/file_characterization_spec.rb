@@ -33,40 +33,6 @@ RSpec.describe FileCharacterization do
       subject.call
       expect(subject.fits.content).to be_equivalent_to(fits_xml)
     end
-    describe "when the FITS media type has a single value" do
-      describe "that is different from the content datastream mimeType" do
-        before do
-          obj.content.mimeType = "application/octet-stream"
-          obj.save!
-        end
-        it "updates the content datastream mimeType" do
-          expect(obj.content.mimeType).to eq "application/octet-stream"
-          expect_any_instance_of(obj.content.class).to receive(:save).and_call_original
-          subject.call
-          obj.reload
-          expect(obj.content.mimeType).to eq "image/jpeg"
-        end
-      end
-      describe "that is the same as the content datastream mimeType" do
-        before do
-          obj.content.mimeType = "image/jpeg"
-          obj.save!
-        end
-        it "does not update the content datastream mimeType" do
-          expect_any_instance_of(obj.content.class).not_to receive(:save)
-          subject.call
-        end
-      end
-    end
-    describe "when the FITS media type has multiple values (conflict)" do
-      before do
-        allow_any_instance_of(obj.techmd.class).to receive(:media_type) { ["image/jpeg", "image/tiff"] }
-      end
-      it "does not update the content datastream mimeType" do
-        expect_any_instance_of(obj.content.class).not_to receive(:save)
-        subject.call
-      end
-    end
   end
 
 end

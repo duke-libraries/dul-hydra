@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171117140716) do
+ActiveRecord::Schema.define(version: 20171206205550) do
 
   create_table "batch_object_attributes", force: :cascade do |t|
     t.integer  "batch_object_id"
@@ -23,6 +23,8 @@ ActiveRecord::Schema.define(version: 20171117140716) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "batch_object_attributes", ["batch_object_id"], name: "index_batch_object_attributes_on_batch_object_id"
 
   create_table "batch_object_datastreams", force: :cascade do |t|
     t.integer  "batch_object_id"
@@ -36,6 +38,8 @@ ActiveRecord::Schema.define(version: 20171117140716) do
     t.string   "checksum_type",   limit: 255
   end
 
+  add_index "batch_object_datastreams", ["batch_object_id"], name: "index_batch_object_datastreams_on_batch_object_id"
+
   create_table "batch_object_messages", force: :cascade do |t|
     t.integer  "batch_object_id"
     t.integer  "level",                         default: 0
@@ -43,6 +47,8 @@ ActiveRecord::Schema.define(version: 20171117140716) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "batch_object_messages", ["batch_object_id"], name: "index_batch_object_messages_on_batch_object_id"
 
   create_table "batch_object_relationships", force: :cascade do |t|
     t.integer  "batch_object_id"
@@ -54,6 +60,10 @@ ActiveRecord::Schema.define(version: 20171117140716) do
     t.datetime "updated_at"
   end
 
+  add_index "batch_object_relationships", ["batch_object_id"], name: "index_batch_object_relationships_on_batch_object_id"
+  add_index "batch_object_relationships", ["name"], name: "index_batch_object_relationships_on_name"
+  add_index "batch_object_relationships", ["object"], name: "index_batch_object_relationships_on_object"
+
   create_table "batch_object_roles", force: :cascade do |t|
     t.integer  "batch_object_id"
     t.string   "operation",       limit: 255
@@ -63,6 +73,8 @@ ActiveRecord::Schema.define(version: 20171117140716) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "batch_object_roles", ["batch_object_id"], name: "index_batch_object_roles_on_batch_object_id"
 
   create_table "batch_objects", force: :cascade do |t|
     t.integer  "batch_id"
@@ -79,6 +91,8 @@ ActiveRecord::Schema.define(version: 20171117140716) do
     t.boolean  "validated",              default: false
   end
 
+  add_index "batch_objects", ["batch_id"], name: "index_batch_objects_on_batch_id"
+  add_index "batch_objects", ["updated_at"], name: "index_batch_objects_on_updated_at"
   add_index "batch_objects", ["verified"], name: "index_batch_objects_on_verified"
 
   create_table "batches", force: :cascade do |t|
@@ -164,7 +178,7 @@ ActiveRecord::Schema.define(version: 20171117140716) do
     t.datetime "updated_at"
   end
 
-  add_index "file_digests", ["repo_id", "file_id"], name: "index_file_digests_on_repo_id_and_file_id", unique: true
+  add_index "file_digests", ["repo_id", "file_id"], name: "index_file_digests_on_repo_id_and_file_id"
 
   create_table "ingest_folders", force: :cascade do |t|
     t.integer  "user_id"
