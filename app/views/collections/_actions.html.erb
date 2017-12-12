@@ -68,13 +68,13 @@
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:publish, current_object),
-                   'Publish Collection and Descendants',
+                   "Publish #{t('dul_hydra.publication.scope.collection')}",
                    publish_collection_path(id: current_object)
     %>
   </li>
   <li class="list-group-item">
     <%= link_to_if can?(:unpublish, current_object),
-                   'Un-Publish Collection and Descendants',
+                   "Un-Publish #{t('dul_hydra.publication.scope.collection')}",
                    unpublish_collection_path(id: current_object)
     %>
   </li>

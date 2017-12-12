@@ -13,9 +13,10 @@ class ExportFilesController < ApplicationController
     if @export.valid?
       @confirmed = params[:confirmed]
       if @confirmed
-        ExportFilesJob.perform_later(@export.identifiers,
-                                     basename: @export.basename,
-                                     user: current_user)
+        Resque.enqueue(ExportFilesJob,
+                       @export.identifiers,
+                       @export.basename,
+                       current_user.id)
       end
     else # not valid
       flash.now[:error] = "Export request cannot be processed: " +

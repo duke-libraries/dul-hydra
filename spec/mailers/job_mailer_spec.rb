@@ -4,7 +4,7 @@ module Mailers
 
   RSpec.describe JobMailer, type: :mailer do
     it "should generate an email" do
-      JobMailer.basic(subject: 'Job', to: 'user@example.com', message: 'Job completed').deliver!
+      JobMailer.basic(subject: 'Job', to: 'user@example.com', message: 'Job completed').deliver_now!
       expect(ActionMailer::Base.deliveries).not_to be_empty
     end
   end

@@ -64,7 +64,7 @@ class DatastreamUpload
         filesystem: filesystem
     }
     builder_args.merge!(checksum_file_path: checksum_path) if checksum_file.present?
-    builder_args.merge!(collection: collection_id) if collection_id
+    builder_args.merge!(collection_id: collection_id) if collection_id
     batch_builder = BuildBatchFromDatastreamUpload.new(builder_args)
     batch_builder.call
   end

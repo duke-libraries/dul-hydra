@@ -47,6 +47,10 @@ class IngestFolder < ActiveRecord::Base
     IngestFolder.load_configuration.fetch(:files).fetch(:included_extensions, DEFAULT_INCLUDED_FILE_EXTENSIONS)
   end
 
+  def exclude
+    IngestFolder.load_configuration.fetch(:files).fetch(:exclude, [])
+  end
+
   def mount_point
     IngestFolder.load_configuration.fetch(:files).fetch(:mount_points).fetch(mount_point_base_key, nil)
   end
@@ -86,6 +90,10 @@ class IngestFolder < ActiveRecord::Base
     @collection ||= Collection.find(collection_pid) if collection_pid
   end
 
+  def collection_title
+    collection.title.first if collection.present?
+  end
+
   def collection_admin_policy
     collection.admin_policy
   end
@@ -111,7 +119,9 @@ class IngestFolder < ActiveRecord::Base
     @batch = Ddr::Batch::Batch.create(
                 user: user,
                 name: I18n.t('batch.ingest_folder.batch_name'),
-                description: abbreviated_path
+                description: abbreviated_path,
+                collection_id: collection_pid,
+                collection_title: collection_title
                 )
     @total_count = 0
     @file_count = 0
@@ -155,17 +165,16 @@ class IngestFolder < ActiveRecord::Base
   end
 
   def scan_files(dirpath, create_batch_objects)
-    enumerator = Dir.foreach(dirpath)
-    enumerator.each do |entry|
-      unless [".", ".."].include?(entry)
-        file_loc = File.join(dirpath, entry)
+    Dir.foreach(dirpath).each do |entry|
+      next if [ '.', '..' ].include?(entry)
+      file_loc = File.join(dirpath, entry)
+      @total_count += 1 unless File.directory?(file_loc)
+      if included?(dirpath, entry)
         if File.directory?(file_loc)
           scan_files(file_loc, create_batch_objects)
         else
-          @total_count += 1
           if included_extensions.include?(File.extname(entry))
-            case target?(dirpath)
-            when true
+            if target?(dirpath)
               @target_count += 1
             else
               @file_count += 1
@@ -181,14 +190,24 @@ class IngestFolder < ActiveRecord::Base
               errors.add(:base, I18n.t('batch.ingest_folder.checksum_missing', entry: File.join(dirpath, entry)))
             end
             create_batch_object_for_file(dirpath, entry) if create_batch_objects
-          else
-            exc = file_loc
-            exc.slice! full_path
-            exc.slice!(0) if exc.starts_with?(File::SEPARATOR)
-            @excluded_files << exc if !create_batch_objects
           end
         end
+      else
+        exc = file_loc
+        exc.slice! full_path
+        exc.slice!(0) if exc.starts_with?(File::SEPARATOR)
+        @excluded_files << exc if !create_batch_objects
       end
+    end
+  end
+
+  def included?(dirpath, entry)
+    if exclude.include?(entry)
+      false
+    elsif File.directory?(File.join(dirpath, entry))
+      true
+    else
+      included_extensions.include?(File.extname(entry)) ? true : false
     end
   end
 

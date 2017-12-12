@@ -47,3 +47,6 @@
 
 # Ignore byebug history files
 .byebug_history
+
+# Ignore Eclipse project files
+.project

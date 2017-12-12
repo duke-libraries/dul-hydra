@@ -18,8 +18,6 @@ describe IngestFoldersController, :type => :controller do
         checksum_file:
             location: #{checksum_directory}
             type: #{checksum_type}
-        file_creators:
-            ABC: Alpha Bravo Charlie
     files:
         mount_points:
             #{mount_point_name}: #{mount_point_path}

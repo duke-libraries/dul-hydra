@@ -5,14 +5,15 @@ module DulHydra
       alias_action :attachments,
                    :duracloud,
                    :captions,
+                   :collection_info,
                    :components,
                    :event,
                    :events,
+                   :files,
                    :intermediate,
                    :items,
                    :stream,
                    :targets,
-                   :versions,
                    to: :read
       alias_action :roles, to: :grant
       alias_action :admin_metadata,

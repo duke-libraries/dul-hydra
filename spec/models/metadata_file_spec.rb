@@ -51,7 +51,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
 
   context "validation" do
 
-    let(:metadata_file) { FactoryGirl.create(:metadata_file_descmd_csv) }
+    let(:metadata_file) { FactoryGirl.create(:metadata_file_csv) }
 
     context "valid" do
       before do
@@ -136,8 +136,7 @@ describe MetadataFile, :type => :model, :metadata_file => true do
           },
           :parse => {
             :include_empty_fields => false,
-            :repeating_fields_separator => ";",
-            :repeatable_fields => [ "subject" ]
+            :repeating_fields_separator => '|'
           }
         }
       end

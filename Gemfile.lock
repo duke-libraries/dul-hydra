@@ -107,13 +107,13 @@ GEM
     ddr-alerts (1.1.0)
       rails (~> 4.2)
     ddr-antivirus (2.1.1)
-    ddr-batch (1.5.1)
-      ddr-models (~> 2.9, >= 2.9.2)
+    ddr-batch (1.6.0)
+      ddr-models (~> 2.10)
       devise (~> 3.4)
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1)
-    ddr-models (2.9.2)
+    ddr-models (2.10.0)
       active-fedora (>= 7.3.1, < 8)
       activeresource
       cancancan (~> 1.12)
@@ -518,8 +518,8 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (= 1.1.0)
-  ddr-batch (= 1.5.1)
-  ddr-models (= 2.9.2)
+  ddr-batch (= 1.6.0)
+  ddr-models (= 2.10.0)
   deprecation
   devise
   equivalent-xml

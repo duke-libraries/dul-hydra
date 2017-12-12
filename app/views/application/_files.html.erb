@@ -1,0 +1,22 @@
+<%= render partial: 'tab_actions', locals: {tab: tab} %>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">File</th>
+      <th scope="col">Media Type</th>
+      <th scope="col">Size</th>
+      <th scope="col">Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% upload_datastreams.each do |dsid| %>
+            <tr>
+              <td><%= file_upload_link(dsid) %>&nbsp;<%= dsid %></td>
+              <td><%= current_object.datastreams[dsid].mimeType || '--' %></td>
+              <td><%= current_object.datastreams[dsid].file_size || '--' %></td>
+              <td><%= current_object.datastreams[dsid].dsCreateDate || '--' %></td>
+            </tr>
+    <% end %>
+  </tbody>
+</table>

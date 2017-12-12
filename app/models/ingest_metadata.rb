@@ -1,4 +1,4 @@
-class StandardIngestMetadata
+class IngestMetadata
 
   attr_reader :metadata_filepath, :metadata_profile
 
@@ -37,11 +37,7 @@ class StandardIngestMetadata
   end
 
   def parse_field_contents(heading, field_contents)
-    if field_contents && repeatable_fields.include?(heading)
-      field_contents.split(repeating_fields_separator).map(&:strip)
-    else
-      field_contents
-    end
+    field_contents.split(repeating_fields_separator).map(&:strip)
   end
 
   def validate_headers
@@ -83,10 +79,8 @@ class StandardIngestMetadata
 
   def repeating_fields_separator
     metadata_profile[:parse][:repeating_fields_separator] || DulHydra.csv_mv_separator
-  end
-
-  def repeatable_fields
-    metadata_profile[:parse][:repeatable_fields]
+  rescue NoMethodError
+    DulHydra.csv_mv_separator
   end
 
   # Accommodate case and spacing errors in column headings

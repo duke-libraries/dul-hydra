@@ -3,7 +3,7 @@ require 'support/shared_examples_for_repository_controllers'
 
 def create_component opts={}
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, parent_id: item.pid, content: {file: fixture_file_upload('imageA.tif', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
+  post :create, parent_id: item.pid, content: {datastream: Ddr::Datastreams::CONTENT, file: fixture_file_upload('imageA.tif', 'image/tiff'), checksum: checksum, checksum_type: checksum_type}
 end
 
 describe ComponentsController, type: :controller, components: true do

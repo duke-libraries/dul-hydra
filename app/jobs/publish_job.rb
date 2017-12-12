@@ -7,13 +7,13 @@ class PublishJob < PublicationJob
     obj.publish!
     send_notification(email: email_addr,
                       subject: 'Publication Job COMPLETED',
-                      message: "Publication of #{id} (and its descendants) has completed.")
+                      message: "Publication of #{id} (#{self.publication_scope(obj)}) has completed.")
   end
 
   def self.on_failure_send_notification(exception, id, email_addr)
     send_notification(email: email_addr,
                       subject: 'Publication Job FAILED',
-                      message: "Publication of #{id} (and its descendants) FAILED.")
+                      message: "Publication of #{id} (#{self.publication_scope(obj)}) FAILED.")
   end
 
 end

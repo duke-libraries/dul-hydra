@@ -1,15 +1,16 @@
 class BuildBatchFromNestedFolderIngest
 
-  attr_reader :user, :filesystem, :content_modeler, :checksum_provider, :admin_set, :collection_title, :batch_name,
-              :batch_description
+  attr_reader :user, :filesystem, :content_modeler, :checksum_provider, :metadata_provider, :admin_set,
+              :collection_title, :batch_name, :batch_description
   attr_accessor :batch, :collection_repo_id, :nested_path_base
 
-  def initialize(user:, filesystem:, content_modeler:, checksum_provider:, admin_set: nil, collection_repo_id: nil, collection_title: nil,
-                 batch_name: nil, batch_description: nil)
+  def initialize(user:, filesystem:, content_modeler:, checksum_provider:, metadata_provider: nil, admin_set: nil,
+                 collection_repo_id: nil, collection_title: nil, batch_name: nil, batch_description: nil)
     @user = user
     @filesystem = filesystem
     @content_modeler = content_modeler
     @checksum_provider = checksum_provider
+    @metadata_provider = metadata_provider
     @admin_set = admin_set
     @collection_repo_id = collection_repo_id
     @collection_title = collection_title
@@ -20,11 +21,26 @@ class BuildBatchFromNestedFolderIngest
   def call
     @batch = create_batch
     traverse_filesystem
-    batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
+    batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY,
+                            collection_id: collection_repo_id,
+                            collection_title: collection_title || collection_title_lookup)
     batch
   end
 
   private
+
+  def collection_title_lookup
+    collection_batch_objects = batch.batch_objects.where(model: 'Collection')
+    if collection_batch_objects.present?
+      collection_batch_object = collection_batch_objects.first
+      titles = collection_batch_object.batch_object_attributes.where(name: 'title')
+      titles.empty? ? nil : titles.first.value
+    else
+      Collection.find(collection_repo_id).title.first
+    end
+  rescue ActiveFedora::ObjectNotFoundError
+    nil
+  end
 
   def create_batch
     Ddr::Batch::Batch.create(user: user, name: batch_name, description: batch_description)
@@ -50,7 +66,10 @@ class BuildBatchFromNestedFolderIngest
     batch_object = Ddr::Batch::IngestBatchObject.create(batch: batch, model: 'Collection', pid: pid)
     add_admin_policy_relationship(batch_object)
     add_attribute(batch_object, Ddr::Datastreams::ADMIN_METADATA, 'admin_set', admin_set)
-    add_attribute(batch_object, Ddr::Datastreams::DESC_METADATA, 'title', collection_title)
+    add_metadata(batch_object, nil) if metadata_provider.present?
+    if batch_object.batch_object_attributes.where(name: 'title').empty?
+      add_attribute(batch_object, Ddr::Datastreams::DESC_METADATA, 'title', collection_title)
+    end
     add_role(batch_object)
   end
 
@@ -61,6 +80,7 @@ class BuildBatchFromNestedFolderIngest
     add_parent_relationship(batch_object, collection_repo_id)
     nested_path = File.join(nested_path_base, Filesystem.path_to_node(node, 'relative'))
     add_attribute(batch_object, Ddr::Datastreams::ADMIN_METADATA, 'nested_path', nested_path)
+    add_metadata(batch_object, Filesystem.path_to_node(node)) if metadata_provider.present?
     pid
   end
 
@@ -74,6 +94,17 @@ class BuildBatchFromNestedFolderIngest
   def assign_pid(node)
     node.content ||= {}
     node.content[:pid] = ActiveFedora::Base.connection_for_pid('0').mint
+  end
+
+  def add_metadata(batch_object, file_path)
+    metadata = metadata_provider.metadata(file_path)
+    metadata.each do |key, value|
+      ds = Ddr::Datastreams::DescriptiveMetadataDatastream.term_names.include?(key.to_sym) ?
+               Ddr::Datastreams::DESC_METADATA : Ddr::Datastreams::ADMIN_METADATA
+      Array(value).each do |v|
+        add_attribute(batch_object, ds, key, v)
+      end
+    end
   end
 
   def add_admin_policy_relationship(batch_object)

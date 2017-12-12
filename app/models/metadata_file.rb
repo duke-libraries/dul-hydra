@@ -43,8 +43,8 @@ class MetadataFile < ActiveRecord::Base
   end
 
   def effective_options
-    csv = MetadataFile.default_options[:csv].merge(profile_options[:csv])
-    parse = MetadataFile.default_options[:parse].merge(profile_options[:parse])
+    csv = MetadataFile.default_options[:csv].merge(profile_options[:csv] || {})
+    parse = MetadataFile.default_options[:parse].merge(profile_options[:parse] || {})
     { :csv => csv, :parse => parse, :schema_map => profile_options[:schema_map] }
   end
 
@@ -65,7 +65,9 @@ class MetadataFile < ActiveRecord::Base
   end
 
   def valid_headers
-    [ :pid, :model, :permanent_id, :is_governed_by ].concat(user_editable_fields)
+    [ :pid, :model, :is_governed_by ]
+        .concat(Ddr::Datastreams::DescriptiveMetadataDatastream.term_names)
+        .concat(Ddr::Datastreams::AdministrativeMetadataDatastream.term_names)
   end
 
   def user_editable_fields
@@ -159,16 +161,8 @@ class MetadataFile < ActiveRecord::Base
     @batch.update_attributes(status: Ddr::Batch::Batch::STATUS_READY)
   end
 
-  def downcase_repeatable_field_names
-    effective_options[:parse][:repeatable_fields].map(&:downcase)
-  end
-
   def parse_field(value, header)
-    if downcase_repeatable_field_names.include?(header.downcase)
-      value.split(effective_options[:parse][:repeating_fields_separator]).map(&:strip)
-    else
-      [ value ]
-    end
+    value.split(effective_options[:parse][:repeating_fields_separator]).map(&:strip)
   end
 
   def as_csv_table

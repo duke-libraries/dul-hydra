@@ -2,11 +2,3 @@
     :col_sep: ","
     :quote_char: '"'
     :header_converters:
-:parse:
-    :local_identifier: local_id
-    :repeatable_fields:
-        - contributor
-        - creator
-        - date
-        - subject
-        - type

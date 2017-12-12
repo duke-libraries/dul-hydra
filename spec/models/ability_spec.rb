@@ -10,7 +10,7 @@ describe Ability, type: :model, abilities: true do
   describe "aliases" do
     it "should alias actions to :read" do
       expect(subject.aliased_actions[:read])
-        .to include(:attachments, :components, :event, :events, :items, :targets, :versions, :duracloud)
+        .to include(:attachments, :components, :event, :events, :files, :items, :targets, :duracloud)
     end
     it "should alias actions to :grant" do
       expect(subject.aliased_actions[:grant]).to include(:roles)
@@ -45,7 +45,7 @@ describe Ability, type: :model, abilities: true do
     end
 
     describe "show" do
-      let(:resource) { FactoryGirl.create(:metadata_file_descmd_csv) }
+      let(:resource) { FactoryGirl.create(:metadata_file_csv) }
       describe "when the user is the creator of the MetadataFile" do
         before { allow(auth_context).to receive(:user) { resource.user } }
         it { should be_able_to(:show, resource) }
@@ -56,7 +56,7 @@ describe Ability, type: :model, abilities: true do
     end
 
     describe "procezz" do
-      let(:resource) { FactoryGirl.create(:metadata_file_descmd_csv) }
+      let(:resource) { FactoryGirl.create(:metadata_file_csv) }
       describe "when the user is the creator of the MetadataFile" do
         before { allow(auth_context).to receive(:user) { resource.user } }
         it { should be_able_to(:procezz, resource) }

@@ -6,7 +6,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
   let(:admin_set) { 'foo' }
   let(:folder_path) { '/test/directory' }
   let(:fs_node_paths) { filesystem.each_leaf.map { |leaf| Filesystem.node_locator(leaf) } }
-  let(:standard_ingest_metadata) { double(StandardIngestMetadata) }
+  let(:ingest_metadata) { double(IngestMetadata) }
 
   subject { StandardIngest.new(standard_ingest_args) }
 
@@ -16,11 +16,11 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                    'folder_path' => folder_path,
                                    'admin_set' => admin_set } }
     before do
-      filesystem.tree = sample_filesystem
+      filesystem.tree = sample_filesystem_without_dot_files
       allow(Dir).to receive(:exist?).with(folder_path) { true }
       allow(Dir).to receive(:exist?).with(subject.data_path) { true }
       allow(File).to receive(:exist?).with(subject.checksum_path) { true }
-      allow(subject).to receive(:metadata_provider) { standard_ingest_metadata }
+      allow(subject).to receive(:metadata_provider) { ingest_metadata }
       allow(subject).to receive(:filesystem_node_paths) { fs_node_paths }
     end
     describe 'metadata file' do
@@ -28,13 +28,13 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
       describe 'present' do
         before { allow(File).to receive(:exist?).with(subject.metadata_path) { true } }
         describe 'valid locators' do
-          before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths } }
+          before { allow(ingest_metadata).to receive(:locators) { fs_node_paths } }
           it "should be valid" do
             expect(subject).to be_valid
           end
         end
         describe 'invalid locators' do
-          before { allow(standard_ingest_metadata).to receive(:locators) { fs_node_paths + [ 'bar' ] } }
+          before { allow(ingest_metadata).to receive(:locators) { fs_node_paths + [ 'bar' ] } }
           it "should not be valid" do
             expect(subject).not_to be_valid
             expect(subject.errors.messages).to include(
@@ -78,19 +78,17 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
   describe "#build_batch" do
     let(:intermediate_files_name) { 'intermediate_files' }
     let(:targets_name) { 'dpc_targets' }
-    let(:standard_ingest_metadata) { double(StandardIngestMetadata) }
+    let(:ingest_metadata) { double(IngestMetadata) }
     let(:standard_ingest_checksum) { double(StandardIngestChecksum) }
     let(:filesystem) { filesystem_standard_ingest }
     let(:config) { {:scanner=>{:exclude=>[".DS_Store", "Thumbs.db", "metadata.txt"], :targets=>"dpc_targets",
                                :intermediate_files=>"intermediate_files"},
                     :metadata=>{:csv=>{:encoding=>"UTF-8", :headers=>true, :col_sep=>"\t"},
-                                :parse=>{:repeating_fields_separator=>";",
-                                         :repeatable_fields=>["contributor", "coverage", "creator", "extent",
-                                                              "identifier", "rightsHolder", "subject", "temporal"]}}} }
+                                :parse=>{:repeating_fields_separator=>";"}}} }
     let(:admin_set) { 'dvs' }
 
     before do
-      allow(StandardIngestMetadata).to receive(:new) { standard_ingest_metadata }
+      allow(IngestMetadata).to receive(:new) { ingest_metadata }
       allow(StandardIngestChecksum).to receive(:new) { standard_ingest_checksum }
       allow(File).to receive(:exist?).with(subject.metadata_path) { true }
       allow(subject).to receive(:filesystem) { filesystem }
@@ -106,14 +104,14 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                    intermediate_files_name: intermediate_files_name,
                                    targets_name: targets_name,
                                    content_modeler: ModelStandardIngestContent,
-                                   metadata_provider: standard_ingest_metadata,
+                                   metadata_provider: ingest_metadata,
                                    checksum_provider: standard_ingest_checksum,
                                    batch_name: "Standard Ingest",
                                    batch_description: filesystem.root.name,
                                    admin_set: admin_set } }
       before do
-        expect(BuildBatchFromFolderIngest).to receive(:new).with(batch_builder_args).and_call_original
-        allow_any_instance_of(BuildBatchFromFolderIngest).to receive(:call) { nil }
+        expect(BuildBatchFromStandardIngest).to receive(:new).with(batch_builder_args).and_call_original
+        allow_any_instance_of(BuildBatchFromStandardIngest).to receive(:call) { nil }
       end
       it "calls the batch builder correctly" do
         subject.build_batch
@@ -131,15 +129,15 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
                                    intermediate_files_name: intermediate_files_name,
                                    targets_name: targets_name,
                                    content_modeler: ModelStandardIngestContent,
-                                   metadata_provider: standard_ingest_metadata,
+                                   metadata_provider: ingest_metadata,
                                    checksum_provider: standard_ingest_checksum,
                                    batch_name: "Standard Ingest",
                                    batch_description: filesystem.root.name,
                                    admin_set: admin_set,
                                    collection_repo_id: collection_repo_id } }
       before do
-        expect(BuildBatchFromFolderIngest).to receive(:new).with(batch_builder_args).and_call_original
-        allow_any_instance_of(BuildBatchFromFolderIngest).to receive(:call) { nil }
+        expect(BuildBatchFromStandardIngest).to receive(:new).with(batch_builder_args).and_call_original
+        allow_any_instance_of(BuildBatchFromStandardIngest).to receive(:call) { nil }
       end
       it "calls the batch builder correctly" do
         subject.build_batch

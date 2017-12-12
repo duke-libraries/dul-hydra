@@ -22,4 +22,8 @@ module MetadataFilesHelper
     csv_table.length
   end
 
+  def metadata_field_disposition(field, metadata_file)
+    metadata_file.user_editable_fields.map(&:to_s).include?(field) ? 'update' : 'ignore'
+  end
+
 end

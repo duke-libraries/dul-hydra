@@ -34,7 +34,7 @@ class MonitorNestedFolderIngest
         To review and process the batch, go to #{batch_url(batch)}
       EOS
       JobMailer.basic(to: user.email,
-                      subject: "COMPLETED - Nested Folder Ingest Job - #{coll_title}",
+                      subject: "BATCH CREATED - Nested Folder Ingest Job - #{coll_title}",
                       message: msg).deliver_now
     end
 

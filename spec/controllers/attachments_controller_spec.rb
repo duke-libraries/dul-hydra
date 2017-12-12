@@ -2,7 +2,7 @@ require 'spec_helper'
 
 def create_attachment opts={}
   checksum, checksum_type = opts.values_at(:checksum, :checksum_type)
-  post :create, attached_to_id: attach_to.pid, content: {file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum, checksum_type: checksum_type}, descMetadata: {title: ["New Attachment"]}
+  post :create, attached_to_id: attach_to.pid, content: {datastream: Ddr::Datastreams::CONTENT, file: fixture_file_upload('sample.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'), checksum: checksum, checksum_type: checksum_type}, descMetadata: {title: ["New Attachment"]}
 end
 
 describe AttachmentsController, type: :controller, attachments: true do

@@ -1,16 +1,16 @@
 class BuildBatchFromDatastreamUpload
 
-  attr_reader :batch_user, :checksum_provider, :collection, :filesystem, :batch_name, :batch_description,
+  attr_reader :batch_user, :checksum_provider, :collection_id, :filesystem, :batch_name, :batch_description,
               :datastream_name
   attr_accessor :batch
 
   def initialize(batch_description: nil, batch_name: 'Datastream Uploads', batch_user:, checksum_file_path: nil,
-                 collection:, datastream_name:, filesystem:)
+                 collection_id:, datastream_name:, filesystem:)
     @batch_description = batch_description
     @batch_name = batch_name
     @batch_user = batch_user
     @checksum_provider = IngestChecksum.new(checksum_file_path) if checksum_file_path.present?
-    @collection = collection
+    @collection_id = collection_id
     @datastream_name = datastream_name
     @filesystem = filesystem
   end
@@ -25,7 +25,8 @@ class BuildBatchFromDatastreamUpload
   private
 
   def create_batch
-    Ddr::Batch::Batch.create(user: batch_user, name: batch_name, description: batch_description)
+    Ddr::Batch::Batch.create(user: batch_user, name: batch_name, description: batch_description,
+                             collection_id: collection_id, collection_title: collection.title.first)
   end
 
   def traverse_filesystem
@@ -39,18 +40,27 @@ class BuildBatchFromDatastreamUpload
   end
 
   def find_matching_component(collection, file_path)
-    local_id = File.basename(file_path, '.*')
-    ids = matching_component_query(collection, local_id).ids
+    basename = File.basename(file_path, '.*')
+    ids = find_matching_component_ids(collection, basename)
     case
       when ids.count == 0
-        raise DulHydra::Error, "Unable to find Component matching local_id '#{local_id}' for #{file_path}"
+        raise DulHydra::Error, "Unable to find matching component '#{basename}' for #{file_path}"
       when ids.count > 1
-        raise DulHydra::Error, "Multiple Components matching local_id '#{local_id}' for #{file_path}"
+        raise DulHydra::Error, "Multiple components found matching for '#{basename}' for #{file_path}"
+      else
+        ids.first
     end
-    ids.first
   end
 
-  def matching_component_query(collection, local_id)
+  def find_matching_component_ids(collection, basename)
+    ids = matching_component_query_by_local_id(collection, basename).ids
+    if ids.count == 0
+      ids = matching_component_query_by_filename(collection, basename).ids
+    end
+    ids
+  end
+
+  def matching_component_query_by_local_id(collection, local_id)
     Ddr::Index::Query.new do
       model 'Component'
       is_governed_by collection
@@ -58,4 +68,18 @@ class BuildBatchFromDatastreamUpload
       fields 'id'
     end
   end
+
+  def matching_component_query_by_filename(collection, filename)
+    Ddr::Index::Query.new do
+      model 'Component'
+      is_governed_by collection
+      raw "#{Ddr::Index::Fields::ORIGINAL_FILENAME}:/#{filename}.*/"
+      fields 'id'
+    end
+  end
+
+  def collection
+    Collection.find(collection_id)
+  end
+
 end

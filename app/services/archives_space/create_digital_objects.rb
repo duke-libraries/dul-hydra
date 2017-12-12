@@ -11,6 +11,8 @@ module ArchivesSpace
     SUCCESS = "SUCCESS"
     SKIPPED = "NO ACTION"
 
+    SKIP_REMAINING_ON_ERRORS = [ Errno::ECONNREFUSED ]
+
     PERMISSIONS = %w( update_resource_record update_digital_object_record )
 
     CSV_IN_OPTS = {
@@ -46,6 +48,7 @@ module ArchivesSpace
       :outcome,
       :published,
       :user,
+      :message,
     ]
 
     delegate :logger, to: :Rails
@@ -81,18 +84,25 @@ module ArchivesSpace
       client.http do |conn|
         conn.authorize!(PERMISSIONS)
 
+        skip_remaining = false
+
         CSV.generate(CSV_OUT_OPTS) do |csv_out|
           csv_out << CSV_OUT_HEADERS
 
           csv_in.each do |row|
             outcome, published, archival_object_uri, digital_object_uri,
-            digital_object_id, file_uri, digital_object_title, use_statement = nil
+            digital_object_id, file_uri, digital_object_title, use_statement, message = nil
 
             repo_id, ref_id, ead_id = row.values_at("pid", "aspace_id", "ead_id")
 
-            if !ref_id
-              logger.debug "No ASpace ref id for repository object #{repo_id} - skipping digital object creation."
+            if skip_remaining
               outcome = SKIPPED
+
+            elsif !ref_id
+              message = "No ASpace ref id for repository object #{repo_id} - skipping digital object creation."
+              logger.debug
+              outcome = SKIPPED
+
             else
               begin
                 archival_object      = conn.find_ao(ref_id, ead_id)
@@ -113,7 +123,7 @@ module ArchivesSpace
                     ],
                   }
 
-                  digital_object_uri = conn.post("/repositories/2/digital_objects", data.to_json)["uri"]
+                  digital_object_uri = conn.post("/repositories/2/digital_objects", data.to_json, json_header)["uri"]
                   logger.info "ASPace digital object created: #{digital_object_uri}."
 
                   # Publish DO, if required
@@ -132,7 +142,7 @@ module ArchivesSpace
                   }
                   archival_object["instances"] << digital_object_instance
 
-                  conn.post(archival_object_uri, archival_object.to_json)
+                  conn.post(archival_object_uri, archival_object.to_json, json_header)
                   logger.info "ASpace digital object #{digital_object_uri} " \
                               "linked to archival object #{archival_object_uri}."
                 end # unless debug
@@ -140,11 +150,18 @@ module ArchivesSpace
                 outcome = SUCCESS
 
               rescue Client::Error => e
-                logger.error e.message
+                message = e.message
+                logger.error(message)
                 outcome = FAILURE
 
+              rescue *SKIP_REMAINING_ON_ERRORS => e
+                message = "Skipping remaining records due to error: #{e.message}"
+                logger.error(message)
+                outcome = SKIPPED
+                skip_remaining = true
+
               end # begin
-            end # if ref_id
+            end # if
 
             csv_out << {
               repo_id: repo_id,
@@ -158,11 +175,16 @@ module ArchivesSpace
               outcome: outcome,
               published: published,
               user: conn.user.username,
+              message: message,
             }
 
           end # csv_in.each
         end # client.http
       end # CSV.generate
+    end
+
+    def json_header
+      { "Content-Type"=>"application/json" }
     end
 
   end

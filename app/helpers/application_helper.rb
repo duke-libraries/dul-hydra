@@ -61,6 +61,12 @@ module ApplicationHelper
     end
   end
 
+  def file_upload_link(dsid)
+    link_to '<i class="glyphicon glyphicon-upload"></i>'.html_safe,
+            url_for(id: current_object, action: 'upload', dsid: dsid),
+            title: "Upload #{dsid} file", 'data-toggle' =>'tooltip'
+  end
+
   def user_icon
     content_tag :span, nil, class: "glyphicon glyphicon-user"
   end
@@ -404,7 +410,6 @@ module ApplicationHelper
   end
 
   def exportable_admin_metadata_fields
-    (DulHydra.user_editable_admin_metadata_fields +
-        DulHydra.user_editable_item_admin_metadata_fields).map { |f| Ddr::Index::Fields.get(f) }
+    Ddr::Index::Fields.adminmd - [Ddr::Index::Fields::IS_LOCKED, Ddr::Index::Fields::ACCESS_ROLE]
   end
 end

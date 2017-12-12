@@ -1,15 +1,17 @@
 <% content_for :page_heading do %>
-  Upload Content
+  <%= "Upload #{@dsid} File" %>
 <% end %>
 
 <%= form_tag url_for(action: "upload"), method: "patch", multipart: true, role: "form" do %>
   <%= render 'form_errors' %>
 
-  <% if current_object.has_content? %>
+  <% if current_object.datastreams[@dsid].has_content? %>
     <p class="alert alert-warning">
-      <strong>Warning!</strong> <%= t('dul_hydra.upload.alerts.has_content') %>
+      <strong>Warning!</strong> <%= t('dul_hydra.upload.alerts.has_content', dsid: @dsid) %>
     </p>
   <% end %>
+
+  <%= hidden_field_tag "content[datastream]", @dsid %>
 
   <%= render 'select_content_file' %>
 

@@ -13,6 +13,8 @@ shared_examples "a proper set of batch objects" do
     expect(user.batches.first.name).to eql(I18n.t('batch.ingest_folder.batch_name'))
     expect(user.batches.first.description).to eql(ingest_folder.abbreviated_path)
     expect(user.batches.first.status).to eql(Ddr::Batch::Batch::STATUS_READY)
+    expect(user.batches.first.collection_id).to eq(collection.id)
+    expect(user.batches.first.collection_title).to eq(collection.title.first)
     expect(objects.fetch('f').model).to eql(parent_model)
     expect(objects.fetch('file01001').model).to eql(IngestFolder.default_file_model)
     expect(objects.fetch('file01002').model).to eql(IngestFolder.default_file_model)
@@ -127,7 +129,10 @@ describe IngestFolder, type: :model, ingest: true do
     let(:ingest_folder) { FactoryGirl.build(:ingest_folder, :user => user, :collection_pid => collection.pid) }
     before do
       allow(Dir).to receive(:foreach).with("/mount/base/path/subpath").and_return(
-        Enumerator.new { |y| y << "Thumbs.db" << "movie.mp4" << "file01001.tif" << "file01002.tif" << "pdf" << "targets" }
+          Enumerator.new { |y| y << "Thumbs.db" << "movie.mp4" << "misc" << "file01001.tif" << "file01002.tif" << "pdf" << "targets" }
+      )
+      allow(Dir).to receive(:foreach).with("/mount/base/path/subpath/misc").and_return(
+          Enumerator.new { |y| y << "extra.pdf" << "foo.tiff" }
       )
       allow(Dir).to receive(:foreach).with("/mount/base/path/subpath/pdf").and_return(
         Enumerator.new { |y| y << "file01.pdf" << "track01.wav" }
@@ -136,6 +141,7 @@ describe IngestFolder, type: :model, ingest: true do
         Enumerator.new { |y| y << "Thumbs.db" << "T001.tiff" << "T002.tiff"}
       )
       allow(File).to receive(:directory?).and_return(false)
+      allow(File).to receive(:directory?).with("/mount/base/path/subpath/misc").and_return(true)
       allow(File).to receive(:directory?).with("/mount/base/path/subpath/pdf").and_return(true)
       allow(File).to receive(:directory?).with("/mount/base/path/subpath/targets").and_return(true)
     end
@@ -147,7 +153,7 @@ describe IngestFolder, type: :model, ingest: true do
           expect(scan_results.file_count).to eql(5)
           expect(scan_results.parent_count).to eql(3)
           expect(scan_results.target_count).to eql(2)
-          expect(scan_results.excluded_files).to eql(["Thumbs.db", "targets/Thumbs.db"])
+          expect(scan_results.excluded_files).to eql(["Thumbs.db", "misc", "targets/Thumbs.db"])
           expect(ingest_folder.errors).to be_empty
         end
       end

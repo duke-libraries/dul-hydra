@@ -30,7 +30,7 @@ DulHydra::Application.routes.draw do
   def content_routes
     get 'upload'
     patch 'upload'
-    get 'versions'
+    get 'files'
   end
 
   def event_routes
@@ -96,6 +96,7 @@ DulHydra::Application.routes.draw do
 
   repository_resource :collections do
     publication_routes
+    get 'collection_info'
     get 'items'
     get 'attachments'
     get 'targets'
