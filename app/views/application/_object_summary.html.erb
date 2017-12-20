@@ -14,9 +14,9 @@
       <%= current_object.class.to_s %> <%= current_object.pid %><br/>
       <hr/>
     </li>
-    <% if current_object.respond_to?(:identifier) && current_object.identifier.present? %>
+    <% if current_document.local_id.present? %>
       <li class="small">
-        <%= current_object.identifier.first %>
+        <%= current_document.local_id %>
       </li>
     <% end %>
     <% if current_document.has_content? %>
