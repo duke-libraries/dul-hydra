@@ -11,9 +11,15 @@ class PublishJob < PublicationJob
   end
 
   def self.on_failure_send_notification(exception, id, email_addr)
+    begin
+      obj = ActiveFedora::Base.find(id)
+      message = "Publication of #{id} (#{self.publication_scope(obj)}) FAILED."
+    rescue ActiveFedora::ObjectNotFoundError
+      message = "Object #{id} Not Found"
+    end
     send_notification(email: email_addr,
                       subject: 'Publication Job FAILED',
-                      message: "Publication of #{id} (#{self.publication_scope(obj)}) FAILED.")
+                      message: message)
   end
 
 end
