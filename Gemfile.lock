@@ -113,7 +113,7 @@ GEM
       log4r
       paperclip (~> 4.2.0)
       rails (~> 4.1)
-    ddr-models (2.10.0)
+    ddr-models (2.10.1)
       active-fedora (>= 7.3.1, < 8)
       activeresource
       cancancan (~> 1.12)
@@ -125,7 +125,7 @@ GEM
       hashie (~> 3.4, < 3.4.4)
       hydra-core (~> 7.2)
       hydra-validations (~> 0.5)
-      net-ldap (~> 0.11)
+      net-ldap (~> 0.16)
       omniauth-shibboleth (~> 1.2.0)
       rails (>= 4.2.7, < 5)
       rdf-vocab (~> 0.8)
@@ -278,9 +278,9 @@ GEM
       activesupport
       nokogiri (>= 1.4.2)
       solrizer (~> 3.3)
-    omniauth (1.4.2)
+    omniauth (1.4.3)
       hashie (>= 1.2, < 4)
-      rack (>= 1.0, < 3)
+      rack (>= 1.6.2, < 3)
     omniauth-shibboleth (1.2.1)
       omniauth (>= 1.0.0)
     orderly (0.0.3)
@@ -519,7 +519,7 @@ DEPENDENCIES
   database_cleaner
   ddr-alerts (= 1.1.0)
   ddr-batch (= 1.6.0)
-  ddr-models (= 2.10.0)
+  ddr-models (= 2.10.1)
   deprecation
   devise
   equivalent-xml
@@ -555,4 +555,4 @@ RUBY VERSION
    ruby 2.3.1p112
 
 BUNDLED WITH
-   1.15.4
+   1.16.1
