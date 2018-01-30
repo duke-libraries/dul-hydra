@@ -4,7 +4,7 @@ ruby '2.3.1'
 gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
-gem 'ddr-batch', '1.6.0'
+gem 'ddr-batch', git: 'https://github.com/duke-libraries/ddr-batch', ref: 'e704c166b50794f2d25d3fd26bb73196914f5ba2'
 gem 'ddr-models', '2.10.1'
 
 gem 'hydra-head', '7.2.2'
@@ -30,7 +30,7 @@ gem 'therubyracer', require: 'v8', group: :production
 # For mapping file extensions to MIME types
 gem 'mime-types', '~> 2.6'
 
-gem 'paperclip', '~> 4.2'
+gem 'paperclip', '~> 5.2'
 
 # Filesystem representation
 gem 'rubytree'
