@@ -1,3 +1,15 @@
+GIT
+  remote: https://github.com/duke-libraries/ddr-batch
+  revision: e704c166b50794f2d25d3fd26bb73196914f5ba2
+  ref: e704c166b50794f2d25d3fd26bb73196914f5ba2
+  specs:
+    ddr-batch (1.7.0.pre)
+      ddr-models (~> 2.10)
+      devise (~> 3.4)
+      log4r
+      paperclip (~> 5.2)
+      rails (~> 4.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -96,7 +108,7 @@ GEM
       xpath (~> 2.0)
     childprocess (0.6.1)
       ffi (~> 1.0, >= 1.0.11)
-    climate_control (0.1.0)
+    climate_control (0.2.0)
     cocaine (0.5.8)
       climate_control (>= 0.0.3, < 1.0)
     coercible (1.0.0)
@@ -107,12 +119,6 @@ GEM
     ddr-alerts (1.1.0)
       rails (~> 4.2)
     ddr-antivirus (2.1.1)
-    ddr-batch (1.6.0)
-      ddr-models (~> 2.10)
-      devise (~> 3.4)
-      log4r
-      paperclip (~> 4.2.0)
-      rails (~> 4.1)
     ddr-models (2.10.1)
       active-fedora (>= 7.3.1, < 8)
       activeresource
@@ -257,6 +263,7 @@ GEM
     mail (2.6.4)
       mime-types (>= 1.16, < 4)
     mime-types (2.99.3)
+    mimemagic (0.3.2)
     mini_portile2 (2.3.0)
     minitest (5.10.1)
     mono_logger (1.1.0)
@@ -287,11 +294,12 @@ GEM
       capybara (>= 1.1)
       rspec (>= 2.14)
     orm_adapter (0.5.0)
-    paperclip (4.2.4)
-      activemodel (>= 3.2.0)
-      activesupport (>= 3.2.0)
+    paperclip (5.2.1)
+      activemodel (>= 4.2.0)
+      activesupport (>= 4.2.0)
       cocaine (~> 0.5.5)
       mime-types
+      mimemagic (~> 0.3.0)
     public_suffix (2.0.5)
     rack (1.6.5)
     rack-protection (1.5.3)
@@ -518,7 +526,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (= 1.1.0)
-  ddr-batch (= 1.6.0)
+  ddr-batch!
   ddr-models (= 2.10.1)
   deprecation
   devise
@@ -534,7 +542,7 @@ DEPENDENCIES
   mysql2 (~> 0.4.5)
   nest (= 1.1.2)
   orderly
-  paperclip (~> 4.2)
+  paperclip (~> 5.2)
   rails (= 4.2.7)
   responders (~> 2.0)
   resque (= 1.25.2)
