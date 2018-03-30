@@ -73,7 +73,7 @@ class BuildBatchFromDatastreamUpload
     Ddr::Index::Query.new do
       model 'Component'
       is_governed_by collection
-      raw "#{Ddr::Index::Fields::ORIGINAL_FILENAME}:/#{filename}.*/"
+      raw "#{Ddr::Index::Fields::ORIGINAL_FILENAME}:/#{filename}\\..*/"
       fields 'id'
     end
   end
