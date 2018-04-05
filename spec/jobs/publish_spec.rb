@@ -16,7 +16,7 @@ RSpec.describe PublishJob, type: :job do
     it "should generate an email" do
       expect(JobMailer).to receive(:basic).with(to: email,
                                                 subject: 'Publication Job COMPLETED',
-                                                message: expected_msg)
+                                                message: expected_msg).and_call_original
       described_class.perform('test-1', email)
     end
   end
