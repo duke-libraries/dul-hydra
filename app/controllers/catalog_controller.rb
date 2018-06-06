@@ -102,7 +102,68 @@ class CatalogController < ApplicationController
     # since we aren't specifying it otherwise.
     config.add_search_field('all_fields', :label => 'All Fields') do |field|
       field.solr_local_parameters = {
-        :qf => "id #{Ddr::Index::Fields::ACTIVE_FEDORA_MODEL} title_tesim creator_tesim subject_tesim description_tesim identifier_tesim #{Ddr::Index::Fields::PERMANENT_ID}"
+        :qf => ["id",
+                solr_name(:abstract, :stored_searchable),
+                solr_name(:affiliation, :stored_searchable),
+                solr_name(:alternative, :stored_searchable),
+                solr_name(:artist, :stored_searchable),
+                solr_name(:biblical_book, :stored_searchable),
+                solr_name(:bibliographicCitation, :stored_searchable),
+                solr_name(:box_number, :stored_searchable),
+                solr_name(:call_number, :stored_searchable),
+                solr_name(:category, :stored_searchable),
+                solr_name(:chapter_and_verse, :stored_searchable),
+                solr_name(:company, :stored_searchable),
+                solr_name(:composer, :stored_searchable),
+                solr_name(:creator, :stored_searchable),
+                solr_name(:contributor, :stored_searchable),
+                solr_name(:description, :stored_searchable),
+                solr_name(:dedicatee, :stored_searchable),
+                solr_name(:engraver, :stored_searchable),
+                solr_name(:extent, :stored_searchable),
+                solr_name(:folder, :stored_searchable),
+                solr_name(:format, :stored_searchable),
+                solr_name(:genre, :stored_searchable),
+                solr_name(:headline, :stored_searchable),
+                solr_name(:identifier, :stored_searchable),
+                solr_name(:illustrated,:stored_searchable),
+                solr_name(:illustrator,:stored_searchable),
+                solr_name(:instrumentation, :stored_searchable),
+                solr_name(:interviewer_name, :stored_searchable),
+                solr_name(:isPartOf, :stored_searchable),
+                solr_name(:issue_number, :stored_searchable),
+                solr_name(:language_name, :stored_searchable),
+                solr_name(:lithographer, :stored_searchable),
+                solr_name(:lyricist, :stored_searchable),
+                solr_name(:medium, :stored_searchable),
+                solr_name(:negative_number, :stored_searchable),
+                solr_name(:nested_path_text, :searchable),
+                solr_name(:oclc_number, :stored_searchable),
+                solr_name(:performer, :stored_searchable),
+                solr_name(:placement_company, :stored_searchable),
+                solr_name(:print_number, :stored_searchable),
+                solr_name(:producer, :stored_searchable),
+                solr_name(:product, :stored_searchable),
+                solr_name(:provenance, :stored_searchable),
+                solr_name(:publication, :stored_searchable),
+                solr_name(:publisher, :stored_searchable),
+                solr_name(:rights, :stored_searchable),
+                solr_name(:roll_number, :stored_searchable),
+                solr_name(:series, :stored_searchable),
+                solr_name(:setting, :stored_searchable),
+                solr_name(:spatial, :stored_searchable),
+                solr_name(:sponsor, :stored_searchable),
+                solr_name(:subject, :stored_searchable),
+                solr_name(:subseries, :stored_searchable),
+                solr_name(:temporal, :stored_searchable),
+                solr_name(:title, :stored_searchable),
+                solr_name(:tone, :stored_searchable),
+                solr_name(:type, :stored_searchable),
+                solr_name(:volume, :stored_searchable),
+                Ddr::Index::Fields::ALL_TEXT,
+                Ddr::Index::Fields::LOCAL_ID,
+                Ddr::Index::Fields::PERMANENT_ID,
+                Ddr::Index::Fields::YEAR_FACET].join(' ')
       }
     end
 
@@ -112,7 +173,7 @@ class CatalogController < ApplicationController
 
     config.add_search_field('title') do |field|
       # solr_parameters hash are sent to Solr as ordinary url query params.
-      field.solr_parameters = { :'spellcheck.dictionary' => 'title' }
+      field.solr_parameters = { :'spellcheck.dictionary' => 'default' }
 
       # :solr_local_parameters will be sent using Solr LocalParams
       # syntax, as eg {! qf=$title_qf }. This is neccesary to use
