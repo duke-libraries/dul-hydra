@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/duke-libraries/ddr-batch.git
-  revision: 0a7f45fc79453a61e4ca26c6827b2d3da0fdc9c9
-  ref: 0a7f45fc79453a61e4ca26c6827b2d3da0fdc9c9
+  revision: 4b76022ae4f93dcf3e1fd4e4c029b2c3f70cc920
+  ref: 4b76022ae4f93dcf3e1fd4e4c029b2c3f70cc920
   specs:
     ddr-batch (1.7.0.pre)
       ddr-models (~> 2.10)
