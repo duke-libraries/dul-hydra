@@ -6,8 +6,6 @@ before_install:
   - gem install bundler
 rvm:
   - 2.3.1
-before_script:
-  - "cp config/log4r.yml.sample config/log4r.yml"
 cache: bundler
 script: "bundle exec rake dul_hydra:ci:build"
 # To exclude antivirus tests:

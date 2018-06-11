@@ -1,4 +1,15 @@
 GIT
+  remote: https://github.com/duke-libraries/ddr-batch.git
+  revision: 0a7f45fc79453a61e4ca26c6827b2d3da0fdc9c9
+  ref: 0a7f45fc79453a61e4ca26c6827b2d3da0fdc9c9
+  specs:
+    ddr-batch (1.7.0.pre)
+      ddr-models (~> 2.10)
+      devise (~> 3.4)
+      paperclip (~> 5.2)
+      rails (~> 4.1)
+
+GIT
   remote: https://github.com/duke-libraries/ddr-models.git
   revision: 988d7dc9029c250acad84a78fcd749074aa94876
   ref: 988d7dc9029c250acad84a78fcd749074aa94876
@@ -133,12 +144,6 @@ GEM
     ddr-alerts (1.1.0)
       rails (~> 4.2)
     ddr-antivirus (2.1.1)
-    ddr-batch (1.6.1)
-      ddr-models (~> 2.10)
-      devise (~> 3.4)
-      log4r
-      paperclip (~> 5.2)
-      rails (~> 4.1)
     debug_inspector (0.0.2)
     deprecation (0.2.2)
       activesupport
@@ -257,7 +262,6 @@ GEM
       rdf-xsd (~> 1.1, >= 1.1.5)
       sparql (~> 1.99)
       sparql-client (~> 1.99)
-    log4r (1.1.10)
     logger (1.2.8)
     loofah (2.2.2)
       crass (~> 1.0.2)
@@ -528,7 +532,7 @@ DEPENDENCIES
   capybara (~> 2.0)
   database_cleaner
   ddr-alerts (= 1.1.0)
-  ddr-batch (= 1.6.1)
+  ddr-batch!
   ddr-models!
   deprecation
   devise
@@ -539,7 +543,6 @@ DEPENDENCIES
   hydra-head (= 7.2.2)
   jettywrapper (~> 1.8)
   jquery-rails
-  log4r
   mime-types (~> 2.6)
   mysql2 (~> 0.4.5)
   nest (= 1.1.2)
