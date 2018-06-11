@@ -4,7 +4,7 @@ ruby '2.3.1'
 gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
-gem 'ddr-batch', '1.6.1'
+gem 'ddr-batch', git: 'https://github.com/duke-libraries/ddr-batch.git', ref: '0a7f45fc79453a61e4ca26c6827b2d3da0fdc9c9'
 gem 'ddr-models', :git => 'https://github.com/duke-libraries/ddr-models.git', :ref => '988d7dc9029c250acad84a78fcd749074aa94876'
 
 gem 'hydra-head', '7.2.2'
@@ -16,8 +16,6 @@ gem 'deprecation'
 gem 'virtus', '~> 1.0.5'
 gem 'ezid-client', '~> 1.7'
 gem 'bagit'
-
-gem 'log4r'
 
 # Background processing
 gem 'resque', '1.25.2'

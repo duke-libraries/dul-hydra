@@ -2,12 +2,6 @@ require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
 
-# log4r
-require 'log4r'
-require 'log4r/yamlconfigurator'
-require 'log4r/outputter/datefileoutputter'
-include Log4r
-
 if defined?(Bundler)
   # Require the gems listed in Gemfile, including any gems
   # you've limited to :test, :development, or :production.
@@ -67,10 +61,7 @@ module DulHydra
 
     config.active_record.raise_in_transactional_callbacks = true
 
-    # assign log4r's logger as Rails' logger
-    log4r_config = YAML.load_file(File.join(File.dirname(__FILE__),"log4r.yml"))
-    YamlConfigurator.decode_yaml(log4r_config['log4r_config'])
-    config.logger = Log4r::Logger[Rails.env]
+    config.logger = Logger.new(config.paths["log"].first, 5, 10**7)
 
     # Load environment variable from file
     # http://railsapps.github.io/rails-environment-variables.html
