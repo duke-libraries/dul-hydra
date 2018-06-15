@@ -59,6 +59,7 @@ end
 
 group :production do
   gem 'mysql2', '~> 0.4.5'
+  gem 'passenger'
 end
 
 gem 'sass-rails'
