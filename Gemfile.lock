@@ -306,6 +306,9 @@ GEM
       cocaine (~> 0.5.5)
       mime-types
       mimemagic (~> 0.3.0)
+    passenger (5.3.2)
+      rack
+      rake (>= 0.8.1)
     public_suffix (2.0.5)
     rack (1.6.5)
     rack-protection (1.5.5)
@@ -548,6 +551,7 @@ DEPENDENCIES
   nest (= 1.1.2)
   orderly
   paperclip (~> 5.2)
+  passenger
   rails (= 4.2.7)
   responders (~> 2.0)
   resque (= 1.25.2)
