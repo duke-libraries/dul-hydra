@@ -72,6 +72,7 @@ module DulHydra
           :ead_id,
           :license,
           :local_id,
+          :research_help_contact,
           :rights_note,
         ]
       end

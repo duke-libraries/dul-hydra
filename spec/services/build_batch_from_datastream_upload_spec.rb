@@ -123,5 +123,18 @@ RSpec.describe BuildBatchFromDatastreamUpload, type: :service, batch: true do
         expect(batch.batch_objects.first.pid).to eq(component.pid)
       end
     end
+    describe 'match on entire filename except for extension' do
+      let(:comp) { FactoryGirl.build(:component) }
+      before do
+        component.update_attributes(original_filename: 'abc001.tif')
+        comp.admin_policy = collection
+        comp.original_filename = 'abc001001.tif'
+        comp.save!
+      end
+      it 'finds the correct component' do
+        batch = batch_builder.call
+        expect(batch.batch_objects.first.pid).to eq(component.pid)
+      end
+    end
   end
 end

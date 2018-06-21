@@ -4,6 +4,7 @@ class PublicationJob
     mail = JobMailer.basic(to: email,
                            subject: subject,
                            message: message)
+    mail.deliver_now
   end
 
   def self.publication_scope(object)

@@ -4,8 +4,8 @@ ruby '2.3.1'
 gem 'rails', '4.2.7'
 
 gem 'ddr-alerts', '1.1.0'
-gem 'ddr-batch', '1.6.1'
-gem 'ddr-models', '2.10.2'
+gem 'ddr-batch', '1.7.0'
+gem 'ddr-models', '2.11.0'
 
 gem 'hydra-head', '7.2.2'
 gem 'blacklight', '5.19.2'
@@ -16,8 +16,6 @@ gem 'deprecation'
 gem 'virtus', '~> 1.0.5'
 gem 'ezid-client', '~> 1.7'
 gem 'bagit'
-
-gem 'log4r'
 
 # Background processing
 gem 'resque', '1.25.2'
@@ -61,6 +59,7 @@ end
 
 group :production do
   gem 'mysql2', '~> 0.4.5'
+  gem 'passenger'
 end
 
 gem 'sass-rails'
