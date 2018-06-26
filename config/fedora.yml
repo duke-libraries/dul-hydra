@@ -7,6 +7,6 @@ test:
   password: fedoraAdmin
   url: http://127.0.0.1:8983/fedora-test
 production:
-  user: fedoraAdmin
-  password: fedoraAdmin
-  url: http://127.0.0.1:8080/fedora
+  user: <%= ENV.fetch("FEDORA_ADMIN_USER", "fedoraAdmin") %>
+  password: <%= ENV["FEDORA_ADMIN_PASS"] %>
+  url: <%= ENV.fetch("FEDORA_URL", "http://127.0.0.1:8080/fedora") %>
