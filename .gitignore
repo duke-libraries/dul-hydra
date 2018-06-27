@@ -22,6 +22,9 @@
 # Except for these ...
 !/config/predicate_mappings.yml
 
+# Figaro
+/config/application.yml
+
 # Environment configs
 /config/environments/*.rb
 

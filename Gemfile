@@ -16,6 +16,7 @@ gem 'deprecation'
 gem 'virtus', '~> 1.0.5'
 gem 'ezid-client', '~> 1.7'
 gem 'bagit'
+gem 'figaro'
 
 # Background processing
 gem 'resque', '1.25.2'
