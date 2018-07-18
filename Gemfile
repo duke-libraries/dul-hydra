@@ -59,7 +59,9 @@ group :test do
 end
 
 group :production do
-  gem 'mysql2', '~> 0.5'
+  # NOTE: mysql2 version requirement is a Rails runtime dependency defined in
+  # active_record/connection_adapters/mysql2_adapter.
+  gem 'mysql2', '>= 0.3.13', '< 0.5'
   gem 'passenger'
 end
 

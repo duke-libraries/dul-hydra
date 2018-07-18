@@ -264,7 +264,7 @@ GEM
     minitest (5.10.1)
     mono_logger (1.1.0)
     multi_json (1.12.1)
-    mysql2 (0.5.1)
+    mysql2 (0.4.10)
     nest (1.1.2)
       redis
     net-http-persistent (2.9.4)
@@ -538,7 +538,7 @@ DEPENDENCIES
   jettywrapper (~> 1.8)
   jquery-rails
   mime-types (~> 2.6)
-  mysql2 (~> 0.5)
+  mysql2 (>= 0.3.13, < 0.5)
   nest (= 1.1.2)
   orderly
   paperclip (~> 5.2)
