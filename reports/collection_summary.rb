@@ -10,6 +10,7 @@ end
 headers = [
   "PID",
   "COLLECTION TITLE",
+  "CREATION DATE",
   "ADMIN SET",
   "OBJECT COUNT",
   "WORKFLOW STATE",
@@ -23,7 +24,7 @@ Tempfile.create(["collection_summary", ".csv"]) do |outfile|
     csv << headers
     collections = Ddr::Index::Query.new do
       model "Collection"
-      fields :id, :title, :admin_set, :workflow_state, :internal_uri
+      fields :id, :title, :object_profile, :admin_set, :workflow_state, :internal_uri
     end
     collections.docs.each do |doc|
       objects = Ddr::Index::Query.new { is_governed_by doc.id }
@@ -34,7 +35,8 @@ Tempfile.create(["collection_summary", ".csv"]) do |outfile|
       end
       total_size = content.docs.map(&:content_size).reduce(0, :+)
       human_size = ActiveSupport::NumberHelper.number_to_human_size(total_size)
-      csv << [doc.id, doc.title, doc.admin_set, objects.count, doc.workflow_state, human_size, total_size]
+      creation_date = doc.object_create_date.strftime('%Y-%m-%d') rescue nil
+      csv << [doc.id, doc.title, creation_date, doc.admin_set, objects.count, doc.workflow_state, human_size, total_size]
     end
   end
   mail = ReportMailer.basic(to: email_addrs,
