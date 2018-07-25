@@ -166,6 +166,8 @@ GEM
       factory_girl (~> 4.8.0)
       railties (>= 3.0.0)
     ffi (1.9.17)
+    figaro (1.1.1)
+      thor (~> 0.14)
     font-awesome-sass (4.6.2)
       sass (>= 3.2)
     globalid (0.3.7)
@@ -262,7 +264,7 @@ GEM
     minitest (5.10.1)
     mono_logger (1.1.0)
     multi_json (1.12.1)
-    mysql2 (0.4.5)
+    mysql2 (0.4.10)
     nest (1.1.2)
       redis
     net-http-persistent (2.9.4)
@@ -530,12 +532,13 @@ DEPENDENCIES
   equivalent-xml
   ezid-client (~> 1.7)
   factory_girl_rails
+  figaro
   font-awesome-sass (~> 4.6.2)
   hydra-head (= 7.2.2)
   jettywrapper (~> 1.8)
   jquery-rails
   mime-types (~> 2.6)
-  mysql2 (~> 0.4.5)
+  mysql2 (>= 0.3.13, < 0.5)
   nest (= 1.1.2)
   orderly
   paperclip (~> 5.2)

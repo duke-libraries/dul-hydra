@@ -63,14 +63,5 @@ module DulHydra
 
     config.logger = Logger.new(config.paths["log"].first, 5, 10**7)
 
-    # Load environment variable from file
-    # http://railsapps.github.io/rails-environment-variables.html
-    config.before_configuration do
-      env_file = File.join(Rails.root, 'config', 'local_env.yml')
-      if File.exists?(env_file)
-        YAML.load_file(env_file).each { |key, value| ENV[key.to_s] = value.to_s }
-      end
-    end
-
   end
 end

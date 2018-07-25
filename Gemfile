@@ -16,6 +16,7 @@ gem 'deprecation'
 gem 'virtus', '~> 1.0.5'
 gem 'ezid-client', '~> 1.7'
 gem 'bagit'
+gem 'figaro'
 
 # Background processing
 gem 'resque', '1.25.2'
@@ -58,7 +59,9 @@ group :test do
 end
 
 group :production do
-  gem 'mysql2', '~> 0.4.5'
+  # NOTE: mysql2 version requirement is a Rails runtime dependency defined in
+  # active_record/connection_adapters/mysql2_adapter.
+  gem 'mysql2', '>= 0.3.13', '< 0.5'
   gem 'passenger'
 end
 
