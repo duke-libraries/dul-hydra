@@ -27,6 +27,7 @@ class BatchFixityCheck
   def self.last_checked(before_days: nil, limit: nil)
     Ddr::Index::Query.build(before_days, limit) do |days, max|
       asc :last_fixity_check_on
+      limit max if max
       if days
         before_days(:last_fixity_check_on, days)
       else
