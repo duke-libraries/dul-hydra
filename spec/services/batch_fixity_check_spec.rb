@@ -31,4 +31,16 @@ RSpec.describe BatchFixityCheck do
     end
   end
 
+  describe "with more objects than the limit that were last checked one year ago" do
+    let(:obj2) { FactoryGirl.create(:item) }
+    before do
+      Ddr::Events::FixityCheckEvent.create(pid: obj.pid, event_date_time: Time.now.ago(1.year).utc)
+      Ddr::Events::FixityCheckEvent.create(pid: obj2.pid, event_date_time: Time.now.ago(1.year).utc)
+    end
+    it "should not queue the excess pid's for fixity checking" do
+      expect(Resque).to receive(:enqueue).with(FixityCheckJob, instance_of(String)).once
+      described_class.call(limit: 1)
+    end
+  end
+
 end
