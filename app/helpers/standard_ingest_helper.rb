@@ -1,12 +1,11 @@
 module StandardIngestHelper
 
-  def standard_ingest_folder_options_for_select
-    options_for_select(standard_ingest_folders.collect { |f| [ f, File.join(DulHydra.standard_ingest_base_path, f) ] }, @standard_ingest.folder_path)
-  end
+  # For convenience, for now, we assume that standard ingest will always use the default configuration file
+  # (StandardIngest::DEFAULT_CONFIG_FILE), though StandardIngest is coded to permit passing in a different
+  # config file.
 
-  def standard_ingest_folders
-    base = DulHydra.standard_ingest_base_path
-    Dir.entries(base).select {|e| File.directory? File.join(base, e) }.reject{ |e| e.starts_with?('.') }
+  def permitted_standard_ingest_bases
+    StandardIngest.default_basepaths
   end
 
 end

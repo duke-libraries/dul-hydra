@@ -26,14 +26,7 @@
           <%= f.hidden_field :collection_id %>
           <%= @standard_ingest.collection_id.present? ? object_display_title(@standard_ingest.collection_id) : '<Will be created by Standard Ingest>' %>
         </div>
-        <div class="form-group">
-          <%= f.label :base_path, "Base Path" %>
-          <%= DulHydra.standard_ingest_base_path %>
-        </div>
-        <div class="form-group">
-          <%= f.label :folder_path, "Folder" %>
-          <%= f.select :folder_path, standard_ingest_folder_options_for_select, { include_blank: "Select Standard Ingest Folder" }, { class: "form-control" } %>
-        </div>
+        <%= render partial: 'folder_path', locals: { f: f } %>
         <div class="form-group">
           <% unless @standard_ingest.collection_id.present? %>
               <%= f.label :admin_set, "Admin Set" %>

@@ -11,7 +11,8 @@ class StandardIngestJob
     model_stats = results.inspection_results.content_model_stats if results.inspection_results
     ActiveSupport::Notifications.instrument(StandardIngest::FINISHED,
                                             user_key: args['batch_user'],
-                                            folder_path: args['folder_path'],
+                                            basepath: args['basepath'],
+                                            subpath: args['subpath'],
                                             collection_id: args['collection_id'],
                                             file_count: file_count,
                                             model_stats: model_stats,

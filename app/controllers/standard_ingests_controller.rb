@@ -9,10 +9,11 @@ class StandardIngestsController < ApplicationController
     if @standard_ingest.valid?
       Resque.enqueue(StandardIngestJob,
                      'admin_set' => @standard_ingest.admin_set,
+                     'basepath' => @standard_ingest.basepath,
                      'batch_user' => @standard_ingest.user.user_key,
                      'collection_id' => @standard_ingest.collection_id,
                      'config_file' => @standard_ingest.config_file,
-                     'folder_path' => @standard_ingest.folder_path)
+                     'subpath' => @standard_ingest.subpath)
       render "queued"
     else
       render "new"
@@ -22,7 +23,7 @@ class StandardIngestsController < ApplicationController
   private
 
   def create_params
-    params.require(:standard_ingest).permit(:folder_path, :admin_set, :collection_id, :config_file)
+    params.require(:standard_ingest).permit(:basepath, :admin_set, :collection_id, :config_file, :subpath)
   end
 
   def authorize_create

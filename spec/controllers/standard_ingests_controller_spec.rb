@@ -5,12 +5,15 @@ RSpec.describe StandardIngestsController, type: :controller do
   describe "#create" do
     let(:user) { FactoryGirl.create(:user) }
     let(:admin_set) { "foo" }
-    let(:folder_path) { "/foo/bar/baz" }
+    let(:basepath) { "/foo/bar/" }
+    let(:subpath) { "baz" }
+    let(:folder_path) { File.join(basepath, subpath) }
     let(:checksum_path) { File.join(folder_path, StandardIngest::CHECKSUM_FILE).to_s }
     let(:data_path) { File.join(folder_path, StandardIngest::DATA_DIRECTORY).to_s }
     let(:metadata_path) { File.join(data_path, StandardIngest::METADATA_FILE).to_s }
-    let(:job_params) { {"admin_set" => admin_set, "batch_user" => user.user_key, "collection_id" => "",
-                        "config_file" => StandardIngest::DEFAULT_CONFIG_FILE.to_s, "folder_path" => folder_path } }
+    let(:job_params) { {"admin_set" => admin_set, "basepath" => basepath, "batch_user" => user.user_key,
+                        "collection_id" => "", "config_file" => StandardIngest::DEFAULT_CONFIG_FILE.to_s,
+                        "subpath" => subpath} }
 
     before do
       sign_in user
@@ -20,6 +23,7 @@ RSpec.describe StandardIngestsController, type: :controller do
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(checksum_path) { true }
       allow(File).to receive(:exist?).with(metadata_path) { true }
+      allow_any_instance_of(StandardIngest).to receive(:load_configuration) { {} }
       allow_any_instance_of(StandardIngest).to receive(:validate_metadata_file) { nil }
     end
 
@@ -30,7 +34,8 @@ RSpec.describe StandardIngestsController, type: :controller do
       }
       it "enqueues the job and renders the 'queued' view" do
         expect(Resque).to receive(:enqueue).with(StandardIngestJob, job_params)
-        post :create, standard_ingest: {"folder_path" => folder_path, "collection_id" => "", "admin_set" => admin_set }
+        post :create, standard_ingest: { "basepath" => basepath, "collection_id" => "", "admin_set" => admin_set,
+                                         "subpath" => subpath }
         expect(response).to render_template(:queued)
       end
       describe "and the collection is specified" do
@@ -39,7 +44,7 @@ RSpec.describe StandardIngestsController, type: :controller do
             controller.current_ability.can(:add_children, "test:1")
           }
           it "is successful" do
-            post :create, standard_ingest: {"folder_path" => folder_path, "collection_id" => "test:1" }
+            post :create, standard_ingest: { "basepath" => basepath, "collection_id" => "test:1", "subpath" => subpath }
             expect(response.response_code).to eq(200)
           end
         end
@@ -49,7 +54,7 @@ RSpec.describe StandardIngestsController, type: :controller do
           controller.current_ability.cannot(:add_children, "test:1")
         }
         it "is forbidden" do
-          post :create, standard_ingest: {"folder_path" => folder_path, "collection_id" => "test:1" }
+          post :create, standard_ingest: {"basepath" => basepath, "collection_id" => "test:1", "subpath" => subpath }
           expect(response.response_code).to eq(403)
         end
       end
@@ -61,7 +66,7 @@ RSpec.describe StandardIngestsController, type: :controller do
       }
       describe "and the collection is not specified" do
         it "is forbidden" do
-          post :create, standard_ingest: {"folder_path" => folder_path, "collection_id" => "" }
+          post :create, standard_ingest: {"basepath" => basepath, "collection_id" => "", "subpath" => subpath }
           expect(response.response_code).to eq(403)
         end
       end
@@ -71,7 +76,7 @@ RSpec.describe StandardIngestsController, type: :controller do
             controller.current_ability.can(:add_children, "test:1")
           }
           it "is successful" do
-            post :create, standard_ingest: {"folder_path" => folder_path, "collection_id" => "test:1" }
+            post :create, standard_ingest: {"basepath" => basepath, "collection_id" => "test:1", "subpath" => subpath }
             expect(response.response_code).to eq(200)
           end
         end
@@ -81,7 +86,7 @@ RSpec.describe StandardIngestsController, type: :controller do
           controller.current_ability.cannot(:add_children, "test:1")
         }
         it "is forbidden" do
-          post :create, standard_ingest: {"folder_path" => folder_path, "collection_id" => "test:1" }
+          post :create, standard_ingest: {"basepath" => basepath, "collection_id" => "test:1", "subpath" => subpath }
           expect(response.response_code).to eq(403)
         end
       end

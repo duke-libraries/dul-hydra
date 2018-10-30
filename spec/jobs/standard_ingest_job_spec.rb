@@ -3,15 +3,17 @@ require 'spec_helper'
 RSpec.describe StandardIngestJob, type: :job do
 
   let(:user_key) { 'joe@test.edu' }
-  let(:folder_path) { '/foo/bar/baz' }
+  let(:basepath) { "/foo/bar/" }
+  let(:subpath) { "baz" }
   let(:collection_pid) { 'test:1' }
   let(:batch) { double('Ddr::Batch::Batch', id: 5) }
   let(:item_count) { 7 }
   let(:component_count) { 10 }
   let(:target_count) { 2 }
-  let(:job_params) { { "batch_user" => user_key, "folder_path" => folder_path } }
+  let(:job_params) { { "batch_user" => user_key, "basepath" => basepath, "subpath" => subpath } }
 
   before do
+    allow_any_instance_of(StandardIngest).to receive(:load_configuration) { {} }
     allow_any_instance_of(InspectStandardIngest).to receive(:call) { inspection_results }
   end
 
@@ -34,7 +36,8 @@ RSpec.describe StandardIngestJob, type: :job do
         it "should publish the appropriate notification" do
           expect(ActiveSupport::Notifications).to receive(:instrument).with(StandardIngest::FINISHED,
                                                                             user_key: user_key,
-                                                                            folder_path: folder_path,
+                                                                            basepath: basepath,
+                                                                            subpath: subpath,
                                                                             collection_id: collection_pid,
                                                                             file_count: file_count,
                                                                             model_stats: model_stats,
@@ -48,7 +51,8 @@ RSpec.describe StandardIngestJob, type: :job do
         it "should publish the appropriate notification" do
           expect(ActiveSupport::Notifications).to receive(:instrument).with(StandardIngest::FINISHED,
                                                                             user_key: user_key,
-                                                                            folder_path: folder_path,
+                                                                            basepath: basepath,
+                                                                            subpath: subpath,
                                                                             collection_id: nil,
                                                                             file_count: file_count,
                                                                             model_stats: model_stats,
@@ -72,7 +76,8 @@ RSpec.describe StandardIngestJob, type: :job do
         it "should publish the appropriate notification" do
           expect(ActiveSupport::Notifications).to receive(:instrument).with(StandardIngest::FINISHED,
                                                                             user_key: user_key,
-                                                                            folder_path: folder_path,
+                                                                            basepath: basepath,
+                                                                            subpath: subpath,
                                                                             collection_id: collection_pid,
                                                                             file_count: nil,
                                                                             model_stats: nil,
@@ -85,7 +90,8 @@ RSpec.describe StandardIngestJob, type: :job do
         it "should publish the appropriate notification" do
           expect(ActiveSupport::Notifications).to receive(:instrument).with(StandardIngest::FINISHED,
                                                                             user_key: user_key,
-                                                                            folder_path: folder_path,
+                                                                            basepath: basepath,
+                                                                            subpath: subpath,
                                                                             collection_id: nil,
                                                                             file_count: nil,
                                                                             model_stats: nil,
