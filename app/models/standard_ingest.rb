@@ -1,7 +1,7 @@
 class StandardIngest
   include ActiveModel::Model
 
-  attr_reader :admin_set, :collection_id, :config_file, :configuration, :folder_path
+  attr_reader :admin_set, :basepath, :collection_id, :config_file, :configuration, :subpath
   attr_accessor :results, :user
 
   # Lifecycle events
@@ -14,7 +14,7 @@ class StandardIngest
   DEFAULT_CONFIG_FILE = Rails.root.join('config', 'standard_ingest.yml')
   METADATA_FILE = 'metadata.txt'
 
-  validates_presence_of(:folder_path, :user)
+  validates_presence_of(:basepath, :subpath, :user)
   with_options if: 'folder_path.present?' do |folder|
     folder.validate :folder_directory_must_exist
     folder.validate :data_directory_must_exist
@@ -26,12 +26,21 @@ class StandardIngest
   validate :collection_must_exist, if: 'collection_id.present?'
   validates_presence_of(:admin_set, unless: 'collection_id.present?')
 
+  def self.default_config
+    YAML.load(File.read(DEFAULT_CONFIG_FILE)).deep_symbolize_keys
+  end
+
+  def self.default_basepaths
+    default_config[:basepaths]
+  end
+
   def initialize(args)
     @admin_set = args['admin_set']
+    @basepath = args['basepath']
     @collection_id = args['collection_id']
     @config_file = args['config_file'] || DEFAULT_CONFIG_FILE.to_s
     @configuration = load_configuration
-    @folder_path = args['folder_path']
+    @subpath = args['subpath']
     @user = User.find_by_user_key(args['batch_user'])
     @results = Results.new
   end
@@ -132,6 +141,10 @@ class StandardIngest
 
   def metadata_provider
     @metadata_provider ||= IngestMetadata.new(File.join(data_path, METADATA_FILE), configuration[:metadata])
+  end
+
+  def folder_path
+    @folder_path ||= File.join(basepath, subpath)
   end
 
   def inspection_results

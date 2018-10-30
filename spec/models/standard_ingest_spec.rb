@@ -4,20 +4,26 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
 
   let(:user) { FactoryGirl.create(:user) }
   let(:admin_set) { 'foo' }
-  let(:folder_path) { '/test/directory' }
+  let(:basepath) { '/test/' }
+  let(:subpath) { 'directory/' }
   let(:fs_node_paths) { filesystem.each_leaf.map { |leaf| Filesystem.node_locator(leaf) } }
   let(:ingest_metadata) { double(IngestMetadata) }
 
   subject { StandardIngest.new(standard_ingest_args) }
 
+  before do
+    allow_any_instance_of(StandardIngest).to receive(:load_configuration) { {} }
+  end
+
   describe 'validation' do
     let(:filesystem) { Filesystem.new }
     let(:standard_ingest_args) { { 'batch_user' => user.user_key,
-                                   'folder_path' => folder_path,
+                                   'basepath' => basepath,
+                                   'subpath' => subpath,
                                    'admin_set' => admin_set } }
     before do
       filesystem.tree = sample_filesystem_without_dot_files
-      allow(Dir).to receive(:exist?).with(folder_path) { true }
+      allow(Dir).to receive(:exist?).with(subject.folder_path) { true }
       allow(Dir).to receive(:exist?).with(subject.data_path) { true }
       allow(File).to receive(:exist?).with(subject.checksum_path) { true }
       allow(subject).to receive(:metadata_provider) { ingest_metadata }
@@ -53,7 +59,8 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
         describe 'item adding ingest' do
           let(:collection_repo_id) { 'test:1' }
           let(:standard_ingest_args) { { 'batch_user' => user.user_key,
-                                         'folder_path' => folder_path,
+                                         'basepath' => basepath,
+                                         'subpath' => subpath,
                                          'collection_id' => collection_repo_id } }
           before { allow(Collection).to receive(:exists?).with(collection_repo_id) { true } }
           it "should be valid" do
@@ -63,7 +70,7 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
       end
     end
     describe 'invalid standard ingest folder' do
-      let(:error_message) { "#{File.join(folder_path, 'data')} is not a valid standard ingest directory" }
+      let(:error_message) { "#{File.join(subject.folder_path, 'data')} is not a valid standard ingest directory" }
       before do
         allow(File).to receive(:exist?).with(subject.metadata_path) { false }
         allow(subject).to receive(:inspection_results).and_raise(DulHydra::BatchError, error_message)
@@ -81,10 +88,13 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
     let(:ingest_metadata) { double(IngestMetadata) }
     let(:standard_ingest_checksum) { double(StandardIngestChecksum) }
     let(:filesystem) { filesystem_standard_ingest }
-    let(:config) { {:scanner=>{:exclude=>[".DS_Store", "Thumbs.db", "metadata.txt"], :targets=>"dpc_targets",
-                               :intermediate_files=>"intermediate_files"},
-                    :metadata=>{:csv=>{:encoding=>"UTF-8", :headers=>true, :col_sep=>"\t"},
-                                :parse=>{:repeating_fields_separator=>";"}}} }
+    let(:config) do
+      { basepaths: [ "/base/path1", "/base/path2" ],
+        scanner: { exclude: [ ".DS_Store", "Thumbs.db", "metadata.txt" ], targets: "dpc_targets",
+                   intermediate_files: "intermediate_files" },
+        metadata: { csv:{ encoding: "UTF-8", headers: true, col_sep: "\t" },
+                    parse: { repeating_fields_separator: ";" } } }
+    end
     let(:admin_set) { 'dvs' }
 
     before do
@@ -97,7 +107,8 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
 
     describe "collection creating standard ingest" do
       let(:standard_ingest_args) { { 'admin_set' => admin_set,
-                                     'folder_path' => folder_path,
+                                     'basepath' => basepath,
+                                     'subpath' => subpath,
                                      'batch_user' => user.user_key } }
       let(:batch_builder_args) { { user: user,
                                    filesystem: filesystem,
@@ -122,7 +133,8 @@ RSpec.describe StandardIngest, type: :model, batch: true, ingest: true do
       let(:collection_repo_id) { 'test:1' }
       let(:standard_ingest_args) { { 'admin_set' => admin_set,
                                      'collection_id' => collection_repo_id,
-                                     'folder_path' => folder_path,
+                                     'basepath' => basepath,
+                                     'subpath' => subpath,
                                      'batch_user' => user.user_key } }
       let(:batch_builder_args) { { user: user,
                                    filesystem: filesystem,
