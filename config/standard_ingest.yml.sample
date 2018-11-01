@@ -1,3 +1,6 @@
+:basepaths:
+  - /path/to/base/folder1/
+  - /path/to/base/folder2/
 :scanner:
     :exclude:
         - .DS_Store

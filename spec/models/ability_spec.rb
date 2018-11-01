@@ -68,8 +68,11 @@ describe Ability, type: :model, abilities: true do
   end
 
   describe "StandardIngest abilities" do
-    let(:resource) { StandardIngest.new({"folder_path" => '/foo', "batch_user" => auth_context.user.user_key }) }
-    before { auth_context.user.save! }
+    let(:resource) { StandardIngest.new({"basepath" => '/foo', "batch_user" => auth_context.user.user_key, subpath: 'bar' }) }
+    before do
+      auth_context.user.save!
+      allow_any_instance_of(StandardIngest).to receive(:load_configuration) { {} }
+    end
     describe "create" do
       before { allow_any_instance_of(described_class).to receive(:can?).and_call_original }
       describe "when the user can create collections" do
