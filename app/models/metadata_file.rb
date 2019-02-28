@@ -75,7 +75,9 @@ class MetadataFile < ActiveRecord::Base
   end
 
   def editable_admin_metadata_fields
-    DulHydra.user_editable_admin_metadata_fields.concat(DulHydra.user_editable_item_admin_metadata_fields)
+    DulHydra.user_editable_admin_metadata_fields
+        .concat(DulHydra.user_editable_item_admin_metadata_fields)
+        .concat([ :research_help_contact ])
   end
 
   def controlled_value_headers
