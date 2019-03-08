@@ -5,7 +5,7 @@ before_install:
   - sudo apt-get install -qq libvips-dev
   - gem install bundler
 rvm:
-  - 2.3.1
+  - 2.3.8
 cache: bundler
 script: "bundle exec rake dul_hydra:ci:build"
 # To exclude antivirus tests:
