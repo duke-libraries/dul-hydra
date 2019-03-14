@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 ruby '2.3.8'
 
-gem 'rails', '4.2.11'
+gem 'rails', '4.2.11.1'
 
 gem 'ddr-alerts', '1.1.0'
 gem 'ddr-batch', '1.7.2'
