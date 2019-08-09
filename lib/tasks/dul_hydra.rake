@@ -294,4 +294,12 @@ namespace :dul_hydra do
     end
   end
 
+  namespace :migration do
+    desc "Write migration metadata CSV table for collection"
+    task :collection, [:collection_pid, :filepath] => :environment do |t, args|
+      puts "Writing migration metadata CSV table for collection #{args[:collection_pid]} to '#{args[:filepath]}'"
+      DulHydra::Migration::CollectionMigration.call(args[:collection_pid], args[:filepath])
+    end
+  end
+
 end
